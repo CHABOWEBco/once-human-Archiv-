@@ -139,7 +139,7 @@ function renderHome(){
           <h1 class="landing-title"><span>ONCE HUMAN</span><strong>ARCHIV</strong></h1>
           <div class="landing-subtitle">DEINE ZENTRALE WISSENSPLATTFORM FÜR ONCE HUMAN</div>
           <p>Guides, Daten, Builds, Karten, Community und Werkzeuge an einem Ort. Übersichtlich verbunden mit den vorhandenen Archivfunktionen und deinem lokalen Fortschritt.</p>
-          <div class="landing-actions"><a class="landing-primary" href="#/database">JETZT ENTDECKEN →</a><button class="landing-video" type="button" id="videoInfo"><span>▶</span> ARCHIV ANSEHEN</button></div>
+          <div class="landing-actions"><a class="landing-primary" href="#/database"><span>JETZT ENTDECKEN</span><span aria-hidden="true">→</span></a><button class="landing-video" type="button" id="videoInfo"><span>▶</span> ARCHIV ANSEHEN</button></div>
           <div class="landing-trust"><span>◷ <b>Aktuell</b></span><span>♙ <b>Community-getrieben</b></span><span>◇ <b>Werbefrei</b></span><span>⌁ <b>Für alle Spieler</b></span></div>
         </div>
         <div class="landing-hero-space" aria-hidden="true"></div>
@@ -163,7 +163,7 @@ function renderHome(){
         <section class="landing-update">
           <div class="landing-section-head"><h2>Aktuelles Update</h2><a href="#/news">Alle Neuigkeiten →</a></div>
           <div class="landing-news-grid">
-            <article class="landing-news-feature"><div class="landing-news-feature-copy"><div><span class="tag">${escapeHtml(featured?.category||'ARCHIV')}</span><small>${fmtDate(featured?.date)}</small></div><h3>${escapeHtml(homeBrandText(featured?.title||'Archivstand aktualisiert'))}</h3><p>${escapeHtml(homeBrandText(featured?.summary||'Der aktuelle Website-Stand ist als funktionierende Archivoberfläche verfügbar.'))}</p><a class="landing-primary landing-compact" href="#/news">DETAILS ANSEHEN →</a></div></article>
+            <article class="landing-news-feature"><div class="landing-news-feature-copy"><div><span class="tag">${escapeHtml(featured?.category||'ARCHIV')}</span><small>${fmtDate(featured?.date)}</small></div><h3>${escapeHtml(homeBrandText(featured?.title||'Archivstand aktualisiert').replace(/JAZZEMEOW\s+ARCHIVE/gi,'ONCE HUMAN ARCHIV'))}</h3><p>${escapeHtml(homeBrandText(featured?.summary||'Der aktuelle Website-Stand ist als funktionierende Archivoberfläche verfügbar.'))}</p><a class="landing-primary landing-compact" href="#/news">DETAILS ANSEHEN →</a></div></article>
             <div class="landing-news-stack">${miniNews}${secondary.length<3?catalogSnapshot:''}</div>
           </div>
         </section>
