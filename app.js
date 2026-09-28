@@ -41,21 +41,23 @@ mainNav.innerHTML = NAV.map(([id,label,icon])=>`<a href="#/${id}" data-nav="${id
 
 const topBrand = document.querySelector('#topbar .brand');
 const footerBrand = document.querySelector('.footer-brand .brand');
-const defaultTopBrand = topBrand?.innerHTML || '';
-const defaultFooterBrand = footerBrand?.innerHTML || '';
+const HOME_TOP_BRAND = `<span class="brand-mark home-logo-mark"><img class="home-brand-logo" src="./assets/branding/once-human-logo.png" alt=""></span><span><strong>ONCE HUMAN</strong><small>ARCHIV</small></span>`;
+const HOME_FOOTER_BRAND = `<span class="brand-mark small home-logo-mark"><img class="home-brand-logo" src="./assets/branding/once-human-logo.png" alt=""></span><span><strong>ONCE HUMAN</strong><small>ARCHIV</small></span>`;
+const LEGACY_TOP_BRAND = `<span class="brand-mark"><i></i><b>M</b></span><span><strong>JAZZEMEOW</strong><small>ONCE HUMAN ARCHIV</small></span>`;
+const LEGACY_FOOTER_BRAND = `<span class="brand-mark small"><i></i><b>M</b></span><span><strong>JAZZEMEOW</strong><small>ONCE HUMAN ARCHIV</small></span>`;
 function syncRouteBrand(routeId){
   const home = routeId === 'home';
   if(topBrand){
-    topBrand.innerHTML = home
-      ? `<span class="brand-mark home-logo-mark"><img class="home-brand-logo" src="./assets/branding/once-human-logo.png" alt=""></span><span><strong>ONCE HUMAN</strong><small>ARCHIV</small></span>`
-      : defaultTopBrand;
+    topBrand.innerHTML = home ? HOME_TOP_BRAND : LEGACY_TOP_BRAND;
     topBrand.setAttribute('aria-label',home?'Once Human Archiv Startseite':'JazzeMeow Archiv Startseite');
   }
-  if(footerBrand){
-    footerBrand.innerHTML = home
-      ? `<span class="brand-mark small home-logo-mark"><img class="home-brand-logo" src="./assets/branding/once-human-logo.png" alt=""></span><span><strong>ONCE HUMAN</strong><small>ARCHIV</small></span>`
-      : defaultFooterBrand;
-  }
+  if(footerBrand) footerBrand.innerHTML = home ? HOME_FOOTER_BRAND : LEGACY_FOOTER_BRAND;
+}
+function homeBrandText(value=''){
+  return String(value)
+    .replace(/JazzeMeow\s+Archive/gi,'Once Human Archiv')
+    .replace(/JazzeMeow\s+Archiv/gi,'Once Human Archiv')
+    .replace(/JazzeMeow/gi,'Once Human');
 }
 
 function asset(name){ return `./assets/reference/${name}`; }
@@ -126,7 +128,7 @@ function renderHome(){
   const favorites=storedSet('jma_favorites').size, hunt=storedSet('jma_hunt').size, found=storedSet('jma_found').size, savedBuilds=readStoredArray('jma_saved_builds').length;
   const total=Math.max(entries.length,1), pct=n=>Math.min(100,Math.round((n/total)*100));
   const fmtDate=v=>{if(!v)return '—';const d=new Date(`${v}T00:00:00`);return Number.isNaN(+d)?escapeHtml(v):d.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'})};
-  const miniNews=secondary.map((n,i)=>`<a class="landing-news-mini n${i+1}" href="#/news"><span class="landing-news-mini-art"></span><span class="landing-news-mini-copy"><small>${escapeHtml(n.category||'ARCHIV')} · ${fmtDate(n.date)}</small><b>${escapeHtml(n.title)}</b><em>${escapeHtml(n.summary||'')}</em></span><i>›</i></a>`).join('');
+  const miniNews=secondary.map((n,i)=>`<a class="landing-news-mini n${i+1}" href="#/news"><span class="landing-news-mini-art"></span><span class="landing-news-mini-copy"><small>${escapeHtml(n.category||'ARCHIV')} · ${fmtDate(n.date)}</small><b>${escapeHtml(homeBrandText(n.title))}</b><em>${escapeHtml(homeBrandText(n.summary||''))}</em></span><i>›</i></a>`).join('');
   const catalogSnapshot=`<a class="landing-news-mini catalog" href="#/database"><span class="landing-news-mini-art"></span><span class="landing-news-mini-copy"><small>DATENBANK · ${escapeHtml(String(globalThis.CATALOG_DATA?.snapshot||'Snapshot'))}</small><b>${entries.length} kuratierte Einträge aktiv</b><em>${cats.length} Kategorien sind im aktuellen Archivstand verknüpft.</em></span><i>›</i></a>`;
   return `<div class="landing">
     <section class="landing-hero">
@@ -137,12 +139,12 @@ function renderHome(){
           <h1 class="landing-title"><span>ONCE HUMAN</span><strong>ARCHIV</strong></h1>
           <div class="landing-subtitle">DEINE ZENTRALE WISSENSPLATTFORM FÜR ONCE HUMAN</div>
           <p>Guides, Daten, Builds, Karten, Community und Werkzeuge an einem Ort. Übersichtlich verbunden mit den vorhandenen Archivfunktionen und deinem lokalen Fortschritt.</p>
-          <div class="actions landing-actions"><a class="cyan-btn compact" href="#/database">JETZT ENTDECKEN →</a><button class="landing-video" type="button" id="videoInfo"><span>▶</span> ARCHIV ANSEHEN</button></div>
+          <div class="landing-actions"><a class="landing-primary" href="#/database">JETZT ENTDECKEN →</a><button class="landing-video" type="button" id="videoInfo"><span>▶</span> ARCHIV ANSEHEN</button></div>
           <div class="landing-trust"><span>◷ <b>Aktuell</b></span><span>♙ <b>Community-getrieben</b></span><span>◇ <b>Werbefrei</b></span><span>⌁ <b>Für alle Spieler</b></span></div>
         </div>
         <div class="landing-hero-space" aria-hidden="true"></div>
         <aside class="landing-login">
-          ${account ? `<div class="landing-account-head"><span class="landing-avatar">${escapeHtml((account.name||account.email||'M').slice(0,1).toUpperCase())}</span><div><small>ARCHIV-PROFIL</small><h2>${escapeHtml(account.name||'META-HUMAN')}</h2><p>${escapeHtml(account.email||'Lokale Sitzung aktiv')}</p></div></div><div class="landing-account-metrics"><span><b>${favorites}</b><small>Favoriten</small></span><span><b>${hunt}</b><small>Jagdliste</small></span><span><b>${savedBuilds}</b><small>Builds</small></span></div><button class="cyan-btn full" id="dashboardOpen" type="button">ZUR KOMMANDOZENTRALE →</button><button class="landing-text-link" id="logoutBtn" type="button"><u>Lokale Sitzung abmelden</u></button>` : `<div class="landing-login-kicker">ARCHIVZUGANG</div><h2>WILLKOMMEN ZURÜCK</h2><p>Melde dich an und werde Teil der Community.</p><form id="heroLoginForm"><label><span>✉</span><input type="email" id="heroEmail" placeholder="E-Mail-Adresse" required></label><label><span>▣</span><input type="password" id="heroPassword" placeholder="Passwort" minlength="4" required></label><div class="landing-login-options"><label class="landing-remember"><input type="checkbox"> Angemeldet bleiben</label><button class="landing-text-link inline" type="button" id="heroForgot">Passwort vergessen?</button></div><button class="cyan-btn full" type="submit">ANMELDEN →</button></form><button class="landing-text-link" id="heroRegister" type="button">Noch kein Konto? <u>Jetzt registrieren</u></button>`}
+          ${account ? `<div class="landing-account-head"><span class="landing-avatar">${escapeHtml((account.name||account.email||'M').slice(0,1).toUpperCase())}</span><div><small>ARCHIV-PROFIL</small><h2>${escapeHtml(account.name||'META-HUMAN')}</h2><p>${escapeHtml(account.email||'Lokale Sitzung aktiv')}</p></div></div><div class="landing-account-metrics"><span><b>${favorites}</b><small>Favoriten</small></span><span><b>${hunt}</b><small>Jagdliste</small></span><span><b>${savedBuilds}</b><small>Builds</small></span></div><button class="landing-primary landing-full" id="dashboardOpen" type="button">ZUR KOMMANDOZENTRALE →</button><button class="landing-text-link" id="logoutBtn" type="button"><u>Lokale Sitzung abmelden</u></button>` : `<div class="landing-login-kicker">ARCHIVZUGANG</div><h2>WILLKOMMEN ZURÜCK</h2><p>Melde dich an und werde Teil der Community.</p><form id="heroLoginForm"><label><span>✉</span><input type="email" id="heroEmail" placeholder="E-Mail-Adresse" required></label><label><span>▣</span><input type="password" id="heroPassword" placeholder="Passwort" minlength="4" required></label><div class="landing-login-options"><label class="landing-remember"><input type="checkbox"> Angemeldet bleiben</label><button class="landing-text-link inline" type="button" id="heroForgot">Passwort vergessen?</button></div><button class="landing-primary landing-full" type="submit">ANMELDEN →</button></form><button class="landing-text-link" id="heroRegister" type="button">Noch kein Konto? <u>Jetzt registrieren</u></button>`}
         </aside>
       </div>
     </section>
@@ -161,7 +163,7 @@ function renderHome(){
         <section class="landing-update">
           <div class="landing-section-head"><h2>Aktuelles Update</h2><a href="#/news">Alle Neuigkeiten →</a></div>
           <div class="landing-news-grid">
-            <article class="landing-news-feature"><div class="landing-news-feature-copy"><div><span class="tag">${escapeHtml(featured?.category||'ARCHIV')}</span><small>${fmtDate(featured?.date)}</small></div><h3>${escapeHtml(featured?.title||'Archivstand aktualisiert')}</h3><p>${escapeHtml(featured?.summary||'Der aktuelle Website-Stand ist als funktionierende Archivoberfläche verfügbar.')}</p><a class="cyan-btn compact" href="#/news">DETAILS ANSEHEN →</a></div></article>
+            <article class="landing-news-feature"><div class="landing-news-feature-copy"><div><span class="tag">${escapeHtml(featured?.category||'ARCHIV')}</span><small>${fmtDate(featured?.date)}</small></div><h3>${escapeHtml(homeBrandText(featured?.title||'Archivstand aktualisiert'))}</h3><p>${escapeHtml(homeBrandText(featured?.summary||'Der aktuelle Website-Stand ist als funktionierende Archivoberfläche verfügbar.'))}</p><a class="landing-primary landing-compact" href="#/news">DETAILS ANSEHEN →</a></div></article>
             <div class="landing-news-stack">${miniNews}${secondary.length<3?catalogSnapshot:''}</div>
           </div>
         </section>
@@ -169,7 +171,7 @@ function renderHome(){
         <section class="landing-status">
           <div class="landing-section-head"><h2>Plattform in Zahlen</h2><a href="#/database">Mehr erfahren →</a></div>
           <div class="landing-stats"><div class="landing-stat"><i>◫</i><span><b>${ROUTES.length}</b><small>Haupt-Routen</small></span></div><div class="landing-stat"><i>⚒</i><span><b>${builds.length}</b><small>Build-Vorlagen</small></span></div><div class="landing-stat"><i>▱</i><span><b>${entries.length}</b><small>kuratierte Einträge</small></span></div><div class="landing-stat"><i>◇</i><span><b>${cats.length}</b><small>Kategorien</small></span></div></div>
-          <div class="landing-community"><div><small>COMMUNITY CORE</small><h3>GEMEINSAM WISSEN AUFBAUEN</h3><p>Beiträge, Builds und geprüfte Archivdaten greifen auf denselben vorhandenen Datenstand zu.</p><a class="ghost-btn" href="#/community">ZUR COMMUNITY →</a></div></div>
+          <div class="landing-community"><div><small>COMMUNITY CORE</small><h3>GEMEINSAM WISSEN AUFBAUEN</h3><p>Beiträge, Builds und geprüfte Archivdaten greifen auf denselben vorhandenen Datenstand zu.</p><a class="landing-secondary" href="#/community">ZUR COMMUNITY →</a></div></div>
         </section>
       </div>
 
