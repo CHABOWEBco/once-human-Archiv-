@@ -40,7 +40,7 @@ const NAV = [
 mainNav.innerHTML = NAV.map(([id,label,icon])=>`<a href="#/${id}" data-nav="${id}"><span>${icon}</span>${label}</a>`).join('');
 
 function asset(name){ return `./assets/reference/${name}`; }
-function quick(route,title,desc,img,icon){return `<a class="quick-card" href="#/${route}" style="--quick-image:url('${asset(img)}')"><span class="quick-visual"></span><span class="quick-body"><i>${icon}</i><span><h3>${title}</h3><p>${desc}</p></span><b aria-hidden="true">›</b></span></a>`}
+function quick(route,title,desc,img,icon){return `<a class="landing-quick" href="#/${route}" style="--quick-image:url('${asset(img)}')"><span class="landing-quick-visual"></span><span class="landing-quick-body"><i>${icon}</i><span><h3>${title}</h3><p>${desc}</p></span><b aria-hidden="true">›</b></span></a>`}
 
 const DB_STATE={q:'',category:'all',status:'all'};
 function catalogEntries(){return Array.isArray(globalThis.CATALOG_DATA?.entries)?globalThis.CATALOG_DATA.entries:[]}
@@ -107,29 +107,29 @@ function renderHome(){
   const favorites=storedSet('jma_favorites').size, hunt=storedSet('jma_hunt').size, found=storedSet('jma_found').size, savedBuilds=readStoredArray('jma_saved_builds').length;
   const total=Math.max(entries.length,1), pct=n=>Math.min(100,Math.round((n/total)*100));
   const fmtDate=v=>{if(!v)return '—';const d=new Date(`${v}T00:00:00`);return Number.isNaN(+d)?escapeHtml(v):d.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'})};
-  const miniNews=secondary.map(n=>`<a class="news-mini" href="#/news"><span class="news-mini-thumb"></span><span><small>${escapeHtml(n.category||'ARCHIV')} · ${fmtDate(n.date)}</small><b>${escapeHtml(n.title)}</b><em>${escapeHtml(n.summary||'')}</em></span><i>›</i></a>`).join('');
-  const catalogSnapshot=`<a class="news-mini" href="#/database"><span class="news-mini-thumb catalog"></span><span><small>DATENBANK · ${escapeHtml(String(globalThis.CATALOG_DATA?.snapshot||'Snapshot'))}</small><b>${entries.length} kuratierte Einträge aktiv</b><em>${cats.length} Kategorien sind im aktuellen Archivstand verknüpft.</em></span><i>›</i></a>`;
-  return `<div class="home home-rebuild">
-    <section class="hero home-hero">
-      <div class="hero-art" aria-hidden="true"></div>
-      <div class="hero-inner">
-        <div class="hero-copy">
-          <div class="section-kicker">ONCE HUMAN</div>
-          <h1 class="hero-title"><span class="hero-name">JAZZEMEOW</span> <span class="hero-archive">ARCHIV</span></h1>
-          <div class="hero-subtitle">DEINE ZENTRALE WISSENSPLATTFORM FÜR ONCE HUMAN</div>
-          <p>Guides, Daten, Builds, Karten, Community und Werkzeuge an einem Ort. Der aktuelle Archivstand verbindet die vorhandenen Funktionen mit einer deutlich dichteren, bildgetragenen Oberfläche.</p>
-          <div class="actions hero-actions"><a class="cyan-btn compact" href="#/database">JETZT ENTDECKEN →</a><button class="video-btn" type="button" id="videoInfo"><span>▶</span> ARCHIV ANSEHEN</button></div>
-          <div class="hero-trust"><span>◷ <b>Aktuell</b></span><span>♙ <b>Community-getrieben</b></span><span>◇ <b>Werbefrei</b></span><span>⌁ <b>Für alle Spieler</b></span></div>
+  const miniNews=secondary.map((n,i)=>`<a class="landing-news-mini n${i+1}" href="#/news"><span class="landing-news-mini-art"></span><span class="landing-news-mini-copy"><small>${escapeHtml(n.category||'ARCHIV')} · ${fmtDate(n.date)}</small><b>${escapeHtml(n.title)}</b><em>${escapeHtml(n.summary||'')}</em></span><i>›</i></a>`).join('');
+  const catalogSnapshot=`<a class="landing-news-mini catalog" href="#/database"><span class="landing-news-mini-art"></span><span class="landing-news-mini-copy"><small>DATENBANK · ${escapeHtml(String(globalThis.CATALOG_DATA?.snapshot||'Snapshot'))}</small><b>${entries.length} kuratierte Einträge aktiv</b><em>${cats.length} Kategorien sind im aktuellen Archivstand verknüpft.</em></span><i>›</i></a>`;
+  return `<div class="landing">
+    <section class="landing-hero">
+      <div class="landing-hero-art" aria-hidden="true"></div>
+      <div class="landing-hero-shell">
+        <div class="landing-copy">
+          <div class="landing-kicker">ONCE HUMAN</div>
+          <h1 class="landing-title"><span>JAZZEMEOW</span><strong>ARCHIV</strong></h1>
+          <div class="landing-subtitle">DEINE ZENTRALE WISSENSPLATTFORM FÜR ONCE HUMAN</div>
+          <p>Guides, Daten, Builds, Karten, Community und Werkzeuge an einem Ort. Übersichtlich verbunden mit den vorhandenen Archivfunktionen und deinem lokalen Fortschritt.</p>
+          <div class="actions landing-actions"><a class="cyan-btn compact" href="#/database">JETZT ENTDECKEN →</a><button class="landing-video" type="button" id="videoInfo"><span>▶</span> ARCHIV ANSEHEN</button></div>
+          <div class="landing-trust"><span>◷ <b>Aktuell</b></span><span>♙ <b>Community-getrieben</b></span><span>◇ <b>Werbefrei</b></span><span>⌁ <b>Für alle Spieler</b></span></div>
         </div>
-        <div class="hero-center" aria-hidden="true"></div>
-        <aside class="hero-login">
-          ${account ? `<div class="account-head"><span class="account-avatar">${escapeHtml((account.name||account.email||'M').slice(0,1).toUpperCase())}</span><div><small>ARCHIV-PROFIL</small><h2>${escapeHtml(account.name||'META-HUMAN')}</h2><p>${escapeHtml(account.email||'Lokale Sitzung aktiv')}</p></div></div><div class="account-metrics"><span><b>${favorites}</b><small>Favoriten</small></span><span><b>${hunt}</b><small>Jagdliste</small></span><span><b>${savedBuilds}</b><small>Builds</small></span></div><button class="cyan-btn full" id="dashboardOpen" type="button">ZUR KOMMANDOZENTRALE →</button><button class="text-link" id="logoutBtn" type="button"><u>Lokale Sitzung abmelden</u></button>` : `<div class="login-kicker">ARCHIVZUGANG</div><h2>WILLKOMMEN ZURÜCK</h2><p>Melde dich an und werde Teil der Community.</p><form id="heroLoginForm"><label><span>✉</span><input type="email" id="heroEmail" placeholder="E-Mail-Adresse" required></label><label><span>▣</span><input type="password" id="heroPassword" placeholder="Passwort" minlength="4" required></label><div class="login-options"><label class="remember"><input type="checkbox"> Angemeldet bleiben</label><button class="text-link inline" type="button" id="heroForgot">Passwort vergessen?</button></div><button class="cyan-btn full" type="submit">ANMELDEN →</button></form><button class="text-link" id="heroRegister" type="button">Noch kein Konto? <u>Jetzt registrieren</u></button>`}
+        <div class="landing-hero-space" aria-hidden="true"></div>
+        <aside class="landing-login">
+          ${account ? `<div class="landing-account-head"><span class="landing-avatar">${escapeHtml((account.name||account.email||'M').slice(0,1).toUpperCase())}</span><div><small>ARCHIV-PROFIL</small><h2>${escapeHtml(account.name||'META-HUMAN')}</h2><p>${escapeHtml(account.email||'Lokale Sitzung aktiv')}</p></div></div><div class="landing-account-metrics"><span><b>${favorites}</b><small>Favoriten</small></span><span><b>${hunt}</b><small>Jagdliste</small></span><span><b>${savedBuilds}</b><small>Builds</small></span></div><button class="cyan-btn full" id="dashboardOpen" type="button">ZUR KOMMANDOZENTRALE →</button><button class="landing-text-link" id="logoutBtn" type="button"><u>Lokale Sitzung abmelden</u></button>` : `<div class="landing-login-kicker">ARCHIVZUGANG</div><h2>WILLKOMMEN ZURÜCK</h2><p>Melde dich an und werde Teil der Community.</p><form id="heroLoginForm"><label><span>✉</span><input type="email" id="heroEmail" placeholder="E-Mail-Adresse" required></label><label><span>▣</span><input type="password" id="heroPassword" placeholder="Passwort" minlength="4" required></label><div class="landing-login-options"><label class="landing-remember"><input type="checkbox"> Angemeldet bleiben</label><button class="landing-text-link inline" type="button" id="heroForgot">Passwort vergessen?</button></div><button class="cyan-btn full" type="submit">ANMELDEN →</button></form><button class="landing-text-link" id="heroRegister" type="button">Noch kein Konto? <u>Jetzt registrieren</u></button>`}
         </aside>
       </div>
     </section>
 
-    <div class="home-content">
-      <section class="quick-grid" aria-label="Schnellzugriffe">
+    <div class="landing-content">
+      <section class="landing-quick-grid" aria-label="Schnellzugriffe">
         ${quick('database','Datenbank','Gegenstände, Waffen, Ausrüstung, Ressourcen und mehr.','feature-database.webp','▱')}
         ${quick('map','Interaktive Karte','Marker, Routen, Fundorte und Gebiete.','feature-map.webp','⌖')}
         ${quick('builds','Builds','Vorlagen, Loadouts und gespeicherte Builds.','feature-builds.webp','⚒')}
@@ -138,29 +138,29 @@ function renderHome(){
         ${quick('guides','Guides','Strukturiertes Wissen und Hilfen.','feature-guides.webp','◫')}
       </section>
 
-      <div class="home-lower">
-        <section class="home-update-block">
-          <div class="section-line"><h2>Aktuelles Update</h2><a href="#/news">Alle Neuigkeiten →</a></div>
-          <div class="news-layout">
-            <article class="news-feature"><div class="news-feature-content"><span class="tag">${escapeHtml(featured?.category||'ARCHIV')}</span><small>${fmtDate(featured?.date)}</small><h3>${escapeHtml(featured?.title||'Archivstand aktualisiert')}</h3><p>${escapeHtml(featured?.summary||'Der aktuelle Website-Stand ist als funktionierende Archivoberfläche verfügbar.')}</p><a class="cyan-btn compact" href="#/news">DETAILS ANSEHEN →</a></div></article>
-            <div class="news-stack">${miniNews}${secondary.length<3?catalogSnapshot:''}</div>
+      <div class="landing-main-grid">
+        <section class="landing-update">
+          <div class="landing-section-head"><h2>Aktuelles Update</h2><a href="#/news">Alle Neuigkeiten →</a></div>
+          <div class="landing-news-grid">
+            <article class="landing-news-feature"><div class="landing-news-feature-copy"><div><span class="tag">${escapeHtml(featured?.category||'ARCHIV')}</span><small>${fmtDate(featured?.date)}</small></div><h3>${escapeHtml(featured?.title||'Archivstand aktualisiert')}</h3><p>${escapeHtml(featured?.summary||'Der aktuelle Website-Stand ist als funktionierende Archivoberfläche verfügbar.')}</p><a class="cyan-btn compact" href="#/news">DETAILS ANSEHEN →</a></div></article>
+            <div class="landing-news-stack">${miniNews}${secondary.length<3?catalogSnapshot:''}</div>
           </div>
         </section>
 
-        <section class="home-status-block">
-          <div class="section-line"><h2>Plattform in Zahlen</h2><a href="#/database">Mehr erfahren →</a></div>
-          <div class="stats-grid"><div class="stat-box"><i>◫</i><span><b>${ROUTES.length}</b><small>Haupt-Routen</small></span></div><div class="stat-box"><i>⚒</i><span><b>${builds.length}</b><small>Build-Vorlagen</small></span></div><div class="stat-box"><i>▱</i><span><b>${entries.length}</b><small>kuratierte Einträge</small></span></div><div class="stat-box"><i>◇</i><span><b>${cats.length}</b><small>Kategorien</small></span></div></div>
-          <div class="community-banner"><div><small>COMMUNITY CORE</small><h3>GEMEINSAM WISSEN AUFBAUEN</h3><p>Beiträge, Builds und geprüfte Archivdaten greifen auf denselben vorhandenen Datenstand zu.</p><a class="ghost-btn" href="#/community">ZUR COMMUNITY →</a></div></div>
+        <section class="landing-status">
+          <div class="landing-section-head"><h2>Plattform in Zahlen</h2><a href="#/database">Mehr erfahren →</a></div>
+          <div class="landing-stats"><div class="landing-stat"><i>◫</i><span><b>${ROUTES.length}</b><small>Haupt-Routen</small></span></div><div class="landing-stat"><i>⚒</i><span><b>${builds.length}</b><small>Build-Vorlagen</small></span></div><div class="landing-stat"><i>▱</i><span><b>${entries.length}</b><small>kuratierte Einträge</small></span></div><div class="landing-stat"><i>◇</i><span><b>${cats.length}</b><small>Kategorien</small></span></div></div>
+          <div class="landing-community"><div><small>COMMUNITY CORE</small><h3>GEMEINSAM WISSEN AUFBAUEN</h3><p>Beiträge, Builds und geprüfte Archivdaten greifen auf denselben vorhandenen Datenstand zu.</p><a class="ghost-btn" href="#/community">ZUR COMMUNITY →</a></div></div>
         </section>
       </div>
 
-      <section class="home-showcase">
-        <div class="section-line"><h2>Archiv-Schnellzugriff</h2><span>Echte Daten aus dem aktuellen Stand</span></div>
-        <div class="showcase-grid">
-          <a href="#/database" class="showcase-card weapons" data-home-category="weapons"><div class="showcase-copy"><small>WAFFEN</small><b>${countCat('weapons')} kuratierte Waffen-Einträge</b><span>Datenbank öffnen →</span></div></a>
-          <a href="#/database" class="showcase-card items" data-home-category="items"><div class="showcase-copy"><small>GEGENSTÄNDE</small><b>${countCat('items')} kuratierte Item-Einträge</b><span>Datenbank öffnen →</span></div></a>
-          <a href="#/builds" class="showcase-card builds"><div class="showcase-copy"><small>BUILDS</small><b>${builds.length} vorhandene Build-Vorlagen</b><span>Builds öffnen →</span></div></a>
-          <article class="progress-card"><header><div><small>DEIN ARCHIV</small><h3>Lokaler Fortschritt</h3></div><a href="#/dashboard">Kommandozentrale →</a></header><div class="progress-row"><span>Favoriten <b>${favorites}</b></span><i><em style="width:${pct(favorites)}%"></em></i></div><div class="progress-row"><span>Jagdliste <b>${hunt}</b></span><i><em style="width:${pct(hunt)}%"></em></i></div><div class="progress-row"><span>Gefunden <b>${found}</b></span><i><em style="width:${pct(found)}%"></em></i></div><div class="progress-row"><span>Gespeicherte Builds <b>${savedBuilds}</b></span><i><em style="width:${Math.min(100,savedBuilds*25)}%"></em></i></div><p>Die Werte stammen ausschließlich aus deiner lokalen Browser-Speicherung.</p></article>
+      <section class="landing-showcase">
+        <div class="landing-section-head"><h2>Archiv-Schnellzugriff</h2><span>Echte Daten aus dem aktuellen Stand</span></div>
+        <div class="landing-showcase-grid">
+          <a href="#/database" class="landing-showcase-card weapons" data-home-category="weapons"><div><small>WAFFEN</small><b>${countCat('weapons')} kuratierte Waffen-Einträge</b><span>Datenbank öffnen →</span></div></a>
+          <a href="#/database" class="landing-showcase-card items" data-home-category="items"><div><small>GEGENSTÄNDE</small><b>${countCat('items')} kuratierte Item-Einträge</b><span>Datenbank öffnen →</span></div></a>
+          <a href="#/builds" class="landing-showcase-card builds"><div><small>BUILDS</small><b>${builds.length} vorhandene Build-Vorlagen</b><span>Builds öffnen →</span></div></a>
+          <article class="landing-progress"><header><div><small>DEIN ARCHIV</small><h3>Lokaler Fortschritt</h3></div><a href="#/dashboard">Kommandozentrale →</a></header><div class="landing-progress-row"><span>Favoriten <b>${favorites}</b></span><i><em style="width:${pct(favorites)}%"></em></i></div><div class="landing-progress-row"><span>Jagdliste <b>${hunt}</b></span><i><em style="width:${pct(hunt)}%"></em></i></div><div class="landing-progress-row"><span>Gefunden <b>${found}</b></span><i><em style="width:${pct(found)}%"></em></i></div><div class="landing-progress-row"><span>Gespeicherte Builds <b>${savedBuilds}</b></span><i><em style="width:${Math.min(100,savedBuilds*25)}%"></em></i></div><p>Die Werte stammen ausschließlich aus deiner lokalen Browser-Speicherung.</p></article>
         </div>
       </section>
     </div>
