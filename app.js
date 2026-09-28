@@ -39,6 +39,25 @@ const NAV = [
 ];
 mainNav.innerHTML = NAV.map(([id,label,icon])=>`<a href="#/${id}" data-nav="${id}"><span>${icon}</span>${label}</a>`).join('');
 
+const topBrand = document.querySelector('#topbar .brand');
+const footerBrand = document.querySelector('.footer-brand .brand');
+const defaultTopBrand = topBrand?.innerHTML || '';
+const defaultFooterBrand = footerBrand?.innerHTML || '';
+function syncRouteBrand(routeId){
+  const home = routeId === 'home';
+  if(topBrand){
+    topBrand.innerHTML = home
+      ? `<span class="brand-mark home-logo-mark"><img class="home-brand-logo" src="./assets/branding/once-human-logo.png" alt=""></span><span><strong>ONCE HUMAN</strong><small>ARCHIV</small></span>`
+      : defaultTopBrand;
+    topBrand.setAttribute('aria-label',home?'Once Human Archiv Startseite':'JazzeMeow Archiv Startseite');
+  }
+  if(footerBrand){
+    footerBrand.innerHTML = home
+      ? `<span class="brand-mark small home-logo-mark"><img class="home-brand-logo" src="./assets/branding/once-human-logo.png" alt=""></span><span><strong>ONCE HUMAN</strong><small>ARCHIV</small></span>`
+      : defaultFooterBrand;
+  }
+}
+
 function asset(name){ return `./assets/reference/${name}`; }
 function quick(route,title,desc,img,icon){return `<a class="landing-quick" href="#/${route}" style="--quick-image:url('${asset(img)}')"><span class="landing-quick-visual"></span><span class="landing-quick-body"><i>${icon}</i><span><h3>${title}</h3><p>${desc}</p></span><b aria-hidden="true">›</b></span></a>`}
 
@@ -115,7 +134,7 @@ function renderHome(){
       <div class="landing-hero-shell">
         <div class="landing-copy">
           <div class="landing-kicker">ONCE HUMAN</div>
-          <h1 class="landing-title"><span>JAZZEMEOW</span><strong>ARCHIV</strong></h1>
+          <h1 class="landing-title"><span>ONCE HUMAN</span><strong>ARCHIV</strong></h1>
           <div class="landing-subtitle">DEINE ZENTRALE WISSENSPLATTFORM FÜR ONCE HUMAN</div>
           <p>Guides, Daten, Builds, Karten, Community und Werkzeuge an einem Ort. Übersichtlich verbunden mit den vorhandenen Archivfunktionen und deinem lokalen Fortschritt.</p>
           <div class="actions landing-actions"><a class="cyan-btn compact" href="#/database">JETZT ENTDECKEN →</a><button class="landing-video" type="button" id="videoInfo"><span>▶</span> ARCHIV ANSEHEN</button></div>
@@ -173,8 +192,9 @@ function routeFromHash(){return (location.hash.replace(/^#\/?/,'').split('/')[0]
 function render(){
   let id=routeFromHash(); let route=ROUTES.find(r=>r.id===id);
   if(!route){route=ROUTES[0];history.replaceState(null,'','#/home');}
-  document.title=`JazzeMeow Archiv // ${route.label}`;
+  document.title=route.id==='home'?`Once Human Archiv // ${route.label}`:`JazzeMeow Archiv // ${route.label}`;
   document.body.className=document.body.className.replace(/\broute-[^\s]+/g,'').trim(); document.body.classList.add(`route-${route.id}`);
+  syncRouteBrand(route.id);
   document.querySelectorAll('[data-nav]').forEach(a=>a.classList.toggle('active',a.dataset.nav===route.id));
   const fullRenderer=globalThis.FULL_ROUTE_RENDERERS?.[route.id];
   app.innerHTML=route.id==='home'?renderHome():route.id==='database'?renderDatabase():fullRenderer?fullRenderer(route):renderDevelopment(route);
