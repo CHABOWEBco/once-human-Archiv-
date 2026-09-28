@@ -56,3 +56,32 @@ Die übrigen 27 Routen sind im Routing vorhanden, aber noch nicht als vollständ
 2. Danach interaktive Karte aus den vorhandenen Karten-/Marker-Daten.
 3. Anschließend Builds/Build-Planer und Techwerkbank.
 4. Weitere Routen systematisch vollständig ausbauen.
+
+## Arbeitspaket: Datenbank/Katalog
+Status: **implementiert; Browserfreigabe noch offen wegen Laufzeit-Policy**.
+
+Quelle:
+- Taxonomie und kuratierte Beispieldaten wurden aus dem vorhandenen R18.3/R7-Projektstand übernommen.
+- 14 fachliche Kategorien und 21 konkrete Fachdatensätze sind eingebunden.
+- Vier im Altstand selbst als Kategorie-/Review-Platzhalter behandelte Datensätze werden weiterhin nicht als öffentliche Katalogkarten ausgegeben.
+- Die im Altstand dokumentierten Referenzmengen werden getrennt als Referenzumfang angezeigt und nicht fälschlich als vollständig importierte Detaildatensätze ausgegeben.
+
+Umgesetzt:
+- eigenständige bilddominante Datenbankseite im bestehenden Once-Human-Designsystem
+- Suchfeld über Name, Typ, Tags, Beschreibung, Erwerbsinfo und Prüfstatus
+- Kategorie- und Prüfstatusfilter
+- responsive Kategorienavigation
+- Ergebniszähler und Filter-Reset
+- echte Detaildialoge für die übernommenen Datensätze
+- lokale Favoriten (`jma_favorites`) und Jagdliste (`jma_hunt`)
+- globale Archivsuche findet zusätzlich Katalogeinträge und öffnet sie in der Datenbank
+- eigene auditierbare Datenquelle `data-catalog.json` plus Browser-Spiegel `catalog-data.js`
+
+Technische Prüfungen:
+- `node --check app.js`: bestanden
+- `node --check catalog-data.js`: bestanden
+- `data-catalog.json`: gültiges JSON
+- 21/21 eindeutige Datensatz-IDs
+- 21/21 Datensätze verweisen auf gültige übernommene Kategorien
+- 21/21 Datensätze besitzen Name, Typ und Prüfstatus
+- erneuter echter Chromium-Render bleibt durch `ERR_BLOCKED_BY_ADMINISTRATOR` der Laufzeit blockiert; deshalb noch nicht als browsergeprüft/fertig markiert.
