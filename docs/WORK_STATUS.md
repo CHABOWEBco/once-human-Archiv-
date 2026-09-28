@@ -1,42 +1,58 @@
 # Once Human Archiv – Arbeitsstatus
 
-## Verifizierter Ausgangsstand
+## Verifizierter Git-/GitHub-Ausgangsstand
 - Repository: `CHABOWEBco/once-human-Archiv-`
 - Branch: `main`
-- geprüfter HEAD vor Neubau: `4f9974f682355be08731ee76847a548d54453455`
-- Repository-Inhalt bei Prüfung: nur `README.md`
-- GitHub-Pages-Lauf des Initialstands: erfolgreich
-- Schreibversuch über aktuellen GitHub-Connector: 403 `Resource not accessible by integration`; Repository dadurch unverändert.
+- ursprünglicher Initial-Commit: `4f9974f682355be08731ee76847a548d54453455`
+- gesicherter Neubau-Baseline-Commit auf GitHub: `b4b0018777c01dca7d7702ad2bb5ca7a48c69a9b`
+- Baseline-Tree: `e474de7d59535052721a355744c6e19eafba0b8a`
+- `README.md` aus dem Initialstand wurde unverändert beibehalten.
+- Runtime-/Review-Dateien (`http.log`, `http.pid`, `screenshots/`, `assets/reference/ref-*.webp`) sind bewusst nicht Bestandteil des Produktions-Commits.
+
+## GitHub Pages
+- Workflow: `pages build and deployment`
+- Run: `36458594210`
+- Commit: `b4b0018777c01dca7d7702ad2bb5ca7a48c69a9b`
+- Ergebnis: `success` (Build und Deploy erfolgreich).
+- Das erzeugte `github-pages`-Artefakt wurde heruntergeladen und bytegenau gegen den lokalen Baseline-Stand verglichen.
+- Verifiziert bytegleich: `index.html`, `app.js`, `styles.css`, `data-routes.json`, `404.html`, `README.md`, Dokumentation und alle acht Produktions-WebP-Assets.
+- Direkter HTTP-Abruf der öffentlichen `github.io`-URL aus dem Container ist wegen DNS-/Netzwerkrestriktionen dieser Laufzeit nicht möglich; der erfolgreiche GitHub-Pages-Deploy und dessen Build-Artefakt sind dagegen direkt verifiziert.
 
 ## Soll-So-Referenz
-- aktuelle Datei: `Soll So(2)(2).zip`
-- 6 PNG-Referenzen, je 1672×941
-- Produktionsassets der Startseite sind Bildausschnitte aus der gelieferten Startseitenreferenz; UI selbst ist echtes HTML/CSS/JS.
+- 6 gelieferte Soll-So-Referenzen werden lokal als visuelle Arbeitsgrundlage erhalten.
+- Produktionsassets der Startseite basieren auf der gelieferten Startseitenreferenz; die Oberfläche selbst ist echtes HTML/CSS/JavaScript.
+- Die aktuelle Startseite bleibt die verbindliche Designsprache für alle weiteren Routen.
 
 ## Routen
-28 bestehende Haupt-Routen aus den früheren Projektdateien rekonstruiert. Siehe `data-routes.json`.
+- 28 bestehende Haupt-Routen aus dem früheren Projektstand rekonstruiert; siehe `data-routes.json`.
+- Keine Route wurde erfunden, entfernt oder umbenannt.
 
-## Aktuelles Arbeitspaket
-### Startseite
-Status: implementiert, Browserprüfung noch ausstehend.
+## Fertigstatus
+### Startseite (`home`)
+Status: **implementiert und als Baseline auf GitHub gesichert**.
 
-Umgesetzt:
+Tatsächlich vorhanden:
 - responsiver Header und Hauptnavigation
 - bilddominanter Hero nach Soll-So-Komposition
-- echtes Login-/Registrierungs-UI mit lokalem Entwicklungszustand
+- Login-/Registrierungsdialog mit lokalem Entwicklungszustand
 - sechs Schnellzugriffe
 - News-/Update-Bereich
-- Plattformzahlen
-- Community-Bereich
+- Plattformzahlen und Community-Bereich
 - Footer + lokale Newsletter-Demo
 - globale Routensuche
-- 28 Routes im Hash-Router, Browser-Zurück/Vorwärts und reload-sicher für GitHub Pages
+- Hash-Routing für alle 28 registrierten Routen
 
-### Nicht als fertig markiert
-Alle übrigen 27 Routen sind nur im Routing registriert und bekommen erst nach Fachlogik-/Browserprüfung den Status „fertig“.
+Browserstatus:
+- vorhandene echte Desktop-/Mobile-Browser-Screenshots des Baseline-Designs bleiben lokal erhalten.
+- ein erneuter Chromium-/Playwright-Lauf nach dem GitHub-Deploy wurde versucht, aber durch die Laufzeit mit `ERR_BLOCKED_BY_ADMINISTRATOR` sowohl für `http://127.0.0.1` als auch für `file://` blockiert.
+- direkter lokaler HTTP-Server-Test liefert weiterhin HTTP 200; `node --check app.js` besteht.
+- Wegen der Browserrestriktion wird kein neuer Browser-Test fälschlich als bestanden dokumentiert.
 
-## Nächste Schritte
-1. Startseite Desktop/Mobile in Chromium testen und echte Screenshots erzeugen.
-2. Datenbank aus vorhandenen realen Altprojektdaten aufbauen.
-3. Karte aus vorhandenen Kartendaten/Markerquellen aufbauen.
-4. Danach Builds und Techwerkbank.
+### Noch nicht fertig
+Die übrigen 27 Routen sind im Routing vorhanden, aber noch nicht als vollständige Fachseiten fertiggestellt. Sie bleiben so lange offen, bis Implementierung und die jeweils möglichen technischen/visuellen Prüfungen erfolgt sind.
+
+## Nächstes Arbeitspaket
+1. Datenbank/Katalog aus dem vorhandenen R18.3-Projektstand rekonstruieren und funktional integrieren.
+2. Danach interaktive Karte aus den vorhandenen Karten-/Marker-Daten.
+3. Anschließend Builds/Build-Planer und Techwerkbank.
+4. Weitere Routen systematisch vollständig ausbauen.
