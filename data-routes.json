@@ -1,0 +1,7 @@
+{
+  "source": "R18.3 prior project route registry reconstructed from existing project files",
+  "count": 28,
+  "routes": [
+    "home","dashboard","news","database","map","hunt","routes","planner","guides","patchwatch","secrets","builds","community","submissions","profile","collection","weapon-blueprints","armor-blueprints","armor-materials","deviations","mods","compare-weapons","compare-armors","memetics","vehicles","creatures","tech-workbench","exchange"
+  ]
+}

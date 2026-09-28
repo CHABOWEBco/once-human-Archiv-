@@ -1,0 +1,18 @@
+# Runtime / local server artifacts
+http.log
+http.pid
+*.log
+*.pid
+*.tmp
+*.swp
+*~
+.DS_Store
+
+# Common generated directories
+node_modules/
+.cache/
+dist/
+
+# Local review artifacts / source-only visual references
+screenshots/
+assets/reference/ref-*.webp

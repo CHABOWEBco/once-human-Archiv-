@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#061018">
+  <meta name="description" content="JazzeMeow Once Human Archiv – Wissen, Karte, Builds, Werkzeuge und Community.">
+  <title>JazzeMeow Archiv // Once Human</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="site-noise" aria-hidden="true"></div>
+  <header class="topbar" id="topbar">
+    <a class="brand" href="#/home" aria-label="JazzeMeow Archiv Startseite">
+      <span class="brand-mark"><i></i><b>M</b></span>
+      <span><strong>JAZZEMEOW</strong><small>ONCE HUMAN ARCHIV</small></span>
+    </a>
+    <nav class="main-nav" id="mainNav" aria-label="Hauptnavigation"></nav>
+    <div class="top-actions">
+      <button class="search-trigger" id="searchTrigger" type="button" aria-label="Suche öffnen"><span>⌕</span><em>Suche nach Waffen, Items, Gebieten, Builds …</em></button>
+      <button class="ghost-btn" id="loginOpen" type="button">Anmelden</button>
+      <button class="cyan-btn compact" id="registerOpen" type="button">Registrieren</button>
+      <button class="menu-toggle" id="menuToggle" type="button" aria-label="Menü öffnen">☰</button>
+    </div>
+  </header>
+
+  <main id="app" tabindex="-1"></main>
+
+  <footer class="footer">
+    <div class="footer-brand"><div class="brand"><span class="brand-mark small"><i></i><b>M</b></span><span><strong>JAZZEMEOW</strong><small>ONCE HUMAN ARCHIV</small></span></div><p>Das unabhängige Once-Human-Wissensarchiv. Von der Community. Für die Community.</p></div>
+    <div><b>PLATTFORM</b><a href="#/database">Datenbank</a><a href="#/map">Karte</a><a href="#/builds">Builds</a><a href="#/tech-workbench">Techwerkbank</a></div>
+    <div><b>COMMUNITY</b><a href="#/community">Community</a><a href="#/exchange">Community-Builds</a><a href="#/submissions">Mitwirken</a></div>
+    <div><b>RESSOURCEN</b><a href="#/guides">Guides</a><a href="#/news">Neuigkeiten</a><a href="#/patchwatch">Patch-Wächter</a></div>
+    <form class="newsletter" id="newsletterForm"><b>NEWSLETTER</b><p>Updates direkt in dein Archiv.</p><label><input type="email" id="newsletterEmail" placeholder="E-Mail-Adresse" required><button class="cyan-btn compact" aria-label="Newsletter abonnieren">→</button></label><small id="newsletterStatus"></small></form>
+  </footer>
+
+  <dialog class="auth-dialog" id="authDialog">
+    <button class="dialog-close" id="authClose" type="button" aria-label="Schließen">×</button>
+    <div class="auth-art"></div>
+    <div class="auth-panel">
+      <div class="section-kicker">ARCHIVZUGANG</div>
+      <h2 id="authTitle">Willkommen zurück</h2>
+      <p id="authCopy">Melde dich an und werde Teil der Community.</p>
+      <form id="authForm">
+        <label>E-Mail-Adresse<input type="email" id="authEmail" required autocomplete="email"></label>
+        <label>Passwort<input type="password" id="authPassword" required minlength="4" autocomplete="current-password"></label>
+        <label class="name-field hidden" id="nameField">Anzeigename<input type="text" id="authName" minlength="2" autocomplete="nickname"></label>
+        <button class="cyan-btn full" id="authSubmit" type="submit">ANMELDEN →</button>
+      </form>
+      <button class="auth-switch" id="authSwitch" type="button">Noch kein Konto? <u>Jetzt registrieren</u></button>
+      <small class="local-note">Aktueller Entwicklungsstand: Kontodaten werden ausschließlich lokal in diesem Browser gespeichert.</small>
+    </div>
+  </dialog>
+
+  <dialog class="search-dialog" id="searchDialog">
+    <div class="search-head"><div><div class="section-kicker">GLOBAL SEARCH</div><h2>Archiv durchsuchen</h2></div><button class="dialog-close static" id="searchClose" type="button">×</button></div>
+    <input class="search-input" id="globalSearch" placeholder="Route oder Bereich eingeben …" autofocus>
+    <div class="search-results" id="searchResults"></div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="./app.js"></script>
+</body>
+</html>
