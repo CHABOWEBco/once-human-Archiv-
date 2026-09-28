@@ -111,10 +111,11 @@ function renderHome(){
   const catalogSnapshot=`<a class="news-mini" href="#/database"><span class="news-mini-thumb catalog"></span><span><small>DATENBANK · ${escapeHtml(String(globalThis.CATALOG_DATA?.snapshot||'Snapshot'))}</small><b>${entries.length} kuratierte Einträge aktiv</b><em>${cats.length} Kategorien sind im aktuellen Archivstand verknüpft.</em></span><i>›</i></a>`;
   return `<div class="home home-rebuild">
     <section class="hero home-hero">
+      <div class="hero-art" aria-hidden="true"></div>
       <div class="hero-inner">
         <div class="hero-copy">
           <div class="section-kicker">ONCE HUMAN</div>
-          <h1 class="hero-title">JAZZEMEOW <span>ARCHIV</span></h1>
+          <h1 class="hero-title"><span class="hero-name">JAZZEMEOW</span> <span class="hero-archive">ARCHIV</span></h1>
           <div class="hero-subtitle">DEINE ZENTRALE WISSENSPLATTFORM FÜR ONCE HUMAN</div>
           <p>Guides, Daten, Builds, Karten, Community und Werkzeuge an einem Ort. Der aktuelle Archivstand verbindet die vorhandenen Funktionen mit einer deutlich dichteren, bildgetragenen Oberfläche.</p>
           <div class="actions hero-actions"><a class="cyan-btn compact" href="#/database">JETZT ENTDECKEN →</a><button class="video-btn" type="button" id="videoInfo"><span>▶</span> ARCHIV ANSEHEN</button></div>
