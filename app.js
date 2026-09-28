@@ -40,7 +40,7 @@ const NAV = [
 mainNav.innerHTML = NAV.map(([id,label,icon])=>`<a href="#/${id}" data-nav="${id}"><span>${icon}</span>${label}</a>`).join('');
 
 function asset(name){ return `./assets/reference/${name}`; }
-function quick(route,title,desc,img,icon){return `<a class="quick-card" href="#/${route}" style="--quick-image:url('${asset(img)}')"><h3><span>${icon}</span>${title}</h3><p>${desc}</p></a>`}
+function quick(route,title,desc,img,icon){return `<a class="quick-card" href="#/${route}" style="--quick-image:url('${asset(img)}')"><span class="quick-visual"></span><span class="quick-body"><i>${icon}</i><span><h3>${title}</h3><p>${desc}</p></span><b aria-hidden="true">›</b></span></a>`}
 
 const DB_STATE={q:'',category:'all',status:'all'};
 function catalogEntries(){return Array.isArray(globalThis.CATALOG_DATA?.entries)?globalThis.CATALOG_DATA.entries:[]}
@@ -97,50 +97,71 @@ function bindDatabase(){
   renderCatalogGrid();
   const pending=sessionStorage.getItem('jma_open_catalog');if(pending){sessionStorage.removeItem('jma_open_catalog');setTimeout(()=>openCatalogDetail(pending),20)}
 }
+function readStoredArray(key){try{const v=JSON.parse(localStorage.getItem(key)||'[]');return Array.isArray(v)?v:[]}catch{return []}}
 function renderHome(){
   const account = JSON.parse(localStorage.getItem('jma_session')||'null');
-  return `<div class="home">
-    <section class="hero">
+  const entries=catalogEntries(), cats=catalogCategories(), archive=globalThis.ARCHIVE_DATA||{}, news=archive.seed?.news||[], builds=archive.seed?.builds||[];
+  const featured=news.find(n=>n.featured)||news[0];
+  const secondary=news.filter(n=>!featured||n.id!==featured.id).slice(0,3);
+  const countCat=id=>entries.filter(e=>e.category===id).length;
+  const favorites=storedSet('jma_favorites').size, hunt=storedSet('jma_hunt').size, found=storedSet('jma_found').size, savedBuilds=readStoredArray('jma_saved_builds').length;
+  const total=Math.max(entries.length,1), pct=n=>Math.min(100,Math.round((n/total)*100));
+  const fmtDate=v=>{if(!v)return '—';const d=new Date(`${v}T00:00:00`);return Number.isNaN(+d)?escapeHtml(v):d.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'})};
+  const miniNews=secondary.map(n=>`<a class="news-mini" href="#/news"><span class="news-mini-thumb"></span><span><small>${escapeHtml(n.category||'ARCHIV')} · ${fmtDate(n.date)}</small><b>${escapeHtml(n.title)}</b><em>${escapeHtml(n.summary||'')}</em></span><i>›</i></a>`).join('');
+  const catalogSnapshot=`<a class="news-mini" href="#/database"><span class="news-mini-thumb catalog"></span><span><small>DATENBANK · ${escapeHtml(String(globalThis.CATALOG_DATA?.snapshot||'Snapshot'))}</small><b>${entries.length} kuratierte Einträge aktiv</b><em>${cats.length} Kategorien sind im aktuellen Archivstand verknüpft.</em></span><i>›</i></a>`;
+  return `<div class="home home-rebuild">
+    <section class="hero home-hero">
       <div class="hero-inner">
         <div class="hero-copy">
           <div class="section-kicker">ONCE HUMAN</div>
           <h1 class="hero-title">JAZZEMEOW <span>ARCHIV</span></h1>
           <div class="hero-subtitle">DEINE ZENTRALE WISSENSPLATTFORM FÜR ONCE HUMAN</div>
-          <p>Guides, Daten, Builds, Karten, Community und Werkzeuge an einem Ort – übersichtlich, nachvollziehbar und auf die tatsächlichen Archivdaten ausgerichtet.</p>
-          <div class="actions"><a class="cyan-btn compact" href="#/database" style="display:inline-flex;align-items:center;text-decoration:none">JETZT ENTDECKEN →</a><button class="video-btn" type="button" id="videoInfo"><span>▶</span> PROJEKT ANSEHEN</button></div>
-          <div class="hero-trust"><span>Aktuell</span><span>Community-getrieben</span><span>Werbefrei</span><span>Für alle Spieler</span></div>
+          <p>Guides, Daten, Builds, Karten, Community und Werkzeuge an einem Ort. Der aktuelle Archivstand verbindet die vorhandenen Funktionen mit einer deutlich dichteren, bildgetragenen Oberfläche.</p>
+          <div class="actions hero-actions"><a class="cyan-btn compact" href="#/database">JETZT ENTDECKEN →</a><button class="video-btn" type="button" id="videoInfo"><span>▶</span> ARCHIV ANSEHEN</button></div>
+          <div class="hero-trust"><span>◷ <b>Aktuell</b></span><span>♙ <b>Community-getrieben</b></span><span>◇ <b>Werbefrei</b></span><span>⌁ <b>Für alle Spieler</b></span></div>
         </div>
         <div class="hero-center" aria-hidden="true"></div>
         <aside class="hero-login">
-          <h2>${account ? `HALLO, ${escapeHtml(account.name||'META-HUMAN')}` : 'WILLKOMMEN ZURÜCK'}</h2>
-          <p>${account ? 'Deine lokale Archiv-Sitzung ist aktiv.' : 'Melde dich an und werde Teil der Community.'}</p>
-          ${account ? `<button class="cyan-btn full" id="dashboardOpen" type="button">ZUR KOMMANDOZENTRALE →</button><button class="text-link" id="logoutBtn" type="button"><u>Lokale Sitzung abmelden</u></button>` : `<form id="heroLoginForm"><label><input type="email" id="heroEmail" placeholder="✉  E-Mail-Adresse" required></label><label><input type="password" id="heroPassword" placeholder="▣  Passwort" minlength="4" required></label><label class="remember"><input type="checkbox">Angemeldet bleiben</label><button class="cyan-btn full" type="submit">ANMELDEN →</button></form><button class="text-link" id="heroRegister" type="button">Noch kein Konto? <u>Jetzt registrieren</u></button>`}
+          ${account ? `<div class="account-head"><span class="account-avatar">${escapeHtml((account.name||account.email||'M').slice(0,1).toUpperCase())}</span><div><small>ARCHIV-PROFIL</small><h2>${escapeHtml(account.name||'META-HUMAN')}</h2><p>${escapeHtml(account.email||'Lokale Sitzung aktiv')}</p></div></div><div class="account-metrics"><span><b>${favorites}</b><small>Favoriten</small></span><span><b>${hunt}</b><small>Jagdliste</small></span><span><b>${savedBuilds}</b><small>Builds</small></span></div><button class="cyan-btn full" id="dashboardOpen" type="button">ZUR KOMMANDOZENTRALE →</button><button class="text-link" id="logoutBtn" type="button"><u>Lokale Sitzung abmelden</u></button>` : `<div class="login-kicker">ARCHIVZUGANG</div><h2>WILLKOMMEN ZURÜCK</h2><p>Melde dich an und werde Teil der Community.</p><form id="heroLoginForm"><label><span>✉</span><input type="email" id="heroEmail" placeholder="E-Mail-Adresse" required></label><label><span>▣</span><input type="password" id="heroPassword" placeholder="Passwort" minlength="4" required></label><div class="login-options"><label class="remember"><input type="checkbox"> Angemeldet bleiben</label><button class="text-link inline" type="button" id="heroForgot">Passwort vergessen?</button></div><button class="cyan-btn full" type="submit">ANMELDEN →</button></form><button class="text-link" id="heroRegister" type="button">Noch kein Konto? <u>Jetzt registrieren</u></button>`}
         </aside>
       </div>
     </section>
+
     <div class="home-content">
       <section class="quick-grid" aria-label="Schnellzugriffe">
         ${quick('database','Datenbank','Gegenstände, Waffen, Ausrüstung, Ressourcen und mehr.','feature-database.webp','▱')}
-        ${quick('map','Interaktive Karte','Routen, Sammelstellen, Events, Gebiete und mehr.','feature-map.webp','⌖')}
-        ${quick('builds','Builds','Community-Builds, Meta und eigene Ideen.','feature-builds.webp','⚒')}
-        ${quick('tech-workbench','Techwerkbank','Rezepte, Materialien, Herstellung und Mods.','feature-tech.webp','⚙')}
-        ${quick('community','Community','Tausche dich aus, teile Wissen und Builds.','feature-community.webp','♙')}
-        ${quick('guides','Guides','Von den Grundlagen bis zu fortgeschrittenen Strategien.','feature-guides.webp','◫')}
+        ${quick('map','Interaktive Karte','Marker, Routen, Fundorte und Gebiete.','feature-map.webp','⌖')}
+        ${quick('builds','Builds','Vorlagen, Loadouts und gespeicherte Builds.','feature-builds.webp','⚒')}
+        ${quick('tech-workbench','Techwerkbank','Rezepte, Materialien und Herstellung.','feature-tech.webp','⚙')}
+        ${quick('community','Community','Wissen teilen und Beiträge austauschen.','feature-community.webp','♙')}
+        ${quick('guides','Guides','Strukturiertes Wissen und Hilfen.','feature-guides.webp','◫')}
       </section>
+
       <div class="home-lower">
-        <section>
+        <section class="home-update-block">
           <div class="section-line"><h2>Aktuelles Update</h2><a href="#/news">Alle Neuigkeiten →</a></div>
           <div class="news-layout">
-            <article class="news-feature"><span class="tag">ARCHIV</span><h3>NEUBAU DES ONCE-HUMAN-ARCHIVS</h3><p>Die neue Oberfläche entsteht auf Basis der vorhandenen Daten, Funktionen und der gelieferten visuellen Soll-Vorlagen.</p><a class="cyan-btn compact" href="#/news" style="display:inline-flex;align-items:center;align-self:flex-start;text-decoration:none">DETAILS ANSEHEN →</a></article>
-            <div class="news-stack"><a class="news-mini" href="#/map"><small>KARTE</small><b>Interaktive Kartenstruktur</b></a><a class="news-mini" href="#/builds"><small>WERKZEUG</small><b>Build-Planer wird neu aufgebaut</b></a><a class="news-mini" href="#/community"><small>COMMUNITY</small><b>Wissen & Einreichungen</b></a></div>
+            <article class="news-feature"><div class="news-feature-content"><span class="tag">${escapeHtml(featured?.category||'ARCHIV')}</span><small>${fmtDate(featured?.date)}</small><h3>${escapeHtml(featured?.title||'Archivstand aktualisiert')}</h3><p>${escapeHtml(featured?.summary||'Der aktuelle Website-Stand ist als funktionierende Archivoberfläche verfügbar.')}</p><a class="cyan-btn compact" href="#/news">DETAILS ANSEHEN →</a></div></article>
+            <div class="news-stack">${miniNews}${secondary.length<3?catalogSnapshot:''}</div>
           </div>
         </section>
-        <section>
+
+        <section class="home-status-block">
           <div class="section-line"><h2>Plattform in Zahlen</h2><a href="#/database">Mehr erfahren →</a></div>
-          <div class="stats-grid"><div class="stat-box"><i>◫</i><span><b>28</b><small>bestätigte Haupt-Routen</small></span></div><div class="stat-box"><i>⚒</i><span><b>4+</b><small>zentrale Werkzeuge</small></span></div><div class="stat-box"><i>▱</i><span><b>1</b><small>gemeinsamer Katalog</small></span></div><div class="stat-box"><i>♙</i><span><b>∞</b><small>Community-Wissen</small></span></div></div>
-          <div class="community-banner"><h3>GEMEINSAM WISSEN AUFBAUEN</h3><p>Ein Archiv mit nachvollziehbaren Daten, funktionierenden Werkzeugen und Community-Beiträgen – statt einer reinen Design-Demo.</p><a class="ghost-btn" href="#/community" style="display:inline-flex;align-items:center;text-decoration:none">ZUR COMMUNITY →</a></div>
+          <div class="stats-grid"><div class="stat-box"><i>◫</i><span><b>${ROUTES.length}</b><small>Haupt-Routen</small></span></div><div class="stat-box"><i>⚒</i><span><b>${builds.length}</b><small>Build-Vorlagen</small></span></div><div class="stat-box"><i>▱</i><span><b>${entries.length}</b><small>kuratierte Einträge</small></span></div><div class="stat-box"><i>◇</i><span><b>${cats.length}</b><small>Kategorien</small></span></div></div>
+          <div class="community-banner"><div><small>COMMUNITY CORE</small><h3>GEMEINSAM WISSEN AUFBAUEN</h3><p>Beiträge, Builds und geprüfte Archivdaten greifen auf denselben vorhandenen Datenstand zu.</p><a class="ghost-btn" href="#/community">ZUR COMMUNITY →</a></div></div>
         </section>
       </div>
+
+      <section class="home-showcase">
+        <div class="section-line"><h2>Archiv-Schnellzugriff</h2><span>Echte Daten aus dem aktuellen Stand</span></div>
+        <div class="showcase-grid">
+          <a href="#/database" class="showcase-card weapons" data-home-category="weapons"><div class="showcase-copy"><small>WAFFEN</small><b>${countCat('weapons')} kuratierte Waffen-Einträge</b><span>Datenbank öffnen →</span></div></a>
+          <a href="#/database" class="showcase-card items" data-home-category="items"><div class="showcase-copy"><small>GEGENSTÄNDE</small><b>${countCat('items')} kuratierte Item-Einträge</b><span>Datenbank öffnen →</span></div></a>
+          <a href="#/builds" class="showcase-card builds"><div class="showcase-copy"><small>BUILDS</small><b>${builds.length} vorhandene Build-Vorlagen</b><span>Builds öffnen →</span></div></a>
+          <article class="progress-card"><header><div><small>DEIN ARCHIV</small><h3>Lokaler Fortschritt</h3></div><a href="#/dashboard">Kommandozentrale →</a></header><div class="progress-row"><span>Favoriten <b>${favorites}</b></span><i><em style="width:${pct(favorites)}%"></em></i></div><div class="progress-row"><span>Jagdliste <b>${hunt}</b></span><i><em style="width:${pct(hunt)}%"></em></i></div><div class="progress-row"><span>Gefunden <b>${found}</b></span><i><em style="width:${pct(found)}%"></em></i></div><div class="progress-row"><span>Gespeicherte Builds <b>${savedBuilds}</b></span><i><em style="width:${Math.min(100,savedBuilds*25)}%"></em></i></div><p>Die Werte stammen ausschließlich aus deiner lokalen Browser-Speicherung.</p></article>
+        </div>
+      </section>
     </div>
   </div>`;
 }
@@ -152,17 +173,23 @@ function render(){
   let id=routeFromHash(); let route=ROUTES.find(r=>r.id===id);
   if(!route){route=ROUTES[0];history.replaceState(null,'','#/home');}
   document.title=`JazzeMeow Archiv // ${route.label}`;
+  document.body.className=document.body.className.replace(/\broute-[^\s]+/g,'').trim(); document.body.classList.add(`route-${route.id}`);
   document.querySelectorAll('[data-nav]').forEach(a=>a.classList.toggle('active',a.dataset.nav===route.id));
-  app.innerHTML=route.id==='home'?renderHome():route.id==='database'?renderDatabase():renderDevelopment(route);
+  const fullRenderer=globalThis.FULL_ROUTE_RENDERERS?.[route.id];
+  app.innerHTML=route.id==='home'?renderHome():route.id==='database'?renderDatabase():fullRenderer?fullRenderer(route):renderDevelopment(route);
   bindView(); window.scrollTo({top:0,behavior:'instant'}); app.focus({preventScroll:true});
 }
 function bindView(){
-  if(routeFromHash()==='database') bindDatabase();
+  const activeRoute=routeFromHash();
+  if(activeRoute==='database') bindDatabase();
+  globalThis.FULL_ROUTE_BINDERS?.[activeRoute]?.();
   $('#heroLoginForm')?.addEventListener('submit',e=>{e.preventDefault();const known=JSON.parse(localStorage.getItem('jma_account')||'null');const email=$('#heroEmail').value.trim();if(known&&known.email.toLowerCase()===email.toLowerCase()){localStorage.setItem('jma_session',JSON.stringify(known));toast(`Willkommen zurück, ${known.name}.`);render()}else{openAuth('register',email);toast('Für diese lokale Demo existiert noch kein Konto – registriere dich zuerst.')}});
   $('#heroRegister')?.addEventListener('click',()=>openAuth('register'));
+  $('#heroForgot')?.addEventListener('click',()=>toast('Passwort-Wiederherstellung ist im lokalen Testkonto noch nicht angebunden.'));
+  document.querySelectorAll('[data-home-category]').forEach(a=>a.addEventListener('click',()=>{DB_STATE.category=a.dataset.homeCategory||'all';DB_STATE.q='';DB_STATE.status='all'}));
   $('#dashboardOpen')?.addEventListener('click',()=>location.hash='#/dashboard');
   $('#logoutBtn')?.addEventListener('click',()=>{localStorage.removeItem('jma_session');toast('Lokale Sitzung beendet.');render()});
-  $('#videoInfo')?.addEventListener('click',()=>toast('Projektvorschau: Die Startseite ist echte programmierte UI; weitere Seiten werden routeweise fertiggestellt.'));
+  $('#videoInfo')?.addEventListener('click',()=>toast('Projektvorschau: Das Archiv ist echte programmierte UI; die Bereiche greifen auf denselben lokalen Arbeitsstand zu.'));
   $('#openSearchFromDev')?.addEventListener('click',openSearch);
 }
 function openAuth(mode='login',email=''){
@@ -185,4 +212,5 @@ $('#searchTrigger').addEventListener('click',openSearch);$('#searchClose').addEv
 $('#newsletterForm').addEventListener('submit',e=>{e.preventDefault();localStorage.setItem('jma_newsletter',$('#newsletterEmail').value.trim());$('#newsletterStatus').textContent='Für diese lokale Demo gespeichert.';toast('Newsletter-Adresse lokal gespeichert.');});
 function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.classList.remove('show'),2600)}
 function escapeHtml(v=''){return String(v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+globalThis.JMA_RENDER=render;
 window.addEventListener('hashchange',render);if(!location.hash)history.replaceState(null,'','#/home');render();
