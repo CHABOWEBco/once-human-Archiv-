@@ -202,9 +202,96 @@ function renderSubmissions(){const rows=arr('jma_submissions');return `<section 
  <div class="rf-submit-layout"><form class="rf-panel" id="submissionForm"><div class="rf-panel-head"><b>NEUE EINREICHUNG</b><small>lokaler Entwurf</small></div><label>TYP<select name="type"><option>Fund / Ort</option><option>Katalog-Korrektur</option><option>Tech-Formel</option><option>Guide-Hinweis</option></select></label><label>TITEL<input name="title" required></label><label>BEOBACHTUNG<textarea name="body" required></textarea></label><label>BELEG / QUELLE<textarea name="evidence" placeholder="Eigene Beobachtung, Screenshot-Hinweis oder Quellenvermerk"></textarea></label><button class="cyan-btn compact" type="submit">IN LOKALE PRÜFQUEUE</button></form><section class="rf-panel"><div class="rf-panel-head"><b>MEINE EINREICHUNGEN</b><small>${rows.length}</small></div>${rows.map(x=>`<article class="rf-submission-row"><div><small>${esc(x.type)} · ${fmt(x.created)}</small><h3>${esc(x.title)}</h3><p>${esc(x.body)}</p><em>Status: ${esc(x.status)}</em></div><button data-sub-delete="${esc(x.id)}">×</button></article>`).join('')||empty('Noch keine lokalen Einreichungen')}</section></div></section>`}
 function bindSubmissions(){navBinds();on('#submissionForm','submit',e=>{e.preventDefault();const fd=new FormData(e.currentTarget),rows=arr('jma_submissions');rows.unshift({id:uid('submission'),type:fd.get('type'),title:String(fd.get('title')).trim(),body:String(fd.get('body')).trim(),evidence:String(fd.get('evidence')||'').trim(),status:'lokal · nicht veröffentlicht',created:new Date().toISOString()});write('jma_submissions',rows);toast('Einreichung lokal gespeichert.');refresh()});qsa('[data-sub-delete]').forEach(b=>b.onclick=()=>{write('jma_submissions',arr('jma_submissions').filter(x=>x.id!==b.dataset.subDelete));refresh()})}
 
-function renderProfile(){const a=account();const keys=['jma_favorites','jma_hunt','jma_saved_builds','jma_routes','jma_plans','jma_submissions','jma_community_posts'];const counts=keys.map(k=>arr(k).length);return `<section class="rf-page profile-page">${hero('KONTO // PROFIL','PROFIL & DATEN',a?`Profil für ${a.name||a.email}. Anmeldung läuft über Supabase; persönliche Werkzeuge bleiben vorerst lokal in diesem Browser.`:'Noch keine Sitzung aktiv. Nutze die vorhandene Anmeldung oder Registrierung in der Kopfzeile.')}
- <div class="rf-profile-grid"><section class="rf-panel rf-profile-card"><div class="rf-avatar">${esc((a?.name||a?.email||'?')[0].toUpperCase())}</div><small>ANZEIGENAME</small><h2>${esc(a?.name||'Nicht angemeldet')}</h2><p>${esc(a?.email||'—')}</p>${a?`<form id="profileNameForm"><input name="name" value="${esc(a.name||'')}" required minlength="2"><button class="cyan-btn compact">NAME SPEICHERN</button></form>`:'<button class="cyan-btn compact" id="profileLogin" type="button">ANMELDEN</button>'}</section><section class="rf-panel"><div class="rf-panel-head"><b>PERSÖNLICHE DATEN</b><small>lokaler Speicher</small></div>${metrics([[counts[0],'Favoriten'],[counts[1],'Jagdziel(e)'],[counts[2],'Builds'],[counts[3],'Routen']])}<div class="rf-action-stack"><button class="ghost-btn" id="profileExport" type="button">DATEN EXPORTIEREN</button><button class="ghost-btn danger" id="profileClear" type="button">WERKZEUGDATEN LÖSCHEN</button></div><p class="rf-note">Passwort-/Sitzungsdaten werden nicht in den Export aufgenommen.</p></section><section class="rf-panel wide"><div class="rf-panel-head"><b>ARCHIV-VERKNÜPFUNGEN</b><small>direkt weiterarbeiten</small></div><div class="rf-profile-links">${btnLink('collection','★ Sammlung')}${btnLink('hunt','◎ Jagdliste')}${btnLink('builds','⚒ Builds')}${btnLink('planner','◷ Einsätze')}</div></section></div></section>`}
-function bindProfile(){navBinds();on('#profileLogin','click',()=>qs('#loginOpen')?.click());on('#profileNameForm','submit',async e=>{e.preventDefault();const name=new FormData(e.currentTarget).get('name').trim();try{await globalThis.JMA_AUTH.updateDisplayName(name);toast('Anzeigename gespeichert.');refresh()}catch(error){toast(error?.message||'Anzeigename konnte nicht gespeichert werden.')}});on('#profileExport','click',()=>{const out={exported:new Date().toISOString()};['jma_favorites','jma_hunt','jma_hunt_meta','jma_saved_builds','jma_routes','jma_plans','jma_submissions','jma_community_posts','jma_found','jma_custom_markers'].forEach(k=>{if(localStorage.getItem(k)!==null)out[k]=read(k)});const blob=new Blob([JSON.stringify(out,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='jazzemeow-archiv-export.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000)});on('#profileClear','click',()=>{if(!confirm('Lokale Werkzeugdaten löschen? Konto/Anmeldung bleiben erhalten.'))return;['jma_favorites','jma_hunt','jma_hunt_meta','jma_saved_builds','jma_build_draft','jma_routes','jma_route_draft','jma_plans','jma_submissions','jma_community_posts','jma_found','jma_custom_markers'].forEach(k=>localStorage.removeItem(k));toast('Werkzeugdaten gelöscht.');refresh()})}
+function renderProfile(){
+  const a=account(),fav=set('jma_favorites'),found=set('jma_found'),hunt=set('jma_hunt'),builds=arr('jma_saved_builds'),routeRows=arr('jma_routes'),plans=arr('jma_plans'),markers=arr('jma_custom_markers'),submissions=arr('jma_submissions'),exchangePosts=arr('jma_exchange_posts');
+  const collectionCount=new Set([...fav,...found]).size,personalTotal=collectionCount+hunt.size+builds.length+routeRows.length+plans.length+markers.length+submissions.length+exchangePosts.length;
+  const displayName=a?.name||a?.email||'Archiv-Nutzer',email=a?.email||'—',initial=String(displayName||'?').trim().charAt(0).toUpperCase()||'?';
+  const stats=[
+    ['★','Favoriten',fav.size],
+    ['◎','Jagdliste',hunt.size],
+    ['✓','Gefunden',found.size],
+    ['⚒','Builds',builds.length],
+    ['⌁','Farmrouten',routeRows.length],
+    ['◷','Einsatzpläne',plans.length],
+    ['⌖','Kartenmarker',markers.length],
+    ['⇧','Einreichungen',submissions.length]
+  ];
+  const archiveLinks=[
+    {route:'dashboard',icon:'⌂',title:'Kommandozentrale',copy:'Arbeitsübersicht, Fortschritt und nächste Schritte an einem Ort.',meta:'PERSÖNLICHER HUB',primary:true},
+    {route:'collection',icon:'★',title:'Sammlung',copy:'Favoriten und gefundene Archiv-Einträge weiter pflegen.',meta:`${collectionCount} Einträge`},
+    {route:'hunt',icon:'◎',title:'Jagdliste',copy:'Markierte Ziele priorisieren und deinen Fortschritt verfolgen.',meta:`${hunt.size} Ziele`},
+    {route:'builds',icon:'⚒',title:'Builds',copy:'Gespeicherte Build-Vorlagen und Ausrüstungsstände öffnen.',meta:`${builds.length} gespeichert`},
+    {route:'planner',icon:'◷',title:'Einsatzplaner',copy:'Vorbereitete Einsätze und persönliche Pläne weiterführen.',meta:`${plans.length} Pläne`},
+    {route:'routes',icon:'⌁',title:'Farmrouten',copy:'Deine gespeicherten Routen und Strecken verwalten.',meta:`${routeRows.length} Routen`},
+    {route:'submissions',icon:'⇧',title:'Einreichungen',copy:'Eigene Hinweise, Korrekturen und Beiträge wieder aufrufen.',meta:`${submissions.length} Einreichungen`},
+    {route:'exchange',icon:'◇',title:'Community-Werkstatt',copy:'Lokale Austausch-Posts und gespeicherte Builds weiterverwenden.',meta:`${exchangePosts.length} Beiträge`}
+  ];
+  return `<section class="rf-page profile-page profile-hub-page">
+    <header class="profile-hub-hero">
+      <div class="profile-hub-hero-copy">
+        <div class="profile-hub-kicker">KONTO // PROFIL</div>
+        <h1>DEIN PROFIL</h1>
+        <p>Persönliche Identität, lokale Werkzeugdaten und direkte Verknüpfungen deines Once Human Archivs.</p>
+      </div>
+      <div class="profile-hub-hero-status">
+        <article><i>●</i><div><small>ACCOUNTSTATUS</small><b>${a?'VERBUNDEN':'NICHT VERBUNDEN'}</b><span>${esc(email)}</span></div></article>
+        <article><i>⌁</i><div><small>ANZEIGENAME</small><b>${esc(displayName)}</b><span>Supabase-Profil</span></div></article>
+        <article><i>◆</i><div><small>LOKALER STAND</small><b>${personalTotal}</b><span>gespeicherte Inhalte</span></div></article>
+        <article><i>★</i><div><small>SAMMLUNG</small><b>${collectionCount}</b><span>Favoriten / gefunden</span></div></article>
+      </div>
+    </header>
+
+    <div class="profile-hub-overview">
+      <section class="profile-hub-panel profile-hub-identity">
+        <div class="profile-hub-panel-head"><div><small>IDENTITÄT // KONTO</small><h2>DEIN ACCOUNT</h2></div><span class="profile-hub-status"><i></i>${a?'ANGEMELDET':'KEINE SITZUNG'}</span></div>
+        <div class="profile-hub-identity-body">
+          <div class="profile-hub-avatar" aria-hidden="true"><span>${esc(initial)}</span></div>
+          <div class="profile-hub-account-copy">
+            <small>ANZEIGENAME</small>
+            <h3>${esc(displayName)}</h3>
+            <p>${esc(email)}</p>
+            <div class="profile-hub-account-meta"><span>Supabase Auth</span><span>Profil verbunden</span></div>
+          </div>
+        </div>
+        ${a?`<form id="profileNameForm" class="profile-hub-name-form"><label><span>ANZEIGENAME ÄNDERN</span><input name="name" value="${esc(a.name||'')}" required minlength="2" autocomplete="nickname"></label><button class="cyan-btn compact" type="submit">NAME SPEICHERN</button></form>`:''}
+      </section>
+
+      <section class="profile-hub-panel profile-hub-summary">
+        <div class="profile-hub-panel-head"><div><small>PERSÖNLICH // LOKAL</small><h2>DEINE ÜBERSICHT</h2></div><span>Browser-Speicher</span></div>
+        <div class="profile-hub-stat-grid">${stats.map(([icon,label,value])=>`<article><i>${icon}</i><div><b>${value}</b><span>${esc(label)}</span></div></article>`).join('')}</div>
+      </section>
+    </div>
+
+    <section class="profile-hub-section">
+      <div class="profile-hub-section-head"><div><small>PERSÖNLICH // WERKZEUGE</small><h2>DEIN ARCHIV</h2></div><p>Direkt zu den Bereichen, in denen du sammelst, planst und weiterarbeitest.</p></div>
+      <div class="profile-hub-link-grid">${archiveLinks.map(x=>`<button type="button" class="profile-hub-link${x.primary?' primary':''}" data-rf-go="${esc(x.route)}"><i>${x.icon}</i><div><small>${esc(x.meta)}</small><h3>${esc(x.title)}</h3><p>${esc(x.copy)}</p></div><b>${x.primary?'ZUR KOMMANDOZENTRALE':'ÖFFNEN'} →</b></button>`).join('')}</div>
+    </section>
+
+    <div class="profile-hub-bottom">
+      <section class="profile-hub-panel profile-hub-data">
+        <div class="profile-hub-panel-head"><div><small>DATEN // DATENSCHUTZ</small><h2>DATEN & DATENSCHUTZ</h2></div><span>lokaler Browser</span></div>
+        <p>Persönliche Werkzeugdaten liegen derzeit teilweise lokal in diesem Browser. Passwort- und Sitzungsdaten gehören nicht zum Export.</p>
+        <ul><li>Exportiert werden ausschließlich vorhandene lokale Werkzeugdaten.</li><li>Lokales Löschen entfernt keine Supabase-Konto- oder Anmeldedaten.</li><li>Dein Account bleibt nach dem Löschen lokaler Werkzeugdaten angemeldet.</li></ul>
+        <div class="profile-hub-data-actions"><button class="ghost-btn" id="profileExport" type="button">DATEN EXPORTIEREN</button><button class="ghost-btn danger" id="profileClear" type="button">WERKZEUGDATEN LÖSCHEN</button></div>
+      </section>
+      <section class="profile-hub-panel profile-hub-security">
+        <div class="profile-hub-panel-head"><div><small>KONTO // SICHERHEIT</small><h2>KONTO & SICHERHEIT</h2></div><span>Supabase</span></div>
+        <div class="profile-hub-security-list">
+          <div><i>✓</i><span><small>AUTHENTIFIZIERUNG</small><b>Supabase Auth aktiv</b></span></div>
+          <div><i>✓</i><span><small>SITZUNG</small><b>${a?'Aktive Kontositzung':'Keine aktive Sitzung'}</b></span></div>
+          <div><i>✓</i><span><small>LOKALE DATEN</small><b>Keine Passwörter im Werkzeug-Export</b></span></div>
+        </div>
+        <p>Sicherheitsrelevante Kontoaktionen werden ausschließlich über den bestehenden Supabase-Auth-Flow verwaltet.</p>
+      </section>
+    </div>
+  </section>`;
+}
+function bindProfile(){
+  navBinds();
+  on('#profileNameForm','submit',async e=>{e.preventDefault();const name=new FormData(e.currentTarget).get('name').trim();try{await globalThis.JMA_AUTH.updateDisplayName(name);toast('Anzeigename gespeichert.');refresh()}catch(error){toast(error?.message||'Anzeigename konnte nicht gespeichert werden.')}});
+  on('#profileExport','click',()=>{const out={exported:new Date().toISOString()};['jma_favorites','jma_hunt','jma_hunt_meta','jma_saved_builds','jma_routes','jma_plans','jma_submissions','jma_community_posts','jma_found','jma_custom_markers'].forEach(k=>{if(localStorage.getItem(k)!==null)out[k]=read(k)});const blob=new Blob([JSON.stringify(out,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='once-human-archiv-export.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000)});
+  on('#profileClear','click',()=>{if(!confirm('Lokale Werkzeugdaten löschen? Konto/Anmeldung bleiben erhalten.'))return;['jma_favorites','jma_hunt','jma_hunt_meta','jma_saved_builds','jma_build_draft','jma_routes','jma_route_draft','jma_plans','jma_submissions','jma_community_posts','jma_found','jma_custom_markers'].forEach(k=>localStorage.removeItem(k));toast('Werkzeugdaten gelöscht.');refresh()});
+}
 
 function renderCollection(){const fav=set('jma_favorites'),found=set('jma_found'),mode=read('jma_collection_mode','all');let rows=catalog().filter(x=>fav.has(x.id)||found.has(x.id));if(mode==='fav')rows=rows.filter(x=>fav.has(x.id));if(mode==='found')rows=rows.filter(x=>found.has(x.id));return `<section class="rf-page collection-page">${hero('PERSÖNLICH // KATALOG','MEINE SAMMLUNG','Favoriten und als gefunden markierte Katalogeinträge getrennt vom öffentlichen Datenbestand verwalten.',metrics([[fav.size,'Favoriten'],[found.size,'gefunden']]))}<div class="rf-tabs"><button class="${mode==='all'?'active':''}" data-collection-mode="all">ALLE</button><button class="${mode==='fav'?'active':''}" data-collection-mode="fav">FAVORITEN</button><button class="${mode==='found'?'active':''}" data-collection-mode="found">GEFUNDEN</button></div><div class="rf-collection-grid">${rows.map(x=>`<article><small>${esc(x.kind||x.category)}</small><h3>${esc(x.name_de)}</h3><p>${esc(x.description||'')}</p><div class="rf-chips">${fav.has(x.id)?'<span>★ Favorit</span>':''}${found.has(x.id)?'<span>✓ Gefunden</span>':''}</div><div class="actions"><button data-found-toggle="${esc(x.id)}">${found.has(x.id)?'GEFUNDEN AUFHEBEN':'ALS GEFUNDEN'}</button><button data-fav-toggle="${esc(x.id)}">${fav.has(x.id)?'FAVORIT ENTFERNEN':'FAVORIT'}</button></div></article>`).join('')||empty('Sammlung ist leer')}<div class="rf-inline-cta">${btnLink('database','DATENBANK DURCHSUCHEN','cyan-btn compact')}</div></div></section>`}
 function bindCollection(){navBinds();qsa('[data-collection-mode]').forEach(b=>b.onclick=()=>{write('jma_collection_mode',b.dataset.collectionMode);refresh()});qsa('[data-found-toggle]').forEach(b=>b.onclick=()=>{const s=set('jma_found'),id=b.dataset.foundToggle;s.has(id)?s.delete(id):s.add(id);putSet('jma_found',s);refresh()});qsa('[data-fav-toggle]').forEach(b=>b.onclick=()=>{const s=set('jma_favorites'),id=b.dataset.favToggle;s.has(id)?s.delete(id):s.add(id);putSet('jma_favorites',s);refresh()})}
