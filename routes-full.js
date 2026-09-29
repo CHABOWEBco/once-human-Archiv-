@@ -329,11 +329,11 @@ function twTabs(tab){
   return `<nav class="tw-mode-tabs" aria-label="Techwerkbank-Modus">${tabs.map(([id,icon,title,sub])=>`<button type="button" class="${tab===id?'active':''}" data-tech-tab="${id}"><i>${icon}</i><span><b>${title}</b><small>${sub}</small></span><em>→</em></button>`).join('')}</nav>`;
 }
 function renderTechWorkbench(){
-  const d=AD().r12?.techWorkbench||{},tab=read('jma_tech_tab','reverse'),q=read('jma_tech_q','');
+  const d=AD().r12?.techWorkbench||{},storedTab=read('jma_tech_tab','reverse'),tab=['reverse','invention','recipes'].includes(storedTab)?storedTab:'reverse',q=read('jma_tech_q','');
   const weaponExtras=(AD().r12?.weapons||[]).slice(0,3).map(w=>({name:w.name,group:'Waffen',tp:'—',time:'—',unlock:`${w.family||'Waffe'} · Tier ${w.tier||1} · visuelle Referenz`,tier:w.tier,visualWeapon:true}));
   const reversePool=[...(d.reverseSamples||[]),...weaponExtras];
   const reverse=filterSearch(reversePool,q,x=>`${x.name} ${x.group} ${x.unlock}`);
-  const defaultRecipe=(d.recipes||[]).find(x=>x.id==='recipe-storage-battery')||d.recipes?.[0],recipeId=read('jma_recipe_id',defaultRecipe?.id),recipe=(d.recipes||[]).find(x=>x.id===recipeId)||defaultRecipe,qty=read('jma_recipe_qty',1),inv=read('jma_invention_slots',Array(9).fill(''));
+  const defaultRecipe=(d.recipes||[]).find(x=>x.id==='recipe-storage-battery')||d.recipes?.[0],recipeId=read('jma_recipe_id',defaultRecipe?.id),recipe=(d.recipes||[]).find(x=>x.id===recipeId)||defaultRecipe,storedQty=Number(read('jma_recipe_qty',1)),qty=Number.isFinite(storedQty)?Math.max(1,Math.min(99,Math.floor(storedQty))):1,inv=read('jma_invention_slots',Array(9).fill(''));
   const categories=Object.entries(d.reverseCounts||{});
   const reversePanel=`<div class="tw-workspace">
     <aside class="tw-sidebar">

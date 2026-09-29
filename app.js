@@ -37,7 +37,7 @@ let authMode = 'login';
 const NAV = [
   ['home','Start','⌂'],['database','Datenbank','▱'],['map','Karte','⌖'],['builds','Builds','⚒'],['tech-workbench','Techwerkbank','⚙'],['community','Community','♙'],['guides','Guides','◫']
 ];
-const AUTH_REQUIRED_ROUTES = new Set(['database','map','builds','tech-workbench','community','guides','dashboard','profile']);
+const AUTH_REQUIRED_ROUTES = new Set(['database','map','builds','tech-workbench','community','guides','dashboard','profile','hunt','routes','planner','submissions','collection','exchange']);
 mainNav.innerHTML = NAV.map(([id,label,icon])=>`<a href="#/${id}" data-nav="${id}"><span>${icon}</span>${label}</a>`).join('');
 
 const topBrand = document.querySelector('#topbar .brand');
@@ -367,6 +367,7 @@ function openAuth(mode='login',email=''){
   $('#authCopy').textContent=copies[mode]||copies.login;
   $('#authSubmit').textContent=submits[mode]||submits.login;
   $('#authSwitch').innerHTML=reg?'Schon ein Konto? <u>Anmelden</u>':forgot?'Zurück zur <u>Anmeldung</u>':recovery?'Abbrechen und zur <u>Anmeldung</u>':'Noch kein Konto? <u>Jetzt registrieren</u>';
+  $('#authForgot').classList.toggle('hidden',mode!=='login');
 
   $('#authEmailField').classList.toggle('hidden',recovery);
   $('#authPasswordField').classList.toggle('hidden',forgot);
@@ -439,6 +440,7 @@ $('#authForm').addEventListener('submit',async e=>{
     else toast(authErrorMessage(error,'Registrierung fehlgeschlagen.'));
   }
 });
+$('#authForgot').addEventListener('click',()=>openAuth('forgot',$('#authEmail').value));
 $('#authSwitch').addEventListener('click',async()=>{
   if(authMode==='forgot'){
     openAuth('login',$('#authEmail').value);
