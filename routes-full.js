@@ -45,20 +45,116 @@ function bindNews(){navBinds();qsa('[data-news-cat]').forEach(b=>b.onclick=()=>{
 const mapCustom=()=>arr('jma_custom_markers');
 const allMarkers=()=>[...(AD().map?.markers||[]),...mapCustom().map(x=>({...x,custom:true}))];
 function mapSelected(){return read('jma_map_selected','')}
-function markerDetail(m){if(!m)return `<div class="rf-map-detail-empty"><span>⌖</span><b>MARKER AUSWÄHLEN</b><p>Wähle einen sichtbaren Marker, um Quelle, Szenario und Notiz anzuzeigen.</p></div>`;return `<div class="section-kicker">MARKERDETAIL</div><h2>${esc(m.name)}</h2><div class="rf-kv"><span><small>SZENARIO</small><b>${esc((AD().map?.scenarios||[]).find(s=>s.id===m.scenario)?.name||m.scenario)}</b></span><span><small>KATEGORIE</small><b>${esc(m.category||'Marker')}</b></span><span><small>SPIELKOORDINATEN</small><b>${m.gameX||m.gameY?`X ${esc(m.gameX||'—')} / Y ${esc(m.gameY||'—')}`:'noch nicht hinterlegt'}</b></span><span><small>PRÜFSTATUS</small><b>${esc(m.verified||'lokal')}</b></span></div><p>${esc(m.note||'')}</p><div class="rf-action-stack"><button class="cyan-btn compact" type="button" data-map-route-add="${esc(m.id)}">＋ ZUR ROUTE</button>${m.custom?`<button class="ghost-btn" type="button" data-map-delete="${esc(m.id)}">LOKALEN MARKER LÖSCHEN</button>`:''}</div>`}
-function renderMap(){
- const scenarios=AD().map?.scenarios||[], scenario=read('jma_map_scenario','way-of-winter'), q=read('jma_map_q',''), cat=read('jma_map_cat','all');
- const candidates=allMarkers().filter(m=>m.scenario===scenario); const cats=[...new Set(candidates.map(x=>x.category).filter(Boolean))];
- const markers=candidates.filter(m=>(cat==='all'||m.category===cat)&&(!q||`${m.name} ${m.category} ${m.note} ${m.location}`.toLowerCase().includes(q.toLowerCase()))); const selected=allMarkers().find(x=>x.id===mapSelected());
- const view=read('jma_map_view',{zoom:1,x:0,y:0});
- return `<section class="rf-page map-page">${hero('KARTENZENTRALE // INTERN','INTERAKTIVE KARTE','Szenarioebenen, bestätigte Marker, lokale Ergänzungen und gespeicherte Routen aus dem vorhandenen Projektstand.',metrics([[scenarios.length,'Szenarien'],[allMarkers().length,'Marker gesamt'],[markers.length,'sichtbar']]))}
- <div class="rf-map-toolbar"><label>SZENARIO<select id="mapScenario">${scenarios.map(s=>`<option value="${esc(s.id)}" ${s.id===scenario?'selected':''}>${esc(s.name)}</option>`).join('')}</select></label><label>MARKER SUCHEN<input id="mapSearch" value="${esc(q)}" placeholder="Silo, Kategorie, Notiz …"></label><label>KATEGORIE<select id="mapCategory"><option value="all">Alle</option>${cats.map(c=>`<option ${c===cat?'selected':''}>${esc(c)}</option>`).join('')}</select></label><div class="rf-map-zoom"><button id="mapZoomOut" type="button">−</button><b>${Math.round((view.zoom||1)*100)}%</b><button id="mapZoomIn" type="button">＋</button><button id="mapResetView" type="button">RESET</button></div></div>
- <div class="rf-map-layout"><aside class="rf-map-layers"><small>EBENEN</small>${scenarios.map(s=>`<button class="${s.id===scenario?'active':''}" data-map-scenario="${esc(s.id)}"><b>${esc(s.name)}</b><span>${esc(s.note||'')}</span><em>${allMarkers().filter(m=>m.scenario===s.id).length}</em></button>`).join('')}<div class="rf-map-draft"><small>ROUTENENTWURF</small>${arr('jma_route_draft').map(id=>{const m=allMarkers().find(x=>x.id===id);return m?`<span>${esc(m.name)}</span>`:''}).join('')||'<p>Noch keine Marker gewählt.</p>'}${btnLink('routes','ROUTEN VERWALTEN')}</div></aside>
- <div class="rf-map-board" id="mapBoard"><div class="rf-map-plane" id="mapPlane" style="transform:translate(${Number(view.x)||0}px,${Number(view.y)||0}px) scale(${Number(view.zoom)||1})"><div class="rf-map-grid"></div><div class="rf-map-region-label">${esc(scenarios.find(s=>s.id===scenario)?.name||scenario)}</div>${markers.map(m=>`<button class="rf-map-marker ${m.id===mapSelected()?'active':''} ${m.custom?'custom':''}" type="button" title="${esc(m.name)}" data-map-marker="${esc(m.id)}" style="left:${Number(m.mapX)||50}%;top:${Number(m.mapY)||50}%"><span>⌖</span></button>`).join('')}</div><div class="rf-map-help">Ziehen = verschieben · Mausrad / ± = zoomen</div></div>
- <aside class="rf-map-detail" id="mapDetail">${markerDetail(selected)}<div class="rf-map-editor"><small>LOKALEN MARKER ERGÄNZEN</small><form id="mapMarkerForm"><input name="name" placeholder="Markername" required><div><input name="x" type="number" min="0" max="100" value="50" required><input name="y" type="number" min="0" max="100" value="50" required></div><input name="category" placeholder="Kategorie" value="Eigener Marker"><textarea name="note" placeholder="Notiz / Fundweg"></textarea><button class="ghost-btn" type="submit">MARKER SPEICHERN</button></form></div></aside></div></section>`;
+const mapPreviewCategories=[
+  ['⌁','Routen & Wege'],
+  ['◈','Teleportationspunkte'],
+  ['⌂','Siedlungen & Lager'],
+  ['⌖','Wichtige Orte'],
+  ['◉','Events'],
+  ['◎','Abweichler'],
+  ['◇','Ressourcen'],
+  ['▣','Kisten & Beute'],
+  ['✧','Sammlerstücke'],
+  ['•••','Sonstiges']
+];
+const mapResourcePreview=['Pflanzen','Erze & Mineralien','Tiere','Spezialressourcen'];
+
+function mapAppDetail(m,scenarioName){
+  if(!m){
+    return `<div class="map-app-detail-cover"><img src="./assets/reference/feature-map.webp" alt=""><span>KARTENARCHIV // BEREIT</span></div>
+      <div class="map-app-detail-copy"><small>DETAILANSICHT</small><h2>GEBIET AUSWÄHLEN</h2><p>Wähle später einen Kartenbereich oder vorhandenen Marker, um geprüfte Informationen an dieser Stelle anzuzeigen.</p></div>
+      <div class="map-app-detail-tabs" aria-label="Detailbereiche"><button class="active" type="button">▦<span>Übersicht</span></button><button type="button">⌁<span>Routen</span></button><button type="button">◇<span>Ressourcen</span></button><button type="button">◎<span>Abweichler</span></button></div>
+      <section class="map-app-detail-section"><header><b>WICHTIGE INFOS</b></header><div class="map-app-empty-lines"><span>Keine Gebietsdaten ausgewählt.</span><span>Keine erfundenen Werte hinterlegt.</span></div></section>
+      <section class="map-app-detail-section"><header><b>RESSOURCEN</b></header><div class="map-app-detail-placeholder">Verifizierte Ressourcendaten werden später angebunden.</div></section>
+      <div class="map-app-detail-actions"><button type="button" class="cyan-btn compact">GEBIET AUSWÄHLEN →</button><button type="button" class="ghost-btn">MARKIERUNGEN</button></div>`;
+  }
+  const coords=m.gameX||m.gameY?`X ${esc(m.gameX||'—')} / Y ${esc(m.gameY||'—')}`:'noch nicht hinterlegt';
+  return `<div class="map-app-detail-cover"><img src="./assets/reference/feature-map.webp" alt=""><span>MARKER // AUSGEWÄHLT</span></div>
+    <div class="map-app-detail-copy"><small>${esc(m.category||'MARKER')}</small><h2>${esc(m.name)}</h2><p>${esc(m.note||'Für diesen Marker ist noch keine zusätzliche Beschreibung hinterlegt.')}</p></div>
+    <div class="map-app-detail-tabs" aria-label="Detailbereiche"><button class="active" type="button">▦<span>Übersicht</span></button><button type="button">⌁<span>Routen</span></button><button type="button">◇<span>Ressourcen</span></button><button type="button">◎<span>Abweichler</span></button></div>
+    <section class="map-app-detail-section"><header><b>WICHTIGE INFOS</b></header><dl class="map-app-kv"><div><dt>Szenario</dt><dd>${esc(scenarioName||m.scenario)}</dd></div><div><dt>Kategorie</dt><dd>${esc(m.category||'Marker')}</dd></div><div><dt>Koordinaten</dt><dd>${coords}</dd></div><div><dt>Prüfstatus</dt><dd>${esc(m.verified||'lokal')}</dd></div></dl></section>
+    <section class="map-app-detail-section"><header><b>RESSOURCEN</b></header><div class="map-app-detail-placeholder">Keine verifizierten Ressourcendaten für diesen Marker hinterlegt.</div></section>
+    <div class="map-app-detail-actions"><button type="button" class="cyan-btn compact" data-map-route-add="${esc(m.id)}">＋ ZUR ROUTE</button><button type="button" class="ghost-btn">MARKERDETAIL</button></div>`;
 }
-function bindMap(){navBinds();const setSc=v=>{write('jma_map_scenario',v);write('jma_map_selected','');refresh()};on('#mapScenario','change',e=>setSc(e.target.value));qsa('[data-map-scenario]').forEach(b=>b.onclick=()=>setSc(b.dataset.mapScenario));on('#mapSearch','input',e=>inputRefresh('jma_map_q',e.target.value,'#mapSearch'));on('#mapCategory','change',e=>{write('jma_map_cat',e.target.value);refresh()});qsa('[data-map-marker]').forEach(b=>b.onclick=e=>{e.stopPropagation();write('jma_map_selected',b.dataset.mapMarker);refresh()});on('#mapMarkerForm','submit',e=>{e.preventDefault();const fd=new FormData(e.currentTarget),scenario=read('jma_map_scenario','way-of-winter'),rows=mapCustom();const m={id:uid('custom-marker'),scenario,name:String(fd.get('name')).trim(),category:String(fd.get('category')||'Eigener Marker').trim(),mapX:+fd.get('x'),mapY:+fd.get('y'),location:'Lokale Ergänzung',note:String(fd.get('note')||'').trim(),verified:'lokal',catalogIds:[]};rows.push(m);write('jma_custom_markers',rows);write('jma_map_selected',m.id);toast('Lokaler Marker gespeichert.');refresh()});qsa('[data-map-delete]').forEach(b=>b.onclick=()=>{write('jma_custom_markers',mapCustom().filter(x=>x.id!==b.dataset.mapDelete));write('jma_map_selected','');toast('Lokaler Marker gelöscht.');refresh()});qsa('[data-map-route-add]').forEach(b=>b.onclick=()=>{const r=arr('jma_route_draft');if(!r.includes(b.dataset.mapRouteAdd))r.push(b.dataset.mapRouteAdd);write('jma_route_draft',r);toast('Marker zum Routenentwurf hinzugefügt.');refresh()});
- const board=qs('#mapBoard'),plane=qs('#mapPlane');if(!board||!plane)return;let v=read('jma_map_view',{zoom:1,x:0,y:0}),drag=null;const apply=()=>{plane.style.transform=`translate(${v.x}px,${v.y}px) scale(${v.zoom})`;write('jma_map_view',v)};const zoom=d=>{v.zoom=Math.max(.65,Math.min(2.2,(v.zoom||1)+d));apply();const b=qs('.rf-map-zoom b');if(b)b.textContent=`${Math.round(v.zoom*100)}%`};on('#mapZoomIn','click',()=>zoom(.15));on('#mapZoomOut','click',()=>zoom(-.15));on('#mapResetView','click',()=>{v={zoom:1,x:0,y:0};apply();refresh()});board.addEventListener('wheel',e=>{e.preventDefault();zoom(e.deltaY<0?.1:-.1)},{passive:false});board.addEventListener('pointerdown',e=>{if(e.target.closest('.rf-map-marker'))return;drag={x:e.clientX,y:e.clientY,bx:v.x||0,by:v.y||0};board.setPointerCapture(e.pointerId)});board.addEventListener('pointermove',e=>{if(!drag)return;v.x=drag.bx+(e.clientX-drag.x);v.y=drag.by+(e.clientY-drag.y);apply()});board.addEventListener('pointerup',()=>drag=null)}
+
+function renderMap(){
+  const scenarios=AD().map?.scenarios||[],scenario=read('jma_map_scenario','way-of-winter'),q=read('jma_map_q',''),cat=read('jma_map_cat','all');
+  const candidates=allMarkers().filter(m=>m.scenario===scenario),cats=[...new Set(candidates.map(x=>x.category).filter(Boolean))];
+  const markers=candidates.filter(m=>(cat==='all'||m.category===cat)&&(!q||`${m.name} ${m.category} ${m.note} ${m.location}`.toLowerCase().includes(q.toLowerCase())));
+  const selected=allMarkers().find(x=>x.id===mapSelected()),view=read('jma_map_view',{zoom:1,x:0,y:0});
+  const scenarioName=scenarios.find(s=>s.id===scenario)?.name||scenario;
+  const routeCount=arr('jma_routes').length;
+  return `<section class="rf-page map-page map-app-page">
+    <header class="map-app-hero">
+      <div class="map-app-hero-copy">
+        <div class="map-app-kicker"><span>✦</span> KARTENZENTRALE // INTERN</div>
+        <h1>INTERAKTIVE <span>KARTE</span></h1>
+        <p>Szenarioebenen, vorhandene Marker und gespeicherte Routen in einer kompakten Kartenoberfläche. Dieser Block bildet zunächst die visuelle Karten-App; weitere Kartendaten folgen kontrolliert nach der Designabnahme.</p>
+      </div>
+      <div class="map-app-stats">
+        <article><i>▦</i><div><b>${scenarios.length}</b><span>SZENARIEN</span><small>vorhandener Projektstand</small></div></article>
+        <article><i>⌖</i><div><b>${allMarkers().length}</b><span>MARKER</span><small>vorhandene Einträge</small></div></article>
+        <article><i>◉</i><div><b>${markers.length}</b><span>SICHTBAR</span><small>aktuelle Auswahl</small></div></article>
+        <article><i>⌁</i><div><b>${routeCount}</b><span>ROUTEN</span><small>lokal gespeichert</small></div></article>
+      </div>
+    </header>
+
+    <div class="map-app-shell">
+      <aside class="map-app-sidebar">
+        <div class="map-app-side-tabs"><button type="button" class="active"><span>▦</span>Marker & Filter</button><button type="button"><span>▤</span>Meine Karten</button></div>
+        <label class="map-app-side-search"><span>⌕</span><input placeholder="Marker suchen …" aria-label="Markerfilter durchsuchen"></label>
+        <section class="map-app-filter-list">
+          <header><div><small>FILTER</small><b>MARKER-KATEGORIEN</b></div><span>VORSCHAU</span></header>
+          ${mapPreviewCategories.map(([icon,label])=>`<button type="button" class="${label==='Ressourcen'?'has-children':''}"><i>${icon}</i><span>${label}</span><em>${label==='Ressourcen'?'⌄':'○'}</em></button>${label==='Ressourcen'? `<div class="map-app-subfilters">${mapResourcePreview.map(x=>`<span>└ ${x}</span>`).join('')}</div>`:''}`).join('')}
+        </section>
+        <button class="map-app-reset-filter" type="button"><span>↻</span> FILTER ZURÜCKSETZEN</button>
+      </aside>
+
+      <main class="map-app-center">
+        <div class="map-app-toolbar">
+          <label><small>SZENARIO</small><select id="mapScenario">${scenarios.map(s=>`<option value="${esc(s.id)}" ${s.id===scenario?'selected':''}>${esc(s.name)}</option>`).join('')}</select></label>
+          <label class="map-app-search"><small>SUCHE</small><span>⌕</span><input id="mapSearch" value="${esc(q)}" placeholder="Silo, Kategorie, Notiz …"></label>
+          <label><small>KATEGORIE</small><select id="mapCategory"><option value="all">Alle</option>${cats.map(c=>`<option ${c===cat?'selected':''}>${esc(c)}</option>`).join('')}</select></label>
+          <button class="map-app-tool-button" type="button" aria-label="Kartenoptionen">⚙</button>
+          <div class="map-app-zoom"><button id="mapZoomOut" type="button">−</button><b>${Math.round((view.zoom||1)*100)}%</b><button id="mapZoomIn" type="button">＋</button><button id="mapResetView" type="button">RESET</button></div>
+        </div>
+
+        <div class="map-app-board" id="mapBoard">
+          <div class="map-app-plane" id="mapPlane" style="transform:translate(${Number(view.x)||0}px,${Number(view.y)||0}px) scale(${Number(view.zoom)||1})">
+            <img class="map-app-image" src="./assets/map/once-human-world-map.webp" alt="Once Human Weltkarte" draggable="false">
+            ${markers.map(m=>`<button class="map-app-marker ${m.id===mapSelected()?'active':''} ${m.custom?'custom':''}" type="button" title="${esc(m.name)}" data-map-marker="${esc(m.id)}" style="left:${Number(m.mapX)||50}%;top:${Number(m.mapY)||50}%"><span>⌖</span></button>`).join('')}
+          </div>
+          <div class="map-app-compass" aria-hidden="true"><b>N</b><span>✥</span><small>W&nbsp;&nbsp;&nbsp;E</small></div>
+          <div class="map-app-scale" aria-hidden="true"><span></span><small>KARTENANSICHT // 1536×1024</small></div>
+          <div class="map-app-help">Ziehen = verschieben · Mausrad / ± = zoomen</div>
+        </div>
+      </main>
+
+      <aside class="map-app-detail" id="mapDetail">${mapAppDetail(selected,scenarioName)}</aside>
+    </div>
+  </section>`;
+}
+
+function bindMap(){
+  navBinds();
+  const setSc=v=>{write('jma_map_scenario',v);write('jma_map_selected','');refresh()};
+  on('#mapScenario','change',e=>setSc(e.target.value));
+  on('#mapSearch','input',e=>inputRefresh('jma_map_q',e.target.value,'#mapSearch'));
+  on('#mapCategory','change',e=>{write('jma_map_cat',e.target.value);refresh()});
+  qsa('[data-map-marker]').forEach(b=>b.onclick=e=>{e.stopPropagation();write('jma_map_selected',b.dataset.mapMarker);refresh()});
+  qsa('[data-map-route-add]').forEach(b=>b.onclick=()=>{const r=arr('jma_route_draft');if(!r.includes(b.dataset.mapRouteAdd))r.push(b.dataset.mapRouteAdd);write('jma_route_draft',r);toast('Marker zum Routenentwurf hinzugefügt.');refresh()});
+  const board=qs('#mapBoard'),plane=qs('#mapPlane');if(!board||!plane)return;
+  let v=read('jma_map_view',{zoom:1,x:0,y:0}),drag=null;
+  const apply=()=>{plane.style.transform=`translate(${v.x}px,${v.y}px) scale(${v.zoom})`;write('jma_map_view',v)};
+  const zoom=d=>{v.zoom=Math.max(.65,Math.min(2.2,(v.zoom||1)+d));apply();const b=qs('.map-app-zoom b');if(b)b.textContent=`${Math.round(v.zoom*100)}%`};
+  on('#mapZoomIn','click',()=>zoom(.15));
+  on('#mapZoomOut','click',()=>zoom(-.15));
+  on('#mapResetView','click',()=>{v={zoom:1,x:0,y:0};apply();refresh()});
+  board.addEventListener('wheel',e=>{e.preventDefault();zoom(e.deltaY<0?.1:-.1)},{passive:false});
+  board.addEventListener('pointerdown',e=>{if(e.target.closest('.map-app-marker'))return;drag={x:e.clientX,y:e.clientY,bx:v.x||0,by:v.y||0};board.setPointerCapture(e.pointerId)});
+  board.addEventListener('pointermove',e=>{if(!drag)return;v.x=drag.bx+(e.clientX-drag.x);v.y=drag.by+(e.clientY-drag.y);apply()});
+  board.addEventListener('pointerup',()=>drag=null);
+}
 
 function renderHunt(){const ids=[...set('jma_hunt')],meta=read('jma_hunt_meta',{});const rows=ids.map(id=>catalog().find(x=>x.id===id)).filter(Boolean);return `<section class="rf-page hunt-page">${hero('PERSÖNLICH // ZIELE','JAGDLISTE','Katalogziele priorisieren, als erledigt markieren oder direkt zur Datenbank zurückspringen.',metrics([[rows.length,'aktive Einträge'],[rows.filter(x=>meta[x.id]?.done).length,'erledigt']]))}<div class="rf-hunt-list">${rows.map(x=>`<article class="${meta[x.id]?.done?'done':''}"><div><small>${esc(x.kind||x.category)}</small><h3>${esc(x.name_de)}</h3><p>${esc(x.acquisition||x.description||'')}</p></div><label>PRIORITÄT<select data-hunt-priority="${esc(x.id)}"><option ${meta[x.id]?.priority==='Hoch'?'selected':''}>Hoch</option><option ${!meta[x.id]?.priority||meta[x.id]?.priority==='Normal'?'selected':''}>Normal</option><option ${meta[x.id]?.priority==='Niedrig'?'selected':''}>Niedrig</option></select></label><div class="actions"><button type="button" data-hunt-done="${esc(x.id)}">${meta[x.id]?.done?'↺ ÖFFNEN':'✓ ERLEDIGT'}</button><button type="button" data-hunt-remove="${esc(x.id)}">ENTFERNEN</button></div></article>`).join('')||empty('Keine Jagdziele')}<div class="rf-inline-cta">${btnLink('database','＋ AUS DATENBANK HINZUFÜGEN','cyan-btn compact')}</div></div></section>`}
 function bindHunt(){navBinds();qsa('[data-hunt-priority]').forEach(s=>s.onchange=()=>{const m=read('jma_hunt_meta',{});m[s.dataset.huntPriority]={...(m[s.dataset.huntPriority]||{}),priority:s.value};write('jma_hunt_meta',m);toast('Priorität gespeichert.')});qsa('[data-hunt-done]').forEach(b=>b.onclick=()=>{const m=read('jma_hunt_meta',{}),id=b.dataset.huntDone;m[id]={...(m[id]||{}),done:!m[id]?.done};write('jma_hunt_meta',m);refresh()});qsa('[data-hunt-remove]').forEach(b=>b.onclick=()=>{const s=set('jma_hunt');s.delete(b.dataset.huntRemove);putSet('jma_hunt',s);refresh()})}

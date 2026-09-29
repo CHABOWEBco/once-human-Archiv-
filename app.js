@@ -47,7 +47,7 @@ const HOME_FOOTER_BRAND = `<span class="brand-mark small home-logo-mark"><img cl
 const LEGACY_TOP_BRAND = `<span class="brand-mark"><i></i><b>M</b></span><span><strong>JAZZEMEOW</strong><small>ONCE HUMAN ARCHIV</small></span>`;
 const LEGACY_FOOTER_BRAND = `<span class="brand-mark small"><i></i><b>M</b></span><span><strong>JAZZEMEOW</strong><small>ONCE HUMAN ARCHIV</small></span>`;
 function syncRouteBrand(routeId){
-  const onceHumanBrand = routeId === 'home' || routeId === 'tech-workbench';
+  const onceHumanBrand = routeId === 'home' || routeId === 'tech-workbench' || routeId === 'map';
   if(topBrand){
     topBrand.innerHTML = onceHumanBrand ? HOME_TOP_BRAND : LEGACY_TOP_BRAND;
     topBrand.setAttribute('aria-label',onceHumanBrand?'Once Human Archiv Startseite':'JazzeMeow Archiv Startseite');
@@ -57,7 +57,7 @@ function syncRouteBrand(routeId){
 const TECH_HEADER_DESKTOP = window.matchMedia('(hover: hover) and (pointer: fine) and (min-width: 861px)');
 let techHeaderHideTimer = null;
 function techHeaderAutoHideEnabled(){
-  return document.body.classList.contains('route-tech-workbench') && TECH_HEADER_DESKTOP.matches;
+  return (document.body.classList.contains('route-tech-workbench') || document.body.classList.contains('route-map')) && TECH_HEADER_DESKTOP.matches;
 }
 function clearTechHeaderTimer(){
   if(techHeaderHideTimer){
@@ -86,7 +86,7 @@ function showTechHeader(){
 function syncTechHeaderAutoHide(routeId){
   clearTechHeaderTimer();
   document.body.classList.remove('tech-header-hidden');
-  if(routeId==='tech-workbench' && TECH_HEADER_DESKTOP.matches) hideTechHeader(520);
+  if((routeId==='tech-workbench'||routeId==='map') && TECH_HEADER_DESKTOP.matches) hideTechHeader(520);
 }
 window.addEventListener('pointermove',e=>{
   if(techHeaderAutoHideEnabled() && e.clientY<=6) showTechHeader();
@@ -104,7 +104,7 @@ TECH_HEADER_DESKTOP.addEventListener?.('change',()=>{
   if(!TECH_HEADER_DESKTOP.matches){
     clearTechHeaderTimer();
     document.body.classList.remove('tech-header-hidden');
-  }else if(routeFromHash()==='tech-workbench'){
+  }else if(routeFromHash()==='tech-workbench'||routeFromHash()==='map'){
     hideTechHeader(520);
   }
 });
@@ -257,7 +257,7 @@ function render(){
   }
   let route=ROUTES.find(r=>r.id===id);
   if(!route){route=ROUTES[0];history.replaceState(null,'','#/home');}
-  document.title=(route.id==='home'||route.id==='tech-workbench')?`Once Human Archiv // ${route.label}`:`JazzeMeow Archiv // ${route.label}`;
+  document.title=(route.id==='home'||route.id==='tech-workbench'||route.id==='map')?`Once Human Archiv // ${route.label}`:`JazzeMeow Archiv // ${route.label}`;
   document.body.className=document.body.className.replace(/\broute-[^\s]+/g,'').trim(); document.body.classList.add(`route-${route.id}`);
   syncRouteBrand(route.id);
   syncTechHeaderAutoHide(route.id);
