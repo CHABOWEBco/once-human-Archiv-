@@ -101,7 +101,9 @@ begin
   new.updated_at := timezone('utc', now());
   return new;
 end;
-$$;
+$;
+
+revoke all on function private.set_updated_at() from public, anon, authenticated;
 
 -- New auth.users rows get a profile and exactly the default "user" role.
 -- User-controlled metadata is used only for the display name, never for roles.
@@ -134,7 +136,9 @@ begin
 
   return new;
 end;
-$$;
+$;
+
+revoke all on function private.handle_new_auth_user() from public, anon, authenticated;
 
 drop trigger if exists profiles_set_updated_at on public.profiles;
 create trigger profiles_set_updated_at
