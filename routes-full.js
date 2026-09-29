@@ -81,7 +81,7 @@ function renderMap(){
   const scenarios=AD().map?.scenarios||[],scenario=read('jma_map_scenario','way-of-winter'),q=read('jma_map_q',''),cat=read('jma_map_cat','all');
   const candidates=allMarkers().filter(m=>m.scenario===scenario),cats=[...new Set(candidates.map(x=>x.category).filter(Boolean))];
   const markers=candidates.filter(m=>(cat==='all'||m.category===cat)&&(!q||`${m.name} ${m.category} ${m.note} ${m.location}`.toLowerCase().includes(q.toLowerCase())));
-  const selected=allMarkers().find(x=>x.id===mapSelected()),view=read('jma_map_view',{zoom:1,x:0,y:0});
+  const selected=allMarkers().find(x=>x.id===mapSelected()),storedView=read('jma_map_view',{zoom:1,x:0,y:0}),view={zoom:Math.max(1,Math.min(2.2,Number(storedView.zoom)||1)),x:Number(storedView.x)||0,y:Number(storedView.y)||0};if(view.zoom===1){view.x=0;view.y=0}
   const scenarioName=scenarios.find(s=>s.id===scenario)?.name||scenario;
   const routeCount=arr('jma_routes').length;
   return `<section class="rf-page map-page map-app-page">
@@ -144,9 +144,10 @@ function bindMap(){
   qsa('[data-map-marker]').forEach(b=>b.onclick=e=>{e.stopPropagation();write('jma_map_selected',b.dataset.mapMarker);refresh()});
   qsa('[data-map-route-add]').forEach(b=>b.onclick=()=>{const r=arr('jma_route_draft');if(!r.includes(b.dataset.mapRouteAdd))r.push(b.dataset.mapRouteAdd);write('jma_route_draft',r);toast('Marker zum Routenentwurf hinzugefügt.');refresh()});
   const board=qs('#mapBoard'),plane=qs('#mapPlane');if(!board||!plane)return;
-  let v=read('jma_map_view',{zoom:1,x:0,y:0}),drag=null;
-  const apply=()=>{plane.style.transform=`translate(${v.x}px,${v.y}px) scale(${v.zoom})`;write('jma_map_view',v)};
-  const zoom=d=>{v.zoom=Math.max(.65,Math.min(2.2,(v.zoom||1)+d));apply();const b=qs('.map-app-zoom b');if(b)b.textContent=`${Math.round(v.zoom*100)}%`};
+  let savedView=read('jma_map_view',{zoom:1,x:0,y:0}),v={zoom:Math.max(1,Math.min(2.2,Number(savedView.zoom)||1)),x:Number(savedView.x)||0,y:Number(savedView.y)||0},drag=null;
+  const clampView=()=>{v.zoom=Math.max(1,Math.min(2.2,Number(v.zoom)||1));const maxX=board.clientWidth*(v.zoom-1)/2,maxY=board.clientHeight*(v.zoom-1)/2;v.x=Math.max(-maxX,Math.min(maxX,Number(v.x)||0));v.y=Math.max(-maxY,Math.min(maxY,Number(v.y)||0));if(v.zoom===1){v.x=0;v.y=0}};
+  const apply=()=>{clampView();plane.style.transform=`translate(${v.x}px,${v.y}px) scale(${v.zoom})`;write('jma_map_view',v)};
+  const zoom=d=>{v.zoom=Math.max(1,Math.min(2.2,(v.zoom||1)+d));apply();const b=qs('.map-app-zoom b');if(b)b.textContent=`${Math.round(v.zoom*100)}%`};
   on('#mapZoomIn','click',()=>zoom(.15));
   on('#mapZoomOut','click',()=>zoom(-.15));
   on('#mapResetView','click',()=>{v={zoom:1,x:0,y:0};apply();refresh()});
@@ -154,6 +155,8 @@ function bindMap(){
   board.addEventListener('pointerdown',e=>{if(e.target.closest('.map-app-marker'))return;drag={x:e.clientX,y:e.clientY,bx:v.x||0,by:v.y||0};board.setPointerCapture(e.pointerId)});
   board.addEventListener('pointermove',e=>{if(!drag)return;v.x=drag.bx+(e.clientX-drag.x);v.y=drag.by+(e.clientY-drag.y);apply()});
   board.addEventListener('pointerup',()=>drag=null);
+  board.addEventListener('pointercancel',()=>drag=null);
+  apply();
 }
 
 function renderHunt(){const ids=[...set('jma_hunt')],meta=read('jma_hunt_meta',{});const rows=ids.map(id=>catalog().find(x=>x.id===id)).filter(Boolean);return `<section class="rf-page hunt-page">${hero('PERSÖNLICH // ZIELE','JAGDLISTE','Katalogziele priorisieren, als erledigt markieren oder direkt zur Datenbank zurückspringen.',metrics([[rows.length,'aktive Einträge'],[rows.filter(x=>meta[x.id]?.done).length,'erledigt']]))}<div class="rf-hunt-list">${rows.map(x=>`<article class="${meta[x.id]?.done?'done':''}"><div><small>${esc(x.kind||x.category)}</small><h3>${esc(x.name_de)}</h3><p>${esc(x.acquisition||x.description||'')}</p></div><label>PRIORITÄT<select data-hunt-priority="${esc(x.id)}"><option ${meta[x.id]?.priority==='Hoch'?'selected':''}>Hoch</option><option ${!meta[x.id]?.priority||meta[x.id]?.priority==='Normal'?'selected':''}>Normal</option><option ${meta[x.id]?.priority==='Niedrig'?'selected':''}>Niedrig</option></select></label><div class="actions"><button type="button" data-hunt-done="${esc(x.id)}">${meta[x.id]?.done?'↺ ÖFFNEN':'✓ ERLEDIGT'}</button><button type="button" data-hunt-remove="${esc(x.id)}">ENTFERNEN</button></div></article>`).join('')||empty('Keine Jagdziele')}<div class="rf-inline-cta">${btnLink('database','＋ AUS DATENBANK HINZUFÜGEN','cyan-btn compact')}</div></div></section>`}
