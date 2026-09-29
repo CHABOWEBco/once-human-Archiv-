@@ -10,13 +10,15 @@ const state = {
   profile: null,
   role: null,
   account: null,
-  ready: false
+  ready: false,
+  recovery: false
 };
 
 let client = null;
 let initialized = false;
 let authSubscription = null;
 let syncChain = Promise.resolve();
+const recoveryHandlers = new Set();
 
 function getClient(){
   if(client) return client;
@@ -105,18 +107,46 @@ function queueSessionSync(session, renderAfter=true){
   return syncChain;
 }
 
+function notifyRecovery(){
+  recoveryHandlers.forEach(handler=>{
+    try{ handler(); }catch(error){ console.error('Recovery-Handler fehlgeschlagen:', error); }
+  });
+}
+
+async function handleRecoverySession(session){
+  await queueSessionSync(session, false);
+  state.recovery = true;
+  notifyRecovery();
+}
+
+function onRecovery(handler){
+  if(typeof handler !== 'function') return ()=>{};
+  recoveryHandlers.add(handler);
+  if(state.recovery) setTimeout(()=>handler(), 0);
+  return ()=>recoveryHandlers.delete(handler);
+}
+
+function isRecovery(){
+  return state.recovery;
+}
+
 async function init(){
   if(initialized) return state;
   const sb = getClient();
 
-  const {data, error} = await sb.auth.getSession();
-  if(error) throw error;
-  await loadIdentity(data.session);
-
-  const listener = sb.auth.onAuthStateChange((_event, session)=>{
+  const listener = sb.auth.onAuthStateChange((event, session)=>{
+    if(event === 'PASSWORD_RECOVERY'){
+      setTimeout(()=>handleRecoverySession(session), 0);
+      return;
+    }
+    if(!initialized) return;
     setTimeout(()=>queueSessionSync(session, true), 0);
   });
   authSubscription = listener.data?.subscription || null;
+
+  const {data, error} = await sb.auth.getSession();
+  if(error) throw error;
+  await loadIdentity(data.session);
 
   initialized = true;
   state.ready = true;
@@ -174,6 +204,31 @@ async function signOut(){
   return true;
 }
 
+async function resetPasswordForEmail(email){
+  const sb = getClient();
+  const {error} = await sb.auth.resetPasswordForEmail(
+    String(email || '').trim(),
+    {redirectTo: 'https://raw.githack.com/CHABOWEBco/once-human-Archiv-/design-preview/index.html'}
+  );
+  if(error) throw error;
+  return true;
+}
+
+async function updatePassword(password){
+  if(!state.session?.user && !state.user) throw new Error('Keine gültige Recovery-Sitzung.');
+  const sb = getClient();
+  const {data, error} = await sb.auth.updateUser({password});
+  if(error) throw error;
+  if(data.user) state.user = data.user;
+  return data.user || state.user;
+}
+
+async function finishRecovery(){
+  await signOut();
+  state.recovery = false;
+  return true;
+}
+
 async function updateDisplayName(displayName){
   if(!state.user) throw new Error('Keine aktive Anmeldung.');
   const name = String(displayName || '').trim();
@@ -203,7 +258,8 @@ function getState(){
     profile: state.profile,
     role: state.role,
     account: getAccount(),
-    ready: state.ready
+    ready: state.ready,
+    recovery: state.recovery
   };
 }
 
@@ -219,6 +275,11 @@ globalThis.JMA_AUTH = {
   signUp,
   signInWithPassword,
   signOut,
+  resetPasswordForEmail,
+  updatePassword,
+  finishRecovery,
+  onRecovery,
+  isRecovery,
   updateDisplayName,
   getAccount,
   getState,

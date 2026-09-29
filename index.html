@@ -43,8 +43,9 @@
       <h2 id="authTitle">Willkommen zurück</h2>
       <p id="authCopy">Melde dich an und werde Teil der Community.</p>
       <form id="authForm">
-        <label>E-Mail-Adresse<input type="email" id="authEmail" required autocomplete="email"></label>
-        <label>Passwort<input type="password" id="authPassword" required minlength="4" autocomplete="current-password"></label>
+        <label id="authEmailField"><span>E-Mail-Adresse</span><input type="email" id="authEmail" required autocomplete="email"></label>
+        <label id="authPasswordField"><span id="authPasswordLabel">Passwort</span><input type="password" id="authPassword" required minlength="4" autocomplete="current-password"></label>
+        <label class="hidden" id="authPasswordRepeatField"><span>Neues Passwort wiederholen</span><input type="password" id="authPasswordRepeat" autocomplete="new-password"></label>
         <label class="name-field hidden" id="nameField">Anzeigename<input type="text" id="authName" minlength="2" autocomplete="nickname"></label>
         <p class="login-error auth-login-error" id="authLoginError" role="alert" hidden></p>
         <button class="cyan-btn full" id="authSubmit" type="submit">ANMELDEN →</button>

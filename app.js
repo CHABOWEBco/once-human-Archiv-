@@ -214,6 +214,14 @@ function setLoginError(selector,message=''){
   const el=$(selector);
   if(!el) return;
   el.textContent=message;
+  el.classList.remove('login-success');
+  el.hidden=!message;
+}
+function setAuthMessage(message='',type='error'){
+  const el=$('#authLoginError');
+  if(!el) return;
+  el.textContent=message;
+  el.classList.toggle('login-success',type==='success');
   el.hidden=!message;
 }
 async function signInWithSupabase(email,password){
@@ -243,7 +251,7 @@ function bindView(){
     }catch(error){setLoginError('#heroLoginError',authErrorMessage(error))}
   });
   $('#heroRegister')?.addEventListener('click',()=>openAuth('register'));
-  $('#heroForgot')?.addEventListener('click',()=>toast('Passwort-Wiederherstellung wird in einem späteren Schritt angebunden.'));
+  $('#heroForgot')?.addEventListener('click',()=>openAuth('forgot',$('#heroEmail')?.value.trim()||''));
   document.querySelectorAll('[data-home-category]').forEach(a=>a.addEventListener('click',()=>{DB_STATE.category=a.dataset.homeCategory||'all';DB_STATE.q='';DB_STATE.status='all'}));
   $('#dashboardOpen')?.addEventListener('click',()=>location.hash='#/dashboard');
   $('#logoutBtn')?.addEventListener('click',async()=>{
@@ -257,19 +265,71 @@ function bindView(){
   $('#openSearchFromDev')?.addEventListener('click',openSearch);
 }
 function openAuth(mode='login',email=''){
-  authMode=mode; const reg=mode==='register';
-  $('#authTitle').textContent=reg?'ARCHIVZUGANG ERSTELLEN':'WILLKOMMEN ZURÜCK';
-  $('#authCopy').textContent=reg?'Erstelle dein Archivkonto.':'Melde dich mit deinem Archivkonto an.';
-  $('#authSubmit').textContent=reg?'REGISTRIEREN →':'ANMELDEN →';
-  $('#authSwitch').innerHTML=reg?'Schon ein Konto? <u>Anmelden</u>':'Noch kein Konto? <u>Jetzt registrieren</u>';
-  $('#nameField').classList.toggle('hidden',!reg); $('#authName').required=reg; $('#authEmail').value=email;
-  setLoginError('#authLoginError');
-  $('#authDialog').showModal(); setTimeout(()=>$('#authEmail').focus(),20);
+  authMode=mode;
+  const reg=mode==='register',forgot=mode==='forgot',recovery=mode==='recovery';
+  const titles={login:'WILLKOMMEN ZURÜCK',register:'ARCHIVZUGANG ERSTELLEN',forgot:'PASSWORT ZURÜCKSETZEN',recovery:'NEUES PASSWORT FESTLEGEN'};
+  const copies={
+    login:'Melde dich mit deinem Archivkonto an.',
+    register:'Erstelle dein Archivkonto.',
+    forgot:'Gib deine E-Mail-Adresse ein. Wir senden dir einen Link zum Zurücksetzen des Passworts.',
+    recovery:'Lege jetzt ein neues Passwort für dein Archivkonto fest.'
+  };
+  const submits={login:'ANMELDEN →',register:'REGISTRIEREN →',forgot:'RESET-LINK SENDEN →',recovery:'PASSWORT SPEICHERN →'};
+
+  $('#authTitle').textContent=titles[mode]||titles.login;
+  $('#authCopy').textContent=copies[mode]||copies.login;
+  $('#authSubmit').textContent=submits[mode]||submits.login;
+  $('#authSwitch').innerHTML=reg?'Schon ein Konto? <u>Anmelden</u>':forgot?'Zurück zur <u>Anmeldung</u>':recovery?'Abbrechen und zur <u>Anmeldung</u>':'Noch kein Konto? <u>Jetzt registrieren</u>';
+
+  $('#authEmailField').classList.toggle('hidden',recovery);
+  $('#authPasswordField').classList.toggle('hidden',forgot);
+  $('#authPasswordRepeatField').classList.toggle('hidden',!recovery);
+  $('#nameField').classList.toggle('hidden',!reg);
+
+  $('#authEmail').required=!recovery;
+  $('#authPassword').required=!forgot;
+  $('#authPasswordRepeat').required=recovery;
+  $('#authName').required=reg;
+  $('#authEmail').value=email||'';
+  $('#authPassword').value='';
+  $('#authPasswordRepeat').value='';
+  $('#authPassword').autocomplete=(reg||recovery)?'new-password':'current-password';
+  $('#authPasswordLabel').textContent=recovery?'Neues Passwort':'Passwort';
+  if(recovery) $('#authPassword').removeAttribute('minlength');
+  else $('#authPassword').setAttribute('minlength','4');
+
+  setAuthMessage();
+  const dialog=$('#authDialog');
+  if(!dialog.open) dialog.showModal();
+  const focusTarget=recovery?$('#authPassword'):$('#authEmail');
+  setTimeout(()=>focusTarget?.focus(),20);
 }
 $('#authForm').addEventListener('submit',async e=>{
   e.preventDefault();
-  const email=$('#authEmail').value.trim(),pass=$('#authPassword').value,button=$('#authSubmit');
+  const email=$('#authEmail').value.trim(),pass=$('#authPassword').value,repeat=$('#authPasswordRepeat').value,button=$('#authSubmit');
+  setAuthMessage();
   try{
+    if(authMode==='forgot'){
+      await bindAuthSubmit(button,()=>globalThis.JMA_AUTH.resetPasswordForEmail(email));
+      setAuthMessage('Wenn ein Konto mit dieser E-Mail existiert, wurde eine E-Mail zum Zurücksetzen des Passworts gesendet.','success');
+      return;
+    }
+    if(authMode==='recovery'){
+      if(!pass||!repeat){
+        setAuthMessage('Bitte fülle beide Passwortfelder aus.');
+        return;
+      }
+      if(pass!==repeat){
+        setAuthMessage('Die beiden Passwörter stimmen nicht überein.');
+        return;
+      }
+      await bindAuthSubmit(button,()=>globalThis.JMA_AUTH.updatePassword(pass));
+      await globalThis.JMA_AUTH.finishRecovery();
+      render();
+      openAuth('login');
+      setAuthMessage('Passwort erfolgreich geändert. Du kannst dich jetzt mit dem neuen Passwort anmelden.','success');
+      return;
+    }
     if(authMode==='register'){
       const result=await bindAuthSubmit(button,()=>registerWithSupabase(email,pass,$('#authName').value.trim()||'Meta-Human'));
       $('#authDialog').close();
@@ -286,12 +346,38 @@ $('#authForm').addEventListener('submit',async e=>{
     toast(`Willkommen zurück, ${account?.name||account?.email||'Meta-Human'}.`);
     render();
   }catch(error){
-    if(authMode==='login') setLoginError('#authLoginError',authErrorMessage(error,'Anmeldung fehlgeschlagen.'));
+    if(authMode==='login') setAuthMessage(authErrorMessage(error,'Anmeldung fehlgeschlagen.'));
+    else if(authMode==='forgot') setAuthMessage('Die Recovery-E-Mail konnte gerade nicht gesendet werden. Bitte versuche es später erneut.');
+    else if(authMode==='recovery') setAuthMessage(authErrorMessage(error,'Das neue Passwort konnte nicht gespeichert werden.'));
     else toast(authErrorMessage(error,'Registrierung fehlgeschlagen.'));
   }
 });
-$('#authSwitch').addEventListener('click',()=>openAuth(authMode==='login'?'register':'login',$('#authEmail').value));
-$('#authClose').addEventListener('click',()=>$('#authDialog').close());
+$('#authSwitch').addEventListener('click',async()=>{
+  if(authMode==='forgot'){
+    openAuth('login',$('#authEmail').value);
+    return;
+  }
+  if(authMode==='recovery'){
+    try{
+      await globalThis.JMA_AUTH.finishRecovery();
+      render();
+      openAuth('login');
+    }catch(error){setAuthMessage(authErrorMessage(error,'Recovery-Sitzung konnte nicht beendet werden.'))}
+    return;
+  }
+  openAuth(authMode==='login'?'register':'login',$('#authEmail').value);
+});
+$('#authClose').addEventListener('click',async()=>{
+  if(authMode==='recovery'){
+    try{
+      await globalThis.JMA_AUTH.finishRecovery();
+      $('#authDialog').close();
+      render();
+    }catch(error){setAuthMessage(authErrorMessage(error,'Recovery-Sitzung konnte nicht beendet werden.'))}
+    return;
+  }
+  $('#authDialog').close();
+});
 $('#loginOpen').addEventListener('click',()=>openAuth('login')); $('#registerOpen').addEventListener('click',()=>openAuth('register'));
 $('#menuToggle').addEventListener('click',()=>mainNav.classList.toggle('open')); mainNav.addEventListener('click',()=>mainNav.classList.remove('open'));
 function openSearch(){const q=$('#globalSearch');$('#searchDialog').showModal();q.value='';renderSearch('');setTimeout(()=>q.focus(),10)}
@@ -304,6 +390,7 @@ globalThis.JMA_RENDER=render;
 window.addEventListener('hashchange',render);
 async function boot(){
   if(!location.hash) history.replaceState(null,'','#/home');
+  globalThis.JMA_AUTH.onRecovery(()=>openAuth('recovery'));
   try{
     await globalThis.JMA_AUTH.init();
   }catch(error){
@@ -311,5 +398,6 @@ async function boot(){
     toast('Anmeldung konnte nicht initialisiert werden.');
   }
   render();
+  if(globalThis.JMA_AUTH.isRecovery()) openAuth('recovery');
 }
 boot();
