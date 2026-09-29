@@ -37,6 +37,7 @@ let authMode = 'login';
 const NAV = [
   ['home','Start','⌂'],['database','Datenbank','▱'],['map','Karte','⌖'],['builds','Builds','⚒'],['tech-workbench','Techwerkbank','⚙'],['community','Community','♙'],['guides','Guides','◫']
 ];
+const AUTH_REQUIRED_ROUTES = new Set(['database','map','builds','tech-workbench','community','guides','dashboard','profile']);
 mainNav.innerHTML = NAV.map(([id,label,icon])=>`<a href="#/${id}" data-nav="${id}"><span>${icon}</span>${label}</a>`).join('');
 
 const topBrand = document.querySelector('#topbar .brand');
@@ -146,7 +147,6 @@ function renderHome(){
           <div class="landing-trust"><span>◷ <b>Aktuell</b></span><span>♙ <b>Community-getrieben</b></span><span>◇ <b>Werbefrei</b></span><span>⌁ <b>Für alle Spieler</b></span></div>
         </div>
         <div class="landing-hero-space" aria-hidden="true"></div>
-        ${account ? '' : `<aside class="landing-login"><div class="landing-login-kicker">ARCHIVZUGANG</div><h2>WILLKOMMEN ZURÜCK</h2><p>Melde dich an und werde Teil der Community.</p><form id="heroLoginForm"><label><span>✉</span><input type="email" id="heroEmail" placeholder="E-Mail-Adresse" required></label><label><span>▣</span><input type="password" id="heroPassword" placeholder="Passwort" minlength="4" required></label><p class="login-error landing-login-error" id="heroLoginError" role="alert" hidden></p><div class="landing-login-options"><label class="landing-remember"><input type="checkbox"> Angemeldet bleiben</label><button class="landing-text-link inline" type="button" id="heroForgot">Passwort vergessen?</button></div><button class="landing-primary landing-full" type="submit">ANMELDEN →</button></form><button class="landing-text-link" id="heroRegister" type="button">Noch kein Konto? <u>Jetzt registrieren</u></button></aside>`}
       </div>
     </section>
 
@@ -193,7 +193,14 @@ function renderDevelopment(route){
 }
 function routeFromHash(){return (location.hash.replace(/^#\/?/,'').split('/')[0]||'home');}
 function render(){
-  let id=routeFromHash(); let route=ROUTES.find(r=>r.id===id);
+  let id=routeFromHash();
+  const hasSession=!!globalThis.JMA_AUTH?.getState?.().session?.user;
+  const blockedRoute=!hasSession&&AUTH_REQUIRED_ROUTES.has(id);
+  if(blockedRoute){
+    id='home';
+    history.replaceState(null,'','#/home');
+  }
+  let route=ROUTES.find(r=>r.id===id);
   if(!route){route=ROUTES[0];history.replaceState(null,'','#/home');}
   document.title=route.id==='home'?`Once Human Archiv // ${route.label}`:`JazzeMeow Archiv // ${route.label}`;
   document.body.className=document.body.className.replace(/\broute-[^\s]+/g,'').trim(); document.body.classList.add(`route-${route.id}`);
@@ -203,6 +210,7 @@ function render(){
   app.innerHTML=route.id==='home'?renderHome():route.id==='database'?renderDatabase():fullRenderer?fullRenderer(route):renderDevelopment(route);
   syncHeaderAccount();
   bindView(); window.scrollTo({top:0,behavior:'instant'}); app.focus({preventScroll:true});
+  if(blockedRoute) setTimeout(()=>openAuth('login'),0);
 }
 function authErrorMessage(error,fallback='Anmeldung fehlgeschlagen.'){
   const message=String(error?.message||'').trim();
@@ -211,13 +219,6 @@ function authErrorMessage(error,fallback='Anmeldung fehlgeschlagen.'){
   if(/user already registered/i.test(message)) return 'Für diese E-Mail-Adresse existiert bereits ein Konto.';
   if(/password/i.test(message)&&/least|short|length/i.test(message)) return 'Das Passwort erfüllt die Supabase-Passwortvorgaben noch nicht.';
   return message||fallback;
-}
-function setLoginError(selector,message=''){
-  const el=$(selector);
-  if(!el) return;
-  el.textContent=message;
-  el.classList.remove('login-success');
-  el.hidden=!message;
 }
 function setAuthMessage(message='',type='error'){
   const el=$('#authLoginError');
@@ -235,12 +236,14 @@ function syncHeaderAccount(){
   const authState=globalThis.JMA_AUTH?.getState?.()||{};
   const account=authState.account||globalThis.JMA_AUTH?.getAccount?.()||null;
   const signedIn=!!authState.session?.user&&!!account;
-  const guestHome=!signedIn&&routeFromHash()==='home';
+  const guest=!signedIn;
+  const guestHome=guest&&routeFromHash()==='home';
   document.body.classList.toggle('home-guest-showcase',guestHome);
-  mainNav.classList.toggle('hidden',guestHome);
-  if(guestHome) mainNav.classList.remove('open');
-  $('#searchTrigger')?.classList.toggle('hidden',guestHome);
-  $('#menuToggle')?.classList.toggle('hidden',guestHome);
+  mainNav.classList.remove('hidden');
+  document.querySelectorAll('[data-nav]').forEach(link=>link.classList.toggle('hidden',guest&&link.dataset.nav!=='home'));
+  if(guest) mainNav.classList.remove('open');
+  $('#searchTrigger')?.classList.toggle('hidden',guest);
+  $('#menuToggle')?.classList.toggle('hidden',guest);
   $('#loginOpen')?.classList.toggle('hidden',signedIn);
   $('#registerOpen')?.classList.toggle('hidden',signedIn);
   const control=$('#headerAccount');
@@ -287,21 +290,8 @@ function bindView(){
   document.querySelectorAll('[data-showcase-gated]').forEach(el=>el.addEventListener('click',e=>{
     e.preventDefault();
     e.stopImmediatePropagation();
-    openAuth('login',$('#heroEmail')?.value.trim()||'');
+    openAuth('login');
   }));
-  $('#heroLoginForm')?.addEventListener('submit',async e=>{
-    e.preventDefault();
-    const button=e.currentTarget.querySelector('[type="submit"]');
-    const email=$('#heroEmail').value.trim(),pass=$('#heroPassword').value;
-    setLoginError('#heroLoginError');
-    try{
-      const account=await bindAuthSubmit(button,()=>signInWithSupabase(email,pass));
-      render();
-      showWelcome(account);
-    }catch(error){setLoginError('#heroLoginError',authErrorMessage(error))}
-  });
-  $('#heroRegister')?.addEventListener('click',()=>openAuth('register'));
-  $('#heroForgot')?.addEventListener('click',()=>openAuth('forgot',$('#heroEmail')?.value.trim()||''));
   document.querySelectorAll('[data-home-category]').forEach(a=>a.addEventListener('click',()=>{DB_STATE.category=a.dataset.homeCategory||'all';DB_STATE.q='';DB_STATE.status='all'}));
   $('#videoInfo')?.addEventListener('click',()=>toast('Projektvorschau: Das Archiv ist echte programmierte UI; die Bereiche greifen auf denselben lokalen Arbeitsstand zu.'));
   $('#openSearchFromDev')?.addEventListener('click',openSearch);
@@ -432,6 +422,7 @@ $('#headerLogout').addEventListener('click',async()=>{
   setAccountMenu(false);
   try{
     await globalThis.JMA_AUTH.signOut();
+    history.replaceState(null,'','#/home');
     toast('Sitzung beendet.');
     render();
   }catch(error){toast(authErrorMessage(error,'Abmeldung fehlgeschlagen.'))}
