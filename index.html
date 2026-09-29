@@ -21,9 +21,27 @@
       <button class="search-trigger" id="searchTrigger" type="button" aria-label="Suche öffnen"><span>⌕</span><em>Suche nach Waffen, Items, Gebieten, Builds …</em></button>
       <button class="ghost-btn" id="loginOpen" type="button">Anmelden</button>
       <button class="cyan-btn compact" id="registerOpen" type="button">Registrieren</button>
+      <div class="header-account" id="headerAccount" hidden>
+        <button class="header-account-trigger" id="headerAccountTrigger" type="button" aria-haspopup="true" aria-expanded="false">
+          <span class="header-account-avatar" id="headerAccountAvatar">M</span>
+          <span class="header-account-copy"><strong id="headerAccountName">Meta-Human</strong><small id="headerAccountStatus">ANGEMELDET</small></span>
+          <span class="header-account-chevron" aria-hidden="true">⌄</span>
+        </button>
+        <div class="header-account-menu" id="headerAccountMenu" hidden>
+          <small class="header-account-email" id="headerAccountEmail"></small>
+          <a href="#/dashboard" data-account-menu-link>Kommandozentrale</a>
+          <a href="#/profile" data-account-menu-link>Profil</a>
+          <button type="button" id="headerLogout">Abmelden</button>
+        </div>
+      </div>
       <button class="menu-toggle" id="menuToggle" type="button" aria-label="Menü öffnen">☰</button>
     </div>
   </header>
+
+  <div class="auth-welcome" id="authWelcome" role="status" aria-live="polite" hidden>
+    <span class="auth-welcome-icon" aria-hidden="true">✓</span>
+    <span class="auth-welcome-copy"><small>WILLKOMMEN ZURÜCK</small><strong id="authWelcomeName">Meta-Human</strong></span>
+  </div>
 
   <main id="app" tabindex="-1"></main>
 

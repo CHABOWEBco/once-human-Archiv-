@@ -143,9 +143,7 @@ function renderHome(){
           <div class="landing-trust"><span>◷ <b>Aktuell</b></span><span>♙ <b>Community-getrieben</b></span><span>◇ <b>Werbefrei</b></span><span>⌁ <b>Für alle Spieler</b></span></div>
         </div>
         <div class="landing-hero-space" aria-hidden="true"></div>
-        <aside class="landing-login">
-          ${account ? `<div class="landing-account-head"><span class="landing-avatar">${escapeHtml((account.name||account.email||'M').slice(0,1).toUpperCase())}</span><div><small>ARCHIV-PROFIL</small><h2>${escapeHtml(account.name||'META-HUMAN')}</h2><p>${escapeHtml(account.email||'Sitzung aktiv')}</p></div></div><div class="landing-account-metrics"><span><b>${favorites}</b><small>Favoriten</small></span><span><b>${hunt}</b><small>Jagdliste</small></span><span><b>${savedBuilds}</b><small>Builds</small></span></div><button class="landing-primary landing-full" id="dashboardOpen" type="button">ZUR KOMMANDOZENTRALE →</button><button class="landing-text-link" id="logoutBtn" type="button"><u>Abmelden</u></button>` : `<div class="landing-login-kicker">ARCHIVZUGANG</div><h2>WILLKOMMEN ZURÜCK</h2><p>Melde dich an und werde Teil der Community.</p><form id="heroLoginForm"><label><span>✉</span><input type="email" id="heroEmail" placeholder="E-Mail-Adresse" required></label><label><span>▣</span><input type="password" id="heroPassword" placeholder="Passwort" minlength="4" required></label><p class="login-error landing-login-error" id="heroLoginError" role="alert" hidden></p><div class="landing-login-options"><label class="landing-remember"><input type="checkbox"> Angemeldet bleiben</label><button class="landing-text-link inline" type="button" id="heroForgot">Passwort vergessen?</button></div><button class="landing-primary landing-full" type="submit">ANMELDEN →</button></form><button class="landing-text-link" id="heroRegister" type="button">Noch kein Konto? <u>Jetzt registrieren</u></button>`}
-        </aside>
+        ${account ? '' : `<aside class="landing-login"><div class="landing-login-kicker">ARCHIVZUGANG</div><h2>WILLKOMMEN ZURÜCK</h2><p>Melde dich an und werde Teil der Community.</p><form id="heroLoginForm"><label><span>✉</span><input type="email" id="heroEmail" placeholder="E-Mail-Adresse" required></label><label><span>▣</span><input type="password" id="heroPassword" placeholder="Passwort" minlength="4" required></label><p class="login-error landing-login-error" id="heroLoginError" role="alert" hidden></p><div class="landing-login-options"><label class="landing-remember"><input type="checkbox"> Angemeldet bleiben</label><button class="landing-text-link inline" type="button" id="heroForgot">Passwort vergessen?</button></div><button class="landing-primary landing-full" type="submit">ANMELDEN →</button></form><button class="landing-text-link" id="heroRegister" type="button">Noch kein Konto? <u>Jetzt registrieren</u></button></aside>`}
       </div>
     </section>
 
@@ -200,6 +198,7 @@ function render(){
   document.querySelectorAll('[data-nav]').forEach(a=>a.classList.toggle('active',a.dataset.nav===route.id));
   const fullRenderer=globalThis.FULL_ROUTE_RENDERERS?.[route.id];
   app.innerHTML=route.id==='home'?renderHome():route.id==='database'?renderDatabase():fullRenderer?fullRenderer(route):renderDevelopment(route);
+  syncHeaderAccount();
   bindView(); window.scrollTo({top:0,behavior:'instant'}); app.focus({preventScroll:true});
 }
 function authErrorMessage(error,fallback='Anmeldung fehlgeschlagen.'){
@@ -224,6 +223,43 @@ function setAuthMessage(message='',type='error'){
   el.classList.toggle('login-success',type==='success');
   el.hidden=!message;
 }
+function setAccountMenu(open=false){
+  const menu=$('#headerAccountMenu'),trigger=$('#headerAccountTrigger');
+  if(menu) menu.hidden=!open;
+  if(trigger) trigger.setAttribute('aria-expanded',open?'true':'false');
+}
+function syncHeaderAccount(){
+  const authState=globalThis.JMA_AUTH?.getState?.()||{};
+  const account=authState.account||globalThis.JMA_AUTH?.getAccount?.()||null;
+  const signedIn=!!authState.session?.user&&!!account;
+  $('#loginOpen')?.classList.toggle('hidden',signedIn);
+  $('#registerOpen')?.classList.toggle('hidden',signedIn);
+  const control=$('#headerAccount');
+  if(!control) return;
+  control.hidden=!signedIn;
+  if(!signedIn){
+    setAccountMenu(false);
+    return;
+  }
+  const name=account.name||account.email||'Meta-Human';
+  $('#headerAccountAvatar').textContent=name.slice(0,1).toUpperCase();
+  $('#headerAccountName').textContent=name;
+  $('#headerAccountStatus').textContent=account.role?String(account.role).toUpperCase():'ANGEMELDET';
+  $('#headerAccountEmail').textContent=account.email||'';
+}
+function showWelcome(account){
+  const box=$('#authWelcome'),name=$('#authWelcomeName');
+  if(!box||!name) return;
+  name.textContent=account?.name||account?.email||'Meta-Human';
+  clearTimeout(showWelcome.hideTimer);
+  clearTimeout(showWelcome.finishTimer);
+  box.hidden=false;
+  requestAnimationFrame(()=>box.classList.add('show'));
+  showWelcome.hideTimer=setTimeout(()=>{
+    box.classList.remove('show');
+    showWelcome.finishTimer=setTimeout(()=>{box.hidden=true},320);
+  },3600);
+}
 async function signInWithSupabase(email,password){
   return globalThis.JMA_AUTH.signInWithPassword(email,password);
 }
@@ -246,21 +282,13 @@ function bindView(){
     setLoginError('#heroLoginError');
     try{
       const account=await bindAuthSubmit(button,()=>signInWithSupabase(email,pass));
-      toast(`Willkommen zurück, ${account?.name||account?.email||'Meta-Human'}.`);
       render();
+      showWelcome(account);
     }catch(error){setLoginError('#heroLoginError',authErrorMessage(error))}
   });
   $('#heroRegister')?.addEventListener('click',()=>openAuth('register'));
   $('#heroForgot')?.addEventListener('click',()=>openAuth('forgot',$('#heroEmail')?.value.trim()||''));
   document.querySelectorAll('[data-home-category]').forEach(a=>a.addEventListener('click',()=>{DB_STATE.category=a.dataset.homeCategory||'all';DB_STATE.q='';DB_STATE.status='all'}));
-  $('#dashboardOpen')?.addEventListener('click',()=>location.hash='#/dashboard');
-  $('#logoutBtn')?.addEventListener('click',async()=>{
-    try{
-      await globalThis.JMA_AUTH.signOut();
-      toast('Sitzung beendet.');
-      render();
-    }catch(error){toast(authErrorMessage(error,'Abmeldung fehlgeschlagen.'))}
-  });
   $('#videoInfo')?.addEventListener('click',()=>toast('Projektvorschau: Das Archiv ist echte programmierte UI; die Bereiche greifen auf denselben lokalen Arbeitsstand zu.'));
   $('#openSearchFromDev')?.addEventListener('click',openSearch);
 }
@@ -343,8 +371,8 @@ $('#authForm').addEventListener('submit',async e=>{
     }
     const account=await bindAuthSubmit(button,()=>signInWithSupabase(email,pass));
     $('#authDialog').close();
-    toast(`Willkommen zurück, ${account?.name||account?.email||'Meta-Human'}.`);
     render();
+    showWelcome(account);
   }catch(error){
     if(authMode==='login') setAuthMessage(authErrorMessage(error,'Anmeldung fehlgeschlagen.'));
     else if(authMode==='forgot') setAuthMessage('Die Recovery-E-Mail konnte gerade nicht gesendet werden. Bitte versuche es später erneut.');
@@ -379,6 +407,27 @@ $('#authClose').addEventListener('click',async()=>{
   $('#authDialog').close();
 });
 $('#loginOpen').addEventListener('click',()=>openAuth('login')); $('#registerOpen').addEventListener('click',()=>openAuth('register'));
+$('#headerAccountTrigger').addEventListener('click',e=>{
+  e.stopPropagation();
+  setAccountMenu($('#headerAccountMenu').hidden);
+});
+$('#headerAccountMenu').addEventListener('click',e=>{
+  if(e.target.closest('[data-account-menu-link]')) setAccountMenu(false);
+});
+$('#headerLogout').addEventListener('click',async()=>{
+  setAccountMenu(false);
+  try{
+    await globalThis.JMA_AUTH.signOut();
+    toast('Sitzung beendet.');
+    render();
+  }catch(error){toast(authErrorMessage(error,'Abmeldung fehlgeschlagen.'))}
+});
+document.addEventListener('click',e=>{
+  if(!e.target.closest('#headerAccount')) setAccountMenu(false);
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape') setAccountMenu(false);
+});
 $('#menuToggle').addEventListener('click',()=>mainNav.classList.toggle('open')); mainNav.addEventListener('click',()=>mainNav.classList.remove('open'));
 function openSearch(){const q=$('#globalSearch');$('#searchDialog').showModal();q.value='';renderSearch('');setTimeout(()=>q.focus(),10)}
 function renderSearch(q){q=q.trim().toLowerCase();const rows=ROUTES.filter(r=>!q||`${r.label} ${r.purpose} ${r.id}`.toLowerCase().includes(q));const entries=q?catalogEntries().filter(e=>[e.name_de,e.kind,...(e.tags||[])].join(' ').toLowerCase().includes(q)).slice(0,8):[];$('#searchResults').innerHTML=rows.map(r=>`<a class="search-result" href="#/${r.id}"><span><b>${escapeHtml(r.label)}</b><small>${escapeHtml(r.purpose)}</small></span><span>${r.icon} →</span></a>`).join('')+entries.map(e=>`<a class="search-result catalog-search-result" href="#/database" data-catalog-jump="${escapeHtml(e.id)}"><span><b>${escapeHtml(e.name_de)}</b><small>Datenbank · ${escapeHtml(e.kind||'Eintrag')}</small></span><span>▱ →</span></a>`).join('')||'<div class="dev-notice">Keine passende Route oder kein Katalogeintrag gefunden.</div>';$('#searchResults').querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{if(a.dataset.catalogJump)sessionStorage.setItem('jma_open_catalog',a.dataset.catalogJump);$('#searchDialog').close()}))}
