@@ -61,7 +61,7 @@ function homeBrandText(value=''){
 }
 
 function asset(name){ return `./assets/reference/${name}`; }
-function quick(route,title,desc,img,icon){return `<a class="landing-quick" href="#/${route}" style="--quick-image:url('${asset(img)}')"><span class="landing-quick-visual"></span><span class="landing-quick-body"><i>${icon}</i><span><h3>${title}</h3><p>${desc}</p></span><b aria-hidden="true">›</b></span></a>`}
+function quick(route,title,desc,img,icon,gated=false){return `<a class="landing-quick" href="#/${route}"${gated?' data-showcase-gated':''} style="--quick-image:url('${asset(img)}')"><span class="landing-quick-visual"></span>${gated?'<em class="showcase-access">⌁ ARCHIVZUGANG</em>':''}<span class="landing-quick-body"><i>${icon}</i><span><h3>${title}</h3><p>${desc}</p></span><b aria-hidden="true">›</b></span></a>`}
 
 const DB_STATE={q:'',category:'all',status:'all'};
 function catalogEntries(){return Array.isArray(globalThis.CATALOG_DATA?.entries)?globalThis.CATALOG_DATA.entries:[]}
@@ -121,6 +121,9 @@ function bindDatabase(){
 function readStoredArray(key){try{const v=JSON.parse(localStorage.getItem(key)||'[]');return Array.isArray(v)?v:[]}catch{return []}}
 function renderHome(){
   const account = globalThis.JMA_AUTH?.getAccount?.() || null;
+  const guest=!account;
+  const gateAttr=guest?' data-showcase-gated':'';
+  const gateBadge=guest?'<em class="showcase-access">⌁ ARCHIVZUGANG</em>':'';
   const entries=catalogEntries(), cats=catalogCategories(), archive=globalThis.ARCHIVE_DATA||{}, news=archive.seed?.news||[], builds=archive.seed?.builds||[];
   const featured=news.find(n=>n.featured)||news[0];
   const secondary=news.filter(n=>!featured||n.id!==featured.id).slice(0,3);
@@ -139,7 +142,7 @@ function renderHome(){
           <h1 class="landing-title"><span>ONCE HUMAN</span><strong>ARCHIV</strong></h1>
           <div class="landing-subtitle">DEINE ZENTRALE WISSENSPLATTFORM FÜR ONCE HUMAN</div>
           <p>Guides, Daten, Builds, Karten, Community und Werkzeuge an einem Ort. Übersichtlich verbunden mit den vorhandenen Archivfunktionen und deinem lokalen Fortschritt.</p>
-          <div class="landing-actions"><a class="landing-primary" href="#/database"><span>JETZT ENTDECKEN</span><span aria-hidden="true">→</span></a><button class="landing-video" type="button" id="videoInfo"><span>▶</span> ARCHIV ANSEHEN</button></div>
+          <div class="landing-actions"><a class="landing-primary" href="#/database"${gateAttr}><span>JETZT ENTDECKEN</span><span aria-hidden="true">→</span></a><button class="landing-video" type="button" id="videoInfo"><span>▶</span> ARCHIV ANSEHEN</button></div>
           <div class="landing-trust"><span>◷ <b>Aktuell</b></span><span>♙ <b>Community-getrieben</b></span><span>◇ <b>Werbefrei</b></span><span>⌁ <b>Für alle Spieler</b></span></div>
         </div>
         <div class="landing-hero-space" aria-hidden="true"></div>
@@ -149,12 +152,12 @@ function renderHome(){
 
     <div class="landing-content">
       <section class="landing-quick-grid" aria-label="Schnellzugriffe">
-        ${quick('database','Datenbank','Gegenstände, Waffen, Ausrüstung, Ressourcen und mehr.','feature-database.webp','▱')}
-        ${quick('map','Interaktive Karte','Marker, Routen, Fundorte und Gebiete.','feature-map.webp','⌖')}
-        ${quick('builds','Builds','Vorlagen, Loadouts und gespeicherte Builds.','feature-builds.webp','⚒')}
-        ${quick('tech-workbench','Techwerkbank','Rezepte, Materialien und Herstellung.','feature-tech.webp','⚙')}
-        ${quick('community','Community','Wissen teilen und Beiträge austauschen.','feature-community.webp','♙')}
-        ${quick('guides','Guides','Strukturiertes Wissen und Hilfen.','feature-guides.webp','◫')}
+        ${quick('database','Datenbank','Gegenstände, Waffen, Ausrüstung, Ressourcen und mehr.','feature-database.webp','▱',guest)}
+        ${quick('map','Interaktive Karte','Marker, Routen, Fundorte und Gebiete.','feature-map.webp','⌖',guest)}
+        ${quick('builds','Builds','Vorlagen, Loadouts und gespeicherte Builds.','feature-builds.webp','⚒',guest)}
+        ${quick('tech-workbench','Techwerkbank','Rezepte, Materialien und Herstellung.','feature-tech.webp','⚙',guest)}
+        ${quick('community','Community','Wissen teilen und Beiträge austauschen.','feature-community.webp','♙',guest)}
+        ${quick('guides','Guides','Strukturiertes Wissen und Hilfen.','feature-guides.webp','◫',guest)}
       </section>
 
       <div class="landing-main-grid">
@@ -167,19 +170,19 @@ function renderHome(){
         </section>
 
         <section class="landing-status">
-          <div class="landing-section-head"><h2>Plattform in Zahlen</h2><a href="#/database">Mehr erfahren →</a></div>
+          <div class="landing-section-head"><h2>Plattform in Zahlen</h2><a href="#/database"${gateAttr}>Mehr erfahren →</a></div>
           <div class="landing-stats"><div class="landing-stat"><i>◫</i><span><b>${ROUTES.length}</b><small>Haupt-Routen</small></span></div><div class="landing-stat"><i>⚒</i><span><b>${builds.length}</b><small>Build-Vorlagen</small></span></div><div class="landing-stat"><i>▱</i><span><b>${entries.length}</b><small>kuratierte Einträge</small></span></div><div class="landing-stat"><i>◇</i><span><b>${cats.length}</b><small>Kategorien</small></span></div></div>
-          <div class="landing-community"><div><small>COMMUNITY CORE</small><h3>GEMEINSAM WISSEN AUFBAUEN</h3><p>Beiträge, Builds und geprüfte Archivdaten greifen auf denselben vorhandenen Datenstand zu.</p><a class="landing-secondary" href="#/community">ZUR COMMUNITY →</a></div></div>
+          <div class="landing-community"><div><small>COMMUNITY CORE</small><h3>GEMEINSAM WISSEN AUFBAUEN</h3><p>Beiträge, Builds und geprüfte Archivdaten greifen auf denselben vorhandenen Datenstand zu.</p><a class="landing-secondary" href="#/community"${gateAttr}>ZUR COMMUNITY →</a></div></div>
         </section>
       </div>
 
       <section class="landing-showcase">
         <div class="landing-section-head"><h2>Archiv-Schnellzugriff</h2><span>Echte Daten aus dem aktuellen Stand</span></div>
         <div class="landing-showcase-grid">
-          <a href="#/database" class="landing-showcase-card weapons" data-home-category="weapons"><div><small>WAFFEN</small><b>${countCat('weapons')} kuratierte Waffen-Einträge</b><span>Datenbank öffnen →</span></div></a>
-          <a href="#/database" class="landing-showcase-card items" data-home-category="items"><div><small>GEGENSTÄNDE</small><b>${countCat('items')} kuratierte Item-Einträge</b><span>Datenbank öffnen →</span></div></a>
-          <a href="#/builds" class="landing-showcase-card builds"><div><small>BUILDS</small><b>${builds.length} vorhandene Build-Vorlagen</b><span>Builds öffnen →</span></div></a>
-          <article class="landing-progress"><header><div><small>DEIN ARCHIV</small><h3>Lokaler Fortschritt</h3></div><a href="#/dashboard">Kommandozentrale →</a></header><div class="landing-progress-row"><span>Favoriten <b>${favorites}</b></span><i><em style="width:${pct(favorites)}%"></em></i></div><div class="landing-progress-row"><span>Jagdliste <b>${hunt}</b></span><i><em style="width:${pct(hunt)}%"></em></i></div><div class="landing-progress-row"><span>Gefunden <b>${found}</b></span><i><em style="width:${pct(found)}%"></em></i></div><div class="landing-progress-row"><span>Gespeicherte Builds <b>${savedBuilds}</b></span><i><em style="width:${Math.min(100,savedBuilds*25)}%"></em></i></div><p>Die Werte stammen ausschließlich aus deiner lokalen Browser-Speicherung.</p></article>
+          <a href="#/database" class="landing-showcase-card weapons" data-home-category="weapons"${gateAttr}>${gateBadge}<div><small>WAFFEN</small><b>${countCat('weapons')} kuratierte Waffen-Einträge</b><span>Datenbank öffnen →</span></div></a>
+          <a href="#/database" class="landing-showcase-card items" data-home-category="items"${gateAttr}>${gateBadge}<div><small>GEGENSTÄNDE</small><b>${countCat('items')} kuratierte Item-Einträge</b><span>Datenbank öffnen →</span></div></a>
+          <a href="#/builds" class="landing-showcase-card builds"${gateAttr}>${gateBadge}<div><small>BUILDS</small><b>${builds.length} vorhandene Build-Vorlagen</b><span>Builds öffnen →</span></div></a>
+          <article class="landing-progress"><header><div><small>DEIN ARCHIV</small><h3>Lokaler Fortschritt</h3></div><a href="#/dashboard"${gateAttr}>Kommandozentrale →</a></header><div class="landing-progress-row"><span>Favoriten <b>${favorites}</b></span><i><em style="width:${pct(favorites)}%"></em></i></div><div class="landing-progress-row"><span>Jagdliste <b>${hunt}</b></span><i><em style="width:${pct(hunt)}%"></em></i></div><div class="landing-progress-row"><span>Gefunden <b>${found}</b></span><i><em style="width:${pct(found)}%"></em></i></div><div class="landing-progress-row"><span>Gespeicherte Builds <b>${savedBuilds}</b></span><i><em style="width:${Math.min(100,savedBuilds*25)}%"></em></i></div><p>Die Werte stammen ausschließlich aus deiner lokalen Browser-Speicherung.</p></article>
         </div>
       </section>
     </div>
@@ -232,6 +235,12 @@ function syncHeaderAccount(){
   const authState=globalThis.JMA_AUTH?.getState?.()||{};
   const account=authState.account||globalThis.JMA_AUTH?.getAccount?.()||null;
   const signedIn=!!authState.session?.user&&!!account;
+  const guestHome=!signedIn&&routeFromHash()==='home';
+  document.body.classList.toggle('home-guest-showcase',guestHome);
+  mainNav.classList.toggle('hidden',guestHome);
+  if(guestHome) mainNav.classList.remove('open');
+  $('#searchTrigger')?.classList.toggle('hidden',guestHome);
+  $('#menuToggle')?.classList.toggle('hidden',guestHome);
   $('#loginOpen')?.classList.toggle('hidden',signedIn);
   $('#registerOpen')?.classList.toggle('hidden',signedIn);
   const control=$('#headerAccount');
@@ -275,6 +284,11 @@ function bindView(){
   const activeRoute=routeFromHash();
   if(activeRoute==='database') bindDatabase();
   globalThis.FULL_ROUTE_BINDERS?.[activeRoute]?.();
+  document.querySelectorAll('[data-showcase-gated]').forEach(el=>el.addEventListener('click',e=>{
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    openAuth('login',$('#heroEmail')?.value.trim()||'');
+  }));
   $('#heroLoginForm')?.addEventListener('submit',async e=>{
     e.preventDefault();
     const button=e.currentTarget.querySelector('[type="submit"]');
