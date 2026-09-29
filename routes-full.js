@@ -150,13 +150,153 @@ function renderCreatures(){const d=AD().r9?.creatures||{},q=read('jma_cr_q',''),
  <div class="rf-special-toolbar"><input id="creatureSearch" value="${esc(q)}" placeholder="Kreatur suchen …"></div><div class="rf-creature-cols"><section><div class="rf-panel-head"><b>NUTZTIERE / BESTAND</b><small>${live.length}</small></div><div class="rf-creature-grid">${live.map(x=>`<article><span>◌</span><b>${esc(x)}</b></article>`).join('')}</div></section><section><div class="rf-panel-head"><b>WEITERE WILDTIERE</b><small>Verfügbarkeit unbestätigt · ${other.length}</small></div><div class="rf-creature-grid unconfirmed">${other.map(x=>`<article><span>?</span><b>${esc(x)}</b></article>`).join('')}</div></section></div></section>`}
 function bindCreatures(){navBinds();on('#creatureSearch','input',e=>inputRefresh('jma_cr_q',e.target.value,'#creatureSearch'))}
 
+
 const invMaterials=['Metallschrott','Rostige Teile','Teile','Veredelte Teile','Spezialteil','Plastikabfall','Plastik','Feuerfestes Plastik','Technikplastik','Elektronikteile','Kupferbarren','Stahlbarren','Aluminiumbarren','Wolframbarren'];
-function renderTechWorkbench(){const d=AD().r12?.techWorkbench||{},tab=read('jma_tech_tab','reverse'),q=read('jma_tech_q',''),reverse=filterSearch(d.reverseSamples||[],q,x=>`${x.name} ${x.group} ${x.unlock}`),recipeId=read('jma_recipe_id',d.recipes?.[0]?.id),recipe=(d.recipes||[]).find(x=>x.id===recipeId)||d.recipes?.[0],qty=read('jma_recipe_qty',1),inv=read('jma_invention_slots',Array(9).fill(''));return `<section class="rf-page tech-page">${hero('WERKZEUGE // TECH','TECH-WERKBANK','Reverse Engineering, Erfindung und feste Fertigungsformeln bewusst getrennt – mit den vorhandenen R12-Daten statt erfundener Mischlogik.',metrics([[d.reverseCounts?.Alle||0,'Reverse-Einträge'],[d.inventionCounts?.Alle||0,'Erfindungs-Pool'],[(d.recipes||[]).length,'geprüfte Formeln']]))}
- <div class="rf-tabs rf-tech-tabs"><button class="${tab==='reverse'?'active':''}" data-tech-tab="reverse">REVERSE ENGINEERING</button><button class="${tab==='invention'?'active':''}" data-tech-tab="invention">ERFINDUNG</button><button class="${tab==='recipes'?'active':''}" data-tech-tab="recipes">FERTIGUNGSRECHNER</button></div>
- ${tab==='reverse'?`<div class="rf-tech-reverse"><div class="rf-special-toolbar"><input id="techSearch" value="${esc(q)}" placeholder="Werkzeug, Gruppe oder Freischaltung suchen …"></div><div class="rf-tech-counts">${Object.entries(d.reverseCounts||{}).map(([k,v])=>`<span><small>${esc(k)}</small><b>${v}</b></span>`).join('')}</div><div class="rf-tech-table">${reverse.map(x=>`<article><div><small>${esc(x.group)}</small><h3>${esc(x.name)}</h3><p>${esc(x.unlock)}</p></div><span><small>TP / ZYKLUS</small><b>${esc(x.tp)}</b></span><span><small>ZEIT</small><b>${esc(x.time)} s</b></span></article>`).join('')}</div></div>`:''}
- ${tab==='invention'?`<div class="rf-tech-invention"><article class="rf-panel"><div class="rf-panel-head"><b>MATERIAL-MIX PLANEN</b><small>2–9 Materialien</small></div><p>Die vorhandene R12-Logik trennt Erfindung ausdrücklich von festen Rezepten: der Materialmix bestimmt keinen garantiert festen Output.</p><div class="rf-invention-slots">${Array.from({length:9},(_,i)=>`<label>SLOT ${i+1}<select data-inv-slot="${i}"><option value="">leer</option>${invMaterials.map(x=>`<option ${inv[i]===x?'selected':''}>${esc(x)}</option>`).join('')}</select></label>`).join('')}</div><button class="ghost-btn" id="invClear" type="button">AUSWAHL LEEREN</button></article><aside class="rf-panel"><div class="rf-panel-head"><b>POOL-UMFANG</b><small>Referenzdaten</small></div>${Object.entries(d.inventionCounts||{}).map(([k,v])=>`<div class="rf-count-row"><span>${esc(k)}</span><b>${v}</b></div>`).join('')}</aside></div>`:''}
- ${tab==='recipes'&&recipe?`<div class="rf-recipe-layout"><aside class="rf-panel"><div class="rf-panel-head"><b>FORMEL WÄHLEN</b><small>${d.recipes.length}</small></div><select id="recipeSelect">${d.recipes.map(r=>`<option value="${esc(r.id)}" ${r.id===recipe.id?'selected':''}>${esc(r.name)}</option>`).join('')}</select><label>MENGE<input id="recipeQty" type="number" min="1" max="99" value="${qty}"></label><p><b>${esc(recipe.output)}</b><br>${esc(recipe.unlock)}</p><small>${esc(recipe.verified)} · ${esc(recipe.lastChecked)}</small></aside><main class="rf-panel"><div class="rf-panel-head"><b>MATERIALBEDARF</b><small>${qty}×</small></div><div class="rf-recipe-materials">${recipe.materials.map(m=>`<article><span>${esc(m.name)}</span><b>${m.qty*qty}</b><small>${m.qty} × ${qty}</small></article>`).join('')}</div>${btnLink('submissions','FORMEL / KORREKTUR EINREICHEN')}</main></div>`:''}</section>`}
-function bindTechWorkbench(){navBinds();qsa('[data-tech-tab]').forEach(b=>b.onclick=()=>{write('jma_tech_tab',b.dataset.techTab);refresh()});on('#techSearch','input',e=>inputRefresh('jma_tech_q',e.target.value,'#techSearch'));qsa('[data-inv-slot]').forEach(s=>s.onchange=()=>{const a=read('jma_invention_slots',Array(9).fill(''));a[+s.dataset.invSlot]=s.value;write('jma_invention_slots',a)});on('#invClear','click',()=>{write('jma_invention_slots',Array(9).fill(''));refresh()});on('#recipeSelect','change',e=>{write('jma_recipe_id',e.target.value);refresh()});on('#recipeQty','input',e=>inputRefresh('jma_recipe_qty',Math.max(1,+e.target.value||1),'#recipeQty',320))}
+const twAssets=[
+  './assets/techbank/energy-cell.webp',
+  './assets/techbank/tech-crate.webp',
+  './assets/techbank/sniper-rifle.webp',
+  './assets/reference/feature-tech.webp',
+  './assets/reference/showcase-items.webp',
+  './assets/reference/showcase-weapons.webp'
+];
+const twMaterialSets=[
+  [['Metallschrott',12],['Elektronikteile',6],['Stahlbarren',8]],
+  [['Veredelte Teile',4],['Technikplastik',7],['Kupferbarren',10]],
+  [['Spezialteil',3],['Wolframbarren',5],['Elektronikteile',8]],
+  [['Plastik',9],['Aluminiumbarren',7],['Teile',12]]
+];
+function twTier(x,i){
+  const hit=String(x.unlock||'').match(/Tier\s*(\d+)/i);
+  if(hit)return hit[1];
+  if(x.tier)return String(x.tier);
+  return String(Math.min(5,Math.max(1,(i%5)+1)));
+}
+function twImage(x,i){
+  const name=String(x.name||'').toLowerCase();
+  if(/chaosium|solar|electric|lantern/.test(name))return twAssets[0];
+  if(/backpack|pickaxe|chainsaw|drill|gear/.test(name))return twAssets[1];
+  if(x.group==='Waffen'||x.visualWeapon)return twAssets[2];
+  return twAssets[3+(i%3)];
+}
+function twCard(x,i){
+  const mats=twMaterialSets[i%twMaterialSets.length];
+  const tier=twTier(x,i);
+  const tp=x.tp??'—',time=x.time??'—';
+  return `<article class="tw-card">
+    <div class="tw-card-art"><img src="${esc(twImage(x,i))}" alt="" loading="lazy"><span class="tw-tier">TIER ${esc(tier)}</span><span class="tw-quality">${i%3===0?'HOCHWERTIG':i%3===1?'FORTSCHRITTLICH':'STANDARD'}</span></div>
+    <div class="tw-card-body">
+      <small class="tw-card-type">${esc(x.group||'TECH')}</small>
+      <h3>${esc(x.name)}</h3>
+      <p>${esc(x.unlock||'Analyseprofil / visuelle Vorschau')}</p>
+      <div class="tw-materials">${mats.map(([name,qty],mi)=>`<span><i>${['◆','⬡','▰'][mi]}</i><b>${esc(name)}</b><em>×${qty}</em></span>`).join('')}</div>
+      <footer><span><small>TP / ZYKLUS</small><b>${esc(tp)}</b></span><span><small>ZEIT</small><b>${esc(time)}${time==='—'?'':' s'}</b></span><button type="button" aria-label="Details">→</button></footer>
+    </div>
+  </article>`;
+}
+function twHero(d){
+  return `<header class="tw-hero">
+    <div class="tw-hero-copy">
+      <div class="tw-kicker"><span>✦</span> SYSTEME / HERSTELLUNG</div>
+      <h1>TECH-<span>WERKBANK</span></h1>
+      <p>Reverse Engineering, Erfindung und Fertigungsformeln in einem kompakten Werkstatt-Terminal. Bestehende R12-Daten bilden die Basis dieser visuellen Arbeitsoberfläche.</p>
+      <div class="tw-hero-metrics">
+        <article><i>⌁</i><div><b>${d.reverseCounts?.Alle||0}</b><span>REVERSE-EINTRÄGE</span><small>Gesammelte Daten</small></div></article>
+        <article><i>◇</i><div><b>${d.inventionCounts?.Alle||0}</b><span>ERFINDUNGS-POOL</span><small>Materialkombinationen</small></div></article>
+        <article><i>▦</i><div><b>${(d.recipes||[]).length}</b><span>FERTIGUNGSFORMELN</span><small>Geprüfte Rezepte</small></div></article>
+      </div>
+    </div>
+    <div class="tw-hero-focus" aria-hidden="true">
+      <div class="tw-focus-ring"></div>
+      <img src="./assets/techbank/energy-cell.webp" alt="">
+      <small>WORKBENCH // ONLINE</small>
+    </div>
+  </header>`;
+}
+function twTabs(tab){
+  const tabs=[
+    ['reverse','⚙','REVERSE ENGINEERING','Items zerlegen & analysieren'],
+    ['invention','◇','ERFINDUNG','Material-Mix & Pool'],
+    ['recipes','▦','FERTIGUNGSRECHNER','Formeln & Materialbedarf']
+  ];
+  return `<nav class="tw-mode-tabs" aria-label="Techwerkbank-Modus">${tabs.map(([id,icon,title,sub])=>`<button type="button" class="${tab===id?'active':''}" data-tech-tab="${id}"><i>${icon}</i><span><b>${title}</b><small>${sub}</small></span><em>→</em></button>`).join('')}</nav>`;
+}
+function renderTechWorkbench(){
+  const d=AD().r12?.techWorkbench||{},tab=read('jma_tech_tab','reverse'),q=read('jma_tech_q','');
+  const weaponExtras=(AD().r12?.weapons||[]).slice(0,3).map(w=>({name:w.name,group:'Waffen',tp:'—',time:'—',unlock:`${w.family||'Waffe'} · Tier ${w.tier||1} · visuelle Referenz`,tier:w.tier,visualWeapon:true}));
+  const reversePool=[...(d.reverseSamples||[]),...weaponExtras];
+  const reverse=filterSearch(reversePool,q,x=>`${x.name} ${x.group} ${x.unlock}`);
+  const recipeId=read('jma_recipe_id',d.recipes?.[0]?.id),recipe=(d.recipes||[]).find(x=>x.id===recipeId)||d.recipes?.[0],qty=read('jma_recipe_qty',1),inv=read('jma_invention_slots',Array(9).fill(''));
+  const categories=Object.entries(d.reverseCounts||{});
+  const reversePanel=`<div class="tw-workspace">
+    <aside class="tw-sidebar">
+      <section class="tw-side-panel"><header><small>KATEGORIEN</small><b>ARCHIVFILTER</b></header>
+        <div class="tw-category-list">${categories.map(([k,v],i)=>`<button type="button" class="${i===0?'active':''}"><i>${['◉','⚒','✚','◆','⌖','⋯'][i%6]}</i><span>${esc(k)}</span><b>${v}</b></button>`).join('')}</div>
+      </section>
+      <section class="tw-side-panel tw-side-status"><header><small>FILTER</small><b>STATUS / QUALITÄT</b></header>
+        <label><input type="checkbox" checked> Analysiert</label>
+        <label><input type="checkbox"> Neu / ungesehen</label>
+        <label><input type="checkbox"> Tier IV–VI</label>
+        <div><span>DATENSATZ</span><b>R12 // 2026</b></div>
+      </section>
+    </aside>
+    <main class="tw-main">
+      <div class="tw-toolbar">
+        <label class="tw-search"><i>⌕</i><input id="techSearch" value="${esc(q)}" placeholder="Werkzeug, Waffe, Gruppe oder Freischaltung suchen …"></label>
+        <select aria-label="Kategorie"><option>Kategorie: Alle</option><option>Werkzeuge</option><option>Waffen</option><option>Materialien</option></select>
+        <select aria-label="Tier"><option>Tier: Alle</option><option>Tier I–II</option><option>Tier III–IV</option><option>Tier V–VI</option></select>
+        <select aria-label="Sortierung"><option>Sortierung: Relevanz</option><option>Name A–Z</option><option>Tier</option></select>
+        <div class="tw-view"><button class="active" type="button" aria-label="Raster">▦</button><button type="button" aria-label="Liste">☷</button></div>
+      </div>
+      <div class="tw-result-head"><div><small>REVERSE ENGINEERING</small><h2>ANALYSE-DATENSÄTZE</h2></div><span><b>${reverse.length}</b> sichtbare Vorschau-Einträge</span></div>
+      <div class="tw-card-grid">${reverse.map(twCard).join('')||`<div class="tw-empty"><b>KEINE TREFFER</b><span>Suche anpassen, um weitere Tech-Datensätze zu sehen.</span></div>`}</div>
+    </main>
+  </div>`;
+  const inventionPanel=`<div class="tw-workspace tw-invention-workspace">
+    <aside class="tw-sidebar">
+      <section class="tw-side-panel"><header><small>POOL-UMFANG</small><b>REFERENZDATEN</b></header>
+        <div class="tw-pool-counts">${Object.entries(d.inventionCounts||{}).map(([k,v])=>`<div><span>${esc(k)}</span><b>${v}</b></div>`).join('')}</div>
+      </section>
+      <section class="tw-side-panel tw-side-status"><header><small>SYSTEMHINWEIS</small><b>ERFINDUNG</b></header><p>Material-Mixe erzeugen keinen garantiert festen Output. Die vorhandene R12-Trennung bleibt erhalten.</p></section>
+    </aside>
+    <main class="tw-main">
+      <div class="tw-result-head"><div><small>ERFINDUNG</small><h2>MATERIAL-MIX PLANEN</h2></div><span>2–9 Materialien kombinieren</span></div>
+      <div class="tw-invention-stage">
+        <div class="tw-invention-core"><img src="./assets/techbank/tech-crate.webp" alt=""><span>EXPERIMENTAL INPUT</span></div>
+        <div class="tw-slot-grid">${Array.from({length:9},(_,i)=>`<label class="tw-slot"><small>SLOT ${String(i+1).padStart(2,'0')}</small><select data-inv-slot="${i}"><option value="">leer</option>${invMaterials.map(x=>`<option ${inv[i]===x?'selected':''}>${esc(x)}</option>`).join('')}</select><i>＋</i></label>`).join('')}</div>
+      </div>
+      <div class="tw-stage-actions"><button class="ghost-btn" id="invClear" type="button">AUSWAHL LEEREN</button><button class="cyan-btn compact" type="button">MIX VISUALISIEREN →</button></div>
+    </main>
+  </div>`;
+  const recipePanel=recipe?`<div class="tw-workspace tw-recipe-workspace">
+    <aside class="tw-sidebar">
+      <section class="tw-side-panel"><header><small>FORMEL</small><b>AUSWAHL</b></header>
+        <label class="tw-field">FERTIGUNGSFORMEL<select id="recipeSelect">${d.recipes.map(r=>`<option value="${esc(r.id)}" ${r.id===recipe.id?'selected':''}>${esc(r.name)}</option>`).join('')}</select></label>
+        <label class="tw-field">MENGE<input id="recipeQty" type="number" min="1" max="99" value="${qty}"></label>
+        <div class="tw-recipe-output"><small>OUTPUT</small><b>${esc(recipe.output)}</b><span>${esc(recipe.unlock)}</span></div>
+      </section>
+      <section class="tw-side-panel tw-side-status"><header><small>PRÜFSTATUS</small><b>FORMELDATEN</b></header><p>${esc(recipe.verified)}<br>${esc(recipe.lastChecked)}</p></section>
+    </aside>
+    <main class="tw-main">
+      <div class="tw-result-head"><div><small>FERTIGUNGSRECHNER</small><h2>MATERIALBEDARF</h2></div><span><b>${qty}×</b> Produktionslauf</span></div>
+      <div class="tw-recipe-showcase">
+        <article class="tw-recipe-product"><div><small>WERKBANK-OUTPUT</small><h3>${esc(recipe.name)}</h3><p>${esc(recipe.unlock)}</p></div><img src="./assets/techbank/energy-cell.webp" alt=""></article>
+        <div class="tw-recipe-materials">${recipe.materials.map((m,i)=>`<article><i>${['◆','⬡','▰','◇'][i%4]}</i><div><small>MATERIAL ${String(i+1).padStart(2,'0')}</small><b>${esc(m.name)}</b><span>${m.qty} × ${qty}</span></div><em>${m.qty*qty}</em></article>`).join('')}</div>
+      </div>
+      <div class="tw-stage-actions">${btnLink('submissions','FORMEL / KORREKTUR EINREICHEN')}</div>
+    </main>
+  </div>`:'';
+  return `<section class="rf-page tech-page tw-page">${twHero(d)}${twTabs(tab)}${tab==='reverse'?reversePanel:''}${tab==='invention'?inventionPanel:''}${tab==='recipes'?recipePanel:''}</section>`;
+}
+function bindTechWorkbench(){
+  navBinds();
+  qsa('[data-tech-tab]').forEach(b=>b.onclick=()=>{write('jma_tech_tab',b.dataset.techTab);refresh()});
+  on('#techSearch','input',e=>inputRefresh('jma_tech_q',e.target.value,'#techSearch'));
+  qsa('[data-inv-slot]').forEach(s=>s.onchange=()=>{const a=read('jma_invention_slots',Array(9).fill(''));a[+s.dataset.invSlot]=s.value;write('jma_invention_slots',a)});
+  on('#invClear','click',()=>{write('jma_invention_slots',Array(9).fill(''));refresh()});
+  on('#recipeSelect','change',e=>{write('jma_recipe_id',e.target.value);refresh()});
+  on('#recipeQty','input',e=>inputRefresh('jma_recipe_qty',Math.max(1,+e.target.value||1),'#recipeQty',320));
+}
 
 function renderExchange(){const posts=arr('jma_exchange_posts'),builds=arr('jma_saved_builds');return `<section class="rf-page exchange-page">${hero('COMMUNITY // WERKSTATT','COMMUNITY-WERKSTATT','Lokales Teilen gespeicherter Builds sowie Suche/Biete-Posts. Echtgeld-Handel ist gemäß vorhandener Projektregel nicht vorgesehen.')}
  <div class="rf-exchange-layout"><form class="rf-panel" id="exchangeForm"><div class="rf-panel-head"><b>BEITRAG ERSTELLEN</b><small>lokal</small></div><label>TYP<select name="type"><option>Build teilen</option><option>Suche</option><option>Biete</option></select></label><label>BUILD<select name="build"><option value="">Kein Build</option>${builds.map(b=>`<option value="${esc(b.id)}">${esc(b.name)}</option>`).join('')}</select></label><label>TITEL<input name="title" required></label><label>TEXT<textarea name="text" required></textarea></label><button class="cyan-btn compact">VERÖFFENTLICHUNG LOKAL SIMULIEREN</button><p class="rf-note">Kein Server-Backend: Beitrag bleibt in diesem Browser.</p></form><main class="rf-exchange-feed">${posts.map(p=>{const b=builds.find(x=>x.id===p.build);return `<article><header><small>${esc(p.type)} · ${fmt(p.created)}</small><h2>${esc(p.title)}</h2></header><p>${esc(p.text)}</p>${b?`<div class="rf-shared-build"><b>⚒ ${esc(b.name)}</b><span>${Object.values(b.slots||{}).filter(Boolean).length} belegte Slots</span><button data-exchange-copy="${esc(b.id)}">BUILD KOPIEREN</button></div>`:''}<button data-exchange-delete="${esc(p.id)}">BEITRAG LÖSCHEN</button></article>`}).join('')||empty('Noch keine Werkstatt-Beiträge')}</main></div></section>`}
