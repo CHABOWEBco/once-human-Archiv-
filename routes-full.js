@@ -194,11 +194,11 @@ function twCard(x,i){
     </div>
   </article>`;
 }
-function twRecipeVisual(recipe){
-  const name=String(recipe?.name||'Werkbank-Formel');
-  const category=String(recipe?.category||'Formel');
-  const icon=/generator/i.test(name)?'⚡':/werkbank|demontage/i.test(name)?'⚙':/batterie/i.test(name)?'▰':/kühlschrank/i.test(name)?'❄':/plattform/i.test(name)?'▦':/säge/i.test(name)?'⚒':/sensor/i.test(name)?'⌁':'◇';
-  return `<div class="tw-recipe-neutral" role="img" aria-label="${esc(name)}"><i>${icon}</i><small>${esc(category)}</small><b>${esc(name)}</b></div>`;
+function twRecipeMedia(recipe){
+  if(recipe?.id==='recipe-storage-battery'){
+    return `<img class="tw-recipe-image" src="./assets/techbank/energy-cell.webp" alt="${esc(recipe.name)}">`;
+  }
+  return `<div class="tw-recipe-image-missing"><small>KEIN VERIFIZIERTES ITEMBILD HINTERLEGT</small></div>`;
 }
 function twHero(d){
   return `<header class="tw-hero">
@@ -232,7 +232,7 @@ function renderTechWorkbench(){
   const weaponExtras=(AD().r12?.weapons||[]).slice(0,3).map(w=>({name:w.name,group:'Waffen',tp:'—',time:'—',unlock:`${w.family||'Waffe'} · Tier ${w.tier||1} · visuelle Referenz`,tier:w.tier,visualWeapon:true}));
   const reversePool=[...(d.reverseSamples||[]),...weaponExtras];
   const reverse=filterSearch(reversePool,q,x=>`${x.name} ${x.group} ${x.unlock}`);
-  const recipeId=read('jma_recipe_id',d.recipes?.[0]?.id),recipe=(d.recipes||[]).find(x=>x.id===recipeId)||d.recipes?.[0],qty=read('jma_recipe_qty',1),inv=read('jma_invention_slots',Array(9).fill(''));
+  const defaultRecipe=(d.recipes||[]).find(x=>x.id==='recipe-storage-battery')||d.recipes?.[0],recipeId=read('jma_recipe_id',defaultRecipe?.id),recipe=(d.recipes||[]).find(x=>x.id===recipeId)||defaultRecipe,qty=read('jma_recipe_qty',1),inv=read('jma_invention_slots',Array(9).fill(''));
   const categories=Object.entries(d.reverseCounts||{});
   const reversePanel=`<div class="tw-workspace">
     <aside class="tw-sidebar">
@@ -286,7 +286,7 @@ function renderTechWorkbench(){
     <main class="tw-main">
       <div class="tw-result-head"><div><small>FERTIGUNGSRECHNER</small><h2>MATERIALBEDARF</h2></div><span><b>${qty}×</b> Produktionslauf</span></div>
       <div class="tw-recipe-showcase">
-        <article class="tw-recipe-product"><div><small>WERKBANK-OUTPUT</small><h3>${esc(recipe.name)}</h3><p>${esc(recipe.unlock)}</p></div>${twRecipeVisual(recipe)}</article>
+        <article class="tw-recipe-product"><div><small>WERKBANK-OUTPUT</small><h3>${esc(recipe.name)}</h3><p>${esc(recipe.unlock)}</p></div>${twRecipeMedia(recipe)}</article>
         <div class="tw-recipe-materials">${recipe.materials.map((m,i)=>`<article><i>${['◆','⬡','▰','◇'][i%4]}</i><div><small>MATERIAL ${String(i+1).padStart(2,'0')}</small><b>${esc(m.name)}</b><span>${m.qty} × ${qty}</span></div><em>${m.qty*qty}</em></article>`).join('')}</div>
       </div>
       <div class="tw-stage-actions">${btnLink('submissions','FORMEL / KORREKTUR EINREICHEN')}</div>
