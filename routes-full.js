@@ -81,7 +81,7 @@ function renderMap(){
   const scenarios=AD().map?.scenarios||[],scenario=read('jma_map_scenario','way-of-winter'),q=read('jma_map_q',''),cat=read('jma_map_cat','all');
   const candidates=allMarkers().filter(m=>m.scenario===scenario),cats=[...new Set(candidates.map(x=>x.category).filter(Boolean))];
   const markers=candidates.filter(m=>(cat==='all'||m.category===cat)&&(!q||`${m.name} ${m.category} ${m.note} ${m.location}`.toLowerCase().includes(q.toLowerCase())));
-  const selected=allMarkers().find(x=>x.id===mapSelected()),storedView=read('jma_map_view',{zoom:1,x:0,y:0}),view={zoom:Math.max(1,Math.min(2.2,Number(storedView.zoom)||1)),x:Number(storedView.x)||0,y:Number(storedView.y)||0};if(view.zoom===1){view.x=0;view.y=0}
+  const selected=allMarkers().find(x=>x.id===mapSelected()),storedView=read('jma_map_view',{zoom:1,x:0,y:0}),view={zoom:Math.max(1,Math.min(2.4,Number(storedView.zoom)||1)),x:Number(storedView.x)||0,y:Number(storedView.y)||0}
   const scenarioName=scenarios.find(s=>s.id===scenario)?.name||scenario;
   const routeCount=arr('jma_routes').length;
   return `<section class="rf-page map-page map-app-page">
@@ -120,7 +120,7 @@ function renderMap(){
         </div>
 
         <div class="map-app-board" id="mapBoard">
-          <div class="map-app-plane" id="mapPlane" style="transform:translate(${Number(view.x)||0}px,${Number(view.y)||0}px) scale(${Number(view.zoom)||1})">
+          <div class="map-app-plane" id="mapPlane">
             <img class="map-app-image" src="./assets/map/once-human-world-map.webp" alt="Once Human Weltkarte" draggable="false">
             ${markers.map(m=>`<button class="map-app-marker ${m.id===mapSelected()?'active':''} ${m.custom?'custom':''}" type="button" title="${esc(m.name)}" data-map-marker="${esc(m.id)}" style="left:${Number(m.mapX)||50}%;top:${Number(m.mapY)||50}%"><span>⌖</span></button>`).join('')}
           </div>
@@ -143,11 +143,12 @@ function bindMap(){
   on('#mapCategory','change',e=>{write('jma_map_cat',e.target.value);refresh()});
   qsa('[data-map-marker]').forEach(b=>b.onclick=e=>{e.stopPropagation();write('jma_map_selected',b.dataset.mapMarker);refresh()});
   qsa('[data-map-route-add]').forEach(b=>b.onclick=()=>{const r=arr('jma_route_draft');if(!r.includes(b.dataset.mapRouteAdd))r.push(b.dataset.mapRouteAdd);write('jma_route_draft',r);toast('Marker zum Routenentwurf hinzugefügt.');refresh()});
-  const board=qs('#mapBoard'),plane=qs('#mapPlane');if(!board||!plane)return;
-  let savedView=read('jma_map_view',{zoom:1,x:0,y:0}),v={zoom:Math.max(1,Math.min(2.2,Number(savedView.zoom)||1)),x:Number(savedView.x)||0,y:Number(savedView.y)||0},drag=null;
-  const clampView=()=>{v.zoom=Math.max(1,Math.min(2.2,Number(v.zoom)||1));const maxX=board.clientWidth*(v.zoom-1)/2,maxY=board.clientHeight*(v.zoom-1)/2;v.x=Math.max(-maxX,Math.min(maxX,Number(v.x)||0));v.y=Math.max(-maxY,Math.min(maxY,Number(v.y)||0));if(v.zoom===1){v.x=0;v.y=0}};
-  const apply=()=>{clampView();plane.style.transform=`translate(${v.x}px,${v.y}px) scale(${v.zoom})`;write('jma_map_view',v)};
-  const zoom=d=>{v.zoom=Math.max(1,Math.min(2.2,(v.zoom||1)+d));apply();const b=qs('.map-app-zoom b');if(b)b.textContent=`${Math.round(v.zoom*100)}%`};
+  const board=qs('#mapBoard'),plane=qs('#mapPlane'),image=qs('.map-app-image');if(!board||!plane||!image)return;
+  let savedView=read('jma_map_view',{zoom:1,x:0,y:0}),v={zoom:Math.max(1,Math.min(2.4,Number(savedView.zoom)||1)),x:Number(savedView.x)||0,y:Number(savedView.y)||0},drag=null,base={w:board.clientWidth,h:board.clientHeight};
+  const fitPlane=()=>{const bw=board.clientWidth,bh=board.clientHeight,ratio=(image.naturalWidth&&image.naturalHeight)?image.naturalWidth/image.naturalHeight:1.5;let w=bw,h=bw/ratio;if(h<bh){h=bh;w=bh*ratio}base={w,h};plane.style.width=`${w}px`;plane.style.height=`${h}px`};
+  const clampView=()=>{fitPlane();v.zoom=Math.max(1,Math.min(2.4,Number(v.zoom)||1));const maxX=Math.max(0,(base.w*v.zoom-board.clientWidth)/2),maxY=Math.max(0,(base.h*v.zoom-board.clientHeight)/2);v.x=Math.max(-maxX,Math.min(maxX,Number(v.x)||0));v.y=Math.max(-maxY,Math.min(maxY,Number(v.y)||0))};
+  const apply=()=>{clampView();plane.style.left=`calc(50% + ${v.x}px)`;plane.style.top=`calc(50% + ${v.y}px)`;plane.style.transform=`translate(-50%,-50%) scale(${v.zoom})`;write('jma_map_view',v)};
+  const zoom=d=>{v.zoom=Math.max(1,Math.min(2.4,(v.zoom||1)+d));apply();const b=qs('.map-app-zoom b');if(b)b.textContent=`${Math.round(v.zoom*100)}%`};
   on('#mapZoomIn','click',()=>zoom(.15));
   on('#mapZoomOut','click',()=>zoom(-.15));
   on('#mapResetView','click',()=>{v={zoom:1,x:0,y:0};apply();refresh()});
@@ -156,6 +157,7 @@ function bindMap(){
   board.addEventListener('pointermove',e=>{if(!drag)return;v.x=drag.bx+(e.clientX-drag.x);v.y=drag.by+(e.clientY-drag.y);apply()});
   board.addEventListener('pointerup',()=>drag=null);
   board.addEventListener('pointercancel',()=>drag=null);
+  if(!image.complete) image.addEventListener('load',apply,{once:true});
   apply();
 }
 
