@@ -101,7 +101,7 @@ begin
   new.updated_at := timezone('utc', now());
   return new;
 end;
-$;
+$$;
 
 revoke all on function private.set_updated_at() from public, anon, authenticated;
 
@@ -136,7 +136,7 @@ begin
 
   return new;
 end;
-$;
+$$;
 
 revoke all on function private.handle_new_auth_user() from public, anon, authenticated;
 
