@@ -194,6 +194,12 @@ function twCard(x,i){
     </div>
   </article>`;
 }
+function twRecipeVisual(recipe){
+  const name=String(recipe?.name||'Werkbank-Formel');
+  const category=String(recipe?.category||'Formel');
+  const icon=/generator/i.test(name)?'⚡':/werkbank|demontage/i.test(name)?'⚙':/batterie/i.test(name)?'▰':/kühlschrank/i.test(name)?'❄':/plattform/i.test(name)?'▦':/säge/i.test(name)?'⚒':/sensor/i.test(name)?'⌁':'◇';
+  return `<div class="tw-recipe-neutral" role="img" aria-label="${esc(name)}"><i>${icon}</i><small>${esc(category)}</small><b>${esc(name)}</b></div>`;
+}
 function twHero(d){
   return `<header class="tw-hero">
     <div class="tw-hero-copy">
@@ -263,7 +269,7 @@ function renderTechWorkbench(){
       <div class="tw-result-head"><div><small>ERFINDUNG</small><h2>MATERIAL-MIX PLANEN</h2></div><span>2–9 Materialien kombinieren</span></div>
       <div class="tw-invention-stage">
         <div class="tw-invention-core"><img src="./assets/techbank/tech-crate.webp" alt=""><span>EXPERIMENTAL INPUT</span></div>
-        <div class="tw-slot-grid">${Array.from({length:9},(_,i)=>`<label class="tw-slot"><small>SLOT ${String(i+1).padStart(2,'0')}</small><select data-inv-slot="${i}"><option value="">leer</option>${invMaterials.map(x=>`<option ${inv[i]===x?'selected':''}>${esc(x)}</option>`).join('')}</select><i>＋</i></label>`).join('')}</div>
+        <div class="tw-slot-grid">${Array.from({length:9},(_,i)=>`<div class="tw-slot"><small>SLOT ${String(i+1).padStart(2,'0')}</small><details class="tw-material-select"><summary><span>${esc(inv[i]||'leer')}</span><i>⌄</i></summary><div class="tw-material-menu" role="listbox" aria-label="Material für Slot ${i+1}"><button type="button" class="${!inv[i]?'selected':''}" data-inv-slot="${i}" data-inv-value="">leer</button>${invMaterials.map(x=>`<button type="button" class="${inv[i]===x?'selected':''}" data-inv-slot="${i}" data-inv-value="${esc(x)}">${esc(x)}</button>`).join('')}</div></details><i>＋</i></div>`).join('')}</div>
       </div>
       <div class="tw-stage-actions"><button class="ghost-btn" id="invClear" type="button">AUSWAHL LEEREN</button><button class="cyan-btn compact" type="button">MIX VISUALISIEREN →</button></div>
     </main>
@@ -280,7 +286,7 @@ function renderTechWorkbench(){
     <main class="tw-main">
       <div class="tw-result-head"><div><small>FERTIGUNGSRECHNER</small><h2>MATERIALBEDARF</h2></div><span><b>${qty}×</b> Produktionslauf</span></div>
       <div class="tw-recipe-showcase">
-        <article class="tw-recipe-product"><div><small>WERKBANK-OUTPUT</small><h3>${esc(recipe.name)}</h3><p>${esc(recipe.unlock)}</p></div><img src="./assets/techbank/energy-cell.webp" alt=""></article>
+        <article class="tw-recipe-product"><div><small>WERKBANK-OUTPUT</small><h3>${esc(recipe.name)}</h3><p>${esc(recipe.unlock)}</p></div>${twRecipeVisual(recipe)}</article>
         <div class="tw-recipe-materials">${recipe.materials.map((m,i)=>`<article><i>${['◆','⬡','▰','◇'][i%4]}</i><div><small>MATERIAL ${String(i+1).padStart(2,'0')}</small><b>${esc(m.name)}</b><span>${m.qty} × ${qty}</span></div><em>${m.qty*qty}</em></article>`).join('')}</div>
       </div>
       <div class="tw-stage-actions">${btnLink('submissions','FORMEL / KORREKTUR EINREICHEN')}</div>
@@ -292,7 +298,7 @@ function bindTechWorkbench(){
   navBinds();
   qsa('[data-tech-tab]').forEach(b=>b.onclick=()=>{write('jma_tech_tab',b.dataset.techTab);refresh()});
   on('#techSearch','input',e=>inputRefresh('jma_tech_q',e.target.value,'#techSearch'));
-  qsa('[data-inv-slot]').forEach(s=>s.onchange=()=>{const a=read('jma_invention_slots',Array(9).fill(''));a[+s.dataset.invSlot]=s.value;write('jma_invention_slots',a)});
+  qsa('[data-inv-slot]').forEach(b=>b.onclick=()=>{const a=read('jma_invention_slots',Array(9).fill(''));a[+b.dataset.invSlot]=b.dataset.invValue||'';write('jma_invention_slots',a);refresh()});
   on('#invClear','click',()=>{write('jma_invention_slots',Array(9).fill(''));refresh()});
   on('#recipeSelect','change',e=>{write('jma_recipe_id',e.target.value);refresh()});
   on('#recipeQty','input',e=>inputRefresh('jma_recipe_qty',Math.max(1,+e.target.value||1),'#recipeQty',320));
