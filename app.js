@@ -40,75 +40,6 @@ const NAV = [
 const AUTH_REQUIRED_ROUTES = new Set(['database','map','builds','tech-workbench','community','guides','dashboard','profile','hunt','routes','planner','submissions','collection','exchange']);
 mainNav.innerHTML = NAV.map(([id,label,icon])=>`<a href="#/${id}" data-nav="${id}"><span>${icon}</span>${label}</a>`).join('');
 
-const topBrand = document.querySelector('#topbar .brand');
-const footerBrand = document.querySelector('.footer-brand .brand');
-const HOME_TOP_BRAND = `<span class="brand-mark home-logo-mark"><img class="home-brand-logo" src="./assets/branding/once-human-logo.png" alt=""></span><span><strong>ONCE HUMAN</strong><small>ARCHIV</small></span>`;
-const HOME_FOOTER_BRAND = `<span class="brand-mark small home-logo-mark"><img class="home-brand-logo" src="./assets/branding/once-human-logo.png" alt=""></span><span><strong>ONCE HUMAN</strong><small>ARCHIV</small></span>`;
-const LEGACY_TOP_BRAND = `<span class="brand-mark"><i></i><b>M</b></span><span><strong>JAZZEMEOW</strong><small>ONCE HUMAN ARCHIV</small></span>`;
-const LEGACY_FOOTER_BRAND = `<span class="brand-mark small"><i></i><b>M</b></span><span><strong>JAZZEMEOW</strong><small>ONCE HUMAN ARCHIV</small></span>`;
-function syncRouteBrand(routeId){
-  const onceHumanBrand = routeId === 'home' || routeId === 'tech-workbench' || routeId === 'map';
-  if(topBrand){
-    topBrand.innerHTML = onceHumanBrand ? HOME_TOP_BRAND : LEGACY_TOP_BRAND;
-    topBrand.setAttribute('aria-label',onceHumanBrand?'Once Human Archiv Startseite':'JazzeMeow Archiv Startseite');
-  }
-  if(footerBrand) footerBrand.innerHTML = onceHumanBrand ? HOME_FOOTER_BRAND : LEGACY_FOOTER_BRAND;
-}
-const TECH_HEADER_DESKTOP = window.matchMedia('(hover: hover) and (pointer: fine) and (min-width: 861px)');
-let techHeaderHideTimer = null;
-function techHeaderAutoHideEnabled(){
-  return (document.body.classList.contains('route-tech-workbench') || document.body.classList.contains('route-map')) && TECH_HEADER_DESKTOP.matches;
-}
-function clearTechHeaderTimer(){
-  if(techHeaderHideTimer){
-    clearTimeout(techHeaderHideTimer);
-    techHeaderHideTimer=null;
-  }
-}
-function hideTechHeader(delay=0){
-  clearTechHeaderTimer();
-  if(!techHeaderAutoHideEnabled()){
-    document.body.classList.remove('tech-header-hidden');
-    return;
-  }
-  techHeaderHideTimer=setTimeout(()=>{
-    if(techHeaderAutoHideEnabled()) document.body.classList.add('tech-header-hidden');
-  },delay);
-}
-function showTechHeader(){
-  if(!techHeaderAutoHideEnabled()) return;
-  clearTechHeaderTimer();
-  document.body.classList.remove('tech-header-hidden');
-  techHeaderHideTimer=setTimeout(()=>{
-    if(techHeaderAutoHideEnabled()) document.body.classList.add('tech-header-hidden');
-  },2200);
-}
-function syncTechHeaderAutoHide(routeId){
-  clearTechHeaderTimer();
-  document.body.classList.remove('tech-header-hidden');
-  if((routeId==='tech-workbench'||routeId==='map') && TECH_HEADER_DESKTOP.matches) hideTechHeader(520);
-}
-window.addEventListener('pointermove',e=>{
-  if(techHeaderAutoHideEnabled() && e.clientY<=6) showTechHeader();
-});
-document.querySelector('.topbar')?.addEventListener('pointerenter',()=>{
-  if(techHeaderAutoHideEnabled()){
-    clearTechHeaderTimer();
-    document.body.classList.remove('tech-header-hidden');
-  }
-});
-document.querySelector('.topbar')?.addEventListener('pointerleave',()=>{
-  if(techHeaderAutoHideEnabled()) hideTechHeader(650);
-});
-TECH_HEADER_DESKTOP.addEventListener?.('change',()=>{
-  if(!TECH_HEADER_DESKTOP.matches){
-    clearTechHeaderTimer();
-    document.body.classList.remove('tech-header-hidden');
-  }else if(routeFromHash()==='tech-workbench'||routeFromHash()==='map'){
-    hideTechHeader(520);
-  }
-});
-
 function homeBrandText(value=''){
   return String(value)
     .replace(/JazzeMeow\s+Archive/gi,'Once Human Archiv')
@@ -280,11 +211,10 @@ function render(){
   }
   let route=ROUTES.find(r=>r.id===id);
   if(!route){route=ROUTES[0];history.replaceState(null,'','#/home');}
-  document.title=(route.id==='home'||route.id==='tech-workbench'||route.id==='map')?`Once Human Archiv // ${route.label}`:`JazzeMeow Archiv // ${route.label}`;
+  document.title=`Once Human Archiv // ${route.label}`;
   document.body.className=document.body.className.replace(/\broute-[^\s]+/g,'').trim(); document.body.classList.add(`route-${route.id}`);
-  syncRouteBrand(route.id);
-  syncTechHeaderAutoHide(route.id);
-  document.querySelectorAll('[data-nav]').forEach(a=>a.classList.toggle('active',a.dataset.nav===route.id));
+  document.querySelectorAll('[data-nav]').forEach(a=>{const active=a.dataset.nav===route.id;a.classList.toggle('active',active);if(active)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});
+  closeNavigation();
   const fullRenderer=globalThis.FULL_ROUTE_RENDERERS?.[route.id];
   app.innerHTML=route.id==='home'?renderHome():route.id==='database'?renderDatabase():fullRenderer?fullRenderer(route):renderDevelopment(route);
   syncHeaderAccount();
@@ -513,7 +443,12 @@ document.addEventListener('click',e=>{
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape') setAccountMenu(false);
 });
-$('#menuToggle').addEventListener('click',()=>mainNav.classList.toggle('open')); mainNav.addEventListener('click',()=>mainNav.classList.remove('open'));
+function closeNavigation(){mainNav.classList.remove('open');$('#menuToggle').setAttribute('aria-expanded','false')}
+$('#menuToggle').setAttribute('aria-controls','mainNav');$('#menuToggle').setAttribute('aria-expanded','false');
+$('#menuToggle').addEventListener('click',()=>{const open=mainNav.classList.toggle('open');$('#menuToggle').setAttribute('aria-expanded',String(open))});
+mainNav.addEventListener('click',closeNavigation);
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeNavigation()});
+document.addEventListener('click',e=>{if(!e.target.closest('#topbar'))closeNavigation()});
 function openSearch(){const q=$('#globalSearch');$('#searchDialog').showModal();q.value='';renderSearch('');setTimeout(()=>q.focus(),10)}
 function renderSearch(q){q=q.trim().toLowerCase();const rows=ROUTES.filter(r=>!q||`${r.label} ${r.purpose} ${r.id}`.toLowerCase().includes(q));const entries=q?catalogEntries().filter(e=>[e.name_de,e.kind,...(e.tags||[])].join(' ').toLowerCase().includes(q)).slice(0,8):[];$('#searchResults').innerHTML=rows.map(r=>`<a class="search-result" href="#/${r.id}"><span><b>${escapeHtml(r.label)}</b><small>${escapeHtml(r.purpose)}</small></span><span>${r.icon} →</span></a>`).join('')+entries.map(e=>`<a class="search-result catalog-search-result" href="#/database" data-catalog-jump="${escapeHtml(e.id)}"><span><b>${escapeHtml(e.name_de)}</b><small>Datenbank · ${escapeHtml(e.kind||'Eintrag')}</small></span><span>▱ →</span></a>`).join('')||'<div class="dev-notice">Keine passende Route oder kein Katalogeintrag gefunden.</div>';$('#searchResults').querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{$('#searchDialog').close();if(a.dataset.catalogJump){if(routeFromHash()==='database'&&globalThis.JMA_AUTH?.getAccount()){sessionStorage.removeItem('jma_open_catalog');openCatalogDetail(a.dataset.catalogJump)}else sessionStorage.setItem('jma_open_catalog',a.dataset.catalogJump)}}))}
 $('#searchTrigger').addEventListener('click',openSearch);$('#searchClose').addEventListener('click',()=>$('#searchDialog').close());$('#globalSearch').addEventListener('input',e=>renderSearch(e.target.value));
