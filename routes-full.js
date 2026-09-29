@@ -204,93 +204,183 @@ function bindSubmissions(){navBinds();on('#submissionForm','submit',e=>{e.preven
 
 function renderProfile(){
   const a=account(),fav=set('jma_favorites'),found=set('jma_found'),hunt=set('jma_hunt'),builds=arr('jma_saved_builds'),routeRows=arr('jma_routes'),plans=arr('jma_plans'),markers=arr('jma_custom_markers'),submissions=arr('jma_submissions'),exchangePosts=arr('jma_exchange_posts');
-  const collectionCount=new Set([...fav,...found]).size,personalTotal=collectionCount+hunt.size+builds.length+routeRows.length+plans.length+markers.length+submissions.length+exchangePosts.length;
   const displayName=a?.name||a?.email||'Archiv-Nutzer',email=a?.email||'—',initial=String(displayName||'?').trim().charAt(0).toUpperCase()||'?';
-  const stats=[
-    ['★','Favoriten',fav.size],
-    ['◎','Jagdliste',hunt.size],
-    ['✓','Gefunden',found.size],
-    ['⚒','Builds',builds.length],
-    ['⌁','Farmrouten',routeRows.length],
-    ['◷','Einsatzpläne',plans.length],
-    ['⌖','Kartenmarker',markers.length],
-    ['⇧','Einreichungen',submissions.length]
+  const catalogTotal=catalog().length,foundRate=catalogTotal?Math.max(0,Math.min(100,Math.round(found.size/catalogTotal*100))):0,slotsTotal=buildSlots().length;
+  const latestBuild=builds[0]||null,latestBuildSlots=latestBuild?Object.values(latestBuild.slots||{}).filter(Boolean).length:0;
+  const activities=[
+    ...submissions.map(x=>({kind:'EINREICHUNG',title:x.title||x.type||'Einreichung',meta:x.status||x.type||'',created:x.created||''})),
+    ...exchangePosts.map(x=>({kind:'WERKSTATT',title:x.title||x.type||'Community-Beitrag',meta:x.type||'',created:x.created||''}))
+  ].sort((x,y)=>(Date.parse(y.created)||0)-(Date.parse(x.created)||0)).slice(0,4);
+  const gallery=[
+    ['./assets/reference/feature-map.webp','Kartenarchiv'],
+    ['./assets/reference/feature-community.webp','Archivwelt'],
+    ['./assets/reference/news-hero.webp','Gefahrenzone'],
+    ['./assets/reference/showcase-items.webp','Anomalien'],
+    ['./assets/reference/news-mini-1.webp','Einsatzgebiet']
   ];
-  const archiveLinks=[
-    {route:'dashboard',icon:'⌂',title:'Kommandozentrale',copy:'Arbeitsübersicht, Fortschritt und nächste Schritte an einem Ort.',meta:'PERSÖNLICHER HUB',primary:true},
-    {route:'collection',icon:'★',title:'Sammlung',copy:'Favoriten und gefundene Archiv-Einträge weiter pflegen.',meta:`${collectionCount} Einträge`},
-    {route:'hunt',icon:'◎',title:'Jagdliste',copy:'Markierte Ziele priorisieren und deinen Fortschritt verfolgen.',meta:`${hunt.size} Ziele`},
-    {route:'builds',icon:'⚒',title:'Builds',copy:'Gespeicherte Build-Vorlagen und Ausrüstungsstände öffnen.',meta:`${builds.length} gespeichert`},
-    {route:'planner',icon:'◷',title:'Einsatzplaner',copy:'Vorbereitete Einsätze und persönliche Pläne weiterführen.',meta:`${plans.length} Pläne`},
-    {route:'routes',icon:'⌁',title:'Farmrouten',copy:'Deine gespeicherten Routen und Strecken verwalten.',meta:`${routeRows.length} Routen`},
-    {route:'submissions',icon:'⇧',title:'Einreichungen',copy:'Eigene Hinweise, Korrekturen und Beiträge wieder aufrufen.',meta:`${submissions.length} Einreichungen`},
-    {route:'exchange',icon:'◇',title:'Community-Werkstatt',copy:'Lokale Austausch-Posts und gespeicherte Builds weiterverwenden.',meta:`${exchangePosts.length} Beiträge`}
-  ];
-  return `<section class="rf-page profile-page profile-hub-page">
-    <header class="profile-hub-hero">
-      <div class="profile-hub-hero-copy">
-        <div class="profile-hub-kicker">KONTO // PROFIL</div>
-        <h1>DEIN PROFIL</h1>
-        <p>Persönliche Identität, lokale Werkzeugdaten und direkte Verknüpfungen deines Once Human Archivs.</p>
-      </div>
-      <div class="profile-hub-hero-status">
-        <article><i>●</i><div><small>ACCOUNTSTATUS</small><b>${a?'VERBUNDEN':'NICHT VERBUNDEN'}</b><span>${esc(email)}</span></div></article>
-        <article><i>⌁</i><div><small>ANZEIGENAME</small><b>${esc(displayName)}</b><span>Supabase-Profil</span></div></article>
-        <article><i>◆</i><div><small>LOKALER STAND</small><b>${personalTotal}</b><span>gespeicherte Inhalte</span></div></article>
-        <article><i>★</i><div><small>SAMMLUNG</small><b>${collectionCount}</b><span>Favoriten / gefunden</span></div></article>
-      </div>
-    </header>
-
-    <div class="profile-hub-overview">
-      <section class="profile-hub-panel profile-hub-identity">
-        <div class="profile-hub-panel-head"><div><small>IDENTITÄT // KONTO</small><h2>DEIN ACCOUNT</h2></div><span class="profile-hub-status"><i></i>${a?'ANGEMELDET':'KEINE SITZUNG'}</span></div>
-        <div class="profile-hub-identity-body">
-          <div class="profile-hub-avatar" aria-hidden="true"><span>${esc(initial)}</span></div>
-          <div class="profile-hub-account-copy">
-            <small>ANZEIGENAME</small>
-            <h3>${esc(displayName)}</h3>
-            <p>${esc(email)}</p>
-            <div class="profile-hub-account-meta"><span>Supabase Auth</span><span>Profil verbunden</span></div>
-          </div>
+  return `<section class="rf-page profile-page profile-ref-page">
+    <section class="profile-ref-banner">
+      <div class="profile-ref-banner-shade"></div>
+      <div class="profile-ref-avatar" aria-label="Profilinitiale"><span>${esc(initial)}</span><i></i></div>
+      <div class="profile-ref-identity">
+        <div class="profile-ref-kicker">ONCE HUMAN ARCHIV // PROFIL</div>
+        <h1>${esc(displayName)}</h1>
+        <div class="profile-ref-account-line"><span class="profile-ref-online-dot"></span><b>${a?'ACCOUNT VERBUNDEN':'KEINE SITZUNG'}</b><span>${esc(email)}</span></div>
+        <p>Sammeln. Planen. Bauen. Archivieren. Dein persönlicher Arbeitsbereich für die vorhandenen Werkzeuge und lokalen Archivdaten.</p>
+        <div class="profile-ref-progress">
+          <div><span>SAMMLUNGSFORTSCHRITT</span><b>${found.size} / ${catalogTotal}</b></div>
+          <i><em style="width:${foundRate}%"></em></i>
         </div>
-        ${a?`<form id="profileNameForm" class="profile-hub-name-form"><label><span>ANZEIGENAME ÄNDERN</span><input name="name" value="${esc(a.name||'')}" required minlength="2" autocomplete="nickname"></label><button class="cyan-btn compact" type="submit">NAME SPEICHERN</button></form>`:''}
-      </section>
-
-      <section class="profile-hub-panel profile-hub-summary">
-        <div class="profile-hub-panel-head"><div><small>PERSÖNLICH // LOKAL</small><h2>DEINE ÜBERSICHT</h2></div><span>Browser-Speicher</span></div>
-        <div class="profile-hub-stat-grid">${stats.map(([icon,label,value])=>`<article><i>${icon}</i><div><b>${value}</b><span>${esc(label)}</span></div></article>`).join('')}</div>
-      </section>
-    </div>
-
-    <section class="profile-hub-section">
-      <div class="profile-hub-section-head"><div><small>PERSÖNLICH // WERKZEUGE</small><h2>DEIN ARCHIV</h2></div><p>Direkt zu den Bereichen, in denen du sammelst, planst und weiterarbeitest.</p></div>
-      <div class="profile-hub-link-grid">${archiveLinks.map(x=>`<button type="button" class="profile-hub-link${x.primary?' primary':''}" data-rf-go="${esc(x.route)}"><i>${x.icon}</i><div><small>${esc(x.meta)}</small><h3>${esc(x.title)}</h3><p>${esc(x.copy)}</p></div><b>${x.primary?'ZUR KOMMANDOZENTRALE':'ÖFFNEN'} →</b></button>`).join('')}</div>
+      </div>
+      <aside class="profile-ref-banner-side">
+        <button class="profile-ref-edit-button" type="button" data-profile-edit-open>✎ PROFIL ANPASSEN</button>
+        <div class="profile-ref-banner-note"><small>ARCHIVSTATUS</small><b>${foundRate}% ERFASST</b><span>Berechnet aus deinen tatsächlich als gefunden markierten Katalogeinträgen.</span></div>
+      </aside>
     </section>
 
-    <div class="profile-hub-bottom">
-      <section class="profile-hub-panel profile-hub-data">
-        <div class="profile-hub-panel-head"><div><small>DATEN // DATENSCHUTZ</small><h2>DATEN & DATENSCHUTZ</h2></div><span>lokaler Browser</span></div>
-        <p>Persönliche Werkzeugdaten liegen derzeit teilweise lokal in diesem Browser. Passwort- und Sitzungsdaten gehören nicht zum Export.</p>
-        <ul><li>Exportiert werden ausschließlich vorhandene lokale Werkzeugdaten.</li><li>Lokales Löschen entfernt keine Supabase-Konto- oder Anmeldedaten.</li><li>Dein Account bleibt nach dem Löschen lokaler Werkzeugdaten angemeldet.</li></ul>
-        <div class="profile-hub-data-actions"><button class="ghost-btn" id="profileExport" type="button">DATEN EXPORTIEREN</button><button class="ghost-btn danger" id="profileClear" type="button">WERKZEUGDATEN LÖSCHEN</button></div>
-      </section>
-      <section class="profile-hub-panel profile-hub-security">
-        <div class="profile-hub-panel-head"><div><small>KONTO // SICHERHEIT</small><h2>KONTO & SICHERHEIT</h2></div><span>Supabase</span></div>
-        <div class="profile-hub-security-list">
-          <div><i>✓</i><span><small>AUTHENTIFIZIERUNG</small><b>Supabase Auth aktiv</b></span></div>
-          <div><i>✓</i><span><small>SITZUNG</small><b>${a?'Aktive Kontositzung':'Keine aktive Sitzung'}</b></span></div>
-          <div><i>✓</i><span><small>LOKALE DATEN</small><b>Keine Passwörter im Werkzeug-Export</b></span></div>
-        </div>
-        <p>Sicherheitsrelevante Kontoaktionen werden ausschließlich über den bestehenden Supabase-Auth-Flow verwaltet.</p>
-      </section>
+    <section class="profile-ref-stats" id="profileStatsSection">
+      <article><i>▣</i><div><b>${found.size}</b><span>GEFUNDENE ITEMS</span></div></article>
+      <article><i>⌖</i><div><b>${routeRows.length}</b><span>GESPEICHERTE ROUTEN</span></div></article>
+      <article><i>⚒</i><div><b>${builds.length}</b><span>GESPEICHERTE BUILDS</span></div></article>
+      <article><i>♥</i><div><b>${fav.size}</b><span>FAVORITEN</span></div></article>
+    </section>
+
+    <nav class="profile-ref-tabs" aria-label="Profilbereiche">
+      <button class="active" type="button" aria-current="page"><i>⌂</i><span>ÜBERSICHT</span></button>
+      <button type="button" data-rf-go="collection"><i>◇</i><span>SAMMLUNG</span></button>
+      <button type="button" data-rf-go="builds"><i>⚒</i><span>BUILDS</span></button>
+      <button type="button" data-rf-go="routes"><i>⌖</i><span>ROUTEN</span></button>
+      <button type="button" data-profile-scroll="profileStatsSection"><i>▥</i><span>STATISTIKEN</span></button>
+      <button type="button" data-profile-scroll="profileGallerySection"><i>▧</i><span>GALERIE</span></button>
+    </nav>
+
+    <div class="profile-ref-grid">
+      <div class="profile-ref-col profile-ref-col-left">
+        <section class="profile-ref-panel profile-ref-highlight">
+          <header><div><span></span><h2>HIGHLIGHTS</h2></div><small>${latestBuild?'GESPEICHERTER BUILD':'PROFILMODUL'}</small></header>
+          <div class="profile-ref-highlight-media">
+            <img src="./assets/reference/feature-builds.webp" alt="" loading="lazy">
+            <div class="profile-ref-highlight-overlay">
+              <small>${latestBuild?'PERSÖNLICHES HIGHLIGHT':'NOCH KEIN HIGHLIGHT'}</small>
+              <h3>${latestBuild?esc(latestBuild.name||'Gespeicherter Build'):'NOCH KEIN HIGHLIGHT'}</h3>
+              <p>${latestBuild?`${latestBuildSlots} von ${slotsTotal} Build-Slots belegt.`:'Sobald ein echter persönlicher Highlight-Flow existiert, kann dieser Bereich damit verbunden werden.'}</p>
+              ${latestBuild?'<button type="button" data-rf-go="builds">BUILD ÖFFNEN →</button>':'<button type="button" disabled aria-disabled="true">BEARBEITEN // BALD VERFÜGBAR</button>'}
+            </div>
+          </div>
+        </section>
+
+        <section class="profile-ref-panel profile-ref-activity">
+          <header><div><span></span><h2>LETZTE AKTIVITÄTEN</h2></div><small>LOKAL</small></header>
+          <div class="profile-ref-activity-list">${activities.length?activities.map(x=>`<article><i>${x.kind==='EINREICHUNG'?'⇧':'◇'}</i><div><small>${esc(x.kind)}${x.created?` · ${esc(fmt(x.created))}`:''}</small><h3>${esc(x.title)}</h3><p>${esc(x.meta||'Lokaler persönlicher Eintrag')}</p></div></article>`).join(''):`<div class="profile-ref-empty"><b>NOCH KEINE AKTIVITÄTEN</b><span>Lokale Einreichungen oder Werkstatt-Beiträge erscheinen hier, sobald sie vorhanden sind.</span></div>`}</div>
+        </section>
+      </div>
+
+      <main class="profile-ref-col profile-ref-col-center">
+        <section class="profile-ref-panel profile-ref-gallery" id="profileGallerySection">
+          <header><div><span></span><h2>GALERIE</h2></div><small>ARCHIVVORSCHAU // KEINE PERSÖNLICHEN UPLOADS</small></header>
+          <div class="profile-ref-gallery-grid">${gallery.map(([src,label],i)=>`<figure class="${i===0?'featured':''}"><img src="${src}" alt="" loading="lazy"><figcaption>${esc(label)}</figcaption></figure>`).join('')}</div>
+          <div class="profile-ref-gallery-note"><span>Persönliche Galerie-Uploads sind noch nicht implementiert.</span><button type="button" disabled aria-disabled="true">UPLOAD // BALD VERFÜGBAR</button></div>
+        </section>
+
+        <section class="profile-ref-panel profile-ref-builds">
+          <header><div><span></span><h2>GESPEICHERTE BUILDS</h2></div><button type="button" data-rf-go="builds">ALLE BUILDS →</button></header>
+          <div class="profile-ref-build-list">${builds.length?builds.slice(0,4).map(b=>{const filled=Object.values(b.slots||{}).filter(Boolean).length;return `<article><i>⚒</i><small>${esc(b.mode||'BUILD')}</small><h3>${esc(b.name||'Gespeicherter Build')}</h3><p>${filled}/${slotsTotal} Slots belegt</p></article>`}).join(''):`<div class="profile-ref-empty wide"><b>NOCH KEINE BUILDS GESPEICHERT</b><span>Gespeicherte Builds aus dem vorhandenen Build-Planer erscheinen hier.</span><button type="button" data-rf-go="builds">BUILD-PLANER ÖFFNEN →</button></div>`}</div>
+        </section>
+
+        <section class="profile-ref-panel profile-ref-routes">
+          <header><div><span></span><h2>GESPEICHERTE ROUTEN</h2></div><button type="button" data-rf-go="routes">ALLE ROUTEN →</button></header>
+          <div class="profile-ref-route-list">${routeRows.length?routeRows.slice(0,3).map(x=>`<article><i>⌖</i><div><small>${x.created?esc(fmt(x.created)):'LOKALE ROUTE'}</small><h3>${esc(x.name||'Gespeicherte Route')}</h3><p>${Array.isArray(x.markers)?x.markers.length:0} Stationen</p></div></article>`).join(''):`<div class="profile-ref-empty wide"><b>NOCH KEINE ROUTEN GESPEICHERT</b><span>Persönliche Farmrouten erscheinen hier, sobald sie angelegt wurden.</span><button type="button" data-rf-go="routes">FARMROUTEN ÖFFNEN →</button></div>`}</div>
+        </section>
+      </main>
+
+      <aside class="profile-ref-col profile-ref-col-right">
+        <section class="profile-ref-panel profile-ref-info">
+          <header><div><span></span><h2>PERSÖNLICHE INFORMATIONEN</h2></div><button type="button" data-profile-edit-open>✎</button></header>
+          <dl>
+            <div><dt>ANZEIGENAME</dt><dd>${esc(displayName)}</dd></div>
+            <div><dt>E-MAIL</dt><dd>${esc(email)}</dd></div>
+            <div><dt>ACCOUNTSTATUS</dt><dd class="ok">${a?'VERBUNDEN':'KEINE SITZUNG'}</dd></div>
+            <div><dt>AUTHENTIFIZIERUNG</dt><dd>Supabase Auth</dd></div>
+            <div><dt>SAMMLUNG</dt><dd>${new Set([...fav,...found]).size} Einträge</dd></div>
+            <div><dt>EINREICHUNGEN</dt><dd>${submissions.length} lokal</dd></div>
+          </dl>
+        </section>
+
+        <section class="profile-ref-panel profile-ref-data">
+          <header><div><span></span><h2>DATEN & SICHERHEIT</h2></div><small>LOKAL + SUPABASE</small></header>
+          <p>Werkzeugdaten werden derzeit teilweise lokal im Browser gespeichert. Passwort- und Sitzungsdaten gehören nicht zum Export.</p>
+          <div class="profile-ref-data-actions"><button type="button" id="profileExport">DATEN EXPORTIEREN</button><button type="button" id="profileClear" class="danger">WERKZEUGDATEN LÖSCHEN</button></div>
+          <small class="profile-ref-data-note">Lokales Löschen beendet deine bestehende Kontositzung nicht.</small>
+        </section>
+
+        <section class="profile-ref-panel profile-ref-prepared">
+          <header><div><span></span><h2>ERFOLGSSYSTEM</h2></div><small>IN VORBEREITUNG</small></header>
+          <div class="profile-ref-prepared-body"><i>⬡</i><div><b>NOCH KEIN ACHIEVEMENT-SYSTEM</b><span>Keine erfundenen Level, Prozente oder Auszeichnungen.</span></div></div>
+        </section>
+
+        <section class="profile-ref-panel profile-ref-prepared">
+          <header><div><span></span><h2>WAFFEN-SHOWCASE</h2></div><small>IN VORBEREITUNG</small></header>
+          <div class="profile-ref-slot-row"><span>+</span><span>+</span><span>+</span><span>+</span></div>
+          <p class="profile-ref-prepared-copy">Wird erst mit echten persönlichen Waffenfavoriten befüllt.</p>
+        </section>
+      </aside>
     </div>
+
+    <div class="profile-ref-drawer-backdrop" id="profileEditBackdrop" hidden></div>
+    <aside class="profile-ref-drawer" id="profileEditDrawer" hidden aria-labelledby="profileEditTitle">
+      <header><div><small>PROFIL // EDITOR</small><h2 id="profileEditTitle">PROFIL ANPASSEN</h2></div><button type="button" id="profileEditClose" aria-label="Profil-Anpassen schließen">×</button></header>
+      <div class="profile-ref-drawer-body">
+        <nav class="profile-ref-drawer-nav" aria-label="Profil bearbeiten">
+          <button type="button" class="active" data-profile-edit-tab="general">ALLGEMEIN</button>
+          <button type="button" data-profile-edit-tab="avatar">PROFILBILD</button>
+          <button type="button" data-profile-edit-tab="banner">BANNER</button>
+          <button type="button" data-profile-edit-tab="colors">FARBEN</button>
+          <button type="button" data-profile-edit-tab="about">ÜBER MICH</button>
+          <button type="button" data-profile-edit-tab="highlights">HIGHLIGHTS</button>
+          <button type="button" data-profile-edit-tab="widgets">WIDGETS</button>
+        </nav>
+        <div class="profile-ref-drawer-content">
+          <section class="active" data-profile-edit-panel="general">
+            <small>ALLGEMEIN</small><h3>PROFILIDENTITÄT</h3>
+            <div class="profile-ref-editor-avatar"><span>${esc(initial)}</span></div>
+            <p>${esc(email)}</p>
+            <form id="profileNameForm"><label><span>ANZEIGENAME</span><input name="name" value="${esc(a?.name||'')}" required minlength="2" autocomplete="nickname"></label><button type="submit">ÄNDERUNGEN SPEICHERN</button></form>
+          </section>
+          <section data-profile-edit-panel="avatar">
+            <small>PROFILBILD</small><h3>AVATAR</h3><div class="profile-ref-future-preview"><div class="profile-ref-editor-avatar large"><span>${esc(initial)}</span></div></div><button type="button" disabled aria-disabled="true">BILD HOCHLADEN // BALD VERFÜGBAR</button><p>Aktuell wird die vorhandene Profilinitiale verwendet. Es wird kein Upload vorgetäuscht.</p>
+          </section>
+          <section data-profile-edit-panel="banner">
+            <small>BANNER</small><h3>PROFILBANNER</h3><div class="profile-ref-banner-preview"><img src="./assets/reference/feature-map.webp" alt=""></div><button type="button" disabled aria-disabled="true">BANNER ÄNDERN // BALD VERFÜGBAR</button>
+          </section>
+          <section data-profile-edit-panel="colors">
+            <small>FARBEN</small><h3>PROFILFARBEN</h3><div class="profile-ref-color-row"><i></i><i></i><i></i><i></i><i></i></div><button type="button" disabled aria-disabled="true">FARBSHEMA // BALD VERFÜGBAR</button>
+          </section>
+          <section data-profile-edit-panel="about">
+            <small>ÜBER MICH</small><h3>PROFILTEXT</h3><textarea disabled aria-disabled="true" placeholder="Profilbeschreibung // bald verfügbar"></textarea><button type="button" disabled aria-disabled="true">SPEICHERN // BALD VERFÜGBAR</button>
+          </section>
+          <section data-profile-edit-panel="highlights">
+            <small>HIGHLIGHTS</small><h3>PROFIL-HIGHLIGHTS</h3><div class="profile-ref-future-block">NOCH KEIN HIGHLIGHT-EDITOR</div><button type="button" disabled aria-disabled="true">HIGHLIGHTS BEARBEITEN // BALD VERFÜGBAR</button>
+          </section>
+          <section data-profile-edit-panel="widgets">
+            <small>WIDGETS</small><h3>PROFILMODULE</h3><div class="profile-ref-future-block">WIDGET-SYSTEM // IN VORBEREITUNG</div><button type="button" disabled aria-disabled="true">WIDGETS KONFIGURIEREN // BALD VERFÜGBAR</button>
+          </section>
+        </div>
+      </div>
+    </aside>
   </section>`;
 }
 function bindProfile(){
   navBinds();
+  const drawer=qs('#profileEditDrawer'),backdrop=qs('#profileEditBackdrop');
+  const setDrawer=open=>{if(!drawer||!backdrop)return;drawer.hidden=!open;backdrop.hidden=!open;drawer.setAttribute('aria-hidden',open?'false':'true')};
+  qsa('[data-profile-edit-open]').forEach(b=>b.onclick=()=>setDrawer(true));
+  on('#profileEditClose','click',()=>setDrawer(false));
+  on('#profileEditBackdrop','click',()=>setDrawer(false));
+  const editTabs=qsa('[data-profile-edit-tab]'),editPanels=qsa('[data-profile-edit-panel]');editTabs.forEach(b=>b.onclick=()=>{editTabs.forEach(x=>x.classList.toggle('active',x===b));editPanels.forEach(x=>x.classList.toggle('active',x.dataset.profileEditPanel===b.dataset.profileEditTab))});
+  qsa('[data-profile-scroll]').forEach(b=>b.onclick=()=>qs('#'+b.dataset.profileScroll)?.scrollIntoView({behavior:'smooth',block:'start'}));
   on('#profileNameForm','submit',async e=>{e.preventDefault();const name=new FormData(e.currentTarget).get('name').trim();try{await globalThis.JMA_AUTH.updateDisplayName(name);toast('Anzeigename gespeichert.');refresh()}catch(error){toast(error?.message||'Anzeigename konnte nicht gespeichert werden.')}});
-  on('#profileExport','click',()=>{const out={exported:new Date().toISOString()};['jma_favorites','jma_hunt','jma_hunt_meta','jma_saved_builds','jma_routes','jma_plans','jma_submissions','jma_community_posts','jma_found','jma_custom_markers'].forEach(k=>{if(localStorage.getItem(k)!==null)out[k]=read(k)});const blob=new Blob([JSON.stringify(out,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='once-human-archiv-export.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000)});
-  on('#profileClear','click',()=>{if(!confirm('Lokale Werkzeugdaten löschen? Konto/Anmeldung bleiben erhalten.'))return;['jma_favorites','jma_hunt','jma_hunt_meta','jma_saved_builds','jma_build_draft','jma_routes','jma_route_draft','jma_plans','jma_submissions','jma_community_posts','jma_found','jma_custom_markers'].forEach(k=>localStorage.removeItem(k));toast('Werkzeugdaten gelöscht.');refresh()});
+  on('#profileExport','click',()=>{const out={exported:new Date().toISOString()};['jma_favorites','jma_hunt','jma_hunt_meta','jma_saved_builds','jma_routes','jma_plans','jma_submissions','jma_community_posts','jma_found','jma_custom_markers','jma_exchange_posts'].forEach(k=>{if(localStorage.getItem(k)!==null)out[k]=read(k)});const blob=new Blob([JSON.stringify(out,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='once-human-archiv-export.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000)});
+  on('#profileClear','click',()=>{if(!confirm('Lokale Werkzeugdaten löschen? Konto/Anmeldung bleiben erhalten.'))return;['jma_favorites','jma_hunt','jma_hunt_meta','jma_saved_builds','jma_build_draft','jma_routes','jma_route_draft','jma_plans','jma_submissions','jma_community_posts','jma_found','jma_custom_markers','jma_exchange_posts'].forEach(k=>localStorage.removeItem(k));toast('Werkzeugdaten gelöscht.');refresh()});
 }
 
 function renderCollection(){const fav=set('jma_favorites'),found=set('jma_found'),mode=read('jma_collection_mode','all');let rows=catalog().filter(x=>fav.has(x.id)||found.has(x.id));if(mode==='fav')rows=rows.filter(x=>fav.has(x.id));if(mode==='found')rows=rows.filter(x=>found.has(x.id));return `<section class="rf-page collection-page">${hero('PERSÖNLICH // KATALOG','MEINE SAMMLUNG','Favoriten und als gefunden markierte Katalogeinträge getrennt vom öffentlichen Datenbestand verwalten.',metrics([[fav.size,'Favoriten'],[found.size,'gefunden']]))}<div class="rf-tabs"><button class="${mode==='all'?'active':''}" data-collection-mode="all">ALLE</button><button class="${mode==='fav'?'active':''}" data-collection-mode="fav">FAVORITEN</button><button class="${mode==='found'?'active':''}" data-collection-mode="found">GEFUNDEN</button></div><div class="rf-collection-grid">${rows.map(x=>`<article><small>${esc(x.kind||x.category)}</small><h3>${esc(x.name_de)}</h3><p>${esc(x.description||'')}</p><div class="rf-chips">${fav.has(x.id)?'<span>★ Favorit</span>':''}${found.has(x.id)?'<span>✓ Gefunden</span>':''}</div><div class="actions"><button data-found-toggle="${esc(x.id)}">${found.has(x.id)?'GEFUNDEN AUFHEBEN':'ALS GEFUNDEN'}</button><button data-fav-toggle="${esc(x.id)}">${fav.has(x.id)?'FAVORIT ENTFERNEN':'FAVORIT'}</button></div></article>`).join('')||empty('Sammlung ist leer')}<div class="rf-inline-cta">${btnLink('database','DATENBANK DURCHSUCHEN','cyan-btn compact')}</div></div></section>`}
