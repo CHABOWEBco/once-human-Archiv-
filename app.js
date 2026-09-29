@@ -47,12 +47,12 @@ const HOME_FOOTER_BRAND = `<span class="brand-mark small home-logo-mark"><img cl
 const LEGACY_TOP_BRAND = `<span class="brand-mark"><i></i><b>M</b></span><span><strong>JAZZEMEOW</strong><small>ONCE HUMAN ARCHIV</small></span>`;
 const LEGACY_FOOTER_BRAND = `<span class="brand-mark small"><i></i><b>M</b></span><span><strong>JAZZEMEOW</strong><small>ONCE HUMAN ARCHIV</small></span>`;
 function syncRouteBrand(routeId){
-  const home = routeId === 'home';
+  const onceHumanBrand = routeId === 'home' || routeId === 'tech-workbench';
   if(topBrand){
-    topBrand.innerHTML = home ? HOME_TOP_BRAND : LEGACY_TOP_BRAND;
-    topBrand.setAttribute('aria-label',home?'Once Human Archiv Startseite':'JazzeMeow Archiv Startseite');
+    topBrand.innerHTML = onceHumanBrand ? HOME_TOP_BRAND : LEGACY_TOP_BRAND;
+    topBrand.setAttribute('aria-label',onceHumanBrand?'Once Human Archiv Startseite':'JazzeMeow Archiv Startseite');
   }
-  if(footerBrand) footerBrand.innerHTML = home ? HOME_FOOTER_BRAND : LEGACY_FOOTER_BRAND;
+  if(footerBrand) footerBrand.innerHTML = onceHumanBrand ? HOME_FOOTER_BRAND : LEGACY_FOOTER_BRAND;
 }
 function homeBrandText(value=''){
   return String(value)
@@ -202,7 +202,7 @@ function render(){
   }
   let route=ROUTES.find(r=>r.id===id);
   if(!route){route=ROUTES[0];history.replaceState(null,'','#/home');}
-  document.title=route.id==='home'?`Once Human Archiv // ${route.label}`:`JazzeMeow Archiv // ${route.label}`;
+  document.title=(route.id==='home'||route.id==='tech-workbench')?`Once Human Archiv // ${route.label}`:`JazzeMeow Archiv // ${route.label}`;
   document.body.className=document.body.className.replace(/\broute-[^\s]+/g,'').trim(); document.body.classList.add(`route-${route.id}`);
   syncRouteBrand(route.id);
   document.querySelectorAll('[data-nav]').forEach(a=>a.classList.toggle('active',a.dataset.nav===route.id));
