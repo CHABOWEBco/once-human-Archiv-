@@ -119,27 +119,26 @@ function homeBrandText(value=''){
 function asset(name){ return `./assets/reference/${name}`; }
 function quick(route,title,desc,img,icon,gated=false){return `<a class="landing-quick" href="#/${route}"${gated?' data-showcase-gated':''} style="--quick-image:url('${asset(img)}')"><span class="landing-quick-visual"></span>${gated?'<em class="showcase-access">⌁ ARCHIVZUGANG</em>':''}<span class="landing-quick-body"><i>${icon}</i><span><h3>${title}</h3><p>${desc}</p></span><b aria-hidden="true">›</b></span></a>`}
 
-const DB_STATE={q:'',category:'all',status:'all'};
+const DB_STATE={q:'',category:'all',status:'all',sort:'name',view:'grid',onlyFav:false,page:1};
 function catalogEntries(){return Array.isArray(globalThis.CATALOG_DATA?.entries)?globalThis.CATALOG_DATA.entries:[]}
 function catalogCategories(){return Array.isArray(globalThis.CATALOG_DATA?.categories)?globalThis.CATALOG_DATA.categories:[]}
 function categoryFor(id){return catalogCategories().find(c=>c.id===id)||{id,label:id||'Unbekannt',icon:'◇',subcategories:[]}}
-function storedSet(key){try{return new Set(JSON.parse(localStorage.getItem(key)||'[]'))}catch{return new Set()}}
-function writeSet(key,set){localStorage.setItem(key,JSON.stringify([...set]))}
-function filteredCatalog(){
-  const q=DB_STATE.q.trim().toLowerCase();
-  return catalogEntries().filter(e=>{
-    const hay=[e.name_de,e.kind,e.description,e.acquisition,e.status,...(e.tags||[])].join(' ').toLowerCase();
-    return (!q||hay.includes(q))&&(DB_STATE.category==='all'||e.category===DB_STATE.category)&&(DB_STATE.status==='all'||e.status===DB_STATE.status);
-  });
-}
+function storedSet(key){const value=globalThis.JMA_STORE.read(key,[]);return new Set(Array.isArray(value)?value:[])}
+
+function writeSet(key,set){globalThis.JMA_STORE.write(key,[...set])}
+
+function filteredCatalog(){const q=DB_STATE.q.trim().toLowerCase(),fav=storedSet('jma_favorites');return catalogEntries().filter(e=>(!q||[e.id,e.name_de,e.kind,e.description,e.acquisition,...(e.tags||[])].join(' ').toLowerCase().includes(q))&&(DB_STATE.category==='all'||e.category===DB_STATE.category)&&(DB_STATE.status==='all'||e.status===DB_STATE.status)&&(!DB_STATE.onlyFav||fav.has(e.id))).sort((a,b)=>DB_STATE.sort==='category'?categoryFor(a.category).label.localeCompare(categoryFor(b.category).label,'de')||a.name_de.localeCompare(b.name_de,'de'):DB_STATE.sort==='checked'?String(b.last_checked||'').localeCompare(a.last_checked||''):a.name_de.localeCompare(b.name_de,'de'))}
+
 function catalogCard(e){
   const c=categoryFor(e.category),fav=storedSet('jma_favorites').has(e.id),hunt=storedSet('jma_hunt').has(e.id);
-  return `<article class="catalog-card" data-entry="${escapeHtml(e.id)}"><div class="catalog-card-top"><span class="catalog-glyph">${escapeHtml(c.icon||'◇')}</span><div><small>${escapeHtml(c.label)}</small><h3>${escapeHtml(e.name_de)}</h3></div></div><p>${escapeHtml(e.kind||'Archiv-Eintrag')}</p><div class="catalog-tags">${(e.tags||[]).slice(0,3).map(t=>`<span>${escapeHtml(t)}</span>`).join('')}</div><div class="catalog-status"><i></i>${escapeHtml(e.status||'Prüfstatus offen')}</div><div class="catalog-actions"><button type="button" data-db-detail="${escapeHtml(e.id)}">DETAILS</button><button class="icon-action ${fav?'active':''}" type="button" data-db-fav="${escapeHtml(e.id)}" title="Favorit">★</button><button class="icon-action ${hunt?'active':''}" type="button" data-db-hunt="${escapeHtml(e.id)}" title="Jagdliste">◎</button></div></article>`;
+  return `<article class="catalog-card" data-entry="${escapeHtml(e.id)}"><div class="catalog-card-top"><span class="catalog-glyph">${escapeHtml(c.icon||'◇')}</span><div><small>${escapeHtml(c.label)}</small><h3>${escapeHtml(e.name_de)}</h3></div></div><p>${escapeHtml(e.kind||'Archiv-Eintrag')}</p><div class="catalog-tags">${(e.tags||[]).slice(0,3).map(t=>`<span>${escapeHtml(t)}</span>`).join('')}</div><div class="catalog-status"><i></i>${escapeHtml(e.status||'Prüfstatus offen')}</div><div class="catalog-actions"><button type="button" data-db-detail="${escapeHtml(e.id)}">DETAILS</button><button class="icon-action ${fav?'active':''}" type="button" data-db-fav="${escapeHtml(e.id)}" title="Favorit">★</button><button class="icon-action ${storedSet('jma_found').has(e.id)?'active':''}" type="button" data-db-found="${escapeHtml(e.id)}" title="Gefunden" aria-pressed="${storedSet('jma_found').has(e.id)}">✓</button><button class="icon-action ${hunt?'active':''}" type="button" data-db-hunt="${escapeHtml(e.id)}" title="Jagdliste">◎</button></div></article>`;
 }
 function renderCatalogGrid(){
   const grid=$('#catalogGrid'); if(!grid)return;
-  const rows=filteredCatalog();
-  grid.innerHTML=rows.map(catalogCard).join('')||`<div class="catalog-empty"><b>KEIN TREFFER</b><span>Ändere Suche oder Filter.</span></div>`;
+  const rows=filteredCatalog(),pages=Math.max(1,Math.ceil(rows.length/12)); DB_STATE.page=Math.max(1,Math.min(pages,DB_STATE.page));
+  grid.classList.toggle('list',DB_STATE.view==='list');
+  $('#catalogPagination').innerHTML=`<button data-db-page="${DB_STATE.page-1}" ${DB_STATE.page===1?'disabled':''}>← ZURÜCK</button><span>SEITE ${DB_STATE.page} / ${pages}</span><button data-db-page="${DB_STATE.page+1}" ${DB_STATE.page===pages?'disabled':''}>WEITER →</button>`;
+  grid.innerHTML=rows.slice((DB_STATE.page-1)*12,DB_STATE.page*12).map(catalogCard).join('')||`<div class="catalog-empty"><b>KEIN TREFFER</b><span>Ändere Suche oder Filter.</span></div>`;
   $('#catalogResultCount').textContent=`${rows.length} / ${catalogEntries().length} Einträge`;
   document.querySelectorAll('[data-db-category]').forEach(b=>b.classList.toggle('active',b.dataset.dbCategory===DB_STATE.category));
 }
@@ -148,7 +147,7 @@ function renderDatabase(){
   return `<section class="database-page">
     <header class="database-hero"><div class="database-hero-copy"><div class="section-kicker">ARCHIV // KATALOG</div><h1>DATENBANK</h1><p>Der zentrale geprüfte Katalog des Archivs. Suche, filtere, öffne Details und übernimm Einträge direkt in Favoriten oder Jagdliste.</p><div class="database-metrics"><span><b>${catalogEntries().length}</b><small>kuratiert übernommen</small></span><span><b>${catalogCategories().length}</b><small>Kategorien</small></span><span><b>${escapeHtml(String(globalThis.CATALOG_DATA?.snapshot||'—'))}</b><small>Quell-Snapshot</small></span></div></div><div class="database-reference"><small>REFERENZUMFANG DES ALTSTANDS</small><div><b>${Number(counts.items||0).toLocaleString('de-DE')}</b><span>Items</span></div><div><b>${Number(counts.weapons||0).toLocaleString('de-DE')}</b><span>Waffen</span></div><div><b>${Number(counts.mods||0).toLocaleString('de-DE')}</b><span>Mods</span></div><div><b>${Number(counts.deviations||0).toLocaleString('de-DE')}</b><span>Abweichler</span></div><em>Diese Referenzzahlen stammen aus dem dokumentierten R18.3-Snapshot; als konkrete Karten werden hier nur die 21 im Altstand kuratierten Datensätze veröffentlicht.</em></div></header>
     <div class="database-shell"><aside class="catalog-rail"><div class="rail-title"><small>KATEGORIEN</small><b>ARCHIVBEREICHE</b></div><button class="active" data-db-category="all"><span>⌘</span><b>Alle Einträge</b><small>${catalogEntries().length}</small></button>${catalogCategories().map(c=>`<button data-db-category="${escapeHtml(c.id)}"><span>${escapeHtml(c.icon||'◇')}</span><b>${escapeHtml(c.label)}</b><small>${catalogEntries().filter(e=>e.category===c.id).length}</small></button>`).join('')}</aside>
-      <div class="catalog-main"><div class="catalog-toolbar"><label class="catalog-search"><span>⌕</span><input id="catalogSearch" value="${escapeHtml(DB_STATE.q)}" placeholder="Name, Tag, Typ oder Beschreibung durchsuchen …"></label><select id="catalogStatus"><option value="all">Alle Prüfstatus</option>${statuses.map(x=>`<option ${DB_STATE.status===x?'selected':''}>${escapeHtml(x)}</option>`).join('')}</select><button class="ghost-btn" id="catalogReset" type="button">FILTER ZURÜCKSETZEN</button></div><div class="catalog-list-head"><div><small>ERGEBNISSE</small><b id="catalogResultCount"></b></div><div><a href="#/collection">★ Favoriten</a><a href="#/hunt">◎ Jagdliste</a></div></div><div class="catalog-grid" id="catalogGrid"></div></div>
+      <div class="catalog-main"><div class="catalog-toolbar"><label class="catalog-search"><span>⌕</span><input id="catalogSearch" value="${escapeHtml(DB_STATE.q)}" placeholder="Name, Tag, Typ oder Beschreibung durchsuchen …"></label><select id="catalogStatus"><option value="all">Alle Prüfstatus</option>${statuses.map(x=>`<option ${DB_STATE.status===x?'selected':''}>${escapeHtml(x)}</option>`).join('')}</select><select id="catalogSort" aria-label="Sortierung"><option value="name">Name A–Z</option><option value="category">Kategorie</option><option value="checked">Zuletzt geprüft</option></select><label><input id="catalogOnlyFav" type="checkbox" ${DB_STATE.onlyFav?'checked':''}>Favoriten</label><button type="button" data-db-view="grid" aria-label="Rasteransicht">▦</button><button type="button" data-db-view="list" aria-label="Listenansicht">☷</button><button class="ghost-btn" id="catalogReset" type="button">FILTER ZURÜCKSETZEN</button></div><div class="catalog-list-head"><div><small>ERGEBNISSE</small><b id="catalogResultCount"></b></div><div><a href="#/collection">★ Favoriten</a><a href="#/hunt">◎ Jagdliste</a></div></div><div class="catalog-grid" id="catalogGrid"></div><div id="catalogPagination" class="catalog-pagination"></div></div>
     </div>
   </section>`;
 }
@@ -158,23 +157,33 @@ function ensureCatalogDialog(){
 }
 function openCatalogDetail(id){
   const e=catalogEntries().find(x=>x.id===id);if(!e)return;const c=categoryFor(e.category),d=ensureCatalogDialog(),fav=storedSet('jma_favorites').has(id),hunt=storedSet('jma_hunt').has(id);
-  d.innerHTML=`<button class="dialog-close" data-db-close type="button">×</button><div class="catalog-detail-visual"><span>${escapeHtml(c.icon||'◇')}</span><small>${escapeHtml(c.label)}</small></div><div class="catalog-detail-body"><div class="section-kicker">ARCHIV-EINTRAG</div><h2>${escapeHtml(e.name_de)}</h2><p class="catalog-kind">${escapeHtml(e.kind||'')}</p><div class="catalog-detail-tags">${(e.tags||[]).map(t=>`<span>${escapeHtml(t)}</span>`).join('')}</div><section><small>BESCHREIBUNG</small><p>${escapeHtml(e.description||'Für diesen Eintrag liegt im übernommenen Altstand noch keine Beschreibung vor.')}</p></section><section><small>ERHALT / FUNDWEG</small><p>${escapeHtml(e.acquisition||'Im übernommenen Altstand nicht abschließend dokumentiert.')}</p></section><div class="catalog-detail-meta"><span><small>PRÜFSTATUS</small><b>${escapeHtml(e.status||'offen')}</b></span><span><small>ZULETZT GEPRÜFT</small><b>${escapeHtml(e.last_checked||'—')}</b></span></div><div class="actions"><button class="ghost-btn ${fav?'active-control':''}" data-db-fav="${escapeHtml(id)}" type="button">★ ${fav?'FAVORIT ENTFERNEN':'ALS FAVORIT'}</button><button class="cyan-btn compact ${hunt?'active-control':''}" data-db-hunt="${escapeHtml(id)}" type="button">◎ ${hunt?'VON JAGDLISTE':'ZUR JAGDLISTE'}</button></div></div>`;
+  d.innerHTML=`<button class="dialog-close" data-db-close type="button">×</button><div class="catalog-detail-visual"><span>${escapeHtml(c.icon||'◇')}</span><small>${escapeHtml(c.label)}</small></div><div class="catalog-detail-body"><div class="section-kicker">ARCHIV-EINTRAG</div><h2>${escapeHtml(e.name_de)}</h2><p class="catalog-kind">${escapeHtml(e.kind||'')}</p><div class="catalog-detail-tags">${(e.tags||[]).map(t=>`<span>${escapeHtml(t)}</span>`).join('')}</div><section><small>BESCHREIBUNG</small><p>${escapeHtml(e.description||'Für diesen Eintrag liegt im übernommenen Altstand noch keine Beschreibung vor.')}</p></section><section><small>ERHALT / FUNDWEG</small><p>${escapeHtml(e.acquisition||'Im übernommenen Altstand nicht abschließend dokumentiert.')}</p></section><div class="catalog-detail-meta"><span><small>PRÜFSTATUS</small><b>${escapeHtml(e.status||'offen')}</b></span><span><small>ZULETZT GEPRÜFT</small><b>${escapeHtml(e.last_checked||'—')}</b></span></div><div class="actions"><button class="ghost-btn" data-db-found="${escapeHtml(id)}" type="button">✓ ${storedSet('jma_found').has(id)?'GEFUNDEN AUFHEBEN':'ALS GEFUNDEN'}</button><button class="ghost-btn ${fav?'active-control':''}" data-db-fav="${escapeHtml(id)}" type="button">★ ${fav?'FAVORIT ENTFERNEN':'ALS FAVORIT'}</button><button class="cyan-btn compact ${hunt?'active-control':''}" data-db-hunt="${escapeHtml(id)}" type="button">◎ ${hunt?'VON JAGDLISTE':'ZUR JAGDLISTE'}</button></div></div>`;
   d.querySelector('[data-db-close]').addEventListener('click',()=>d.close());
   d.querySelectorAll('[data-db-fav]').forEach(b=>b.addEventListener('click',()=>{toggleCatalogSet('jma_favorites',id,'Favorit');d.close();renderCatalogGrid();openCatalogDetail(id)}));
   d.querySelectorAll('[data-db-hunt]').forEach(b=>b.addEventListener('click',()=>{toggleCatalogSet('jma_hunt',id,'Jagdliste');d.close();renderCatalogGrid();openCatalogDetail(id)}));
+  d.querySelector('[data-db-found]').onclick=()=>{toggleCatalogSet('jma_found',id,'Gefunden');d.close();renderCatalogGrid();openCatalogDetail(id)};
   d.showModal();
 }
 function toggleCatalogSet(key,id,label){const s=storedSet(key);const adding=!s.has(id);adding?s.add(id):s.delete(id);writeSet(key,s);toast(`${label}: ${adding?'hinzugefügt':'entfernt'}.`)}
 function bindDatabase(){
-  $('#catalogSearch')?.addEventListener('input',e=>{DB_STATE.q=e.target.value;renderCatalogGrid()});
-  $('#catalogStatus')?.addEventListener('change',e=>{DB_STATE.status=e.target.value;renderCatalogGrid()});
-  $('#catalogReset')?.addEventListener('click',()=>{DB_STATE.q='';DB_STATE.category='all';DB_STATE.status='all';render()});
-  document.querySelectorAll('[data-db-category]').forEach(b=>b.addEventListener('click',()=>{DB_STATE.category=b.dataset.dbCategory;renderCatalogGrid()}));
+  $('#catalogSearch')?.addEventListener('input',e=>{DB_STATE.q=e.target.value;DB_STATE.page=1;renderCatalogGrid()});
+  $('#catalogStatus')?.addEventListener('change',e=>{DB_STATE.status=e.target.value;DB_STATE.page=1;renderCatalogGrid()});
+  $('#catalogReset')?.addEventListener('click',()=>{DB_STATE.q='';DB_STATE.category='all';DB_STATE.status='all';DB_STATE.onlyFav=false;DB_STATE.page=1;render()});
+  document.querySelectorAll('[data-db-category]').forEach(b=>b.addEventListener('click',()=>{DB_STATE.category=b.dataset.dbCategory;DB_STATE.page=1;renderCatalogGrid()}));
   $('#catalogGrid')?.addEventListener('click',e=>{const detail=e.target.closest('[data-db-detail]'),fav=e.target.closest('[data-db-fav]'),hunt=e.target.closest('[data-db-hunt]');if(detail)return openCatalogDetail(detail.dataset.dbDetail);if(fav){toggleCatalogSet('jma_favorites',fav.dataset.dbFav,'Favorit');return renderCatalogGrid()}if(hunt){toggleCatalogSet('jma_hunt',hunt.dataset.dbHunt,'Jagdliste');return renderCatalogGrid()}});
+  $('#catalogSort').value=DB_STATE.sort;
+  $('#catalogSort').onchange=e=>{DB_STATE.sort=e.target.value;DB_STATE.page=1;renderCatalogGrid()};
+  $('#catalogOnlyFav').onchange=e=>{DB_STATE.onlyFav=e.target.checked;DB_STATE.page=1;renderCatalogGrid()};
+  document.querySelectorAll('[data-db-view]').forEach(b=>b.onclick=()=>{DB_STATE.view=b.dataset.dbView;renderCatalogGrid()});
+  $('#catalogPagination').onclick=e=>{const b=e.target.closest('[data-db-page]');if(b){DB_STATE.page=+b.dataset.dbPage;renderCatalogGrid()}};
+  $('#catalogGrid').addEventListener('click',e=>{const b=e.target.closest('[data-db-found]');if(b){toggleCatalogSet('jma_found',b.dataset.dbFound,'Gefunden');renderCatalogGrid()}});
   renderCatalogGrid();
   const pending=sessionStorage.getItem('jma_open_catalog');if(pending){sessionStorage.removeItem('jma_open_catalog');setTimeout(()=>openCatalogDetail(pending),20)}
 }
-function readStoredArray(key){try{const v=JSON.parse(localStorage.getItem(key)||'[]');return Array.isArray(v)?v:[]}catch{return []}}
+
+function readStoredArray(key){const value=globalThis.JMA_STORE.read(key,[]);return Array.isArray(value)?value:[]}
+
+
 function renderHome(){
   const account = globalThis.JMA_AUTH?.getAccount?.() || null;
   const guest=!account;

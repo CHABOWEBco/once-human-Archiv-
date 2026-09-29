@@ -45,7 +45,8 @@ function normalizeAccount(user, profile, role){
     id: user.id,
     email,
     name: profile?.display_name || metadataName || emailName || 'Meta-Human',
-    role: role || null
+    role: role || null,
+    avatar: profile?.avatar_url || "", appearance: user.user_metadata?.archive_appearance || {}, created: user.created_at || ""
   };
 }
 
@@ -247,6 +248,19 @@ async function updateDisplayName(displayName){
   return state.account;
 }
 
+async function updateProfile({name,avatar,appearance}){
+ if(!state.user) throw new Error('Keine aktive Anmeldung.');
+ name=String(name||'').trim();if(name.length<2||name.length>48)throw new Error('Anzeigename benötigt 2 bis 48 Zeichen.');
+ if(JSON.stringify(appearance).length>3500)throw new Error('Profilgestaltung ist zu groß.');
+ const allowed=(globalThis.PROFILE_ASSETS?.avatars||[]).find(x=>x.id===avatar);
+ const {data,error}=await getClient().from('profiles').update({display_name:name,avatar_url:allowed?.src||null}).eq('id',state.user.id).select('id, display_name, avatar_url').single();if(error)throw error;
+ state.profile=data;
+ const result=await getClient().auth.updateUser({data:{archive_appearance:appearance}});
+ if(result.error){state.account=normalizeAccount(state.user,state.profile,state.role);throw new Error('Anzeigename gespeichert; Profilgestaltung konnte nicht gespeichert werden: '+result.error.message)}
+ state.user=result.data.user;if(state.session)state.session.user=state.user;
+ state.account=normalizeAccount(state.user,state.profile,state.role);return getAccount();
+}
+
 function getAccount(){
   return state.account ? {...state.account} : null;
 }
@@ -281,6 +295,7 @@ globalThis.JMA_AUTH = {
   onRecovery,
   isRecovery,
   updateDisplayName,
+  updateProfile,
   getAccount,
   getState,
   destroy

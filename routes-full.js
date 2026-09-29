@@ -3,8 +3,8 @@
 const AD=()=>globalThis.ARCHIVE_DATA||{};
 const qs=(s,r=document)=>r.querySelector(s), qsa=(s,r=document)=>[...r.querySelectorAll(s)];
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
-const read=(k,f=null)=>{try{const v=localStorage.getItem(k);return v===null?f:JSON.parse(v)}catch{return f}};
-const write=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+const read=(k,f=null)=>globalThis.JMA_STORE.read(k,f);
+const write=(k,v)=>globalThis.JMA_STORE.write(k,v);
 const arr=(k)=>{const v=read(k,[]);return Array.isArray(v)?v:[]};
 const set=(k)=>new Set(arr(k));
 const putSet=(k,s)=>write(k,[...s]);
@@ -63,18 +63,18 @@ function mapAppDetail(m,scenarioName){
   if(!m){
     return `<div class="map-app-detail-cover"><img src="./assets/reference/feature-map.webp" alt=""><span>KARTENARCHIV // BEREIT</span></div>
       <div class="map-app-detail-copy"><small>DETAILANSICHT</small><h2>GEBIET AUSWÄHLEN</h2><p>Wähle später einen Kartenbereich oder vorhandenen Marker, um geprüfte Informationen an dieser Stelle anzuzeigen.</p></div>
-      <div class="map-app-detail-tabs" aria-label="Detailbereiche"><button class="active" type="button">▦<span>Übersicht</span></button><button type="button">⌁<span>Routen</span></button><button type="button">◇<span>Ressourcen</span></button><button type="button">◎<span>Abweichler</span></button></div>
+      <div class="map-app-detail-tabs" aria-label="Detailbereiche"><button class="active" type="button">▦<span>Übersicht</span></button><button type="button" data-rf-go="routes">⌁<span>Routen</span></button><button type="button" data-map-filter-label="Ressourcen">◇<span>Ressourcen</span></button><button type="button" data-map-filter-label="Abweichler">◎<span>Abweichler</span></button></div>
       <section class="map-app-detail-section"><header><b>WICHTIGE INFOS</b></header><div class="map-app-empty-lines"><span>Keine Gebietsdaten ausgewählt.</span><span>Keine erfundenen Werte hinterlegt.</span></div></section>
       <section class="map-app-detail-section"><header><b>RESSOURCEN</b></header><div class="map-app-detail-placeholder">Verifizierte Ressourcendaten werden später angebunden.</div></section>
-      <div class="map-app-detail-actions"><button type="button" class="cyan-btn compact">GEBIET AUSWÄHLEN →</button><button type="button" class="ghost-btn">MARKIERUNGEN</button></div>`;
+      <div class="map-app-detail-actions"><button type="button" class="cyan-btn compact" id="mapChoose">MARKER AUSWÄHLEN →</button>${btnLink('routes','ROUTEN VERWALTEN')}</div>`;
   }
   const coords=m.gameX||m.gameY?`X ${esc(m.gameX||'—')} / Y ${esc(m.gameY||'—')}`:'noch nicht hinterlegt';
   return `<div class="map-app-detail-cover"><img src="./assets/reference/feature-map.webp" alt=""><span>MARKER // AUSGEWÄHLT</span></div>
     <div class="map-app-detail-copy"><small>${esc(m.category||'MARKER')}</small><h2>${esc(m.name)}</h2><p>${esc(m.note||'Für diesen Marker ist noch keine zusätzliche Beschreibung hinterlegt.')}</p></div>
-    <div class="map-app-detail-tabs" aria-label="Detailbereiche"><button class="active" type="button">▦<span>Übersicht</span></button><button type="button">⌁<span>Routen</span></button><button type="button">◇<span>Ressourcen</span></button><button type="button">◎<span>Abweichler</span></button></div>
+    <div class="map-app-detail-tabs" aria-label="Detailbereiche"><button class="active" type="button">▦<span>Übersicht</span></button><button type="button" data-rf-go="routes">⌁<span>Routen</span></button><button type="button" data-map-filter-label="Ressourcen">◇<span>Ressourcen</span></button><button type="button" data-map-filter-label="Abweichler">◎<span>Abweichler</span></button></div>
     <section class="map-app-detail-section"><header><b>WICHTIGE INFOS</b></header><dl class="map-app-kv"><div><dt>Szenario</dt><dd>${esc(scenarioName||m.scenario)}</dd></div><div><dt>Kategorie</dt><dd>${esc(m.category||'Marker')}</dd></div><div><dt>Koordinaten</dt><dd>${coords}</dd></div><div><dt>Prüfstatus</dt><dd>${esc(m.verified||'lokal')}</dd></div></dl></section>
     <section class="map-app-detail-section"><header><b>RESSOURCEN</b></header><div class="map-app-detail-placeholder">Keine verifizierten Ressourcendaten für diesen Marker hinterlegt.</div></section>
-    <div class="map-app-detail-actions"><button type="button" class="cyan-btn compact" data-map-route-add="${esc(m.id)}">＋ ZUR ROUTE</button><button type="button" class="ghost-btn">MARKERDETAIL</button></div>`;
+    <div class="map-app-detail-actions"><button type="button" class="cyan-btn compact" data-map-route-add="${esc(m.id)}">＋ ZUR ROUTE</button>${m.custom?`<button type="button" class="ghost-btn" data-map-delete="${esc(m.id)}">MARKER LÖSCHEN</button>`:btnLink('routes','ROUTEN VERWALTEN')}</div>`;
 }
 
 function renderMap(){
@@ -101,13 +101,13 @@ function renderMap(){
 
     <div class="map-app-shell">
       <aside class="map-app-sidebar">
-        <div class="map-app-side-tabs"><button type="button" class="active"><span>▦</span>Marker & Filter</button><button type="button"><span>▤</span>Meine Karten</button></div>
-        <label class="map-app-side-search"><span>⌕</span><input placeholder="Marker suchen …" aria-label="Markerfilter durchsuchen"></label>
+        <div class="map-app-side-tabs"><button type="button" class="active"><span>▦</span>Marker & Filter</button><button type="button" data-rf-go="routes"><span>▤</span>Meine Karten</button></div>
+        <label class="map-app-side-search"><span>⌕</span><input id="mapSideSearch" value="${esc(q)}" placeholder="Marker suchen …" aria-label="Markerfilter durchsuchen"></label>
         <section class="map-app-filter-list">
           <header><div><small>FILTER</small><b>MARKER-KATEGORIEN</b></div><span>VORSCHAU</span></header>
-          ${mapPreviewCategories.map(([icon,label])=>`<button type="button" class="${label==='Ressourcen'?'has-children':''}"><i>${icon}</i><span>${label}</span><em>${label==='Ressourcen'?'⌄':'○'}</em></button>${label==='Ressourcen'? `<div class="map-app-subfilters">${mapResourcePreview.map(x=>`<span>└ ${x}</span>`).join('')}</div>`:''}`).join('')}
+          ${['all',...cats].map(label=>`<button type="button" data-map-cat="${esc(label)}" class="${label===cat?'active':''}"><i>⌖</i><span>${label==='all'?'Alle Marker':esc(label)}</span><em>${candidates.filter(x=>label==='all'||x.category===label).length}</em></button>`).join('')}
         </section>
-        <button class="map-app-reset-filter" type="button"><span>↻</span> FILTER ZURÜCKSETZEN</button>
+        <button id="mapResetFilters" class="map-app-reset-filter" type="button"><span>↻</span> FILTER ZURÜCKSETZEN</button>
       </aside>
 
       <main class="map-app-center">
@@ -115,13 +115,13 @@ function renderMap(){
           <label><small>SZENARIO</small><select id="mapScenario">${scenarios.map(s=>`<option value="${esc(s.id)}" ${s.id===scenario?'selected':''}>${esc(s.name)}</option>`).join('')}</select></label>
           <label class="map-app-search"><small>SUCHE</small><span>⌕</span><input id="mapSearch" value="${esc(q)}" placeholder="Silo, Kategorie, Notiz …"></label>
           <label><small>KATEGORIE</small><select id="mapCategory"><option value="all">Alle</option>${cats.map(c=>`<option ${c===cat?'selected':''}>${esc(c)}</option>`).join('')}</select></label>
-          <button class="map-app-tool-button" type="button" aria-label="Kartenoptionen">⚙</button>
+          <button class="map-app-tool-button" type="button" id="mapPlace" aria-label="Eigenen Marker setzen">＋</button>
           <div class="map-app-zoom"><button id="mapZoomOut" type="button">−</button><b>${Math.round((view.zoom||1)*100)}%</b><button id="mapZoomIn" type="button">＋</button><button id="mapResetView" type="button">RESET</button></div>
         </div>
 
         <div class="map-app-board" id="mapBoard">
           <div class="map-app-plane" id="mapPlane">
-            <img class="map-app-image" src="./assets/map/once-human-world-map.webp" alt="Once Human Weltkarte" draggable="false">
+            <svg class="map-route-line" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><polyline points="${arr('jma_route_draft').map(id=>allMarkers().find(m=>m.id===id&&m.scenario===scenario)).filter(Boolean).map(m=>`${m.mapX},${m.mapY}`).join(' ')}" fill="none" stroke="#45e3f1" stroke-width=".3"/></svg><img class="map-app-image" src="./assets/map/once-human-world-map.webp" alt="Once Human Weltkarte" draggable="false">
             ${markers.map(m=>`<button class="map-app-marker ${m.id===mapSelected()?'active':''} ${m.custom?'custom':''}" type="button" title="${esc(m.name)}" data-map-marker="${esc(m.id)}" style="left:${Number(m.mapX)||50}%;top:${Number(m.mapY)||50}%"><span>⌖</span></button>`).join('')}
           </div>
           <div class="map-app-compass" aria-hidden="true"><b>N</b><span>✥</span><small>W&nbsp;&nbsp;&nbsp;E</small></div>
@@ -135,31 +135,9 @@ function renderMap(){
   </section>`;
 }
 
-function bindMap(){
-  navBinds();
-  const setSc=v=>{write('jma_map_scenario',v);write('jma_map_selected','');refresh()};
-  on('#mapScenario','change',e=>setSc(e.target.value));
-  on('#mapSearch','input',e=>inputRefresh('jma_map_q',e.target.value,'#mapSearch'));
-  on('#mapCategory','change',e=>{write('jma_map_cat',e.target.value);refresh()});
-  qsa('[data-map-marker]').forEach(b=>b.onclick=e=>{e.stopPropagation();write('jma_map_selected',b.dataset.mapMarker);refresh()});
-  qsa('[data-map-route-add]').forEach(b=>b.onclick=()=>{const r=arr('jma_route_draft');if(!r.includes(b.dataset.mapRouteAdd))r.push(b.dataset.mapRouteAdd);write('jma_route_draft',r);toast('Marker zum Routenentwurf hinzugefügt.');refresh()});
-  const board=qs('#mapBoard'),plane=qs('#mapPlane'),image=qs('.map-app-image');if(!board||!plane||!image)return;
-  let savedView=read('jma_map_view',{zoom:1,x:0,y:0}),v={zoom:Math.max(1,Math.min(2.4,Number(savedView.zoom)||1)),x:Number(savedView.x)||0,y:Number(savedView.y)||0},drag=null,base={w:board.clientWidth,h:board.clientHeight};
-  const fitPlane=()=>{const bw=board.clientWidth,bh=board.clientHeight,ratio=(image.naturalWidth&&image.naturalHeight)?image.naturalWidth/image.naturalHeight:1.5;let w=bw,h=bw/ratio;if(h<bh){h=bh;w=bh*ratio}base={w,h};plane.style.width=`${w}px`;plane.style.height=`${h}px`};
-  const clampView=()=>{fitPlane();v.zoom=Math.max(1,Math.min(2.4,Number(v.zoom)||1));const maxX=Math.max(0,(base.w*v.zoom-board.clientWidth)/2),maxY=Math.max(0,(base.h*v.zoom-board.clientHeight)/2);v.x=Math.max(-maxX,Math.min(maxX,Number(v.x)||0));v.y=Math.max(-maxY,Math.min(maxY,Number(v.y)||0))};
-  const apply=()=>{clampView();plane.style.left=`calc(50% + ${v.x}px)`;plane.style.top=`calc(50% + ${v.y}px)`;plane.style.transform=`translate(-50%,-50%) scale(${v.zoom})`;write('jma_map_view',v)};
-  const zoom=d=>{v.zoom=Math.max(1,Math.min(2.4,(v.zoom||1)+d));apply();const b=qs('.map-app-zoom b');if(b)b.textContent=`${Math.round(v.zoom*100)}%`};
-  on('#mapZoomIn','click',()=>zoom(.15));
-  on('#mapZoomOut','click',()=>zoom(-.15));
-  on('#mapResetView','click',()=>{v={zoom:1,x:0,y:0};apply();refresh()});
-  board.addEventListener('wheel',e=>{e.preventDefault();zoom(e.deltaY<0?.1:-.1)},{passive:false});
-  board.addEventListener('pointerdown',e=>{if(e.target.closest('.map-app-marker'))return;drag={x:e.clientX,y:e.clientY,bx:v.x||0,by:v.y||0};board.setPointerCapture(e.pointerId)});
-  board.addEventListener('pointermove',e=>{if(!drag)return;v.x=drag.bx+(e.clientX-drag.x);v.y=drag.by+(e.clientY-drag.y);apply()});
-  board.addEventListener('pointerup',()=>drag=null);
-  board.addEventListener('pointercancel',()=>drag=null);
-  if(!image.complete) image.addEventListener('load',apply,{once:true});
-  apply();
-}
+function bindMap(){navBinds();on('#mapScenario','change',e=>{write('jma_map_scenario',e.target.value);write('jma_map_selected','');write('jma_map_cat','all');write('jma_map_q','');refresh()});on('#mapSearch','input',e=>inputRefresh('jma_map_q',e.target.value,'#mapSearch'));qsa('[data-map-cat]').forEach(b=>b.onclick=()=>{write('jma_map_cat',b.dataset.mapCat);refresh()});on('#mapResetFilters','click',()=>{write('jma_map_cat','all');write('jma_map_q','');refresh()});on('#mapSideSearch','input',e=>inputRefresh('jma_map_q',e.target.value,'#mapSideSearch'));on('#mapCategory','change',e=>{write('jma_map_cat',e.target.value);refresh()});on('#mapChoose','click',()=>qs('#mapSearch').focus());qsa('[data-map-filter-label]').forEach(b=>b.onclick=()=>{write('jma_map_q',b.dataset.mapFilterLabel);refresh()});on('#mapLabels','change',e=>{write('jma_map_labels',e.target.checked);refresh()});qsa('[data-map-marker]').forEach(b=>b.onclick=e=>{e.stopPropagation();write('jma_map_selected',b.dataset.mapMarker);refresh()});qsa('[data-map-route-add]').forEach(b=>b.onclick=()=>{const rows=arr('jma_route_draft');if(!rows.includes(b.dataset.mapRouteAdd))rows.push(b.dataset.mapRouteAdd);write('jma_route_draft',rows);refresh()});qsa('[data-map-route-remove]').forEach(b=>b.onclick=()=>{write('jma_route_draft',arr('jma_route_draft').filter(x=>x!==b.dataset.mapRouteRemove));refresh()});qsa('[data-map-delete]').forEach(b=>b.onclick=()=>{if(!confirm('Eigenen Marker löschen?'))return;write('jma_custom_markers',mapCustom().filter(x=>x.id!==b.dataset.mapDelete));write('jma_map_selected','');write('jma_route_draft',arr('jma_route_draft').filter(x=>x!==b.dataset.mapDelete));refresh()});qsa('[data-map-catalog]').forEach(b=>b.onclick=()=>{sessionStorage.setItem('jma_open_catalog',b.dataset.mapCatalog);go('database')});
+const board=qs('#mapBoard'),plane=qs('#mapPlane'),image=qs('.map-app-image');let placing=false,drag=null,saved=read('jma_map_view',{zoom:1,x:0,y:0}),v={zoom:Math.max(1,Math.min(3,+saved.zoom||1)),x:+saved.x||0,y:+saved.y||0};const apply=()=>{const ratio=image.naturalWidth/image.naturalHeight||1.5,w=Math.max(board.clientWidth,board.clientHeight*ratio),h=w/ratio,maxX=Math.max(0,(w*v.zoom-board.clientWidth)/2),maxY=Math.max(0,(h*v.zoom-board.clientHeight)/2);v.x=Math.min(maxX,Math.max(-maxX,v.x));v.y=Math.min(maxY,Math.max(-maxY,v.y));plane.style.width=w+'px';plane.style.height=h+'px';plane.style.left=`calc(50% + ${v.x}px)`;plane.style.top=`calc(50% + ${v.y}px)`;plane.style.transform=`translate(-50%,-50%) scale(${v.zoom})`;qs('.map-app-zoom b').textContent=Math.round(v.zoom*100)+'%';write('jma_map_view',v)};const zoom=delta=>{v.zoom=Math.max(1,Math.min(3,v.zoom+delta));apply()};on('#mapZoomIn','click',()=>zoom(.15));on('#mapZoomOut','click',()=>zoom(-.15));on('#mapResetView','click',()=>{v={zoom:1,x:0,y:0};apply()});on('#mapPlace','click',()=>{placing=!placing;qs('#mapPlace').textContent=placing?'Klicke auf die Position für deinen neuen Marker.':'Ziehen = verschieben · Mausrad / ± = zoomen';board.classList.toggle('placing',placing)});board.addEventListener('wheel',e=>{e.preventDefault();zoom(e.deltaY<0?.1:-.1)},{passive:false});board.addEventListener('pointerdown',e=>{if(placing||e.target.closest('[data-map-marker]'))return;drag={x:e.clientX,y:e.clientY,bx:v.x,by:v.y};board.setPointerCapture(e.pointerId)});board.addEventListener('pointermove',e=>{if(drag){v.x=drag.bx+e.clientX-drag.x;v.y=drag.by+e.clientY-drag.y;apply()}});for(const ev of ['pointerup','pointercancel'])board.addEventListener(ev,()=>drag=null);board.addEventListener('click',e=>{if(!placing||e.target.closest('[data-map-marker]'))return;const rect=plane.getBoundingClientRect(),mapX=(e.clientX-rect.left)/rect.width*100,mapY=(e.clientY-rect.top)/rect.height*100;if(mapX<0||mapX>100||mapY<0||mapY>100)return;placing=false;let dialog=qs('#markerDialog');if(!dialog){dialog=document.createElement('dialog');dialog.id='markerDialog';document.body.appendChild(dialog)}dialog.innerHTML=`<form id="markerForm"><button type="button" class="dialog-close" aria-label="Schließen">×</button><h2>EIGENER MARKER</h2><label>NAME<input name="name" required maxlength="80"></label><label>KATEGORIE<input name="category" required value="Eigener Fund" maxlength="60"></label><label>NOTIZ<textarea name="note" maxlength="1000"></textarea></label><label>SPIEL X (optional)<input name="gameX" type="number"></label><label>SPIEL Y (optional)<input name="gameY" type="number"></label><button class="cyan-btn">MARKER SPEICHERN</button></form>`;dialog.querySelector('.dialog-close').onclick=()=>dialog.close();dialog.querySelector('form').onsubmit=e=>{e.preventDefault();const fd=new FormData(e.currentTarget),name=String(fd.get('name')).trim(),category=String(fd.get('category')).trim();if(!name||!category)return;const marker={id:uid('marker'),name,category,note:String(fd.get('note')).trim(),gameX:fd.get('gameX'),gameY:fd.get('gameY'),mapX,mapY,scenario:read('jma_map_scenario','way-of-winter'),created:new Date().toISOString(),catalogIds:[]};write('jma_custom_markers',[...mapCustom(),marker]);write('jma_map_selected',marker.id);dialog.close();refresh()};dialog.showModal()});image.addEventListener('load',apply,{once:true});const observer=new ResizeObserver(()=>{if(board.isConnected)apply();else observer.disconnect()});observer.observe(board);apply()}
+
 
 function renderHunt(){const ids=[...set('jma_hunt')],meta=read('jma_hunt_meta',{});const rows=ids.map(id=>catalog().find(x=>x.id===id)).filter(Boolean);return `<section class="rf-page hunt-page">${hero('PERSÖNLICH // ZIELE','JAGDLISTE','Katalogziele priorisieren, als erledigt markieren oder direkt zur Datenbank zurückspringen.',metrics([[rows.length,'aktive Einträge'],[rows.filter(x=>meta[x.id]?.done).length,'erledigt']]))}<div class="rf-hunt-list">${rows.map(x=>`<article class="${meta[x.id]?.done?'done':''}"><div><small>${esc(x.kind||x.category)}</small><h3>${esc(x.name_de)}</h3><p>${esc(x.acquisition||x.description||'')}</p></div><label>PRIORITÄT<select data-hunt-priority="${esc(x.id)}"><option ${meta[x.id]?.priority==='Hoch'?'selected':''}>Hoch</option><option ${!meta[x.id]?.priority||meta[x.id]?.priority==='Normal'?'selected':''}>Normal</option><option ${meta[x.id]?.priority==='Niedrig'?'selected':''}>Niedrig</option></select></label><div class="actions"><button type="button" data-hunt-done="${esc(x.id)}">${meta[x.id]?.done?'↺ ÖFFNEN':'✓ ERLEDIGT'}</button><button type="button" data-hunt-remove="${esc(x.id)}">ENTFERNEN</button></div></article>`).join('')||empty('Keine Jagdziele')}<div class="rf-inline-cta">${btnLink('database','＋ AUS DATENBANK HINZUFÜGEN','cyan-btn compact')}</div></div></section>`}
 function bindHunt(){navBinds();qsa('[data-hunt-priority]').forEach(s=>s.onchange=()=>{const m=read('jma_hunt_meta',{});m[s.dataset.huntPriority]={...(m[s.dataset.huntPriority]||{}),priority:s.value};write('jma_hunt_meta',m);toast('Priorität gespeichert.')});qsa('[data-hunt-done]').forEach(b=>b.onclick=()=>{const m=read('jma_hunt_meta',{}),id=b.dataset.huntDone;m[id]={...(m[id]||{}),done:!m[id]?.done};write('jma_hunt_meta',m);refresh()});qsa('[data-hunt-remove]').forEach(b=>b.onclick=()=>{const s=set('jma_hunt');s.delete(b.dataset.huntRemove);putSet('jma_hunt',s);refresh()})}
@@ -167,7 +145,7 @@ function bindHunt(){navBinds();qsa('[data-hunt-priority]').forEach(s=>s.onchange
 function renderRoutes(){const saved=arr('jma_routes'),draft=arr('jma_route_draft');return `<section class="rf-page routes-page">${hero('KARTE // PLANUNG','FARMROUTEN','Marker zu eigenen Routen verbinden. Gespeicherte Routen bleiben lokal im Browser und öffnen ihre Stationen wieder auf der Karte.')}
  <div class="rf-routes-grid"><section class="rf-panel"><div class="rf-panel-head"><b>AKTUELLER ENTWURF</b><small>${draft.length} Stationen</small></div><div class="rf-route-steps">${draft.map((id,i)=>{const m=allMarkers().find(x=>x.id===id);return m?`<div><b>${i+1}</b><span>${esc(m.name)}</span><button data-route-step-remove="${esc(id)}">×</button></div>`:''}).join('')||empty('Entwurf leer')}</div><form id="routeSaveForm"><input name="name" placeholder="Routenname" required><button class="cyan-btn compact" type="submit" ${draft.length?'':'disabled'}>ROUTE SPEICHERN</button></form>${btnLink('map','⌖ MARKER AUF KARTE WÄHLEN')}</section>
  <section class="rf-panel"><div class="rf-panel-head"><b>GESPEICHERTE ROUTEN</b><small>${saved.length}</small></div><div class="rf-saved-list">${saved.map(r=>`<article><div><small>${fmt(r.created)}</small><h3>${esc(r.name)}</h3><p>${r.markers.length} Stationen</p></div><div><button data-route-open="${esc(r.id)}">ÖFFNEN</button><button data-route-delete="${esc(r.id)}">LÖSCHEN</button></div></article>`).join('')||empty('Noch keine Route gespeichert')}</div></section></div></section>`}
-function bindRoutes(){navBinds();qsa('[data-route-step-remove]').forEach(b=>b.onclick=()=>{write('jma_route_draft',arr('jma_route_draft').filter(x=>x!==b.dataset.routeStepRemove));refresh()});on('#routeSaveForm','submit',e=>{e.preventDefault();const name=new FormData(e.currentTarget).get('name').trim(),draft=arr('jma_route_draft');if(!name||!draft.length)return;const rows=arr('jma_routes');rows.unshift({id:uid('route'),name,markers:draft,created:new Date().toISOString()});write('jma_routes',rows);write('jma_route_draft',[]);toast('Route gespeichert.');refresh()});qsa('[data-route-delete]').forEach(b=>b.onclick=()=>{write('jma_routes',arr('jma_routes').filter(x=>x.id!==b.dataset.routeDelete));refresh()});qsa('[data-route-open]').forEach(b=>b.onclick=()=>{const r=arr('jma_routes').find(x=>x.id===b.dataset.routeOpen);if(!r)return;write('jma_route_draft',r.markers);if(r.markers[0])write('jma_map_selected',r.markers[0]);go('map')})}
+function bindRoutes(){navBinds();qsa('[data-route-step-remove]').forEach(b=>b.onclick=()=>{write('jma_route_draft',arr('jma_route_draft').filter(x=>x!==b.dataset.routeStepRemove));refresh()});on('#routeSaveForm','submit',e=>{e.preventDefault();const name=new FormData(e.currentTarget).get('name').trim(),draft=arr('jma_route_draft');if(!name||!draft.length)return;const rows=arr('jma_routes');rows.unshift({id:uid('route'),name,markers:draft,created:new Date().toISOString()});write('jma_routes',rows);write('jma_route_draft',[]);toast('Route gespeichert.');refresh()});qsa('[data-route-delete]').forEach(b=>b.onclick=()=>{write('jma_routes',arr('jma_routes').filter(x=>x.id!==b.dataset.routeDelete));refresh()});qsa('[data-route-open]').forEach(b=>b.onclick=()=>{const r=arr('jma_routes').find(x=>x.id===b.dataset.routeOpen);if(!r)return;write('jma_route_draft',r.markers);if(r.markers[0]){write('jma_map_selected',r.markers[0]);const m=allMarkers().find(x=>x.id===r.markers[0]);if(m)write('jma_map_scenario',m.scenario)}write('jma_map_q','');write('jma_map_cat','all');go('map')})}
 
 function renderPlanner(){const plans=arr('jma_plans'),hunts=[...set('jma_hunt')].map(id=>catalog().find(x=>x.id===id)).filter(Boolean),builds=arr('jma_saved_builds'),routes=arr('jma_routes');return `<section class="rf-page planner-page">${hero('SESSION // PLANUNG','EINSATZPLANER','Eine Spielsitzung aus Jagdzielen, Build und Kartenroute zusammensetzen und lokal speichern.')}
  <div class="rf-planner-layout"><form class="rf-panel rf-plan-form" id="planForm"><div class="rf-panel-head"><b>NEUER EINSATZ</b><small>lokaler Plan</small></div><label>TITEL<input name="title" required placeholder="z. B. Winter-Silos"></label><div class="rf-form-pair"><label>DATUM<input type="date" name="date"></label><label>FOKUS<select name="focus"><option>Farm</option><option>Boss</option><option>Erkundung</option><option>Tech</option><option>Community</option></select></label></div><label>JAGDZIEL<select name="hunt"><option value="">Keins</option>${hunts.map(x=>`<option value="${esc(x.id)}">${esc(x.name_de)}</option>`).join('')}</select></label><label>BUILD<select name="build"><option value="">Kein Build</option>${builds.map(x=>`<option value="${esc(x.id)}">${esc(x.name)}</option>`).join('')}</select></label><label>ROUTE<select name="route"><option value="">Keine Route</option>${routes.map(x=>`<option value="${esc(x.id)}">${esc(x.name)}</option>`).join('')}</select></label><label>NOTIZ<textarea name="note" placeholder="Materialien, Gruppe, Reihenfolge …"></textarea></label><button class="cyan-btn compact" type="submit">EINSATZ SPEICHERN</button></form>
@@ -185,13 +163,16 @@ function renderSecrets(){const rows=AD().seed?.secrets||[],status=read('jma_secr
 function bindSecrets(){navBinds();qsa('[data-secret-status]').forEach(b=>b.onclick=()=>{write('jma_secret_status',b.dataset.secretStatus);refresh()});qsa('[data-secret-note]').forEach(b=>b.onclick=()=>{const s=(AD().seed?.secrets||[]).find(x=>x.id===b.dataset.secretNote),text=prompt('Deine lokale Notiz zu diesem Thema:','');if(text===null||!text.trim())return;const rows=arr('jma_secret_notes');rows.unshift({id:uid('secret-note'),source:s?.id,title:s?.title||'Notiz',text:text.trim()});write('jma_secret_notes',rows);refresh()});qsa('[data-secret-delete]').forEach(b=>b.onclick=()=>{write('jma_secret_notes',arr('jma_secret_notes').filter(x=>x.id!==b.dataset.secretDelete));refresh()})}
 
 const buildSlots=()=>AD().r9?.buildPlanner?.slots||[];
-function buildOptions(slot){const d=AD(),c=catalog();if(/Primär|Sekundär|Nahkampf/.test(slot))return (d.r12?.weapons||[]).map(x=>x.name);if(['Helm','Maske','Oberteil','Handschuhe','Hose','Schuhe'].includes(slot))return [...new Set([...(d.r9?.armorBlueprints||[]).filter(x=>x.slot===slot).map(x=>x.name),...(d.r9?.mods?.samples||[]).filter(x=>x.slot===slot||x.slot==='Alle Waffen').map(x=>x.name)])];if(slot==='Abweichler')return (d.r9?.deviations||[]).map(x=>x.name);if(slot==='Nahrung')return c.filter(x=>/Fleisch|Food|Nahrung|Verbrauch/i.test(`${x.name_de} ${x.kind}`)).map(x=>x.name_de);if(slot==='Cradle')return [];return c.slice(0,20).map(x=>x.name_de)}
+function buildOptions(slot){const d=AD(),c=catalog();if(/Primär|Sekundär/.test(slot))return [...new Set([...(d.r12?.weapons||[]).map(x=>x.name),...(d.r9?.weaponBlueprints||[]).map(x=>x.name),...c.filter(x=>x.category==='weapons'&&!/Nahkampf|Messer|Schwert/i.test(x.kind||'')).map(x=>x.name_de)])];if(slot==='Nahkampfwaffe')return c.filter(x=>/Nahkampf|Messer|Schwert/i.test(x.kind||'')).map(x=>x.name_de);if(['Helm','Maske','Oberteil','Handschuhe','Hose','Schuhe'].includes(slot))return (d.r9?.armorBlueprints||[]).filter(x=>x.slot===slot).map(x=>x.name);if(slot==='Abweichler')return (d.r9?.deviations||[]).map(x=>x.name);if(slot==='Nahrung')return c.filter(x=>/Fleisch|Food|Nahrung|Verbrauch/i.test(`${x.name_de} ${x.kind}`)).map(x=>x.name_de);return []}
+
 function currentBuild(){return read('jma_build_draft',{id:null,name:'Neuer Build',mode:'Eigener Build',effect:'',notes:'',slots:{},template:null})}
+function validateBuild(b){if(!b||typeof b!=='object'||Array.isArray(b)||typeof b.name!=='string'||b.name.trim().length<2||b.name.length>80||!b.slots||typeof b.slots!=='object'||Array.isArray(b.slots))throw new Error('Ungültiger Build: Name und Slots prüfen.');for(const [slot,value]of Object.entries(b.slots))if(!buildSlots().includes(slot)||typeof value!=='string'||value&&!buildOptions(slot).includes(value))throw new Error('Unbekannter Build-Slot oder Ausrüstung: '+slot);if(b.notes!==undefined&&(typeof b.notes!=='string'||b.notes.length>2000)||b.effect!==undefined&&(typeof b.effect!=='string'||b.effect.length>80))throw new Error('Ungültiger Build-Text.');return {id:typeof b.id==='string'?b.id:null,name:b.name.trim(),mode:'Eigener Build',slots:{...b.slots},notes:b.notes||'',effect:b.effect||'',template:null}}
 function renderBuilds(){const d=AD(),draft=currentBuild(),saved=arr('jma_saved_builds'),templates=d.seed?.builds||[],slots=buildSlots();const filled=slots.filter(s=>draft.slots?.[s]).length,base=templates.find(x=>x.id===draft.template);return `<section class="rf-page builds-page">${hero('WERKSTATT // LOADOUT','BUILD-PLANER','Waffen, Rüstung, Abweichler, Cradle und Nahrung in einem speicherbaren Loadout zusammenstellen – basierend auf den vorhandenen Planner-Slots.',metrics([[slots.length,'Slots'],[filled,'belegt'],[saved.length,'gespeichert']]))}
- <div class="rf-build-layout"><aside class="rf-panel rf-build-meta"><div class="rf-panel-head"><b>BUILD-PROFIL</b><small>lokaler Entwurf</small></div><label>NAME<input id="buildName" value="${esc(draft.name)}"></label><label>VORLAGE<select id="buildTemplate"><option value="">Eigener Build</option>${templates.map(t=>`<option value="${esc(t.id)}" ${draft.template===t.id?'selected':''}>${esc(t.name)} · ${esc(t.role)}</option>`).join('')}</select></label><label>EFFEKT-FOKUS<select id="buildEffect"><option value="">Kein Fokus</option>${(d.r9?.buildPlanner?.effectFilters||[]).map(x=>`<option ${draft.effect===x?'selected':''}>${esc(x)}</option>`).join('')}</select></label><label>NOTIZ<textarea id="buildNotes">${esc(draft.notes||'')}</textarea></label><div class="rf-action-stack"><button class="cyan-btn compact" id="buildSave" type="button">BUILD SPEICHERN</button><button class="ghost-btn" id="buildClear" type="button">ENTWURF LEEREN</button></div>${base?`<div class="rf-template-stats"><small>VORLAGEN-VERGLEICHSWERTE</small>${Object.entries(base.stats||{}).map(([k,v])=>`<div><span>${esc(k)}</span><i><em style="width:${v}%"></em></i><b>${v}</b></div>`).join('')}<p>${esc(base.notes||'')}</p></div>`:''}</aside>
+ <div class="rf-build-layout"><aside class="rf-panel rf-build-meta"><div class="rf-panel-head"><b>BUILD-PROFIL</b><small>lokaler Entwurf</small></div><label>NAME<input id="buildName" value="${esc(draft.name)}"></label><label>VORLAGE<select id="buildTemplate"><option value="">Eigener Build</option>${templates.map(t=>`<option value="${esc(t.id)}" ${draft.template===t.id?'selected':''}>${esc(t.name)} · ${esc(t.role)}</option>`).join('')}</select></label><label>EFFEKT-FOKUS<select id="buildEffect"><option value="">Kein Fokus</option>${(d.r9?.buildPlanner?.effectFilters||[]).map(x=>`<option ${draft.effect===x?'selected':''}>${esc(x)}</option>`).join('')}</select></label><label>NOTIZ<textarea id="buildNotes">${esc(draft.notes||'')}</textarea></label><div class="rf-action-stack"><button class="cyan-btn compact" id="buildSave" type="button">BUILD SPEICHERN</button><button class="ghost-btn" id="buildClear" type="button">ENTWURF LEEREN</button></div></aside>
  <main class="rf-build-slots">${slots.map((s,i)=>`<article><header><span>${String(i+1).padStart(2,'0')}</span><div><small>SLOT</small><b>${esc(s)}</b></div></header><select data-build-slot="${esc(s)}"><option value="">Nicht belegt</option>${buildOptions(s).map(x=>`<option ${draft.slots?.[s]===x?'selected':''}>${esc(x)}</option>`).join('')}</select><p>${draft.slots?.[s]?esc(draft.slots[s]):'Wähle einen bekannten Eintrag aus dem vorhandenen Datenbestand.'}</p></article>`).join('')}</main>
- <aside class="rf-panel rf-build-saved"><div class="rf-panel-head"><b>GESPEICHERT</b><small>${saved.length}</small></div>${saved.map(b=>`<article><div><small>${esc(b.mode||'Build')} · ${fmt(b.updated)}</small><h3>${esc(b.name)}</h3><p>${Object.values(b.slots||{}).filter(Boolean).length}/${slots.length} Slots</p></div><div><button data-build-load="${esc(b.id)}">LADEN</button><button data-build-delete="${esc(b.id)}">×</button></div></article>`).join('')||empty('Noch kein Build gespeichert')}<button class="ghost-btn" id="buildShare" type="button" ${saved.length?'':'disabled'}>AKTUELLEN BUILD ALS JSON KOPIEREN</button></aside></div></section>`}
-function bindBuilds(){navBinds();const patch=(k,v)=>{const b=currentBuild();b[k]=v;write('jma_build_draft',b)};on('#buildName','input',e=>patch('name',e.target.value));on('#buildNotes','input',e=>patch('notes',e.target.value));on('#buildEffect','change',e=>patch('effect',e.target.value));on('#buildTemplate','change',e=>{const b=currentBuild(),t=(AD().seed?.builds||[]).find(x=>x.id===e.target.value);b.template=t?.id||null;b.mode=t?`${t.role} · ${t.rating}`:'Eigener Build';if(t){b.name=t.name;b.notes=t.notes||''}write('jma_build_draft',b);refresh()});qsa('[data-build-slot]').forEach(s=>s.onchange=()=>{const b=currentBuild();b.slots={...(b.slots||{}),[s.dataset.buildSlot]:s.value};write('jma_build_draft',b);const p=s.parentElement.querySelector('p');if(p)p.textContent=s.value||'Wähle einen bekannten Eintrag aus dem vorhandenen Datenbestand.'});on('#buildSave','click',()=>{const b=currentBuild(),rows=arr('jma_saved_builds'),id=b.id||uid('build'),obj={...b,id,updated:new Date().toISOString()};const idx=rows.findIndex(x=>x.id===id);idx>=0?rows.splice(idx,1,obj):rows.unshift(obj);write('jma_saved_builds',rows);write('jma_build_draft',obj);toast('Build gespeichert.');refresh()});on('#buildClear','click',()=>{write('jma_build_draft',{id:null,name:'Neuer Build',mode:'Eigener Build',effect:'',notes:'',slots:{},template:null});refresh()});qsa('[data-build-load]').forEach(b=>b.onclick=()=>{const x=arr('jma_saved_builds').find(v=>v.id===b.dataset.buildLoad);if(x){write('jma_build_draft',x);refresh()}});qsa('[data-build-delete]').forEach(b=>b.onclick=()=>{write('jma_saved_builds',arr('jma_saved_builds').filter(x=>x.id!==b.dataset.buildDelete));refresh()});on('#buildShare','click',async()=>{const text=JSON.stringify(currentBuild(),null,2);try{await navigator.clipboard.writeText(text);toast('Build-JSON kopiert.')}catch{prompt('Build-JSON kopieren:',text)}})}
+ <aside class="rf-panel rf-build-saved"><div class="rf-panel-head"><b>GESPEICHERT</b><small>${saved.length}</small></div>${saved.map(b=>`<article><div><small>${esc(b.mode||'Build')} · ${fmt(b.updated)}</small><h3>${esc(b.name)}</h3><p>${Object.values(b.slots||{}).filter(Boolean).length}/${slots.length} Slots</p></div><div><button data-build-load="${esc(b.id)}">LADEN</button><button data-build-delete="${esc(b.id)}">×</button></div></article>`).join('')||empty('Noch kein Build gespeichert')}<label class="file-button">BUILD IMPORTIEREN<input id="buildImport" type="file" accept="application/json"></label><p id="buildMessage" role="status"></p><button class="ghost-btn" id="buildShare" type="button" >BUILD ALS JSON EXPORTIEREN</button></aside></div></section>`}
+function bindBuilds(){navBinds();const patch=(k,v)=>{const b=currentBuild();b[k]=v;write('jma_build_draft',b)};on('#buildName','input',e=>patch('name',e.target.value));on('#buildNotes','input',e=>patch('notes',e.target.value));on('#buildEffect','change',e=>patch('effect',e.target.value));qsa('[data-build-slot]').forEach(s=>s.onchange=()=>{const b=currentBuild();b.slots={...b.slots,[s.dataset.buildSlot]:s.value};write('jma_build_draft',b)});qsa('[data-build-tab]').forEach(b=>b.onclick=()=>{write('jma_build_tab',b.dataset.buildTab);refresh()});on('#savedBuildSearch','input',e=>inputRefresh('jma_build_search',e.target.value,'#savedBuildSearch'));on('#buildSave','click',()=>{try{const b=validateBuild(currentBuild());if(!Object.values(b.slots).some(Boolean))throw new Error('Mindestens einen Ausrüstungsslot belegen.');const rows=arr('jma_saved_builds'),obj={...b,id:b.id||uid('build'),updated:new Date().toISOString()},index=rows.findIndex(x=>x.id===obj.id);index<0?rows.unshift(obj):rows.splice(index,1,obj);write('jma_saved_builds',rows);write('jma_build_draft',obj);toast('Build gespeichert.');refresh()}catch(error){qs('#buildMessage').textContent=error.message}});on('#buildTemplate','change',e=>{const b=currentBuild(),t=(AD().seed?.builds||[]).find(x=>x.id===e.target.value);b.template=t?.id||null;b.mode=t?.role||'Eigener Build';if(t){b.name=t.name;b.notes=t.notes||''}write('jma_build_draft',b);refresh()});on('#buildClear','click',()=>{globalThis.JMA_STORE.remove('jma_build_draft');refresh()});qsa('[data-build-load]').forEach(b=>b.onclick=()=>{const saved=arr('jma_saved_builds').find(x=>x.id===b.dataset.buildLoad);if(saved){write('jma_build_draft',saved);write('jma_build_tab','planner');refresh()}});qsa('[data-build-delete]').forEach(b=>b.onclick=()=>{if(!confirm('Build löschen?'))return;write('jma_saved_builds',arr('jma_saved_builds').filter(x=>x.id!==b.dataset.buildDelete));refresh()});qsa('[data-build-layout]').forEach(b=>b.onclick=()=>{const t=AD().seed.builds.find(x=>x.id===b.dataset.buildLayout);write('jma_build_draft',{id:null,name:t.name,mode:'Eigener Build',slots:{},notes:t.notes,effect:'',template:null});write('jma_build_tab','planner');refresh()});on('#buildShare','click',()=>{try{downloadJSON({version:1,build:validateBuild(currentBuild())},'once-human-build.json')}catch(error){qs('#buildMessage').textContent=error.message}});on('#buildImport','change',async e=>{try{const file=e.target.files[0];if(!file||file.size>500000)throw new Error('Build-Datei darf maximal 500 KB groß sein.');const data=JSON.parse(await file.text()),b=validateBuild(data.version===1?data.build:data);b.id=null;write('jma_build_draft',b);refresh();toast('Build als Entwurf importiert.')}catch(error){qs('#buildMessage').textContent=error.message;e.target.value=''}});qsa('[data-build-compare]').forEach(s=>s.onchange=()=>{const values=read('jma_build_compare',(AD().r12.weapons||[]).slice(0,2).map(x=>x.id));values[+s.dataset.buildCompare]=s.value;write('jma_build_compare',values);refresh()})}
+
 
 const rooms=[['hilfe','Archiv-Hilfe','Fragen zu Katalog, Karte und Werkzeugen'],['funde','Funde & Korrekturen','Wissen gemeinsam prüfen'],['builds','Build-Labor','Loadouts und Ideen diskutieren']];
 function renderCommunity(){const room=read('jma_community_room','hilfe'),posts=arr('jma_community_posts').filter(x=>x.room===room);return `<section class="rf-page community-page">${hero('COMMUNITY // LOKALER PROTOTYP','COMMUNITY','Themenräume und Beiträge sind funktional als lokaler Browserzustand umgesetzt; ein Server-Backend ist im aktuellen Projekt noch nicht angeschlossen.')}
@@ -202,31 +183,34 @@ function renderSubmissions(){const rows=arr('jma_submissions');return `<section 
  <div class="rf-submit-layout"><form class="rf-panel" id="submissionForm"><div class="rf-panel-head"><b>NEUE EINREICHUNG</b><small>lokaler Entwurf</small></div><label>TYP<select name="type"><option>Fund / Ort</option><option>Katalog-Korrektur</option><option>Tech-Formel</option><option>Guide-Hinweis</option></select></label><label>TITEL<input name="title" required></label><label>BEOBACHTUNG<textarea name="body" required></textarea></label><label>BELEG / QUELLE<textarea name="evidence" placeholder="Eigene Beobachtung, Screenshot-Hinweis oder Quellenvermerk"></textarea></label><button class="cyan-btn compact" type="submit">IN LOKALE PRÜFQUEUE</button></form><section class="rf-panel"><div class="rf-panel-head"><b>MEINE EINREICHUNGEN</b><small>${rows.length}</small></div>${rows.map(x=>`<article class="rf-submission-row"><div><small>${esc(x.type)} · ${fmt(x.created)}</small><h3>${esc(x.title)}</h3><p>${esc(x.body)}</p><em>Status: ${esc(x.status)}</em></div><button data-sub-delete="${esc(x.id)}">×</button></article>`).join('')||empty('Noch keine lokalen Einreichungen')}</section></div></section>`}
 function bindSubmissions(){navBinds();on('#submissionForm','submit',e=>{e.preventDefault();const fd=new FormData(e.currentTarget),rows=arr('jma_submissions');rows.unshift({id:uid('submission'),type:fd.get('type'),title:String(fd.get('title')).trim(),body:String(fd.get('body')).trim(),evidence:String(fd.get('evidence')||'').trim(),status:'lokal · nicht veröffentlicht',created:new Date().toISOString()});write('jma_submissions',rows);toast('Einreichung lokal gespeichert.');refresh()});qsa('[data-sub-delete]').forEach(b=>b.onclick=()=>{write('jma_submissions',arr('jma_submissions').filter(x=>x.id!==b.dataset.subDelete));refresh()})}
 
+const profileColors={cyan:'#45e3f1',red:'#ff3d5e',gold:'#edc775',violet:'#b89bf8'};
+function appearance(source){const p=source||account()?.appearance||read('jma_profile_appearance',{}),assets=globalThis.PROFILE_ASSETS;return {avatar:assets.avatars.some(x=>x.id===p.avatar)||/^upload-[a-f0-9-]{36}$/.test(p.avatar||'')?p.avatar:'none',frame:assets.frames.some(x=>x.id===p.frame)?p.frame:'none',banner:assets.banners.some(x=>x.id===p.banner)?p.banner:'kartenwelt',color:Object.hasOwn(profileColors,p.color)?p.color:'cyan',ring:['none','cyan','red','gold'].includes(p.ring)?p.ring:'none',wreath:['none','orbit','laurel'].includes(p.wreath)?p.wreath:'none',bio:String(p.bio||'').slice(0,280),faction:String(p.faction||'').slice(0,40),region:String(p.region||'').slice(0,40),language:String(p.language||'Deutsch').slice(0,30),highlight:String(p.highlight||'').slice(0,120),trophy:String(p.trophy||'').slice(0,40),widgets:(Array.isArray(p.widgets)?p.widgets:['gallery','builds','routes','activities','showcase']).filter(x=>['gallery','builds','routes','activities','showcase'].includes(x))}}
+function profileStats(){const known=new Set(catalog().map(x=>x.id));return {found:[...set('jma_found')].filter(x=>known.has(x)).length,favorites:[...set('jma_favorites')].filter(x=>known.has(x)).length,hunt:[...set('jma_hunt')].filter(x=>known.has(x)).length,builds:arr('jma_saved_builds').length,routes:arr('jma_routes').length,plans:arr('jma_plans').length,markers:mapCustom().length,submissions:arr('jma_submissions').length,total:catalog().length}}
+const achievementDefs=[['first-find','Erster Fund','found',1,'◇'],['collector','Sammler','found',10,'▦'],['first-build','Erster Build','builds',1,'⚒'],['builder','Build-Werkstatt','builds',5,'⬡'],['first-route','Erste Route','routes',1,'◎'],['pathfinder','Pfadfinder','routes',5,'↝'],['planner','Einsatzbereit','plans',1,'◷'],['contributor','Archivbeitrag','submissions',1,'✧']];
+function achievements(){const stats=profileStats(),earned=read('jma_achievements',{});let changed=false;for(const [id,,key,n]of achievementDefs)if(stats[key]>=n&&!earned[id]){earned[id]=new Date().toISOString();changed=true}if(changed)write('jma_achievements',earned);return achievementDefs.map(([id,name,key,n,icon])=>({id,name,key,n,icon,progress:Math.min(n,stats[key]),earned:earned[id]||null}))}
+function avatar(p=appearance(),tiny=false){const a=globalThis.PROFILE_ASSETS.avatars.find(x=>x.id===p.avatar),frame=globalThis.PROFILE_ASSETS.frames.find(x=>x.id===p.frame),upload=p.avatar?.startsWith('upload-');return `<span class="profile-avatar ${tiny?'tiny':''} ring-${esc(p.ring)} wreath-${esc(p.wreath)}" style="--accent:${profileColors[p.color]}">${upload?`<img class="avatar-image" data-media-id="${esc(p.avatar)}" alt="Eigener Avatar">`:a?`<img class="avatar-image" src="${esc(a.src)}" alt="${esc(a.name)}">`:`<b>${esc((account()?.name||'?')[0])}</b>`}${frame?`<img class="avatar-frame" src="${esc(frame.src)}" alt="${esc(frame.name)}">`:''}${p.wreath==='laurel'?'<svg class="avatar-laurel" viewBox="0 0 100 100" aria-hidden="true"><path d="M35 92C1 75 3 30 24 12M65 92C99 75 97 30 76 12" fill="none" stroke="currentColor" stroke-width="3"/><path d="M14 29l-8-12 14 5M9 43L0 31l14 6M10 58L0 47l14 5M16 74L3 65l17 2M86 29l8-12-14 5M91 43l9-12-14 6M90 58l10-11-14 5M84 74l13-9-17 2" fill="currentColor"/></svg>':''}</span>`}
+globalThis.JMA_PROFILE={avatar,appearance,stats:profileStats};
+
 function renderProfile(){
   const a=account(),fav=set('jma_favorites'),found=set('jma_found'),hunt=set('jma_hunt'),builds=arr('jma_saved_builds'),routeRows=arr('jma_routes'),plans=arr('jma_plans'),markers=arr('jma_custom_markers'),submissions=arr('jma_submissions'),exchangePosts=arr('jma_exchange_posts');
   const displayName=a?.name||a?.email||'Archiv-Nutzer',email=a?.email||'—',initial=String(displayName||'?').trim().charAt(0).toUpperCase()||'?';
   const catalogTotal=catalog().length,foundRate=catalogTotal?Math.max(0,Math.min(100,Math.round(found.size/catalogTotal*100))):0,slotsTotal=buildSlots().length;
-  const latestBuild=builds[0]||null,latestBuildSlots=latestBuild?Object.values(latestBuild.slots||{}).filter(Boolean).length:0;
+  const p=appearance();
+  const latestBuild=builds.find(x=>x.id===p.highlight)||builds[0]||null,latestBuildSlots=latestBuild?Object.values(latestBuild.slots||{}).filter(Boolean).length:0;
   const activities=[
     ...submissions.map(x=>({kind:'EINREICHUNG',title:x.title||x.type||'Einreichung',meta:x.status||x.type||'',created:x.created||''})),
     ...exchangePosts.map(x=>({kind:'WERKSTATT',title:x.title||x.type||'Community-Beitrag',meta:x.type||'',created:x.created||''}))
   ].sort((x,y)=>(Date.parse(y.created)||0)-(Date.parse(x.created)||0)).slice(0,4);
-  const gallery=[
-    ['./assets/reference/feature-map.webp','Kartenarchiv'],
-    ['./assets/reference/feature-community.webp','Archivwelt'],
-    ['./assets/reference/news-hero.webp','Gefahrenzone'],
-    ['./assets/reference/showcase-items.webp','Anomalien'],
-    ['./assets/reference/news-mini-1.webp','Einsatzgebiet']
-  ];
+  const gallery=arr('jma_gallery');
   return `<section class="rf-page profile-page profile-ref-page">
-    <section class="profile-ref-banner">
+    <section class="profile-ref-banner" style="${p.banner!=='kartenwelt'?`background-image:url('${globalThis.PROFILE_ASSETS.banners.find(x=>x.id===p.banner).src}')`:p.color!=='cyan'?`border-color:${profileColors[p.color]}`:''}">
       <div class="profile-ref-banner-shade"></div>
-      <div class="profile-ref-avatar" aria-label="Profilinitiale"><span>${esc(initial)}</span><i></i></div>
+      <div class="profile-ref-avatar" aria-label="Profilinitiale">${avatar(p)}<i></i></div>
       <div class="profile-ref-identity">
         <div class="profile-ref-kicker">ONCE HUMAN ARCHIV // PROFIL</div>
         <h1>${esc(displayName)}</h1>
         <div class="profile-ref-account-line"><span class="profile-ref-online-dot"></span><b>${a?'ACCOUNT VERBUNDEN':'KEINE SITZUNG'}</b><span>${esc(email)}</span></div>
-        <p>Sammeln. Planen. Bauen. Archivieren. Dein persönlicher Arbeitsbereich für die vorhandenen Werkzeuge und lokalen Archivdaten.</p>
+        <p>${esc(p.bio||'Sammeln. Planen. Bauen. Archivieren. Dein persönlicher Arbeitsbereich für die vorhandenen Werkzeuge und lokalen Archivdaten.')}</p>
         <div class="profile-ref-progress">
           <div><span>SAMMLUNGSFORTSCHRITT</span><b>${found.size} / ${catalogTotal}</b></div>
           <i><em style="width:${foundRate}%"></em></i>
@@ -269,25 +253,25 @@ function renderProfile(){
           </div>
         </section>
 
-        <section class="profile-ref-panel profile-ref-activity">
+        <section class="profile-ref-panel profile-ref-activity" ${p.widgets.includes('activities')?'':'hidden'}>
           <header><div><span></span><h2>LETZTE AKTIVITÄTEN</h2></div><small>LOKAL</small></header>
           <div class="profile-ref-activity-list">${activities.length?activities.map(x=>`<article><i>${x.kind==='EINREICHUNG'?'⇧':'◇'}</i><div><small>${esc(x.kind)}${x.created?` · ${esc(fmt(x.created))}`:''}</small><h3>${esc(x.title)}</h3><p>${esc(x.meta||'Lokaler persönlicher Eintrag')}</p></div></article>`).join(''):`<div class="profile-ref-empty"><b>NOCH KEINE AKTIVITÄTEN</b><span>Lokale Einreichungen oder Werkstatt-Beiträge erscheinen hier, sobald sie vorhanden sind.</span></div>`}</div>
         </section>
       </div>
 
       <main class="profile-ref-col profile-ref-col-center">
-        <section class="profile-ref-panel profile-ref-gallery" id="profileGallerySection">
-          <header><div><span></span><h2>GALERIE</h2></div><small>ARCHIVVORSCHAU // KEINE PERSÖNLICHEN UPLOADS</small></header>
-          <div class="profile-ref-gallery-grid">${gallery.map(([src,label],i)=>`<figure class="${i===0?'featured':''}"><img src="${src}" alt="" loading="lazy"><figcaption>${esc(label)}</figcaption></figure>`).join('')}</div>
-          <div class="profile-ref-gallery-note"><span>Persönliche Galerie-Uploads sind noch nicht implementiert.</span><button type="button" disabled aria-disabled="true">UPLOAD // BALD VERFÜGBAR</button></div>
+        <section class="profile-ref-panel profile-ref-gallery" ${p.widgets.includes('gallery')?'':'hidden'} id="profileGallerySection">
+          <header><div><span></span><h2>GALERIE</h2></div><small>${gallery.length}/6 EIGENE BILDER</small></header>
+          <div class="profile-ref-gallery-grid">${gallery.map((image,i)=>`<figure class="${i===0?'featured':''}"><img data-media-id="${esc(image.id)}" alt="${esc(image.name)}" loading="lazy"><figcaption>${esc(image.name)} <button data-gallery-remove="${esc(image.id)}" aria-label="Galeriebild löschen">×</button></figcaption></figure>`).join('')}</div>
+          <div class="profile-ref-gallery-note"><span>Deine Uploads bleiben lokal in diesem Browser.</span><label class="file-button">BILD HOCHLADEN<input id="galleryUpload" type="file" accept="image/png,image/jpeg,image/webp" ${gallery.length>=6?'disabled':''}></label></div>
         </section>
 
-        <section class="profile-ref-panel profile-ref-builds">
+        <section class="profile-ref-panel profile-ref-builds" ${p.widgets.includes('builds')?'':'hidden'}>
           <header><div><span></span><h2>GESPEICHERTE BUILDS</h2></div><button type="button" data-rf-go="builds">ALLE BUILDS →</button></header>
           <div class="profile-ref-build-list">${builds.length?builds.slice(0,4).map(b=>{const filled=Object.values(b.slots||{}).filter(Boolean).length;return `<article><i>⚒</i><small>${esc(b.mode||'BUILD')}</small><h3>${esc(b.name||'Gespeicherter Build')}</h3><p>${filled}/${slotsTotal} Slots belegt</p></article>`}).join(''):`<div class="profile-ref-empty wide"><b>NOCH KEINE BUILDS GESPEICHERT</b><span>Gespeicherte Builds aus dem vorhandenen Build-Planer erscheinen hier.</span><button type="button" data-rf-go="builds">BUILD-PLANER ÖFFNEN →</button></div>`}</div>
         </section>
 
-        <section class="profile-ref-panel profile-ref-routes">
+        <section class="profile-ref-panel profile-ref-routes" ${p.widgets.includes('routes')?'':'hidden'}>
           <header><div><span></span><h2>GESPEICHERTE ROUTEN</h2></div><button type="button" data-rf-go="routes">ALLE ROUTEN →</button></header>
           <div class="profile-ref-route-list">${routeRows.length?routeRows.slice(0,3).map(x=>`<article><i>⌖</i><div><small>${x.created?esc(fmt(x.created)):'LOKALE ROUTE'}</small><h3>${esc(x.name||'Gespeicherte Route')}</h3><p>${Array.isArray(x.markers)?x.markers.length:0} Stationen</p></div></article>`).join(''):`<div class="profile-ref-empty wide"><b>NOCH KEINE ROUTEN GESPEICHERT</b><span>Persönliche Farmrouten erscheinen hier, sobald sie angelegt wurden.</span><button type="button" data-rf-go="routes">FARMROUTEN ÖFFNEN →</button></div>`}</div>
         </section>
@@ -315,7 +299,7 @@ function renderProfile(){
 
         <section class="profile-ref-panel profile-ref-prepared">
           <header><div><span></span><h2>ERFOLGSSYSTEM</h2></div><small>IN VORBEREITUNG</small></header>
-          <div class="profile-ref-prepared-body"><i>⬡</i><div><b>NOCH KEIN ACHIEVEMENT-SYSTEM</b><span>Keine erfundenen Level, Prozente oder Auszeichnungen.</span></div></div>
+          <div class="profile-ref-prepared-body"><i>⬡</i><div><b>${achievements().filter(x=>x.earned).length} ARCHIV-MEILENSTEINE</b><span>${achievements().filter(x=>x.earned).map(x=>esc(x.name)).join(' · ')||'Echte Werkzeugaktionen schalten Trophäen frei.'}</span></div></div>
         </section>
 
         <section class="profile-ref-panel profile-ref-prepared">
@@ -370,7 +354,7 @@ function renderProfile(){
   </section>`;
 }
 function bindProfile(){
-  navBinds();
+  navBinds();globalThis.JMA_MEDIA.hydrate();bindProfileAppearance();
   const drawer=qs('#profileEditDrawer'),backdrop=qs('#profileEditBackdrop');
   const setDrawer=open=>{if(!drawer||!backdrop)return;drawer.hidden=!open;backdrop.hidden=!open;drawer.setAttribute('aria-hidden',open?'false':'true')};
   qsa('[data-profile-edit-open]').forEach(b=>b.onclick=()=>setDrawer(true));
@@ -378,10 +362,12 @@ function bindProfile(){
   on('#profileEditBackdrop','click',()=>setDrawer(false));
   const editTabs=qsa('[data-profile-edit-tab]'),editPanels=qsa('[data-profile-edit-panel]');editTabs.forEach(b=>b.onclick=()=>{editTabs.forEach(x=>x.classList.toggle('active',x===b));editPanels.forEach(x=>x.classList.toggle('active',x.dataset.profileEditPanel===b.dataset.profileEditTab))});
   qsa('[data-profile-scroll]').forEach(b=>b.onclick=()=>qs('#'+b.dataset.profileScroll)?.scrollIntoView({behavior:'smooth',block:'start'}));
-  on('#profileNameForm','submit',async e=>{e.preventDefault();const name=new FormData(e.currentTarget).get('name').trim();try{await globalThis.JMA_AUTH.updateDisplayName(name);toast('Anzeigename gespeichert.');refresh()}catch(error){toast(error?.message||'Anzeigename konnte nicht gespeichert werden.')}});
-  on('#profileExport','click',()=>{const out={exported:new Date().toISOString()};['jma_favorites','jma_hunt','jma_hunt_meta','jma_saved_builds','jma_routes','jma_plans','jma_submissions','jma_community_posts','jma_found','jma_custom_markers','jma_exchange_posts'].forEach(k=>{if(localStorage.getItem(k)!==null)out[k]=read(k)});const blob=new Blob([JSON.stringify(out,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='once-human-archiv-export.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000)});
-  on('#profileClear','click',()=>{if(!confirm('Lokale Werkzeugdaten löschen? Konto/Anmeldung bleiben erhalten.'))return;['jma_favorites','jma_hunt','jma_hunt_meta','jma_saved_builds','jma_build_draft','jma_routes','jma_route_draft','jma_plans','jma_submissions','jma_community_posts','jma_found','jma_custom_markers','jma_exchange_posts'].forEach(k=>localStorage.removeItem(k));toast('Werkzeugdaten gelöscht.');refresh()});
+  on('#profileNameForm','submit',async e=>{e.preventDefault();const name=new FormData(e.currentTarget).get('name').trim();try{await saveProfileAppearance(name);toast('Anzeigename gespeichert.');refresh()}catch(error){toast(error?.message||'Anzeigename konnte nicht gespeichert werden.')}});
+  on('#galleryUpload','change',async e=>{try{const file=e.target.files[0],rows=arr('jma_gallery');if(rows.length>=6)throw new Error('Maximal sechs Galerie-Bilder.');const id=await globalThis.JMA_MEDIA.save(file);rows.push({id,name:file.name,created:new Date().toISOString()});write('jma_gallery',rows);refresh()}catch(error){toast(error.message)}});qsa('[data-gallery-remove]').forEach(b=>b.onclick=async()=>{if(!confirm('Galeriebild löschen?'))return;await globalThis.JMA_MEDIA.remove(b.dataset.galleryRemove);write('jma_gallery',arr('jma_gallery').filter(x=>x.id!==b.dataset.galleryRemove));refresh()});
+  on('#profileExport','click',()=>{const out={exported:new Date().toISOString()};['jma_favorites','jma_hunt','jma_hunt_meta','jma_saved_builds','jma_routes','jma_plans','jma_submissions','jma_community_posts','jma_found','jma_custom_markers','jma_exchange_posts'].forEach(k=>{if(read(k)!==null)out[k]=read(k)});const blob=new Blob([JSON.stringify(out,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='once-human-archiv-export.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000)});
+  on('#profileClear','click',()=>{if(!confirm('Lokale Werkzeugdaten löschen? Konto/Anmeldung bleiben erhalten.'))return;['jma_favorites','jma_hunt','jma_hunt_meta','jma_saved_builds','jma_build_draft','jma_routes','jma_route_draft','jma_plans','jma_submissions','jma_community_posts','jma_found','jma_custom_markers','jma_exchange_posts'].forEach(k=>globalThis.JMA_STORE.remove(k));toast('Werkzeugdaten gelöscht.');refresh()});
 }
+
 
 function renderCollection(){const fav=set('jma_favorites'),found=set('jma_found'),mode=read('jma_collection_mode','all');let rows=catalog().filter(x=>fav.has(x.id)||found.has(x.id));if(mode==='fav')rows=rows.filter(x=>fav.has(x.id));if(mode==='found')rows=rows.filter(x=>found.has(x.id));return `<section class="rf-page collection-page">${hero('PERSÖNLICH // KATALOG','MEINE SAMMLUNG','Favoriten und als gefunden markierte Katalogeinträge getrennt vom öffentlichen Datenbestand verwalten.',metrics([[fav.size,'Favoriten'],[found.size,'gefunden']]))}<div class="rf-tabs"><button class="${mode==='all'?'active':''}" data-collection-mode="all">ALLE</button><button class="${mode==='fav'?'active':''}" data-collection-mode="fav">FAVORITEN</button><button class="${mode==='found'?'active':''}" data-collection-mode="found">GEFUNDEN</button></div><div class="rf-collection-grid">${rows.map(x=>`<article><small>${esc(x.kind||x.category)}</small><h3>${esc(x.name_de)}</h3><p>${esc(x.description||'')}</p><div class="rf-chips">${fav.has(x.id)?'<span>★ Favorit</span>':''}${found.has(x.id)?'<span>✓ Gefunden</span>':''}</div><div class="actions"><button data-found-toggle="${esc(x.id)}">${found.has(x.id)?'GEFUNDEN AUFHEBEN':'ALS GEFUNDEN'}</button><button data-fav-toggle="${esc(x.id)}">${fav.has(x.id)?'FAVORIT ENTFERNEN':'FAVORIT'}</button></div></article>`).join('')||empty('Sammlung ist leer')}<div class="rf-inline-cta">${btnLink('database','DATENBANK DURCHSUCHEN','cyan-btn compact')}</div></div></section>`}
 function bindCollection(){navBinds();qsa('[data-collection-mode]').forEach(b=>b.onclick=()=>{write('jma_collection_mode',b.dataset.collectionMode);refresh()});qsa('[data-found-toggle]').forEach(b=>b.onclick=()=>{const s=set('jma_found'),id=b.dataset.foundToggle;s.has(id)?s.delete(id):s.add(id);putSet('jma_found',s);refresh()});qsa('[data-fav-toggle]').forEach(b=>b.onclick=()=>{const s=set('jma_favorites'),id=b.dataset.favToggle;s.has(id)?s.delete(id):s.add(id);putSet('jma_favorites',s);refresh()})}
@@ -438,18 +424,7 @@ const twAssets=[
   './assets/reference/showcase-items.webp',
   './assets/reference/showcase-weapons.webp'
 ];
-const twMaterialSets=[
-  [['Metallschrott',12],['Elektronikteile',6],['Stahlbarren',8]],
-  [['Veredelte Teile',4],['Technikplastik',7],['Kupferbarren',10]],
-  [['Spezialteil',3],['Wolframbarren',5],['Elektronikteile',8]],
-  [['Plastik',9],['Aluminiumbarren',7],['Teile',12]]
-];
-function twTier(x,i){
-  const hit=String(x.unlock||'').match(/Tier\s*(\d+)/i);
-  if(hit)return hit[1];
-  if(x.tier)return String(x.tier);
-  return String(Math.min(5,Math.max(1,(i%5)+1)));
-}
+function twTier(x){const hit=String(x.unlock||'').match(/Tier\s*(\d+)/i);return hit?Number(hit[1]):Number.isFinite(x.tier)?x.tier:null}
 function twImage(x,i){
   const name=String(x.name||'').toLowerCase();
   if(/chaosium|solar|electric|lantern/.test(name))return twAssets[0];
@@ -458,26 +433,22 @@ function twImage(x,i){
   return twAssets[3+(i%3)];
 }
 function twCard(x,i){
-  const mats=twMaterialSets[i%twMaterialSets.length];
+  const mats=Array.isArray(x.materials)?x.materials:[];
   const tier=twTier(x,i);
   const tp=x.tp??'—',time=x.time??'—';
   return `<article class="tw-card">
-    <div class="tw-card-art"><img src="${esc(twImage(x,i))}" alt="" loading="lazy"><span class="tw-tier">TIER ${esc(tier)}</span><span class="tw-quality">${i%3===0?'HOCHWERTIG':i%3===1?'FORTSCHRITTLICH':'STANDARD'}</span></div>
+    <div class="tw-card-art"><img src="./assets/reference/feature-tech.webp" alt="" loading="lazy"><span class="tw-tier">${tier===null?'TIER OFFEN':'TIER '+esc(tier)}</span><span class="tw-quality">${set('jma_tech_seen').has(x.name)?'ANALYSIERT':'UNGesehen'}</span></div>
     <div class="tw-card-body">
       <small class="tw-card-type">${esc(x.group||'TECH')}</small>
       <h3>${esc(x.name)}</h3>
       <p>${esc(x.unlock||'Analyseprofil / visuelle Vorschau')}</p>
-      <div class="tw-materials">${mats.map(([name,qty],mi)=>`<span><i>${['◆','⬡','▰'][mi]}</i><b>${esc(name)}</b><em>×${qty}</em></span>`).join('')}</div>
-      <footer><span><small>TP / ZYKLUS</small><b>${esc(tp)}</b></span><span><small>ZEIT</small><b>${esc(time)}${time==='—'?'':' s'}</b></span><button type="button" aria-label="Details">→</button></footer>
+      <div class="tw-materials">${mats.length?mats.map(({name,qty},mi)=>`<span><i>◆</i><b>${esc(name)}</b><em>×${qty}</em></span>`).join(''):'<span>Materialmengen nicht dokumentiert.</span>'}</div>
+      <button type="button" data-tech-seen="${esc(x.name)}" aria-pressed="${set('jma_tech_seen').has(x.name)}">${set('jma_tech_seen').has(x.name)?'✓ ANALYSIERT':'ALS ANALYSIERT MARKIEREN'}</button><footer><span><small>TP / ZYKLUS</small><b>${esc(tp)}</b></span><span><small>ZEIT</small><b>${esc(time)}${time==='—'?'':' s'}</b></span><button type="button" data-tech-detail="${esc(x.name)}" aria-label="Details">→</button></footer>
     </div>
   </article>`;
 }
-function twRecipeMedia(recipe){
-  if(recipe?.id==='recipe-storage-battery'){
-    return `<img class="tw-recipe-image" src="./assets/techbank/energy-cell.webp" alt="${esc(recipe.name)}">`;
-  }
-  return `<div class="tw-recipe-image-missing"><small>KEIN VERIFIZIERTES ITEMBILD HINTERLEGT</small></div>`;
-}
+function twRecipeMedia(recipe){return `<div class="tw-recipe-image-missing"><small>KEIN VERIFIZIERTES ITEMBILD HINTERLEGT</small></div>`}
+
 function twHero(d){
   return `<header class="tw-hero">
     <div class="tw-hero-copy">
@@ -485,8 +456,8 @@ function twHero(d){
       <h1>TECH-<span>WERKBANK</span></h1>
       <p>Reverse Engineering, Erfindung und Fertigungsformeln in einem kompakten Werkstatt-Terminal. Bestehende R12-Daten bilden die Basis dieser visuellen Arbeitsoberfläche.</p>
       <div class="tw-hero-metrics">
-        <article><i>⌁</i><div><b>${d.reverseCounts?.Alle||0}</b><span>REVERSE-EINTRÄGE</span><small>Gesammelte Daten</small></div></article>
-        <article><i>◇</i><div><b>${d.inventionCounts?.Alle||0}</b><span>ERFINDUNGS-POOL</span><small>Materialkombinationen</small></div></article>
+        <article><i>⌁</i><div><b>${(d.reverseSamples||[]).length}</b><span>REVERSE-EINTRÄGE</span><small>Gesammelte Daten</small></div></article>
+        <article><i>◇</i><div><b>${invMaterials.length}</b><span>ERFINDUNGS-POOL</span><small>Materialkombinationen</small></div></article>
         <article><i>▦</i><div><b>${(d.recipes||[]).length}</b><span>FERTIGUNGSFORMELN</span><small>Geprüfte Rezepte</small></div></article>
       </div>
     </div>
@@ -507,39 +478,38 @@ function twTabs(tab){
 }
 function renderTechWorkbench(){
   const d=AD().r12?.techWorkbench||{},storedTab=read('jma_tech_tab','reverse'),tab=['reverse','invention','recipes'].includes(storedTab)?storedTab:'reverse',q=read('jma_tech_q','');
-  const weaponExtras=(AD().r12?.weapons||[]).slice(0,3).map(w=>({name:w.name,group:'Waffen',tp:'—',time:'—',unlock:`${w.family||'Waffe'} · Tier ${w.tier||1} · visuelle Referenz`,tier:w.tier,visualWeapon:true}));
-  const reversePool=[...(d.reverseSamples||[]),...weaponExtras];
-  const reverse=filterSearch(reversePool,q,x=>`${x.name} ${x.group} ${x.unlock}`);
+  const reversePool=d.reverseSamples||[],category=read('jma_tech_cat','all'),tier=read('jma_tech_tier','all'),sort=read('jma_tech_sort','name'),only=read('jma_tech_seen_only',false),unseen=read('jma_tech_unseen_only',false),high=read('jma_tech_high_only',false),seen=set('jma_tech_seen'),view=read('jma_tech_view','grid');
+  const reverse=filterSearch(reversePool,q,x=>`${x.name} ${x.group} ${x.unlock}`).filter(x=>(category==='all'||x.group===category)&&(tier==='all'||String(twTier(x))===tier)&&(!only||seen.has(x.name))&&(!unseen||!seen.has(x.name))&&(!high||twTier(x)>=4)).sort((a,b)=>sort==='tier'?(twTier(a)??99)-(twTier(b)??99):a.name.localeCompare(b.name,'de'));
   const defaultRecipe=(d.recipes||[]).find(x=>x.id==='recipe-storage-battery')||d.recipes?.[0],recipeId=read('jma_recipe_id',defaultRecipe?.id),recipe=(d.recipes||[]).find(x=>x.id===recipeId)||defaultRecipe,storedQty=Number(read('jma_recipe_qty',1)),qty=Number.isFinite(storedQty)?Math.max(1,Math.min(99,Math.floor(storedQty))):1,inv=read('jma_invention_slots',Array(9).fill(''));
-  const categories=Object.entries(d.reverseCounts||{});
+  const categories=[['all',reversePool.length],...[...new Set(reversePool.map(x=>x.group))].map(g=>[g,reversePool.filter(x=>x.group===g).length])];
   const reversePanel=`<div class="tw-workspace">
     <aside class="tw-sidebar">
       <section class="tw-side-panel"><header><small>KATEGORIEN</small><b>ARCHIVFILTER</b></header>
-        <div class="tw-category-list">${categories.map(([k,v],i)=>`<button type="button" class="${i===0?'active':''}"><i>${['◉','⚒','✚','◆','⌖','⋯'][i%6]}</i><span>${esc(k)}</span><b>${v}</b></button>`).join('')}</div>
+        <div class="tw-category-list">${categories.map(([k,v],i)=>`<button type="button" data-tech-cat="${esc(k)}" class="${k===category?'active':''}"><i>${['◉','⚒','✚','◆','⌖','⋯'][i%6]}</i><span>${k==='all'?'Alle':esc(k)}</span><b>${v}</b></button>`).join('')}</div>
       </section>
       <section class="tw-side-panel tw-side-status"><header><small>FILTER</small><b>STATUS / QUALITÄT</b></header>
-        <label><input type="checkbox" checked> Analysiert</label>
-        <label><input type="checkbox"> Neu / ungesehen</label>
-        <label><input type="checkbox"> Tier IV–VI</label>
+        <label><input id="techSeenOnly" type="checkbox" ${only?'checked':''}> Analysiert</label>
+        <label><input id="techUnseenOnly" type="checkbox" ${unseen?'checked':''}> Neu / ungesehen</label>
+        <label><input id="techHighOnly" type="checkbox" ${high?'checked':''}> Tier IV–VI</label>
         <div><span>DATENSATZ</span><b>R12 // 2026</b></div>
       </section>
     </aside>
     <main class="tw-main">
       <div class="tw-toolbar">
         <label class="tw-search"><i>⌕</i><input id="techSearch" value="${esc(q)}" placeholder="Werkzeug, Waffe, Gruppe oder Freischaltung suchen …"></label>
-        <select aria-label="Kategorie"><option>Kategorie: Alle</option><option>Werkzeuge</option><option>Waffen</option><option>Materialien</option></select>
-        <select aria-label="Tier"><option>Tier: Alle</option><option>Tier I–II</option><option>Tier III–IV</option><option>Tier V–VI</option></select>
-        <select aria-label="Sortierung"><option>Sortierung: Relevanz</option><option>Name A–Z</option><option>Tier</option></select>
-        <div class="tw-view"><button class="active" type="button" aria-label="Raster">▦</button><button type="button" aria-label="Liste">☷</button></div>
+        <select id="techCategory" aria-label="Kategorie">${categories.map(([g])=>`<option value="${esc(g)}" ${g===category?'selected':''}>${g==='all'?'Alle Kategorien':esc(g)}</option>`).join('')}</select>
+        <select id="techTier" aria-label="Tier"><option value="all">Alle Tiers</option>${[...new Set(reversePool.map(twTier).filter(x=>x!==null))].sort().map(t=>`<option value="${t}" ${tier===String(t)?'selected':''}>Tier ${t}</option>`).join('')}</select>
+        <select id="techSort" aria-label="Sortierung"><option value="name">Name A–Z</option><option value="tier" ${sort==='tier'?'selected':''}>Tier</option></select>
+        <div class="tw-view"><button data-tech-view="grid" type="button" aria-label="Raster">▦</button><button data-tech-view="list" type="button" aria-label="Liste">☷</button></div>
       </div>
       <div class="tw-result-head"><div><small>REVERSE ENGINEERING</small><h2>ANALYSE-DATENSÄTZE</h2></div><span><b>${reverse.length}</b> sichtbare Vorschau-Einträge</span></div>
-      <div class="tw-card-grid">${reverse.map(twCard).join('')||`<div class="tw-empty"><b>KEINE TREFFER</b><span>Suche anpassen, um weitere Tech-Datensätze zu sehen.</span></div>`}</div>
+      <div class="tw-card-grid ${view==='list'?'list':''}">${reverse.map(twCard).join('')||`<div class="tw-empty"><b>KEINE TREFFER</b><span>Suche anpassen, um weitere Tech-Datensätze zu sehen.</span></div>`}</div>
     </main>
   </div>`;
   const inventionPanel=`<div class="tw-workspace tw-invention-workspace">
     <aside class="tw-sidebar">
       <section class="tw-side-panel"><header><small>POOL-UMFANG</small><b>REFERENZDATEN</b></header>
-        <div class="tw-pool-counts">${Object.entries(d.inventionCounts||{}).map(([k,v])=>`<div><span>${esc(k)}</span><b>${v}</b></div>`).join('')}</div>
+        <div class="tw-pool-counts">${arr('jma_invention_saved').map(x=>`<div><span>${esc(x.name)}</span><button data-inv-load="${esc(x.id)}">LADEN</button><button data-inv-delete="${esc(x.id)}">×</button></div>`).join('')||'Noch keine gespeicherten Mischungen.'}</div>
       </section>
       <section class="tw-side-panel tw-side-status"><header><small>SYSTEMHINWEIS</small><b>ERFINDUNG</b></header><p>Material-Mixe erzeugen keinen garantiert festen Output. Die vorhandene R12-Trennung bleibt erhalten.</p></section>
     </aside>
@@ -549,7 +519,7 @@ function renderTechWorkbench(){
         <div class="tw-invention-core"><img src="./assets/techbank/tech-crate.webp" alt=""><span>EXPERIMENTAL INPUT</span></div>
         <div class="tw-slot-grid">${Array.from({length:9},(_,i)=>`<div class="tw-slot"><small>SLOT ${String(i+1).padStart(2,'0')}</small><details class="tw-material-select"><summary><span>${esc(inv[i]||'leer')}</span><i>⌄</i></summary><div class="tw-material-menu" role="listbox" aria-label="Material für Slot ${i+1}"><button type="button" class="${!inv[i]?'selected':''}" data-inv-slot="${i}" data-inv-value="">leer</button>${invMaterials.map(x=>`<button type="button" class="${inv[i]===x?'selected':''}" data-inv-slot="${i}" data-inv-value="${esc(x)}">${esc(x)}</button>`).join('')}</div></details><i>＋</i></div>`).join('')}</div>
       </div>
-      <div class="tw-stage-actions"><button class="ghost-btn" id="invClear" type="button">AUSWAHL LEEREN</button><button class="cyan-btn compact" type="button">MIX VISUALISIEREN →</button></div>
+      <label class="tw-field">NAME<input id="invName" maxlength="80" placeholder="Meine Materialmischung"></label><p id="invMessage" role="status"></p><div class="tw-stage-actions"><button class="ghost-btn" id="invClear" type="button">AUSWAHL LEEREN</button><button class="cyan-btn compact" id="invSave" type="button">MISCHUNG SPEICHERN →</button></div>
     </main>
   </div>`;
   const recipePanel=recipe?`<div class="tw-workspace tw-recipe-workspace">
@@ -572,19 +542,41 @@ function renderTechWorkbench(){
   </div>`:'';
   return `<section class="rf-page tech-page tw-page">${twHero(d)}${twTabs(tab)}${tab==='reverse'?reversePanel:''}${tab==='invention'?inventionPanel:''}${tab==='recipes'?recipePanel:''}</section>`;
 }
-function bindTechWorkbench(){
-  navBinds();
-  qsa('[data-tech-tab]').forEach(b=>b.onclick=()=>{write('jma_tech_tab',b.dataset.techTab);refresh()});
-  on('#techSearch','input',e=>inputRefresh('jma_tech_q',e.target.value,'#techSearch'));
-  qsa('[data-inv-slot]').forEach(b=>b.onclick=()=>{const a=read('jma_invention_slots',Array(9).fill(''));a[+b.dataset.invSlot]=b.dataset.invValue||'';write('jma_invention_slots',a);refresh()});
-  on('#invClear','click',()=>{write('jma_invention_slots',Array(9).fill(''));refresh()});
-  on('#recipeSelect','change',e=>{write('jma_recipe_id',e.target.value);refresh()});
-  on('#recipeQty','input',e=>inputRefresh('jma_recipe_qty',Math.max(1,+e.target.value||1),'#recipeQty',320));
-}
+function bindTechWorkbench(){navBinds();qsa('[data-tech-tab]').forEach(b=>b.onclick=()=>{write('jma_tech_tab',b.dataset.techTab);refresh()});qsa('[data-tech-cat]').forEach(b=>b.onclick=()=>{write('jma_tech_cat',b.dataset.techCat);refresh()});on('#techCategory','change',e=>{write('jma_tech_cat',e.target.value);refresh()});on('#techUnseenOnly','change',e=>{write('jma_tech_unseen_only',e.target.checked);refresh()});on('#techHighOnly','change',e=>{write('jma_tech_high_only',e.target.checked);refresh()});on('#techSearch','input',e=>inputRefresh('jma_tech_q',e.target.value,'#techSearch'));for(const [id,key]of [['techTier','jma_tech_tier'],['techSort','jma_tech_sort'],['techSeenOnly','jma_tech_seen_only']])on('#'+id,'change',e=>{write(key,id==='techSeenOnly'?e.target.checked:e.target.value);refresh()});qsa('[data-tech-view]').forEach(b=>b.onclick=()=>{write('jma_tech_view',b.dataset.techView);refresh()});qsa('[data-tech-seen]').forEach(b=>b.onclick=()=>{const s=set('jma_tech_seen');s.has(b.dataset.techSeen)?s.delete(b.dataset.techSeen):s.add(b.dataset.techSeen);putSet('jma_tech_seen',s);refresh()});qsa('[data-tech-detail]').forEach(b=>b.onclick=()=>{const x=AD().r12.techWorkbench.reverseSamples.find(x=>x.name===b.dataset.techDetail);let dialog=qs('#techDialog');if(!dialog){dialog=document.createElement('dialog');dialog.id='techDialog';document.body.appendChild(dialog)}dialog.innerHTML=`<button class="dialog-close" aria-label="Details schließen">×</button><small>${esc(x.group)}</small><h2>${esc(x.name)}</h2><p>${esc(x.unlock)}</p>${metrics([[x.tp,'TP pro Zyklus'],[x.time,'Sekunden']])}<p>Materialmengen sind für diese Analyse nicht dokumentiert.</p>`;dialog.querySelector('button').onclick=()=>dialog.close();dialog.showModal()});qsa('[data-inv-slot]').forEach(b=>b.onclick=()=>{const a=read('jma_invention_slots',Array(9).fill(''));a[+b.dataset.invSlot]=b.dataset.invValue||'';write('jma_invention_slots',a);refresh()});on('#invClear','click',()=>{write('jma_invention_slots',Array(9).fill(''));refresh()});on('#invSave','click',()=>{const slots=read('jma_invention_slots',Array(9).fill('')),name=qs('#invName').value.trim();if(name.length<2||!slots.some(Boolean)){qs('#invMessage').textContent='Name und mindestens ein Material erforderlich.';return}const rows=arr('jma_invention_saved');rows.unshift({id:uid('mix'),name,slots,created:new Date().toISOString()});write('jma_invention_saved',rows);refresh();toast('Materialmischung gespeichert.')});qsa('[data-inv-load]').forEach(b=>b.onclick=()=>{const x=arr('jma_invention_saved').find(x=>x.id===b.dataset.invLoad);write('jma_invention_slots',x.slots);refresh();qs('#invName').value=x.name});qsa('[data-inv-delete]').forEach(b=>b.onclick=()=>{write('jma_invention_saved',arr('jma_invention_saved').filter(x=>x.id!==b.dataset.invDelete));refresh()});on('#recipeSelect','change',e=>{write('jma_recipe_id',e.target.value);refresh()});on('#recipeQty','input',e=>inputRefresh('jma_recipe_qty',Math.min(99,Math.max(1,Math.floor(+e.target.value||1))),'#recipeQty',320))}
+
 
 function renderExchange(){const posts=arr('jma_exchange_posts'),builds=arr('jma_saved_builds');return `<section class="rf-page exchange-page">${hero('COMMUNITY // WERKSTATT','COMMUNITY-WERKSTATT','Lokales Teilen gespeicherter Builds sowie Suche/Biete-Posts. Echtgeld-Handel ist gemäß vorhandener Projektregel nicht vorgesehen.')}
  <div class="rf-exchange-layout"><form class="rf-panel" id="exchangeForm"><div class="rf-panel-head"><b>BEITRAG ERSTELLEN</b><small>lokal</small></div><label>TYP<select name="type"><option>Build teilen</option><option>Suche</option><option>Biete</option></select></label><label>BUILD<select name="build"><option value="">Kein Build</option>${builds.map(b=>`<option value="${esc(b.id)}">${esc(b.name)}</option>`).join('')}</select></label><label>TITEL<input name="title" required></label><label>TEXT<textarea name="text" required></textarea></label><button class="cyan-btn compact">VERÖFFENTLICHUNG LOKAL SIMULIEREN</button><p class="rf-note">Kein Server-Backend: Beitrag bleibt in diesem Browser.</p></form><main class="rf-exchange-feed">${posts.map(p=>{const b=builds.find(x=>x.id===p.build);return `<article><header><small>${esc(p.type)} · ${fmt(p.created)}</small><h2>${esc(p.title)}</h2></header><p>${esc(p.text)}</p>${b?`<div class="rf-shared-build"><b>⚒ ${esc(b.name)}</b><span>${Object.values(b.slots||{}).filter(Boolean).length} belegte Slots</span><button data-exchange-copy="${esc(b.id)}">BUILD KOPIEREN</button></div>`:''}<button data-exchange-delete="${esc(p.id)}">BEITRAG LÖSCHEN</button></article>`}).join('')||empty('Noch keine Werkstatt-Beiträge')}</main></div></section>`}
 function bindExchange(){navBinds();on('#exchangeForm','submit',e=>{e.preventDefault();const fd=new FormData(e.currentTarget),rows=arr('jma_exchange_posts');rows.unshift({id:uid('exchange'),type:fd.get('type'),build:fd.get('build'),title:String(fd.get('title')).trim(),text:String(fd.get('text')).trim(),created:new Date().toISOString()});write('jma_exchange_posts',rows);refresh()});qsa('[data-exchange-delete]').forEach(b=>b.onclick=()=>{write('jma_exchange_posts',arr('jma_exchange_posts').filter(x=>x.id!==b.dataset.exchangeDelete));refresh()});qsa('[data-exchange-copy]').forEach(b=>b.onclick=()=>{const x=arr('jma_saved_builds').find(v=>v.id===b.dataset.exchangeCopy);if(!x)return;const copy={...x,id:uid('build'),name:`${x.name} · Kopie`,updated:new Date().toISOString()};const rows=arr('jma_saved_builds');rows.unshift(copy);write('jma_saved_builds',rows);toast('Build als lokale Kopie gespeichert.')})}
+
+function downloadJSON(data,name){const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+let profileDraft=null;
+async function saveProfileAppearance(name){const p=appearance(profileDraft||appearance());await globalThis.JMA_AUTH.updateProfile({name,avatar:p.avatar,appearance:p});write('jma_profile_appearance',p)}
+function bindProfileAppearance(){
+ profileDraft=appearance();const drawer=qs('#profileEditDrawer'),nav=qs('.profile-ref-drawer-nav'),content=qs('.profile-ref-drawer-content');
+ for(const [id,title] of [['frames','RAHMEN'],['decorations','RINGE & KRÄNZE'],['trophies','TROPHÄEN']]){const b=document.createElement('button');b.type='button';b.dataset.profileEditTab=id;b.textContent=title;nav.append(b);const panel=document.createElement('section');panel.dataset.profileEditPanel=id;content.append(panel)}
+ const choices=(kind,field)=>`<div class="profile-choices"><button type="button" data-profile-choice="${field}" data-value="${field==='banner'?'kartenwelt':'none'}">Standard</button>${globalThis.PROFILE_ASSETS[kind].map(x=>`<button type="button" data-profile-choice="${field}" data-value="${x.id}" aria-pressed="${profileDraft[field]===x.id}"><img src="${esc(x.src)}" alt=""><span>${esc(x.name)}</span></button>`).join('')}</div>`;
+ const fill=(id,html)=>qs(`[data-profile-edit-panel="${id}"]`).innerHTML=html+'<button type="button" data-profile-save>ÄNDERUNGEN SPEICHERN</button><p class="profile-save-message" role="status"></p>';
+ fill('avatar','<h3>AVATAR</h3><label class="file-button">EIGENEN AVATAR HOCHLADEN<input id="avatarUpload" type="file" accept="image/png,image/jpeg,image/webp"></label>'+choices('avatars','avatar'));
+ fill('frames','<h3>AVATARRAHMEN</h3>'+choices('frames','frame'));
+ fill('banner','<h3>PROFILBANNER</h3>'+choices('banners','banner'));
+ fill('colors','<h3>PROFILFARBEN</h3><div class="profile-choices">'+Object.entries(profileColors).map(([id,color])=>`<button type="button" data-profile-choice="color" data-value="${id}" style="border-color:${color}">${id}</button>`).join('')+'</div>');
+ fill('about',`<h3>ÜBER MICH</h3><label>PROFILTEXT<textarea id="profileBio" maxlength="280">${esc(profileDraft.bio)}</textarea></label>`);
+ fill('highlights',`<h3>BUILD-HIGHLIGHT</h3><select id="profileHighlight"><option value="">Neuester Build</option>${arr('jma_saved_builds').map(x=>`<option value="${esc(x.id)}" ${profileDraft.highlight===x.id?'selected':''}>${esc(x.name)}</option>`).join('')}</select>`);
+ fill('widgets','<h3>PROFILMODULE</h3>'+['gallery','builds','routes','activities','showcase'].map(id=>`<label><input type="checkbox" data-profile-widget="${id}" ${profileDraft.widgets.includes(id)?'checked':''}> ${id}</label>`).join(''));
+ fill('decorations','<h3>RINGE</h3><div class="profile-choices">'+['none','cyan','red','gold'].map(id=>`<button type="button" data-profile-choice="ring" data-value="${id}">${id}</button>`).join('')+'</div><h3>KRÄNZE</h3><div class="profile-choices">'+['none','orbit','laurel'].map(id=>`<button type="button" data-profile-choice="wreath" data-value="${id}">${id}</button>`).join('')+'</div>');
+ fill('trophies','<h3>ARCHIV-TROPHÄEN</h3><div class="profile-choices"><button type="button" data-profile-choice="trophy" data-value="">Ohne</button>'+achievements().map(t=>`<button type="button" data-profile-choice="trophy" data-value="${t.id}" ${t.earned?'':'disabled'}>${t.icon} ${esc(t.name)}${t.earned?'':' · gesperrt'}</button>`).join('')+'</div>');
+ const preview=()=>{qs('.profile-ref-editor-avatar').innerHTML=avatar(profileDraft);qsa('[data-profile-choice]').forEach(b=>{const selected=profileDraft[b.dataset.profileChoice]===b.dataset.value;b.classList.toggle('active',selected);b.setAttribute('aria-pressed',selected)});globalThis.JMA_MEDIA.hydrate(drawer)};
+ qsa('[data-profile-choice]').forEach(b=>b.onclick=()=>{profileDraft[b.dataset.profileChoice]=b.dataset.value;preview()});
+ on('#profileBio','input',e=>profileDraft.bio=e.target.value);on('#profileHighlight','change',e=>profileDraft.highlight=e.target.value);
+ qsa('[data-profile-widget]').forEach(el=>el.onchange=()=>{profileDraft.widgets=el.checked?[...new Set([...profileDraft.widgets,el.dataset.profileWidget])]:profileDraft.widgets.filter(x=>x!==el.dataset.profileWidget)});
+ on('#avatarUpload','change',async e=>{try{profileDraft.avatar=await globalThis.JMA_MEDIA.save(e.target.files[0]);preview()}catch(error){toast(error.message)}});
+ qsa('[data-profile-save]').forEach(b=>b.onclick=async()=>{b.disabled=true;try{await saveProfileAppearance(qs('#profileNameForm input[name="name"]').value.trim());refresh();toast('Profil gespeichert.')}catch(error){b.parentElement.querySelector('.profile-save-message').textContent=error.message;b.disabled=false}});
+ if(globalThis.__profileDrawerKey)document.removeEventListener('keydown',globalThis.__profileDrawerKey);globalThis.__profileDrawerKey=e=>{if(!drawer.isConnected||drawer.hidden)return;if(e.key==='Escape'){qs('#profileEditClose').click();qs('[data-profile-edit-open]')?.focus()}if(e.key==='Tab'){const els=[...drawer.querySelectorAll('button,input,select,textarea')].filter(x=>!x.disabled&&x.getClientRects().length);const first=els[0],last=els.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}};document.addEventListener('keydown',globalThis.__profileDrawerKey);
+ const trophy=achievements().find(t=>t.id===profileDraft.trophy&&t.earned);if(trophy){const badge=document.createElement('span');badge.textContent=trophy.icon+' '+trophy.name;qs('.profile-ref-identity').append(badge)}
+ const showcase=qs('.profile-ref-slot-row');if(showcase){showcase.innerHTML=[...set('jma_favorites')].map(id=>catalog().find(x=>x.id===id)).filter(Boolean).slice(0,4).map(x=>`<span title="${esc(x.name_de)}">★ ${esc(x.name_de)}</span>`).join('')||'<span>+</span><span>+</span><span>+</span><span>+</span>';showcase.closest('section').hidden=!profileDraft.widgets.includes('showcase')}
+ preview();
+}
 
 const R={dashboard:renderDashboard,news:renderNews,map:renderMap,hunt:renderHunt,routes:renderRoutes,planner:renderPlanner,guides:renderGuides,patchwatch:renderPatchwatch,secrets:renderSecrets,builds:renderBuilds,community:renderCommunity,submissions:renderSubmissions,profile:renderProfile,collection:renderCollection,'weapon-blueprints':renderWeaponBlueprints,'armor-blueprints':renderArmorBlueprints,'armor-materials':renderArmorMaterials,deviations:renderDeviations,mods:renderMods,'compare-weapons':renderCompareWeapons,'compare-armors':renderCompareArmors,memetics:renderMemetics,vehicles:renderVehicles,creatures:renderCreatures,'tech-workbench':renderTechWorkbench,exchange:renderExchange};
 const B={dashboard:navBinds,news:bindNews,map:bindMap,hunt:bindHunt,routes:bindRoutes,planner:bindPlanner,guides:bindGuides,patchwatch:bindPatchwatch,secrets:bindSecrets,builds:bindBuilds,community:bindCommunity,submissions:bindSubmissions,profile:bindProfile,collection:bindCollection,'weapon-blueprints':bindWeaponBlueprints,'armor-blueprints':bindArmorBlueprints,'armor-materials':bindArmorMaterials,deviations:bindDeviations,mods:bindMods,'compare-weapons':bindCompareWeapons,'compare-armors':bindCompareArmors,memetics:bindMemetics,vehicles:bindVehicles,creatures:bindCreatures,'tech-workbench':bindTechWorkbench,exchange:bindExchange};

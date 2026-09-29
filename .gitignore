@@ -22,3 +22,6 @@ assets/reference/ref-*.webp
 .env.*
 !.env.example
 supabase/.temp/
+
+# Targeted test output
+test-results/
