@@ -49,7 +49,7 @@
         <button class="cyan-btn full" id="authSubmit" type="submit">ANMELDEN →</button>
       </form>
       <button class="auth-switch" id="authSwitch" type="button">Noch kein Konto? <u>Jetzt registrieren</u></button>
-      <small class="local-note">Aktueller Entwicklungsstand: Kontodaten werden ausschließlich lokal in diesem Browser gespeichert.</small>
+      <small class="local-note">Anmeldung und Kontozugang werden sicher über Supabase verarbeitet.</small>
     </div>
   </dialog>
 
@@ -62,6 +62,8 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <script src="./archive-data.js"></script>
   <script src="./catalog-data.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./supabase-client.js"></script>
   <script src="./routes-full.js"></script>
   <script src="./app.js"></script>
 </body>

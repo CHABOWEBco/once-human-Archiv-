@@ -120,7 +120,7 @@ function bindDatabase(){
 }
 function readStoredArray(key){try{const v=JSON.parse(localStorage.getItem(key)||'[]');return Array.isArray(v)?v:[]}catch{return []}}
 function renderHome(){
-  const account = JSON.parse(localStorage.getItem('jma_session')||'null');
+  const account = globalThis.JMA_AUTH?.getAccount?.() || null;
   const entries=catalogEntries(), cats=catalogCategories(), archive=globalThis.ARCHIVE_DATA||{}, news=archive.seed?.news||[], builds=archive.seed?.builds||[];
   const featured=news.find(n=>n.featured)||news[0];
   const secondary=news.filter(n=>!featured||n.id!==featured.id).slice(0,3);
@@ -144,7 +144,7 @@ function renderHome(){
         </div>
         <div class="landing-hero-space" aria-hidden="true"></div>
         <aside class="landing-login">
-          ${account ? `<div class="landing-account-head"><span class="landing-avatar">${escapeHtml((account.name||account.email||'M').slice(0,1).toUpperCase())}</span><div><small>ARCHIV-PROFIL</small><h2>${escapeHtml(account.name||'META-HUMAN')}</h2><p>${escapeHtml(account.email||'Lokale Sitzung aktiv')}</p></div></div><div class="landing-account-metrics"><span><b>${favorites}</b><small>Favoriten</small></span><span><b>${hunt}</b><small>Jagdliste</small></span><span><b>${savedBuilds}</b><small>Builds</small></span></div><button class="landing-primary landing-full" id="dashboardOpen" type="button">ZUR KOMMANDOZENTRALE →</button><button class="landing-text-link" id="logoutBtn" type="button"><u>Lokale Sitzung abmelden</u></button>` : `<div class="landing-login-kicker">ARCHIVZUGANG</div><h2>WILLKOMMEN ZURÜCK</h2><p>Melde dich an und werde Teil der Community.</p><form id="heroLoginForm"><label><span>✉</span><input type="email" id="heroEmail" placeholder="E-Mail-Adresse" required></label><label><span>▣</span><input type="password" id="heroPassword" placeholder="Passwort" minlength="4" required></label><div class="landing-login-options"><label class="landing-remember"><input type="checkbox"> Angemeldet bleiben</label><button class="landing-text-link inline" type="button" id="heroForgot">Passwort vergessen?</button></div><button class="landing-primary landing-full" type="submit">ANMELDEN →</button></form><button class="landing-text-link" id="heroRegister" type="button">Noch kein Konto? <u>Jetzt registrieren</u></button>`}
+          ${account ? `<div class="landing-account-head"><span class="landing-avatar">${escapeHtml((account.name||account.email||'M').slice(0,1).toUpperCase())}</span><div><small>ARCHIV-PROFIL</small><h2>${escapeHtml(account.name||'META-HUMAN')}</h2><p>${escapeHtml(account.email||'Sitzung aktiv')}</p></div></div><div class="landing-account-metrics"><span><b>${favorites}</b><small>Favoriten</small></span><span><b>${hunt}</b><small>Jagdliste</small></span><span><b>${savedBuilds}</b><small>Builds</small></span></div><button class="landing-primary landing-full" id="dashboardOpen" type="button">ZUR KOMMANDOZENTRALE →</button><button class="landing-text-link" id="logoutBtn" type="button"><u>Abmelden</u></button>` : `<div class="landing-login-kicker">ARCHIVZUGANG</div><h2>WILLKOMMEN ZURÜCK</h2><p>Melde dich an und werde Teil der Community.</p><form id="heroLoginForm"><label><span>✉</span><input type="email" id="heroEmail" placeholder="E-Mail-Adresse" required></label><label><span>▣</span><input type="password" id="heroPassword" placeholder="Passwort" minlength="4" required></label><div class="landing-login-options"><label class="landing-remember"><input type="checkbox"> Angemeldet bleiben</label><button class="landing-text-link inline" type="button" id="heroForgot">Passwort vergessen?</button></div><button class="landing-primary landing-full" type="submit">ANMELDEN →</button></form><button class="landing-text-link" id="heroRegister" type="button">Noch kein Konto? <u>Jetzt registrieren</u></button>`}
         </aside>
       </div>
     </section>
@@ -202,29 +202,83 @@ function render(){
   app.innerHTML=route.id==='home'?renderHome():route.id==='database'?renderDatabase():fullRenderer?fullRenderer(route):renderDevelopment(route);
   bindView(); window.scrollTo({top:0,behavior:'instant'}); app.focus({preventScroll:true});
 }
+function authErrorMessage(error,fallback='Anmeldung fehlgeschlagen.'){
+  const message=String(error?.message||'').trim();
+  if(/invalid login credentials/i.test(message)) return 'E-Mail oder Passwort stimmen nicht.';
+  if(/email not confirmed/i.test(message)) return 'Bitte bestätige zuerst deine E-Mail-Adresse.';
+  if(/user already registered/i.test(message)) return 'Für diese E-Mail-Adresse existiert bereits ein Konto.';
+  if(/password/i.test(message)&&/least|short|length/i.test(message)) return 'Das Passwort erfüllt die Supabase-Passwortvorgaben noch nicht.';
+  return message||fallback;
+}
+async function signInWithSupabase(email,password){
+  return globalThis.JMA_AUTH.signInWithPassword(email,password);
+}
+async function registerWithSupabase(email,password,name){
+  return globalThis.JMA_AUTH.signUp(email,password,name);
+}
+async function bindAuthSubmit(button,action){
+  if(button?.disabled) return;
+  if(button) button.disabled=true;
+  try{return await action()}finally{if(button) button.disabled=false}
+}
 function bindView(){
   const activeRoute=routeFromHash();
   if(activeRoute==='database') bindDatabase();
   globalThis.FULL_ROUTE_BINDERS?.[activeRoute]?.();
-  $('#heroLoginForm')?.addEventListener('submit',e=>{e.preventDefault();const known=JSON.parse(localStorage.getItem('jma_account')||'null');const email=$('#heroEmail').value.trim();if(known&&known.email.toLowerCase()===email.toLowerCase()){localStorage.setItem('jma_session',JSON.stringify(known));toast(`Willkommen zurück, ${known.name}.`);render()}else{openAuth('register',email);toast('Für diese lokale Demo existiert noch kein Konto – registriere dich zuerst.')}});
+  $('#heroLoginForm')?.addEventListener('submit',async e=>{
+    e.preventDefault();
+    const button=e.currentTarget.querySelector('[type="submit"]');
+    const email=$('#heroEmail').value.trim(),pass=$('#heroPassword').value;
+    try{
+      const account=await bindAuthSubmit(button,()=>signInWithSupabase(email,pass));
+      toast(`Willkommen zurück, ${account?.name||account?.email||'Meta-Human'}.`);
+      render();
+    }catch(error){toast(authErrorMessage(error))}
+  });
   $('#heroRegister')?.addEventListener('click',()=>openAuth('register'));
-  $('#heroForgot')?.addEventListener('click',()=>toast('Passwort-Wiederherstellung ist im lokalen Testkonto noch nicht angebunden.'));
+  $('#heroForgot')?.addEventListener('click',()=>toast('Passwort-Wiederherstellung wird in einem späteren Schritt angebunden.'));
   document.querySelectorAll('[data-home-category]').forEach(a=>a.addEventListener('click',()=>{DB_STATE.category=a.dataset.homeCategory||'all';DB_STATE.q='';DB_STATE.status='all'}));
   $('#dashboardOpen')?.addEventListener('click',()=>location.hash='#/dashboard');
-  $('#logoutBtn')?.addEventListener('click',()=>{localStorage.removeItem('jma_session');toast('Lokale Sitzung beendet.');render()});
+  $('#logoutBtn')?.addEventListener('click',async()=>{
+    try{
+      await globalThis.JMA_AUTH.signOut();
+      toast('Sitzung beendet.');
+      render();
+    }catch(error){toast(authErrorMessage(error,'Abmeldung fehlgeschlagen.'))}
+  });
   $('#videoInfo')?.addEventListener('click',()=>toast('Projektvorschau: Das Archiv ist echte programmierte UI; die Bereiche greifen auf denselben lokalen Arbeitsstand zu.'));
   $('#openSearchFromDev')?.addEventListener('click',openSearch);
 }
 function openAuth(mode='login',email=''){
   authMode=mode; const reg=mode==='register';
   $('#authTitle').textContent=reg?'ARCHIVZUGANG ERSTELLEN':'WILLKOMMEN ZURÜCK';
-  $('#authCopy').textContent=reg?'Erstelle für den Entwicklungsstand ein lokales Testkonto.':'Melde dich mit deinem lokalen Testkonto an.';
+  $('#authCopy').textContent=reg?'Erstelle dein Archivkonto.':'Melde dich mit deinem Archivkonto an.';
   $('#authSubmit').textContent=reg?'REGISTRIEREN →':'ANMELDEN →';
   $('#authSwitch').innerHTML=reg?'Schon ein Konto? <u>Anmelden</u>':'Noch kein Konto? <u>Jetzt registrieren</u>';
   $('#nameField').classList.toggle('hidden',!reg); $('#authName').required=reg; $('#authEmail').value=email;
   $('#authDialog').showModal(); setTimeout(()=>$('#authEmail').focus(),20);
 }
-$('#authForm').addEventListener('submit',e=>{e.preventDefault();const email=$('#authEmail').value.trim(),pass=$('#authPassword').value; if(authMode==='register'){const acc={email,name:$('#authName').value.trim()||'Meta-Human',password:pass};localStorage.setItem('jma_account',JSON.stringify(acc));localStorage.setItem('jma_session',JSON.stringify(acc));$('#authDialog').close();toast('Lokales Testkonto erstellt.');render();return}const acc=JSON.parse(localStorage.getItem('jma_account')||'null');if(!acc||acc.email.toLowerCase()!==email.toLowerCase()||acc.password!==pass){toast('E-Mail oder Passwort stimmen im lokalen Testkonto nicht.');return}localStorage.setItem('jma_session',JSON.stringify(acc));$('#authDialog').close();toast(`Willkommen zurück, ${acc.name}.`);render();});
+$('#authForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const email=$('#authEmail').value.trim(),pass=$('#authPassword').value,button=$('#authSubmit');
+  try{
+    if(authMode==='register'){
+      const result=await bindAuthSubmit(button,()=>registerWithSupabase(email,pass,$('#authName').value.trim()||'Meta-Human'));
+      $('#authDialog').close();
+      if(result.requiresEmailConfirmation){
+        toast('Registrierung erfolgreich. Bitte bestätige deine E-Mail-Adresse.');
+      }else{
+        toast(`Willkommen, ${result.account?.name||result.account?.email||'Meta-Human'}.`);
+      }
+      render();
+      return;
+    }
+    const account=await bindAuthSubmit(button,()=>signInWithSupabase(email,pass));
+    $('#authDialog').close();
+    toast(`Willkommen zurück, ${account?.name||account?.email||'Meta-Human'}.`);
+    render();
+  }catch(error){toast(authErrorMessage(error,authMode==='register'?'Registrierung fehlgeschlagen.':'Anmeldung fehlgeschlagen.'))}
+});
 $('#authSwitch').addEventListener('click',()=>openAuth(authMode==='login'?'register':'login',$('#authEmail').value));
 $('#authClose').addEventListener('click',()=>$('#authDialog').close());
 $('#loginOpen').addEventListener('click',()=>openAuth('login')); $('#registerOpen').addEventListener('click',()=>openAuth('register'));
@@ -236,4 +290,15 @@ $('#newsletterForm').addEventListener('submit',e=>{e.preventDefault();localStora
 function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.classList.remove('show'),2600)}
 function escapeHtml(v=''){return String(v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
 globalThis.JMA_RENDER=render;
-window.addEventListener('hashchange',render);if(!location.hash)history.replaceState(null,'','#/home');render();
+window.addEventListener('hashchange',render);
+async function boot(){
+  if(!location.hash) history.replaceState(null,'','#/home');
+  try{
+    await globalThis.JMA_AUTH.init();
+  }catch(error){
+    console.error('Supabase Auth konnte nicht initialisiert werden:',error);
+    toast('Anmeldung konnte nicht initialisiert werden.');
+  }
+  render();
+}
+boot();

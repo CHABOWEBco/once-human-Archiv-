@@ -1,0 +1,227 @@
+(()=>{
+'use strict';
+
+const PROJECT_URL = 'https://pmoazkdpkxveloespevd.supabase.co';
+const PUBLISHABLE_KEY = ['sb','publishable','Yce3SzdU5SpLDJhEvd1PqQ_7LLp2AP9'].join('_');
+
+const state = {
+  session: null,
+  user: null,
+  profile: null,
+  role: null,
+  account: null,
+  ready: false
+};
+
+let client = null;
+let initialized = false;
+let authSubscription = null;
+let syncChain = Promise.resolve();
+
+function getClient(){
+  if(client) return client;
+  const createClient = globalThis.supabase?.createClient;
+  if(typeof createClient !== 'function'){
+    throw new Error('Supabase-Bibliothek konnte nicht geladen werden.');
+  }
+  client = createClient(PROJECT_URL, PUBLISHABLE_KEY, {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true
+    }
+  });
+  return client;
+}
+
+function normalizeAccount(user, profile, role){
+  if(!user) return null;
+  const email = user.email || '';
+  const metadataName = user.user_metadata?.display_name || user.user_metadata?.name || '';
+  const emailName = email.includes('@') ? email.split('@')[0] : '';
+  return {
+    id: user.id,
+    email,
+    name: profile?.display_name || metadataName || emailName || 'Meta-Human',
+    role: role || null
+  };
+}
+
+function clearIdentity(){
+  state.session = null;
+  state.user = null;
+  state.profile = null;
+  state.role = null;
+  state.account = null;
+}
+
+async function loadIdentity(session){
+  if(!session?.user){
+    clearIdentity();
+    return null;
+  }
+
+  const sb = getClient();
+  const user = session.user;
+  state.session = session;
+  state.user = user;
+  state.profile = null;
+  state.role = null;
+  state.account = normalizeAccount(user, null, null);
+
+  const [profileResult, roleResult] = await Promise.all([
+    sb.from('profiles')
+      .select('id, display_name, avatar_url')
+      .eq('id', user.id)
+      .maybeSingle(),
+    sb.from('user_roles')
+      .select('user_id, role')
+      .eq('user_id', user.id)
+      .maybeSingle()
+  ]);
+
+  if(profileResult.error) throw profileResult.error;
+  if(roleResult.error) throw roleResult.error;
+
+  state.profile = profileResult.data || null;
+  state.role = roleResult.data?.role || null;
+  state.account = normalizeAccount(user, state.profile, state.role);
+  return state.account;
+}
+
+function queueSessionSync(session, renderAfter=true){
+  syncChain = syncChain
+    .catch(()=>{})
+    .then(()=>loadIdentity(session))
+    .then(()=>{
+      if(renderAfter) globalThis.JMA_RENDER?.();
+      return state.account;
+    })
+    .catch(error=>{
+      console.error('Supabase Auth-Synchronisierung fehlgeschlagen:', error);
+      if(renderAfter) globalThis.JMA_RENDER?.();
+      return null;
+    });
+  return syncChain;
+}
+
+async function init(){
+  if(initialized) return state;
+  const sb = getClient();
+
+  const {data, error} = await sb.auth.getSession();
+  if(error) throw error;
+  await loadIdentity(data.session);
+
+  const listener = sb.auth.onAuthStateChange((_event, session)=>{
+    setTimeout(()=>queueSessionSync(session, true), 0);
+  });
+  authSubscription = listener.data?.subscription || null;
+
+  initialized = true;
+  state.ready = true;
+  return state;
+}
+
+async function signUp(email, password, displayName){
+  const sb = getClient();
+  const name = String(displayName || '').trim() || 'Meta-Human';
+  const {data, error} = await sb.auth.signUp({
+    email: String(email || '').trim(),
+    password,
+    options: {
+      data: {
+        display_name: name
+      }
+    }
+  });
+  if(error) throw error;
+
+  if(data.session){
+    await loadIdentity(data.session);
+  }else{
+    state.session = null;
+    state.user = data.user || null;
+    state.profile = null;
+    state.role = null;
+    state.account = null;
+  }
+
+  return {
+    user: data.user || null,
+    session: data.session || null,
+    account: state.account,
+    requiresEmailConfirmation: !data.session
+  };
+}
+
+async function signInWithPassword(email, password){
+  const sb = getClient();
+  const {data, error} = await sb.auth.signInWithPassword({
+    email: String(email || '').trim(),
+    password
+  });
+  if(error) throw error;
+  await loadIdentity(data.session);
+  return state.account;
+}
+
+async function signOut(){
+  const sb = getClient();
+  const {error} = await sb.auth.signOut();
+  if(error) throw error;
+  clearIdentity();
+  return true;
+}
+
+async function updateDisplayName(displayName){
+  if(!state.user) throw new Error('Keine aktive Anmeldung.');
+  const name = String(displayName || '').trim();
+  if(!name) throw new Error('Anzeigename darf nicht leer sein.');
+
+  const sb = getClient();
+  const {data, error} = await sb.from('profiles')
+    .update({display_name: name})
+    .eq('id', state.user.id)
+    .select('id, display_name, avatar_url')
+    .single();
+  if(error) throw error;
+
+  state.profile = data;
+  state.account = normalizeAccount(state.user, state.profile, state.role);
+  return state.account;
+}
+
+function getAccount(){
+  return state.account ? {...state.account} : null;
+}
+
+function getState(){
+  return {
+    session: state.session,
+    user: state.user,
+    profile: state.profile,
+    role: state.role,
+    account: getAccount(),
+    ready: state.ready
+  };
+}
+
+function destroy(){
+  authSubscription?.unsubscribe?.();
+  authSubscription = null;
+  initialized = false;
+  state.ready = false;
+}
+
+globalThis.JMA_AUTH = {
+  init,
+  signUp,
+  signInWithPassword,
+  signOut,
+  updateDisplayName,
+  getAccount,
+  getState,
+  destroy
+};
+})();
