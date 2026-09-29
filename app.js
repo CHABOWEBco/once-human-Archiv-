@@ -144,7 +144,7 @@ function renderHome(){
         </div>
         <div class="landing-hero-space" aria-hidden="true"></div>
         <aside class="landing-login">
-          ${account ? `<div class="landing-account-head"><span class="landing-avatar">${escapeHtml((account.name||account.email||'M').slice(0,1).toUpperCase())}</span><div><small>ARCHIV-PROFIL</small><h2>${escapeHtml(account.name||'META-HUMAN')}</h2><p>${escapeHtml(account.email||'Sitzung aktiv')}</p></div></div><div class="landing-account-metrics"><span><b>${favorites}</b><small>Favoriten</small></span><span><b>${hunt}</b><small>Jagdliste</small></span><span><b>${savedBuilds}</b><small>Builds</small></span></div><button class="landing-primary landing-full" id="dashboardOpen" type="button">ZUR KOMMANDOZENTRALE →</button><button class="landing-text-link" id="logoutBtn" type="button"><u>Abmelden</u></button>` : `<div class="landing-login-kicker">ARCHIVZUGANG</div><h2>WILLKOMMEN ZURÜCK</h2><p>Melde dich an und werde Teil der Community.</p><form id="heroLoginForm"><label><span>✉</span><input type="email" id="heroEmail" placeholder="E-Mail-Adresse" required></label><label><span>▣</span><input type="password" id="heroPassword" placeholder="Passwort" minlength="4" required></label><div class="landing-login-options"><label class="landing-remember"><input type="checkbox"> Angemeldet bleiben</label><button class="landing-text-link inline" type="button" id="heroForgot">Passwort vergessen?</button></div><button class="landing-primary landing-full" type="submit">ANMELDEN →</button></form><button class="landing-text-link" id="heroRegister" type="button">Noch kein Konto? <u>Jetzt registrieren</u></button>`}
+          ${account ? `<div class="landing-account-head"><span class="landing-avatar">${escapeHtml((account.name||account.email||'M').slice(0,1).toUpperCase())}</span><div><small>ARCHIV-PROFIL</small><h2>${escapeHtml(account.name||'META-HUMAN')}</h2><p>${escapeHtml(account.email||'Sitzung aktiv')}</p></div></div><div class="landing-account-metrics"><span><b>${favorites}</b><small>Favoriten</small></span><span><b>${hunt}</b><small>Jagdliste</small></span><span><b>${savedBuilds}</b><small>Builds</small></span></div><button class="landing-primary landing-full" id="dashboardOpen" type="button">ZUR KOMMANDOZENTRALE →</button><button class="landing-text-link" id="logoutBtn" type="button"><u>Abmelden</u></button>` : `<div class="landing-login-kicker">ARCHIVZUGANG</div><h2>WILLKOMMEN ZURÜCK</h2><p>Melde dich an und werde Teil der Community.</p><form id="heroLoginForm"><label><span>✉</span><input type="email" id="heroEmail" placeholder="E-Mail-Adresse" required></label><label><span>▣</span><input type="password" id="heroPassword" placeholder="Passwort" minlength="4" required></label><p class="login-error landing-login-error" id="heroLoginError" role="alert" hidden></p><div class="landing-login-options"><label class="landing-remember"><input type="checkbox"> Angemeldet bleiben</label><button class="landing-text-link inline" type="button" id="heroForgot">Passwort vergessen?</button></div><button class="landing-primary landing-full" type="submit">ANMELDEN →</button></form><button class="landing-text-link" id="heroRegister" type="button">Noch kein Konto? <u>Jetzt registrieren</u></button>`}
         </aside>
       </div>
     </section>
@@ -210,6 +210,12 @@ function authErrorMessage(error,fallback='Anmeldung fehlgeschlagen.'){
   if(/password/i.test(message)&&/least|short|length/i.test(message)) return 'Das Passwort erfüllt die Supabase-Passwortvorgaben noch nicht.';
   return message||fallback;
 }
+function setLoginError(selector,message=''){
+  const el=$(selector);
+  if(!el) return;
+  el.textContent=message;
+  el.hidden=!message;
+}
 async function signInWithSupabase(email,password){
   return globalThis.JMA_AUTH.signInWithPassword(email,password);
 }
@@ -229,11 +235,12 @@ function bindView(){
     e.preventDefault();
     const button=e.currentTarget.querySelector('[type="submit"]');
     const email=$('#heroEmail').value.trim(),pass=$('#heroPassword').value;
+    setLoginError('#heroLoginError');
     try{
       const account=await bindAuthSubmit(button,()=>signInWithSupabase(email,pass));
       toast(`Willkommen zurück, ${account?.name||account?.email||'Meta-Human'}.`);
       render();
-    }catch(error){toast(authErrorMessage(error))}
+    }catch(error){setLoginError('#heroLoginError',authErrorMessage(error))}
   });
   $('#heroRegister')?.addEventListener('click',()=>openAuth('register'));
   $('#heroForgot')?.addEventListener('click',()=>toast('Passwort-Wiederherstellung wird in einem späteren Schritt angebunden.'));
@@ -256,6 +263,7 @@ function openAuth(mode='login',email=''){
   $('#authSubmit').textContent=reg?'REGISTRIEREN →':'ANMELDEN →';
   $('#authSwitch').innerHTML=reg?'Schon ein Konto? <u>Anmelden</u>':'Noch kein Konto? <u>Jetzt registrieren</u>';
   $('#nameField').classList.toggle('hidden',!reg); $('#authName').required=reg; $('#authEmail').value=email;
+  setLoginError('#authLoginError');
   $('#authDialog').showModal(); setTimeout(()=>$('#authEmail').focus(),20);
 }
 $('#authForm').addEventListener('submit',async e=>{
@@ -277,7 +285,10 @@ $('#authForm').addEventListener('submit',async e=>{
     $('#authDialog').close();
     toast(`Willkommen zurück, ${account?.name||account?.email||'Meta-Human'}.`);
     render();
-  }catch(error){toast(authErrorMessage(error,authMode==='register'?'Registrierung fehlgeschlagen.':'Anmeldung fehlgeschlagen.'))}
+  }catch(error){
+    if(authMode==='login') setLoginError('#authLoginError',authErrorMessage(error,'Anmeldung fehlgeschlagen.'));
+    else toast(authErrorMessage(error,'Registrierung fehlgeschlagen.'));
+  }
 });
 $('#authSwitch').addEventListener('click',()=>openAuth(authMode==='login'?'register':'login',$('#authEmail').value));
 $('#authClose').addEventListener('click',()=>$('#authDialog').close());
