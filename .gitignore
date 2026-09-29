@@ -16,3 +16,9 @@ dist/
 # Local review artifacts / source-only visual references
 screenshots/
 assets/reference/ref-*.webp
+
+# Supabase / local environment secrets
+.env
+.env.*
+!.env.example
+supabase/.temp/
