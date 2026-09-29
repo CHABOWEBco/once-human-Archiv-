@@ -63,7 +63,7 @@ body.route-home{
     radial-gradient(circle at 13% 42%,rgba(157,35,57,.045),transparent 26%),
     linear-gradient(180deg,#06131a 0,#02090e 66%,#010507 100%);
 }
-.landing-hero{height:500px;position:relative;overflow:hidden;border-bottom:1px solid rgba(83,172,185,.46);background:#061019;isolation:isolate;box-shadow:0 20px 42px rgba(0,0,0,.34),inset 0 -1px 0 rgba(112,205,215,.06)}
+.landing-hero{height:540px;position:relative;overflow:hidden;border-bottom:1px solid rgba(83,172,185,.46);background:#061019;isolation:isolate;box-shadow:0 20px 42px rgba(0,0,0,.34),inset 0 -1px 0 rgba(112,205,215,.06)}
 .landing-hero-art{position:absolute;z-index:0;inset:-8px -12px;background:url('./assets/reference/home-hero.webp') 50% 49%/cover no-repeat;filter:brightness(.98) saturate(1.02) contrast(1.16);transform:translate3d(0,0,0);will-change:transform;animation:landingHeroDrift 22s ease-in-out infinite alternate}
 @keyframes landingHeroDrift{0%{transform:translate3d(-5px,-2px,0)}50%{transform:translate3d(2px,2px,0)}100%{transform:translate3d(6px,-1px,0)}}
 @media(prefers-reduced-motion:reduce){.landing-hero-art{animation:none;transform:none}}

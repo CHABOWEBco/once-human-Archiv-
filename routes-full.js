@@ -88,14 +88,14 @@ function renderMap(){
     <header class="map-app-hero">
       <div class="map-app-hero-copy">
         <div class="map-app-kicker"><span>✦</span> KARTENZENTRALE // INTERN</div>
-        <h1>INTERAKTIVE <span>KARTE</span></h1>
+        <h1>INTERAKTIVE<br><span>KARTE</span></h1>
         <p>Szenarioebenen, vorhandene Marker und gespeicherte Routen in einer kompakten Kartenoberfläche. Dieser Block bildet zunächst die visuelle Karten-App; weitere Kartendaten folgen kontrolliert nach der Designabnahme.</p>
-      </div>
-      <div class="map-app-stats">
-        <article><i>▦</i><div><b>${scenarios.length}</b><span>SZENARIEN</span><small>vorhandener Projektstand</small></div></article>
-        <article><i>⌖</i><div><b>${allMarkers().length}</b><span>MARKER</span><small>vorhandene Einträge</small></div></article>
-        <article><i>◉</i><div><b>${markers.length}</b><span>SICHTBAR</span><small>aktuelle Auswahl</small></div></article>
-        <article><i>⌁</i><div><b>${routeCount}</b><span>ROUTEN</span><small>lokal gespeichert</small></div></article>
+        <div class="map-app-stats">
+          <article><i>▦</i><div><b>${scenarios.length}</b><span>SZENARIEN</span><small>vorhandener Projektstand</small></div></article>
+          <article><i>⌖</i><div><b>${allMarkers().length}</b><span>MARKER</span><small>vorhandene Einträge</small></div></article>
+          <article><i>◉</i><div><b>${markers.length}</b><span>SICHTBAR</span><small>aktuelle Auswahl</small></div></article>
+          <article><i>⌁</i><div><b>${routeCount}</b><span>ROUTEN</span><small>lokal gespeichert</small></div></article>
+        </div>
       </div>
     </header>
 
