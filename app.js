@@ -239,8 +239,7 @@ function syncHeaderAccount(){
   const guest=!signedIn;
   const guestHome=guest&&routeFromHash()==='home';
   document.body.classList.toggle('home-guest-showcase',guestHome);
-  mainNav.classList.remove('hidden');
-  document.querySelectorAll('[data-nav]').forEach(link=>link.classList.toggle('hidden',guest&&link.dataset.nav!=='home'));
+  mainNav.classList.toggle('hidden',guest);
   if(guest) mainNav.classList.remove('open');
   $('#searchTrigger')?.classList.toggle('hidden',guest);
   $('#menuToggle')?.classList.toggle('hidden',guest);
