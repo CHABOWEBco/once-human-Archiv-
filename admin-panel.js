@@ -4,6 +4,7 @@
 const ADMIN_VIEWS=[
   ['overview','Übersicht','⌂'],
   ['content','Inhalte & Seiten','▤'],
+  ['editor','Inhaltseditor','✎'],
   ['map','Karte & Marker','⌖'],
   ['moderation','Moderation','⚑'],
   ['users','Nutzer & Rollen','♙'],
@@ -126,6 +127,23 @@ function overview(){
   '</div>';
 }
 function contentView(){
+  const s=localStats();
+  const modules=[
+    ['Datenbank','Katalog, Filter, Einträge und Detailansichten.',s.catalog+' Einträge','database','▱'],
+    ['Karte','Marker, Kategorien, Routen und eigene Fundpunkte.',(s.baseMarkers+s.localMarkers)+' Marker','map','⌖'],
+    ['Techwerkbank','Reverse Engineering, Erfindung und Fertigung.','Route aktiv','tech-workbench','⚙'],
+    ['Neuigkeiten','Projektmeldungen und Archiv-Updates.',s.news+' Meldungen','news','▤'],
+    ['Guides','Wissensartikel und strukturierte Hilfen.','Route aktiv','guides','◫'],
+    ['Community','Räume, Beiträge und lokale Community-Daten.',s.posts+' lokale Beiträge','community','♙'],
+    ['Einreichungen','Funde, Korrekturen und Hinweise.',s.submissions+' lokal','submissions','⇧'],
+    ['Profil','Account, Darstellung und Sicherheitsbereich.','Accountbereich','profile','○']
+  ];
+  return '<section class="admin-view">'+panelHead('CONTENT MANAGEMENT','Inhalte & Seiten','<button type="button" class="admin-secondary compact" data-admin-go="home">Website-Vorschau ↗</button>')+
+    '<div class="admin-editor-layout"><div class="admin-content-list">'+modules.map((m,i)=>'<article class="admin-content-row"><span class="admin-content-no">'+String(i+1).padStart(2,'0')+'</span><span class="admin-content-icon">'+m[4]+'</span><div><small>'+esc(m[2])+'</small><h3>'+esc(m[0])+'</h3><p>'+esc(m[1])+'</p></div><button type="button" data-admin-go="'+m[3]+'">Öffnen ↗</button></article>').join('')+'</div>'+
+    '<aside class="admin-inspector"><small>EDITOR-PRINZIP</small><h3>Bearbeiten ohne Code</h3><p>Hier entsteht später der echte Inhaltseditor: links Datensätze auswählen, rechts Felder bearbeiten, Vorschau prüfen und erst danach speichern.</p><div class="admin-inspector-preview"><span>01</span><b>Auswählen</b><em>Seite oder Datensatz</em><span>02</span><b>Bearbeiten</b><em>Texte, Bilder, Status</em><span>03</span><b>Prüfen</b><em>Live-Vorschau</em><span>04</span><b>Speichern</b><em>über sichere Backend-Aktion</em></div><div class="admin-safe-note"><b>SAFE MODE</b><p>In Phase 1 verändert dieses Panel noch keine produktiven Daten.</p></div></aside></div>'+
+  '</section>';
+}
+function editorView(){
   const entries=catalog();
   const categories=Array.isArray(globalThis.CATALOG_DATA?.categories)?globalThis.CATALOG_DATA.categories:[];
   let selectedId='';
@@ -230,6 +248,7 @@ function renderView(){
   if(!allowed(view)) setView('overview');
   const active=getView();
   if(active==='content') return contentView();
+  if(active==='editor') return editorView();
   if(active==='map') return mapView();
   if(active==='moderation') return moderationView();
   if(active==='users') return usersView();
