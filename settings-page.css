@@ -1285,3 +1285,191 @@ html[data-ui-theme="light"] body.route-profile.ui-preferences-active :is(.profil
 @media(prefers-reduced-motion:reduce){
   .settings-profile-subnav,.settings-profile-subnav:after{animation:none!important}
 }
+
+
+/* === Flat profile tabs: no second sidebar === */
+.settings-profile-flat{
+  display:block!important;
+  min-height:0;
+  height:100%;
+  overflow:hidden
+}
+.settings-profile-flat>.settings-profile-work{
+  height:100%;
+  min-height:0;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  padding:0 24px 34px!important;
+  overscroll-behavior:contain
+}
+.settings-profile-tabs{
+  position:sticky;
+  top:0;
+  z-index:12;
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin:0 -24px;
+  padding:14px 24px 12px;
+  border-bottom:1px solid color-mix(in srgb,var(--ui-accent) 16%,rgba(153,194,216,.14));
+  background:linear-gradient(180deg,rgba(6,13,20,.99),rgba(6,13,20,.94));
+  backdrop-filter:blur(18px) saturate(125%);
+  -webkit-backdrop-filter:blur(18px) saturate(125%)
+}
+.settings-profile-tabs button{
+  min-height:35px;
+  padding:0 11px;
+  border:1px solid rgba(153,194,216,.12);
+  border-radius:9px;
+  background:rgba(255,255,255,.018);
+  color:#81949d;
+  font:800 8px var(--display);
+  letter-spacing:.045em;
+  cursor:pointer;
+  transition:color .16s ease,border-color .16s ease,background .16s ease,transform .16s ease,box-shadow .16s ease
+}
+.settings-profile-tabs button:hover{
+  transform:translateY(-1px);
+  color:#eef7f8;
+  border-color:color-mix(in srgb,var(--ui-accent) 26%,rgba(153,194,216,.16));
+  background:color-mix(in srgb,var(--ui-accent) 5%,rgba(255,255,255,.018))
+}
+.settings-profile-tabs button.active{
+  color:#fff;
+  border-color:color-mix(in srgb,var(--ui-accent) 56%,transparent);
+  background:linear-gradient(180deg,color-mix(in srgb,var(--ui-accent) 18%,transparent),color-mix(in srgb,var(--ui-accent) 7%,transparent));
+  box-shadow:inset 0 -2px var(--ui-accent),0 0 18px color-mix(in srgb,var(--ui-accent) 9%,transparent)
+}
+
+/* Live preview sits directly under the profile tabs and stays visible while editor content scrolls. */
+.settings-profile-flat .settings-profile-live{
+  top:64px;
+  margin:0 -24px 20px;
+  padding:12px 24px 12px
+}
+.settings-profile-panel-stage{
+  position:relative;
+  min-height:260px
+}
+.settings-profile-panel-stage>[data-profile-edit-panel]{
+  display:none;
+  width:min(860px,100%);
+  margin:0 auto;
+  padding:6px 2px 24px
+}
+.settings-profile-panel-stage>[data-profile-edit-panel].active{
+  display:block
+}
+.settings-profile-panel-stage>[data-profile-edit-panel].panel-enter{
+  animation:settings-profile-panel-in .22s cubic-bezier(.2,.78,.24,1) both
+}
+@keyframes settings-profile-panel-in{
+  from{opacity:0;transform:translateY(8px);filter:blur(2px)}
+  to{opacity:1;transform:translateY(0);filter:blur(0)}
+}
+
+/* Notifications + Security use the same archive settings language. */
+.settings-content-single{
+  display:block;
+  min-width:0;
+  padding:26px
+}
+.settings-single-panel{
+  width:min(880px,100%);
+  min-height:100%;
+  padding:0;
+  color:#eaf2f5
+}
+.settings-single-panel .settings-titlebar{
+  margin-bottom:26px
+}
+.settings-toggles-single{
+  width:min(640px,100%)
+}
+.settings-info-card,
+.settings-account-status{
+  width:min(640px,100%);
+  margin-top:18px;
+  padding:16px;
+  border:1px solid var(--settings-line);
+  border-radius:var(--ui-radius);
+  background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.012));
+  box-shadow:inset 0 1px rgba(255,255,255,.025)
+}
+.settings-info-card small,
+.settings-account-status small{
+  display:block;
+  color:var(--ui-accent);
+  font:800 8px var(--display);
+  letter-spacing:.13em
+}
+.settings-info-card b,
+.settings-account-status b{
+  display:block;
+  margin-top:6px;
+  color:#f4f8fa;
+  font-size:13px
+}
+.settings-info-card p,
+.settings-account-status span{
+  display:block;
+  margin:6px 0 0;
+  color:#81949d;
+  font-size:10px;
+  line-height:1.6
+}
+.settings-security-form{
+  width:min(640px,100%);
+  display:grid;
+  gap:12px;
+  margin-top:18px
+}
+.settings-security-form label>span{
+  display:block;
+  margin-bottom:6px;
+  color:#8297a0;
+  font:800 8px var(--display);
+  letter-spacing:.08em
+}
+.settings-security-form input{
+  width:100%;
+  height:44px;
+  padding:0 12px;
+  border:1px solid var(--settings-line);
+  border-radius:var(--ui-radius);
+  background:rgba(4,11,17,.82);
+  color:#eaf2f5
+}
+.settings-security-form button{
+  min-height:42px;
+  border:1px solid color-mix(in srgb,var(--ui-accent) 30%,var(--settings-line));
+  border-radius:var(--ui-radius);
+  background:linear-gradient(180deg,color-mix(in srgb,var(--ui-accent) 12%,transparent),rgba(255,255,255,.02));
+  color:#eef7f8;
+  font:800 9px var(--display);
+  letter-spacing:.07em;
+  cursor:pointer
+}
+#settingsSecurityMessage{
+  min-height:16px;
+  margin:0;
+  color:#ff8791;
+  font-size:9px
+}
+#settingsSecurityMessage.success{color:#54dca9}
+
+@media(max-width:900px){
+  .settings-profile-flat>.settings-profile-work{padding-inline:16px!important}
+  .settings-profile-tabs{margin-inline:-16px;padding-inline:16px}
+  .settings-profile-flat .settings-profile-live{margin-inline:-16px;padding-inline:16px}
+}
+@media(max-width:640px){
+  .settings-profile-tabs{flex-wrap:nowrap;overflow:auto hidden;scrollbar-width:none}
+  .settings-profile-tabs::-webkit-scrollbar{display:none}
+  .settings-profile-tabs button{flex:0 0 auto}
+  .settings-profile-flat .settings-profile-live{top:62px}
+  .settings-content-single{padding:16px}
+}
+@media(prefers-reduced-motion:reduce){
+  .settings-profile-panel-stage>[data-profile-edit-panel].panel-enter{animation:none!important}
+}
