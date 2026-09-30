@@ -61,7 +61,7 @@
 .database-page .catalog-import-note{display:flex;align-items:flex-start;gap:9px;padding:14px 6px;color:#839ca6}
 .database-page .catalog-import-note>span{color:#cf697a;font-size:20px}
 .database-page .catalog-import-note p{margin:0;font-size:10px;line-height:1.65}
-.database-page .catalog-main{min-width:0}
+.database-page .catalog-main{min-width:0}#app:focus{outline:none}
 .database-page .catalog-toolbar{padding:0}
 .database-page .catalog-search{display:flex;align-items:center;gap:12px;height:54px;padding:0 17px;border:1px solid #548a99;background:linear-gradient(90deg,#102630,#07151e)}
 .database-page .catalog-search>span{color:var(--db-accent);font-size:26px}
