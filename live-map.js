@@ -152,7 +152,17 @@ function bindLiveMap(){
   qsa('[data-lm-go]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.lmGo)));
   qs('#lmScenario')?.addEventListener('change',e=>{write('jma_map_scenario',e.target.value);write('jma_map_selected','');write('jma_map_cat','all');write('jma_map_q','');refresh()});
   let searchTimer;
-  qs('#lmSearch')?.addEventListener('input',e=>{write('jma_map_q',e.target.value);clearTimeout(searchTimer);searchTimer=setTimeout(refresh,180)});
+  qs('#lmSearch')?.addEventListener('input',e=>{
+    const input=e.target;
+    write('jma_map_q',input.value);clearTimeout(searchTimer);
+    searchTimer=setTimeout(()=>{
+      if(!input.isConnected)return;
+      const focused=document.activeElement===input,start=input.selectionStart,end=input.selectionEnd,direction=input.selectionDirection;
+      refresh();
+      const next=qs('#lmSearch');
+      if(focused&&next){next.focus({preventScroll:true});next.setSelectionRange(start,end,direction)}
+    },180);
+  });
   qsa('[data-lm-cat]').forEach(b=>b.addEventListener('click',()=>{write('jma_map_cat',b.dataset.lmCat);refresh()}));
   qs('#lmResetFilters')?.addEventListener('click',()=>{write('jma_map_cat','all');write('jma_map_q','');refresh()});
   qsa('[data-lm-marker]').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();write('jma_map_selected',b.dataset.lmMarker);refresh()}));
