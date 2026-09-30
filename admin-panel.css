@@ -373,3 +373,166 @@
 .admin-access-card>p{font-size:14px;line-height:1.7;color:#a5b6c1}
 .admin-access-facts b{font-size:9px}
 .admin-access-facts em{font-size:11px;color:#d8e4eb}
+
+
+/* === Admin liquid glass 3D hover === */
+.admin-system-list>span,
+.admin-cap-list>span{
+  --rx:0deg;
+  --ry:0deg;
+  --px:50%;
+  --py:50%;
+  --glow:.18;
+  position:relative;
+  overflow:hidden;
+  isolation:isolate;
+  transform-style:preserve-3d;
+  will-change:transform;
+  border:1px solid rgba(133,210,238,.12);
+  border-radius:14px;
+  background:
+    radial-gradient(circle at var(--px) var(--py),rgba(91,227,246,.12),transparent 34%),
+    radial-gradient(circle at 82% 18%,rgba(255,91,106,.08),transparent 28%),
+    linear-gradient(180deg,rgba(15,25,37,.76),rgba(7,14,21,.88));
+  backdrop-filter:blur(22px) saturate(145%);
+  -webkit-backdrop-filter:blur(22px) saturate(145%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.055),
+    inset 0 -1px 0 rgba(255,255,255,.018),
+    0 10px 26px rgba(0,0,0,.18);
+  transform:
+    perspective(920px)
+    rotateX(var(--rx))
+    rotateY(var(--ry))
+    translateZ(0)
+    translateY(0);
+  transition:
+    transform .16s ease-out,
+    box-shadow .18s ease,
+    border-color .18s ease,
+    background .18s ease;
+}
+
+.admin-system-list>span::before,
+.admin-cap-list>span::before{
+  content:"";
+  position:absolute;
+  inset:-1px;
+  z-index:0;
+  pointer-events:none;
+  border-radius:inherit;
+  background:
+    linear-gradient(
+      128deg,
+      rgba(255,255,255,.16) 0%,
+      rgba(255,255,255,.05) 18%,
+      transparent 34%,
+      transparent 62%,
+      rgba(255,255,255,.025) 80%,
+      rgba(255,255,255,.08) 100%
+    );
+  opacity:.72;
+  mix-blend-mode:screen;
+}
+
+.admin-system-list>span::after,
+.admin-cap-list>span::after{
+  content:"";
+  position:absolute;
+  inset:-35%;
+  z-index:0;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at var(--px) var(--py),
+      rgba(113,235,255,.28) 0%,
+      rgba(72,217,239,.13) 15%,
+      rgba(72,217,239,.05) 28%,
+      transparent 48%),
+    conic-gradient(from 90deg at var(--px) var(--py),
+      transparent 0deg,
+      rgba(255,255,255,.08) 42deg,
+      transparent 92deg,
+      rgba(255,104,117,.08) 168deg,
+      transparent 232deg,
+      rgba(72,217,239,.08) 304deg,
+      transparent 360deg);
+  opacity:var(--glow);
+  filter:blur(18px);
+  transform:translateZ(1px) scale(1.03);
+  transition:opacity .18s ease,filter .18s ease;
+}
+
+.admin-system-list>span>*,
+.admin-cap-list>span>*{
+  position:relative;
+  z-index:2;
+  transform:translateZ(18px);
+}
+
+.admin-system-list>span:hover,
+.admin-cap-list>span:hover{
+  --glow:.95;
+  border-color:rgba(126,229,255,.28);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.08),
+    inset 0 -1px 0 rgba(255,255,255,.02),
+    0 20px 40px rgba(0,0,0,.26),
+    0 0 28px rgba(72,217,239,.10),
+    0 0 48px rgba(255,94,108,.06);
+  transform:
+    perspective(920px)
+    rotateX(var(--rx))
+    rotateY(var(--ry))
+    translateZ(8px)
+    translateY(-3px)
+    scale(1.012);
+}
+
+.admin-system-list>span:hover::before,
+.admin-cap-list>span:hover::before{
+  opacity:1;
+}
+
+.admin-system-list>span:hover::after,
+.admin-cap-list>span:hover::after{
+  filter:blur(14px);
+}
+
+.admin-system-list>span i.ok,
+.admin-cap-list>span i.ok{
+  box-shadow:
+    0 0 7px rgba(52,220,162,.8),
+    0 0 18px rgba(52,220,162,.38),
+    0 0 30px rgba(52,220,162,.12);
+}
+
+.admin-system-list>span i.off,
+.admin-cap-list>span i.off{
+  box-shadow:
+    0 0 7px rgba(255,101,112,.75),
+    0 0 18px rgba(255,101,112,.30),
+    0 0 30px rgba(255,101,112,.10);
+}
+
+.admin-system-list>span:hover i.ok,
+.admin-cap-list>span:hover i.ok{
+  transform:scale(1.18);
+}
+
+.admin-system-list>span:hover i.off,
+.admin-cap-list>span:hover i.off{
+  transform:scale(1.18);
+}
+
+.admin-system-list>span i,
+.admin-cap-list>span i{
+  transition:transform .16s ease,box-shadow .16s ease;
+}
+
+@media (prefers-reduced-motion:reduce){
+  .admin-system-list>span,
+  .admin-cap-list>span{
+    transform:none!important;
+    transition:none!important;
+  }
+}
