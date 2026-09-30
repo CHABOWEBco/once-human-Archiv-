@@ -173,18 +173,18 @@ function editorView(){
         '<div class="admin-editor-empty-filter" id="adminEditorEmpty" hidden><span>⌕</span><b>Keine Treffer</b><p>Suchbegriff oder Filter ändern.</p></div>'+
       '</main>'+
       (selected?'<aside class="admin-editor-drawer" aria-label="Item bearbeiten">'+
-        '<header class="admin-editor-drawer-head"><div><small>ITEM BEARBEITEN</small><h3>'+esc(selected.name_de||selected.id)+'</h3></div></header>'+
-        '<div class="admin-editor-item-preview"><div class="admin-editor-preview-media"><img src="'+esc(imageOf(selected))+'" alt="" data-editor-preview-image></div><div><small>'+esc(categoryName(selected.category))+'</small><strong data-editor-preview-title>'+esc(selected.name_de||selected.id)+'</strong><p data-editor-preview-desc>'+esc(selected.description||'Keine Beschreibung')+'</p></div></div>'+
+        '<header class="admin-editor-drawer-head"><div><small>ITEM BEARBEITEN</small><h3 data-editor-drawer-title>'+esc(selected.name_de||selected.id)+'</h3></div></header>'+
+        '<div class="admin-editor-item-preview"><div class="admin-editor-preview-media"><img src="'+esc(imageOf(selected))+'" alt="" data-editor-preview-image></div><div><small data-editor-preview-category>'+esc(categoryName(selected.category))+'</small><strong data-editor-preview-title>'+esc(selected.name_de||selected.id)+'</strong><p data-editor-preview-desc>'+esc(selected.description||'Keine Beschreibung')+'</p></div></div>'+
         '<form class="admin-editor-form" onsubmit="return false">'+
           '<label><span>Name</span><input type="text" value="'+esc(selected.name_de||'')+'" data-editor-input="name"></label>'+
           '<label><span>Typ</span><input type="text" value="'+esc(selected.kind||'')+'" data-editor-input="kind"></label>'+
           '<label class="wide"><span>Beschreibung</span><textarea rows="5" data-editor-input="description">'+esc(selected.description||'')+'</textarea></label>'+
           '<label class="wide"><span>Fundort / Freischaltung</span><textarea rows="3" data-editor-input="acquisition">'+esc(selected.acquisition||'')+'</textarea></label>'+
           '<label><span>Status</span><input type="text" value="'+esc(selected.status||'')+'" data-editor-input="status"></label>'+
-          '<label><span>Kategorie</span><input type="text" value="'+esc(categoryName(selected.category))+'" disabled></label>'+
+          '<label><span>Kategorie</span><input type="text" value="'+esc(categoryName(selected.category))+'" data-editor-category disabled></label>'+
           '<label class="wide"><span>Tags</span><input type="text" value="'+esc((selected.tags||[]).join(', '))+'" data-editor-input="tags"></label>'+
         '</form>'+
-        '<section class="admin-editor-media-control"><div><small>BILD</small><b>'+esc(selected.image||'Kein Bildpfad')+'</b></div><button type="button" disabled>Bild ersetzen</button></section>'+
+        '<section class="admin-editor-media-control"><div><small>BILD</small><b data-editor-media-path>'+esc(selected.image||'Kein Bildpfad')+'</b></div><button type="button" disabled>Bild ersetzen</button></section>'+
         '<div class="admin-safe-note"><b>BLOCK 1 · VORSCHAU</b><p>Du kannst die Felder hier bereits ausprobieren. Es wird noch nichts in Supabase, Git oder den Live-Katalog geschrieben.</p></div>'+
         '<div class="admin-editor-drawer-actions"><button type="button" class="admin-primary" disabled>Speichern · Block 2</button></div>'+
       '</aside>':'')+
@@ -339,8 +339,32 @@ function bindAdmin(){
     location.hash='#/'+button.dataset.adminGo;
   }));
   document.querySelectorAll('[data-admin-edit-item]').forEach(button=>button.addEventListener('click',()=>{
-    try{sessionStorage.setItem('oha:admin-editor:selected',button.dataset.adminEditItem||'')}catch{}
-    globalThis.JMA_RENDER?.();
+    const itemId=button.dataset.adminEditItem||'';
+    const item=catalog().find(entry=>entry.id===itemId);
+    if(!item) return;
+    try{sessionStorage.setItem('oha:admin-editor:selected',itemId)}catch{}
+
+    const categories=Array.isArray(globalThis.CATALOG_DATA?.categories)?globalThis.CATALOG_DATA.categories:[];
+    const categoryName=id=>categories.find(x=>x.id===id)?.label||id||'Ohne Kategorie';
+    const imageOf=item=>item?.image||'assets/branding/once-human-logo.png';
+    const setText=(selector,value)=>{const el=document.querySelector(selector);if(el) el.textContent=value};
+    const setValue=(selector,value)=>{const el=document.querySelector(selector);if(el) el.value=value};
+
+    document.querySelectorAll('[data-admin-edit-item]').forEach(card=>card.classList.toggle('selected',card===button));
+    setText('[data-editor-drawer-title]',item.name_de||item.id);
+    setText('[data-editor-preview-category]',categoryName(item.category));
+    setText('[data-editor-preview-title]',item.name_de||item.id);
+    setText('[data-editor-preview-desc]',item.description||'Keine Beschreibung');
+    setText('[data-editor-media-path]',item.image||'Kein Bildpfad');
+    setValue('[data-editor-input="name"]',item.name_de||'');
+    setValue('[data-editor-input="kind"]',item.kind||'');
+    setValue('[data-editor-input="description"]',item.description||'');
+    setValue('[data-editor-input="acquisition"]',item.acquisition||'');
+    setValue('[data-editor-input="status"]',item.status||'');
+    setValue('[data-editor-input="tags"]',(item.tags||[]).join(', '));
+    setValue('[data-editor-category]',categoryName(item.category));
+    const image=document.querySelector('[data-editor-preview-image]');
+    if(image) image.src=imageOf(item);
   }));
 
   const search=document.querySelector('#adminEditorSearch');
