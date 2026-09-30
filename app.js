@@ -287,6 +287,8 @@ function syncHeaderAccount(){
   if(adminLink) adminLink.hidden=!['moderator','admin','owner'].includes(String(account.role||'').toLowerCase());
 }
 function showWelcome(account){
+  const prefs=globalThis.SETTINGS_PAGE?.read?.()||{};
+  if(prefs.welcome===false) return;
   const box=$('#authWelcome'),name=$('#authWelcomeName');
   if(!box||!name) return;
   name.textContent=account?.name||account?.email||'Meta-Human';
