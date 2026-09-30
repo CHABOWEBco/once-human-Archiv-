@@ -951,3 +951,105 @@ html[data-ui-theme="light"] body.route-profile.ui-preferences-active :is(.profil
   .settings-profile-editor{border-radius:calc(var(--ui-radius) - 2px)}
   .settings-profile-editor-head:before{display:none}
 }
+
+
+/* === Avatar composite preview: avatar + active frame === */
+.settings-profile-editor .profile-choice-hint{
+  margin:-6px 0 14px;
+  color:#7f949d;
+  font-size:9px;
+  line-height:1.5
+}
+.settings-profile-editor .avatar-choices{
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:12px
+}
+.settings-profile-editor .avatar-choices button{
+  min-height:190px;
+  padding:14px 12px 12px;
+  justify-content:flex-start
+}
+.settings-profile-editor .avatar-choice-stage{
+  position:relative;
+  width:138px;
+  height:138px;
+  flex:0 0 138px;
+  display:grid;
+  place-items:center;
+  margin:0 auto 2px;
+  border-radius:22px;
+  background:
+    radial-gradient(circle at 50% 42%,color-mix(in srgb,var(--ui-accent) 7%,transparent),transparent 48%),
+    rgba(3,10,16,.44);
+  box-shadow:inset 0 0 0 1px rgba(153,194,216,.08)
+}
+.settings-profile-editor .avatar-choice-image{
+  position:absolute!important;
+  z-index:1!important;
+  inset:18px!important;
+  width:102px!important;
+  max-width:none!important;
+  height:102px!important;
+  margin:0!important;
+  object-fit:contain!important;
+  border-radius:18px!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  filter:drop-shadow(0 8px 11px rgba(0,0,0,.42))!important
+}
+.settings-profile-editor .avatar-choice-frame{
+  position:absolute!important;
+  z-index:2!important;
+  inset:0!important;
+  width:138px!important;
+  max-width:none!important;
+  height:138px!important;
+  margin:0!important;
+  object-fit:contain!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  pointer-events:none;
+  filter:drop-shadow(0 8px 13px rgba(0,0,0,.5)) drop-shadow(0 0 8px color-mix(in srgb,var(--ui-accent) 4%,transparent))!important
+}
+.settings-profile-editor .avatar-choice-frame[hidden]{display:none!important}
+.settings-profile-editor .avatar-choice-initial{
+  position:relative;
+  z-index:1;
+  width:102px;
+  height:102px;
+  display:grid;
+  place-items:center;
+  border-radius:18px;
+  background:
+    radial-gradient(circle at 32% 24%,rgba(255,255,255,.12),transparent 23%),
+    linear-gradient(145deg,#162631,#091219);
+  color:#eaf5f7;
+  font:900 34px var(--display);
+  font-style:normal;
+  box-shadow:inset 0 0 0 1px rgba(153,194,216,.12),0 8px 16px rgba(0,0,0,.22)
+}
+.settings-profile-editor .avatar-choices button:hover .avatar-choice-stage{
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb,var(--ui-accent) 18%,transparent),
+    0 0 20px color-mix(in srgb,var(--ui-accent) 6%,transparent)
+}
+.settings-profile-editor .avatar-choices button.active .avatar-choice-stage{
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb,var(--ui-accent) 30%,transparent),
+    0 0 24px color-mix(in srgb,var(--ui-accent) 10%,transparent)
+}
+
+@media(max-width:1180px){
+  .settings-profile-editor .avatar-choices{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:700px){
+  .settings-profile-editor .avatar-choice-stage{width:124px;height:124px;flex-basis:124px}
+  .settings-profile-editor .avatar-choice-frame{width:124px!important;height:124px!important}
+  .settings-profile-editor .avatar-choice-image{inset:16px!important;width:92px!important;height:92px!important}
+  .settings-profile-editor .avatar-choice-initial{width:92px;height:92px}
+}
+@media(max-width:520px){
+  .settings-profile-editor .avatar-choices{grid-template-columns:1fr}
+}
