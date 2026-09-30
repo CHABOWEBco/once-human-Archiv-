@@ -195,7 +195,7 @@ function renderProfile(){
   const a=account(),fav=set('jma_favorites'),found=set('jma_found'),hunt=set('jma_hunt'),builds=arr('jma_saved_builds'),routeRows=arr('jma_routes'),plans=arr('jma_plans'),markers=arr('jma_custom_markers'),submissions=arr('jma_submissions'),exchangePosts=arr('jma_exchange_posts');
   const displayName=a?.name||a?.email||'Archiv-Nutzer',email=a?.email||'—',initial=String(displayName||'?').trim().charAt(0).toUpperCase()||'?';
   const catalogTotal=catalog().length,foundRate=catalogTotal?Math.max(0,Math.min(100,Math.round(found.size/catalogTotal*100))):0,slotsTotal=buildSlots().length;
-  const p=appearance();
+  const p=appearance(),profileView=read('jma_profile_view','overview')==='collection'?'collection':'overview';
   const latestBuild=builds.find(x=>x.id===p.highlight)||builds[0]||null,latestBuildSlots=latestBuild?Object.values(latestBuild.slots||{}).filter(Boolean).length:0;
   const activities=[
     ...submissions.map(x=>({kind:'EINREICHUNG',title:x.title||x.type||'Einreichung',meta:x.status||x.type||'',created:x.created||''})),
@@ -230,14 +230,15 @@ function renderProfile(){
     </section>
 
     <nav class="profile-ref-tabs" aria-label="Profilbereiche">
-      <button class="active" type="button" aria-current="page"><i>⌂</i><span>ÜBERSICHT</span></button>
-      <button type="button" data-rf-go="collection"><i>◇</i><span>SAMMLUNG</span></button>
+      <button class="${profileView==='overview'?'active':''}" type="button" data-profile-view="overview" ${profileView==='overview'?'aria-current="page"':''}><i>⌂</i><span>ÜBERSICHT</span></button>
+      <button class="${profileView==='collection'?'active':''}" type="button" data-profile-view="collection" ${profileView==='collection'?'aria-current="page"':''}><i>◇</i><span>SAMMLUNG</span></button>
       <button type="button" data-rf-go="builds"><i>⚒</i><span>BUILDS</span></button>
       <button type="button" data-rf-go="routes"><i>⌖</i><span>ROUTEN</span></button>
       <button type="button" data-profile-scroll="profileStatsSection"><i>▥</i><span>STATISTIKEN</span></button>
       <button type="button" data-profile-scroll="profileGallerySection"><i>▧</i><span>GALERIE</span></button>
     </nav>
 
+    <div data-profile-view-panel="overview" ${profileView==='overview'?'':'hidden'}>
     <div class="profile-ref-grid">
       <div class="profile-ref-col profile-ref-col-left">
         <section class="profile-ref-panel profile-ref-highlight">
@@ -309,6 +310,11 @@ function renderProfile(){
         </section>
       </aside>
     </div>
+    </div>
+
+    <div data-profile-view-panel="collection" ${profileView==='collection'?'':'hidden'}>
+      ${renderCollectionBody()}
+    </div>
 
     <div class="profile-ref-drawer-backdrop" id="profileEditBackdrop" hidden></div>
     <aside class="profile-ref-drawer" id="profileEditDrawer" hidden aria-labelledby="profileEditTitle">
@@ -361,7 +367,10 @@ function bindProfile(){
   on('#profileEditClose','click',()=>setDrawer(false));
   on('#profileEditBackdrop','click',()=>setDrawer(false));
   const editTabs=qsa('[data-profile-edit-tab]'),editPanels=qsa('[data-profile-edit-panel]');editTabs.forEach(b=>b.onclick=()=>{editTabs.forEach(x=>x.classList.toggle('active',x===b));editPanels.forEach(x=>x.classList.toggle('active',x.dataset.profileEditPanel===b.dataset.profileEditTab))});
-  qsa('[data-profile-scroll]').forEach(b=>b.onclick=()=>qs('#'+b.dataset.profileScroll)?.scrollIntoView({behavior:'smooth',block:'start'}));
+  const setProfileView=view=>{view=view==='collection'?'collection':'overview';write('jma_profile_view',view);qsa('[data-profile-view]').forEach(x=>{const active=x.dataset.profileView===view;x.classList.toggle('active',active);active?x.setAttribute('aria-current','page'):x.removeAttribute('aria-current')});qsa('[data-profile-view-panel]').forEach(x=>x.hidden=x.dataset.profileViewPanel!==view)};
+  qsa('[data-profile-view]').forEach(b=>b.onclick=()=>setProfileView(b.dataset.profileView));
+  qsa('[data-profile-scroll]').forEach(b=>b.onclick=()=>{setProfileView('overview');requestAnimationFrame(()=>qs('#'+b.dataset.profileScroll)?.scrollIntoView({behavior:'smooth',block:'start'}))});
+  bindCollectionControls();
   on('#profileNameForm','submit',async e=>{e.preventDefault();const name=new FormData(e.currentTarget).get('name').trim();try{await saveProfileAppearance(name);toast('Anzeigename gespeichert.');refresh()}catch(error){toast(error?.message||'Anzeigename konnte nicht gespeichert werden.')}});
   on('#galleryUpload','change',async e=>{try{const file=e.target.files[0],rows=arr('jma_gallery');if(rows.length>=6)throw new Error('Maximal sechs Galerie-Bilder.');const id=await globalThis.JMA_MEDIA.save(file);rows.push({id,name:file.name,created:new Date().toISOString()});write('jma_gallery',rows);refresh()}catch(error){toast(error.message)}});qsa('[data-gallery-remove]').forEach(b=>b.onclick=async()=>{if(!confirm('Galeriebild löschen?'))return;await globalThis.JMA_MEDIA.remove(b.dataset.galleryRemove);write('jma_gallery',arr('jma_gallery').filter(x=>x.id!==b.dataset.galleryRemove));refresh()});
   on('#profileExport','click',()=>{const out={exported:new Date().toISOString()};['jma_favorites','jma_hunt','jma_hunt_meta','jma_saved_builds','jma_routes','jma_plans','jma_submissions','jma_community_posts','jma_found','jma_custom_markers','jma_exchange_posts'].forEach(k=>{if(read(k)!==null)out[k]=read(k)});const blob=new Blob([JSON.stringify(out,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='once-human-archiv-export.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000)});
@@ -369,8 +378,11 @@ function bindProfile(){
 }
 
 
-function renderCollection(){const fav=set('jma_favorites'),found=set('jma_found'),mode=read('jma_collection_mode','all');let rows=catalog().filter(x=>fav.has(x.id)||found.has(x.id));if(mode==='fav')rows=rows.filter(x=>fav.has(x.id));if(mode==='found')rows=rows.filter(x=>found.has(x.id));return `<section class="rf-page collection-page">${hero('PERSÖNLICH // KATALOG','MEINE SAMMLUNG','Favoriten und als gefunden markierte Katalogeinträge getrennt vom öffentlichen Datenbestand verwalten.',metrics([[fav.size,'Favoriten'],[found.size,'gefunden']]))}<div class="rf-tabs"><button class="${mode==='all'?'active':''}" data-collection-mode="all">ALLE</button><button class="${mode==='fav'?'active':''}" data-collection-mode="fav">FAVORITEN</button><button class="${mode==='found'?'active':''}" data-collection-mode="found">GEFUNDEN</button></div><div class="rf-collection-grid">${rows.map(x=>`<article><small>${esc(x.kind||x.category)}</small><h3>${esc(x.name_de)}</h3><p>${esc(x.description||'')}</p><div class="rf-chips">${fav.has(x.id)?'<span>★ Favorit</span>':''}${found.has(x.id)?'<span>✓ Gefunden</span>':''}</div><div class="actions"><button data-found-toggle="${esc(x.id)}">${found.has(x.id)?'GEFUNDEN AUFHEBEN':'ALS GEFUNDEN'}</button><button data-fav-toggle="${esc(x.id)}">${fav.has(x.id)?'FAVORIT ENTFERNEN':'FAVORIT'}</button></div></article>`).join('')||empty('Sammlung ist leer')}<div class="rf-inline-cta">${btnLink('database','DATENBANK DURCHSUCHEN','cyan-btn compact')}</div></div></section>`}
-function bindCollection(){navBinds();qsa('[data-collection-mode]').forEach(b=>b.onclick=()=>{write('jma_collection_mode',b.dataset.collectionMode);refresh()});qsa('[data-found-toggle]').forEach(b=>b.onclick=()=>{const s=set('jma_found'),id=b.dataset.foundToggle;s.has(id)?s.delete(id):s.add(id);putSet('jma_found',s);refresh()});qsa('[data-fav-toggle]').forEach(b=>b.onclick=()=>{const s=set('jma_favorites'),id=b.dataset.favToggle;s.has(id)?s.delete(id):s.add(id);putSet('jma_favorites',s);refresh()})}
+function collectionState(){const fav=set('jma_favorites'),found=set('jma_found'),mode=read('jma_collection_mode','all');let rows=catalog().filter(x=>fav.has(x.id)||found.has(x.id));if(mode==='fav')rows=rows.filter(x=>fav.has(x.id));if(mode==='found')rows=rows.filter(x=>found.has(x.id));return {fav,found,mode,rows}}
+function renderCollectionBody(state=collectionState()){const {fav,found,mode,rows}=state;return `<div class="rf-tabs"><button class="${mode==='all'?'active':''}" data-collection-mode="all">ALLE</button><button class="${mode==='fav'?'active':''}" data-collection-mode="fav">FAVORITEN</button><button class="${mode==='found'?'active':''}" data-collection-mode="found">GEFUNDEN</button></div><div class="rf-collection-grid">${rows.map(x=>`<article><small>${esc(x.kind||x.category)}</small><h3>${esc(x.name_de)}</h3><p>${esc(x.description||'')}</p><div class="rf-chips">${fav.has(x.id)?'<span>★ Favorit</span>':''}${found.has(x.id)?'<span>✓ Gefunden</span>':''}</div><div class="actions"><button data-found-toggle="${esc(x.id)}">${found.has(x.id)?'GEFUNDEN AUFHEBEN':'ALS GEFUNDEN'}</button><button data-fav-toggle="${esc(x.id)}">${fav.has(x.id)?'FAVORIT ENTFERNEN':'FAVORIT'}</button></div></article>`).join('')||empty('Sammlung ist leer')}<div class="rf-inline-cta">${btnLink('database','DATENBANK DURCHSUCHEN','cyan-btn compact')}</div></div>`}
+function renderCollection(){const state=collectionState();return `<section class="rf-page collection-page">${hero('PERSÖNLICH // KATALOG','MEINE SAMMLUNG','Favoriten und als gefunden markierte Katalogeinträge getrennt vom öffentlichen Datenbestand verwalten.',metrics([[state.fav.size,'Favoriten'],[state.found.size,'gefunden']]))}${renderCollectionBody(state)}</section>`}
+function bindCollectionControls(){qsa('[data-collection-mode]').forEach(b=>b.onclick=()=>{write('jma_collection_mode',b.dataset.collectionMode);refresh()});qsa('[data-found-toggle]').forEach(b=>b.onclick=()=>{const s=set('jma_found'),id=b.dataset.foundToggle;s.has(id)?s.delete(id):s.add(id);putSet('jma_found',s);refresh()});qsa('[data-fav-toggle]').forEach(b=>b.onclick=()=>{const s=set('jma_favorites'),id=b.dataset.favToggle;s.has(id)?s.delete(id):s.add(id);putSet('jma_favorites',s);refresh()})}
+function bindCollection(){navBinds();bindCollectionControls()}
 
 function filterSearch(rows,q,fn=x=>JSON.stringify(x)){q=(q||'').trim().toLowerCase();return q?rows.filter(x=>fn(x).toLowerCase().includes(q)):rows}
 function renderWeaponBlueprints(){const rows=AD().r9?.weaponBlueprints||[],q=read('jma_wb_q',''),fam=read('jma_wb_family','all'),families=[...new Set(rows.map(x=>x.family))],view=filterSearch(rows.filter(x=>fam==='all'||x.family===fam),q,x=>`${x.name} ${x.family} ${x.rarity}`);return `<section class="rf-page arsenal-page">${hero('DATENBANK // ARSENAL','WAFFEN-BLAUPAUSEN','Blaupausen nach Familie, Seltenheit und offensiven Referenzwerten durchsuchen.',metrics([[rows.length,'Blaupausen'],[families.length,'Familien']]))}<div class="rf-special-toolbar"><input id="wbSearch" value="${esc(q)}" placeholder="Waffe suchen …"><select id="wbFamily"><option value="all">Alle Familien</option>${families.map(x=>`<option ${x===fam?'selected':''}>${esc(x)}</option>`).join('')}</select>${btnLink('compare-weapons','⇄ VERGLEICH ÖFFNEN')}</div><div class="rf-arsenal-grid">${view.map(x=>`<article><div class="rf-weapon-mark">⌁</div><small>${esc(x.rarity)} · ${esc(x.family)}</small><h2>${esc(x.name)}</h2><div class="rf-stat-bars">${[['Krit-Rate',x.critRate],['Krit-Schaden',x.critDmg],['Schwachstelle',x.weakspot]].map(([k,v])=>`<div><span>${k}</span><i><em style="width:${Math.min(100,v)}%"></em></i><b>${v}%</b></div>`).join('')}</div></article>`).join('')}</div></section>`}
