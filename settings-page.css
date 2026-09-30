@@ -855,3 +855,99 @@ html[data-ui-theme="light"] body.route-profile.ui-preferences-active :is(.profil
   .settings-profile-editor .frame-choices,
   .settings-profile-editor .banner-choices{grid-template-columns:1fr}
 }
+
+
+/* === Match profile settings composition to the main settings workspace === */
+.settings-content-profile{
+  padding:26px;
+  background:
+    linear-gradient(rgba(255,255,255,.015) 1px,transparent 1px) 0 0/100% 38px,
+    linear-gradient(90deg,rgba(255,255,255,.012) 1px,transparent 1px) 0 0/38px 100%,
+    radial-gradient(circle at 65% 8%,color-mix(in srgb,var(--ui-accent) 7%,transparent),transparent 35%)
+}
+.settings-profile-editor{
+  min-width:0;
+  border:1px solid var(--settings-line);
+  border-radius:var(--ui-radius);
+  background:linear-gradient(180deg,rgba(14,21,30,.88),rgba(8,13,20,.92));
+  box-shadow:inset 0 1px rgba(255,255,255,.025),0 14px 34px rgba(0,0,0,.18)
+}
+.settings-profile-editor-head{
+  min-height:82px;
+  padding:18px 20px;
+  border-bottom:1px solid var(--settings-line);
+  background:
+    radial-gradient(circle at 0 50%,color-mix(in srgb,var(--ui-accent) 8%,transparent),transparent 36%),
+    rgba(255,255,255,.012)
+}
+.settings-profile-editor-head:before{
+  content:"";
+  width:44px;
+  height:44px;
+  flex:0 0 44px;
+  border:1px solid color-mix(in srgb,var(--ui-accent) 34%,rgba(255,255,255,.14));
+  border-radius:12px;
+  background:
+    radial-gradient(circle at 50% 50%,color-mix(in srgb,var(--ui-accent) 22%,transparent),transparent 58%),
+    linear-gradient(145deg,color-mix(in srgb,var(--ui-accent) 18%,rgba(255,255,255,.04)),rgba(255,255,255,.025));
+  box-shadow:0 0 22px color-mix(in srgb,var(--ui-accent) 11%,transparent)
+}
+.settings-profile-editor-head>div{
+  margin-right:auto
+}
+.settings-profile-editor-head h1{
+  font-size:29px;
+  letter-spacing:-.03em
+}
+.settings-profile-editor-head p{
+  margin-top:5px;
+  font-size:11px
+}
+.settings-profile-editor>.profile-ref-drawer-body{
+  background:transparent
+}
+.settings-profile-editor .profile-ref-drawer-nav{
+  width:auto;
+  border-right:1px solid var(--settings-line);
+  background:linear-gradient(180deg,rgba(7,14,21,.68),rgba(5,11,17,.46))
+}
+.settings-profile-editor .profile-ref-drawer-content{
+  background:
+    radial-gradient(circle at 88% 8%,color-mix(in srgb,var(--ui-accent) 5%,transparent),transparent 32%),
+    linear-gradient(180deg,rgba(255,255,255,.006),transparent 18%)
+}
+.settings-profile-editor .profile-ref-drawer-content>section{
+  width:min(820px,100%)
+}
+.settings-profile-editor .profile-ref-drawer-content section>small{
+  letter-spacing:.14em;
+  font-size:8px
+}
+.settings-profile-editor .profile-ref-drawer-content section>h3{
+  color:#f7f9fd;
+  font-size:24px;
+  letter-spacing:-.02em
+}
+.settings-profile-editor #profileNameForm{
+  gap:12px
+}
+.settings-profile-editor #profileNameForm label>span{
+  color:#8fa3ad
+}
+.settings-profile-editor #profileNameForm input{
+  height:44px;
+  background:rgba(7,14,21,.76)
+}
+.settings-profile-editor #profileNameForm button,
+.settings-profile-editor [data-profile-save]{
+  min-height:42px
+}
+
+@media(max-width:900px){
+  .settings-content-profile{padding:18px}
+}
+@media(max-width:700px){
+  .settings-content-profile{padding:10px}
+  .settings-profile-editor{border-radius:calc(var(--ui-radius) - 2px)}
+  .settings-profile-editor-head:before{display:none}
+}
