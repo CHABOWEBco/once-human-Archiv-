@@ -329,6 +329,12 @@ function bindLiquidCards(){
 }
 
 function bindAdmin(){
+  document.querySelectorAll('.admin-editor-card-media img,[data-editor-preview-image]').forEach(image=>{
+    const fallback='assets/branding/once-human-logo.png';
+    const useFallback=()=>{if(image.getAttribute('src')!==fallback) image.src=fallback};
+    image.addEventListener('error',useFallback);
+    if(image.complete&&image.naturalWidth===0) useFallback();
+  });
   document.querySelectorAll('[data-admin-view]').forEach(button=>button.addEventListener('click',()=>{
     const view=button.dataset.adminView;
     if(!allowed(view)) return;
