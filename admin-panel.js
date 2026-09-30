@@ -211,6 +211,40 @@ function renderAdmin(){
   return shell(renderView());
 }
 
+
+function bindLiquidNav(){
+  const items=document.querySelectorAll('.admin-nav-item:not(:disabled)');
+  items.forEach(item=>{
+    let frame=0;
+    const reset=()=>{
+      cancelAnimationFrame(frame);
+      item.style.setProperty('--nav-x','50%');
+      item.style.setProperty('--nav-y','50%');
+      item.style.setProperty('--nav-rx','0deg');
+      item.style.setProperty('--nav-ry','0deg');
+    };
+    item.addEventListener('pointermove',event=>{
+      if(event.pointerType==='touch') return;
+      const rect=item.getBoundingClientRect();
+      const x=Math.max(0,Math.min(rect.width,event.clientX-rect.left));
+      const y=Math.max(0,Math.min(rect.height,event.clientY-rect.top));
+      const px=(x/rect.width)*100;
+      const py=(y/rect.height)*100;
+      const ry=((x/rect.width)-.5)*4.5;
+      const rx=((y/rect.height)-.5)*-3.5;
+      cancelAnimationFrame(frame);
+      frame=requestAnimationFrame(()=>{
+        item.style.setProperty('--nav-x',px.toFixed(2)+'%');
+        item.style.setProperty('--nav-y',py.toFixed(2)+'%');
+        item.style.setProperty('--nav-rx',rx.toFixed(2)+'deg');
+        item.style.setProperty('--nav-ry',ry.toFixed(2)+'deg');
+      });
+    });
+    item.addEventListener('pointerleave',reset);
+    item.addEventListener('pointercancel',reset);
+  });
+}
+
 function bindLiquidCards(){
   const cards=document.querySelectorAll('.admin-system-list>span,.admin-cap-list>span');
   cards.forEach(card=>{
@@ -255,6 +289,7 @@ function bindAdmin(){
     location.hash='#/'+button.dataset.adminGo;
   }));
   bindLiquidCards();
+  bindLiquidNav();
 }
 globalThis.ADMIN_PANEL={render:renderAdmin,bind:bindAdmin,allowed:()=>ADMIN_ROLES.has(role())};
 globalThis.FULL_ROUTE_RENDERERS=globalThis.FULL_ROUTE_RENDERERS||{};
