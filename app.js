@@ -217,6 +217,7 @@ function render(){
   if(!route){route=ROUTES[0];history.replaceState(null,'','#/home');}
   document.title=`Once Human Archiv // ${route.label}`;
   document.body.className=document.body.className.replace(/\broute-[^\s]+/g,'').trim(); document.body.classList.add(`route-${route.id}`);
+  globalThis.SETTINGS_PAGE?.apply?.();
   document.querySelectorAll('[data-nav]').forEach(a=>{const active=a.dataset.nav===route.id;a.classList.toggle('active',active);if(active)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});
   closeNavigation();
   const fullRenderer=globalThis.FULL_ROUTE_RENDERERS?.[route.id];
@@ -280,8 +281,7 @@ function syncHeaderAccount(){
     liveMapLink.href='#/live-map';
     liveMapLink.dataset.accountMenuLink='';
     liveMapLink.textContent='Live Karte';
-    const settingsLink=accountMenu.querySelector('a[href="#/settings"]');
-    accountMenu.insertBefore(liveMapLink,settingsLink||$('#headerAdminLink')||$('#headerLogout'));
+    accountMenu.insertBefore(liveMapLink,$('#headerAdminLink')||$('#headerLogout'));
   }
   const adminLink=$('#headerAdminLink');
   if(adminLink) adminLink.hidden=!['moderator','admin','owner'].includes(String(account.role||'').toLowerCase());
