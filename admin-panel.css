@@ -294,3 +294,82 @@
   .admin-access-facts{grid-template-columns:1fr}
 }
 @media(prefers-reduced-motion:reduce){.signal-orbit{animation:none}}
+
+
+/* === Admin readability upgrade === */
+.admin-panel-page{
+  --admin-text:#f3f8fc;
+  --admin-muted:#a6b6c2;
+}
+.admin-rail-brand small{font-size:9px;color:#8ea3b1}
+.admin-rail-brand strong{font-size:16px;font-weight:800;letter-spacing:.08em}
+.admin-nav-item{padding:13px 12px}
+.admin-nav-item b{font-size:14px;font-weight:700;color:#dce8ef}
+.admin-nav-item span{font-size:18px}
+.admin-nav-item em{font-size:8px}
+.admin-mini-status b{font-size:11px}
+.admin-mini-status small{font-size:9px;color:#8ea2af}
+.admin-rail-bottom>button{font-size:11px;font-weight:600}
+.admin-eyebrow{font-size:10px}
+.admin-topline h1{font-size:34px;font-weight:800}
+.admin-topline p{font-size:14px;color:#9bb0bc;line-height:1.6}
+.admin-identity small{font-size:9px}
+.admin-identity b{font-size:13px;font-weight:700}
+.admin-badge{font-size:9px;font-weight:700;padding:4px 9px}
+.admin-hero h2{font-size:clamp(40px,4vw,64px);font-weight:900;line-height:.96}
+.admin-hero p{font-size:14px;line-height:1.7;color:#b1c0c9;max-width:760px}
+.admin-primary,.admin-secondary,.admin-panel-head button,.admin-table-row button{font-size:12px;font-weight:700}
+.admin-hero-signal small{font-size:9px}
+.admin-hero-signal b{font-size:24px}
+.admin-hero-signal em{font-size:10px}
+.admin-metric{min-height:108px}
+.admin-metric small{font-size:9px;color:#8ca0ad}
+.admin-metric strong{font-size:28px;font-weight:800}
+.admin-metric p{font-size:10px;color:#91a3af}
+.admin-panel-head small{font-size:9px}
+.admin-panel-head h2{font-size:22px;font-weight:800}
+.admin-module-card small{font-size:9px;color:#7e95a1}
+.admin-module-card h3{font-size:15px;font-weight:800}
+.admin-module-card p{font-size:11px;color:#9caeba}
+.admin-queue-list small{font-size:9px}
+.admin-queue-list h3{font-size:14px;font-weight:800}
+.admin-queue-list p{font-size:11px;color:#9eb0bb}
+.admin-cap-list b,.admin-system-list b{font-size:12px;font-weight:700}
+.admin-cap-list em,.admin-system-list em{font-size:10px;color:#98aab5}
+.admin-content-no{font-size:10px}
+.admin-content-row small{font-size:9px}
+.admin-content-row h3{font-size:16px;font-weight:800}
+.admin-content-row p{font-size:11px;color:#9caeba}
+.admin-content-row button{font-size:11px;font-weight:700}
+.admin-inspector>small{font-size:9px}
+.admin-inspector h3{font-size:24px;font-weight:800}
+.admin-inspector>p{font-size:12px;line-height:1.7;color:#a5b6c1}
+.admin-inspector-preview b{font-size:12px;font-weight:700}
+.admin-inspector-preview em{font-size:10px;color:#93a5b1}
+.admin-safe-note b{font-size:10px}
+.admin-safe-note p{font-size:11px;line-height:1.6}
+.admin-map-stats b{font-size:24px;font-weight:800}
+.admin-map-stats small{font-size:9px;color:#8ea1ad}
+.admin-simple-list b{font-size:12px;font-weight:700}
+.admin-simple-list small{font-size:10px;color:#93a5b0}
+.admin-table-head{font-size:9px;font-weight:700}
+.admin-table-row{font-size:11px}
+.admin-table-row b{font-size:12px;font-weight:700}
+.admin-table-row small{font-size:10px;color:#8ea2ad}
+.admin-warning b{font-size:13px;font-weight:800}
+.admin-warning p{font-size:11px;line-height:1.6}
+.admin-user-card small{font-size:10px}
+.admin-user-card h3{font-size:18px;font-weight:800}
+.admin-user-card p{font-size:10px;color:#8ea2ad}
+.admin-role-matrix b{font-size:13px;font-weight:800}
+.admin-role-matrix em{font-size:10px;color:#93a6b1}
+.admin-disabled-action{font-size:11px;font-weight:600}
+.admin-audit-list time{font-size:10px}
+.admin-audit-list small{font-size:10px}
+.admin-audit-list b{font-size:13px;font-weight:800}
+.admin-audit-list p{font-size:11px;color:#99acb7}
+.admin-access-card>small{font-size:10px}
+.admin-access-card h1{font-size:40px;font-weight:900}
+.admin-access-card>p{font-size:14px;line-height:1.7;color:#a5b6c1}
+.admin-access-facts b{font-size:9px}
+.admin-access-facts em{font-size:11px;color:#d8e4eb}
