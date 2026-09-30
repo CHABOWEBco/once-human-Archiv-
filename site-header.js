@@ -22,7 +22,8 @@
         <div class="header-account-menu" id="headerAccountMenu" hidden>
           <small class="header-account-email" id="headerAccountEmail"></small>
           <a href="#/dashboard" data-account-menu-link>Kommandozentrale</a>
-          <a href="#/profile" data-account-menu-link>Profil</a>\n          <a href="#/settings" data-account-menu-link>Einstellungen</a>
+          <a href="#/profile" data-account-menu-link>Profil</a>
+          <a href="#/settings" data-account-menu-link>Einstellungen</a>
           <button type="button" id="headerLogout">Abmelden</button>
         </div>
       </div>
