@@ -1171,8 +1171,9 @@ html[data-ui-theme="light"] body.route-profile.ui-preferences-active :is(.profil
 .settings-profile-live-art:after{
   content:"";
   position:absolute;left:0;right:0;bottom:0;height:2px;
-  background:linear-gradient(90deg,var(--profile-live-accent),color-mix(in srgb,var(--profile-live-accent) 40%,#48d9ef),transparent 78%);
-  opacity:.86
+  background:linear-gradient(90deg,var(--profile-live-accent),color-mix(in srgb,var(--profile-live-accent) 72%,transparent) 56%,transparent 86%);
+  box-shadow:0 0 10px color-mix(in srgb,var(--profile-live-accent) 34%,transparent);
+  opacity:.82
 }
 .settings-profile-live-avatar{
   position:relative;
@@ -1202,7 +1203,7 @@ html[data-ui-theme="light"] body.route-profile.ui-preferences-active :is(.profil
 }
 .settings-profile-live-copy h2{
   margin:6px 0 5px;
-  color:#fff;
+  color:#d6e0e4;
   font:900 25px/1 var(--display);
   letter-spacing:-.025em
 }
