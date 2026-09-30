@@ -68,12 +68,12 @@ function renderSettings(){
       '<aside class="settings-sidebar">'+
         '<div class="settings-user-mini"><span>'+safe(String(name).trim().charAt(0).toUpperCase()||'M')+'</span><div><b>'+safe(name)+'</b><small>Einstellungen</small></div></div>'+
         '<nav aria-label="Einstellungsbereiche">'+
-          '<a href="#/profile">'+sidebarIcon('profile')+'<span>Profil</span><em>1</em></a>'+
-          '<button type="button" disabled>'+sidebarIcon('team')+'<span>Team</span><em>5</em></button>'+
-          '<button type="button" disabled>'+sidebarIcon('alerts')+'<span>Benachrichtigungen</span><em>3</em></button>'+
+          '<a href="#/profile">'+sidebarIcon('profile')+'<span>Profil</span></a>'+
+          '<button type="button" disabled>'+sidebarIcon('team')+'<span>Team</span></button>'+
+          '<button type="button" disabled>'+sidebarIcon('alerts')+'<span>Benachrichtigungen</span></button>'+
           '<a href="#/profile">'+sidebarIcon('security')+'<span>Sicherheit</span></a>'+
           '<button class="active" type="button" aria-current="page">'+sidebarIcon('themes')+'<span>Themes</span></button>'+
-          '<button type="button" disabled>'+sidebarIcon('links')+'<span>Verbindungen</span><em>2</em></button>'+
+          '<button type="button" disabled>'+sidebarIcon('links')+'<span>Verbindungen</span></button>'+
           '<button type="button" disabled>'+sidebarIcon('sub')+'<span>Abonnement</span></button>'+
           '<button type="button" disabled>'+sidebarIcon('shortcuts')+'<span>Shortcuts</span></button>'+
           '<button type="button" disabled>'+sidebarIcon('dev')+'<span>Entwickler Tools</span></button>'+
