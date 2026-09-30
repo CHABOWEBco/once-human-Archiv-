@@ -508,6 +508,9 @@
 
 
 @media(min-width:901px){
+  .admin-main:has(.admin-visual-editor)>.admin-topline{display:none}
+  .admin-main:has(.admin-visual-editor){padding-top:12px}
+  .admin-visual-editor>.admin-panel-head{padding-top:0}
   .route-admin #app:has(.admin-visual-editor){
     height:calc(100vh - 64px);
     min-height:0;
