@@ -22,3 +22,187 @@
 @media(max-width:1100px){.topbar{height:66px;padding-inline:20px}.topbar .brand-mark{width:42px;height:42px}.topbar .brand strong{font-size:20px}.main-nav{display:none;position:absolute;top:100%;left:0;right:0;height:auto;background:#041019;border-bottom:1px solid var(--line);padding:12px;grid-template-columns:repeat(2,minmax(0,1fr));max-height:calc(100dvh - 66px);overflow:auto}.main-nav.open{display:grid}.main-nav a{min-height:48px;border:1px solid #50bed521;justify-content:flex-start;font-size:13px}.menu-toggle{display:block}.header-account-trigger{min-width:0;max-width:190px}}
 @media(max-width:640px){.topbar{height:64px;padding-inline:12px;gap:8px}.topbar .brand{gap:8px}.topbar .brand-mark{width:34px;height:34px}.topbar .brand strong{font-size:15px}.topbar .brand small{font-size:7px;margin-top:4px}.top-actions{gap:7px}.top-actions>.ghost-btn,.top-actions>.cyan-btn{height:36px;min-height:36px;padding-inline:9px;font-size:10px}.header-account-trigger{height:36px;max-width:132px;padding-inline:6px}.header-account-copy strong{max-width:70px}.header-account-copy small,.header-account-chevron{display:none}.header-account-avatar{width:24px;height:24px;flex-basis:24px}.header-account-menu{width:215px}.menu-toggle{height:36px;width:36px}}
 @media(prefers-reduced-motion:reduce){.main-nav a{transition:none}}
+
+
+/* === Admin preview compact premium topbar === */
+/* Scoped to the isolated admin route only. */
+.route-admin .topbar{
+  height:64px;
+  gap:16px;
+  padding-inline:clamp(20px,2.5vw,44px);
+  background:
+    linear-gradient(180deg,rgba(3,14,20,.985),rgba(2,9,14,.99));
+  border-bottom-color:rgba(87,174,187,.38);
+  box-shadow:
+    0 10px 28px rgba(0,0,0,.26),
+    inset 0 -1px 0 rgba(108,211,222,.06);
+  backdrop-filter:blur(22px) saturate(125%);
+  -webkit-backdrop-filter:blur(22px) saturate(125%);
+}
+
+.route-admin .topbar .brand{
+  gap:11px;
+}
+
+.route-admin .topbar .brand-mark{
+  width:44px;
+  height:44px;
+}
+
+.route-admin .topbar .brand strong{
+  font-size:21px;
+  letter-spacing:.105em;
+  line-height:1;
+}
+
+.route-admin .topbar .brand small{
+  font-size:8px;
+  letter-spacing:.25em;
+  margin-top:4px;
+}
+
+.route-admin .main-nav{
+  height:64px;
+  justify-content:center;
+}
+
+.route-admin .main-nav a{
+  gap:8px;
+  padding-inline:12px;
+  font-size:13px;
+  font-weight:750;
+  border-bottom-width:2px;
+}
+
+.route-admin .main-nav a span{
+  display:grid;
+  place-items:center;
+  font-size:22px;
+  color:#92b8c1;
+  transition:
+    color .18s ease,
+    transform .18s ease,
+    filter .18s ease;
+}
+
+.route-admin .main-nav a svg{
+  width:22px;
+  height:22px;
+  stroke-width:1.65;
+}
+
+.route-admin .main-nav a:hover span{
+  color:#72dce7;
+  transform:translateY(-1px) scale(1.06);
+  filter:drop-shadow(0 0 7px rgba(89,199,209,.28));
+}
+
+.route-admin .main-nav a.active span{
+  color:#6fe2ec;
+  filter:drop-shadow(0 0 8px rgba(89,199,209,.32));
+}
+
+.route-admin .top-actions{
+  gap:9px;
+}
+
+.route-admin .search-trigger{
+  width:min(270px,16vw);
+  height:40px;
+  padding-inline:10px;
+  border-color:rgba(86,169,181,.48);
+  background:linear-gradient(180deg,rgba(6,21,29,.88),rgba(3,16,23,.94));
+}
+
+.route-admin .search-trigger>span{
+  font-size:17px;
+}
+
+.route-admin .search-trigger em{
+  font-size:10px;
+}
+
+.route-admin .header-account-trigger{
+  height:40px;
+  min-width:160px;
+  max-width:205px;
+  padding-inline:7px 9px;
+  gap:8px;
+  border-color:rgba(78,183,198,.4);
+}
+
+.route-admin .header-account-avatar{
+  width:30px;
+  height:30px;
+  flex-basis:30px;
+  font-size:13px;
+}
+
+.route-admin .header-account-copy strong{
+  font-size:11px;
+}
+
+.route-admin .header-account-copy small{
+  font-size:6px;
+  margin-top:2px;
+}
+
+.route-admin .header-account-chevron{
+  font-size:11px;
+}
+
+@media(min-width:1451px){
+  .route-admin .header-account-trigger{
+    height:40px;
+    min-width:164px;
+  }
+}
+
+@media(max-width:1450px){
+  .route-admin .topbar{
+    height:62px;
+    gap:12px;
+    padding-inline:22px;
+  }
+  .route-admin .main-nav{
+    height:62px;
+  }
+  .route-admin .main-nav a{
+    padding-inline:9px;
+    font-size:12px;
+  }
+  .route-admin .main-nav a svg{
+    width:21px;
+    height:21px;
+  }
+}
+
+@media(max-width:1100px){
+  .route-admin .topbar{
+    height:62px;
+  }
+  .route-admin .topbar .brand-mark{
+    width:40px;
+    height:40px;
+  }
+  .route-admin .topbar .brand strong{
+    font-size:18px;
+  }
+  .route-admin .main-nav{
+    height:auto;
+  }
+}
+
+@media(max-width:640px){
+  .route-admin .topbar{
+    height:60px;
+    padding-inline:10px;
+  }
+  .route-admin .topbar .brand-mark{
+    width:34px;
+    height:34px;
+  }
+  .route-admin .topbar .brand strong{
+    font-size:15px;
+  }
+}
