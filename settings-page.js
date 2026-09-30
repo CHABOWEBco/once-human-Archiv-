@@ -1,6 +1,7 @@
 (()=>{'use strict';
 const KEY='jma_ui_preferences';
 const DEFAULTS={theme:'dark',accent:'coral',density:58,font:'SF Pro',radius:12,smooth:true,focus:false,grid:true,compact:false};
+const SCOPED_ROUTES=new Set(['admin','live-map','profile']);
 const ACCENTS={
   blue:'#238cff',green:'#1fcf97',yellow:'#ffd02e',orange:'#ff7a18',red:'#ff3349',
   magenta:'#cf48df',violet:'#8454e8',cyan:'#22d0e8',coral:'#ff7d73'
@@ -23,18 +24,26 @@ function write(value){
 function apply(p=read()){
   const root=document.documentElement,body=document.body;
   const accent=ACCENTS[p.accent]||ACCENTS.coral;
+  const density=clamp(p.density,0,100);
+  const route=(location.hash.replace(/^#\/?/,'').split('/')[0]||'home');
+  const scoped=SCOPED_ROUTES.has(route);
   root.dataset.uiTheme=p.theme;
   root.dataset.uiAccent=p.accent;
   root.style.setProperty('--ui-accent',accent);
   root.style.setProperty('--ui-accent-soft',accent+'33');
   root.style.setProperty('--ui-radius',p.radius+'px');
-  root.style.setProperty('--ui-density',String(p.density/100));
+  root.style.setProperty('--ui-density',String(density/100));
+  root.style.setProperty('--ui-density-gap',(14-Math.round(density*.06))+'px');
+  root.style.setProperty('--ui-density-pad',(18-Math.round(density*.08))+'px');
   root.style.setProperty('--ui-font',p.font==='System'?'system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif':p.font==='Inter'?'Inter,system-ui,sans-serif':'"SF Pro Display","SF Pro Text",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif');
   if(body){
+    body.classList.toggle('ui-preferences-active',scoped);
     body.classList.toggle('ui-smooth',!!p.smooth);
     body.classList.toggle('ui-bold-focus',!!p.focus);
     body.classList.toggle('ui-show-grid',!!p.grid);
     body.classList.toggle('ui-compact-settings',!!p.compact);
+    if(scoped) body.dataset.uiPreferenceScope=route;
+    else delete body.dataset.uiPreferenceScope;
   }
 }
 function sidebarIcon(type){
@@ -66,22 +75,17 @@ function renderSettings(){
     '<div class="settings-backdrop" aria-hidden="true"></div>'+
     '<div class="settings-window">'+
       '<aside class="settings-sidebar">'+
-        '<div class="settings-user-mini"><span>'+safe(String(name).trim().charAt(0).toUpperCase()||'M')+'</span><div><b>'+safe(name)+'</b><small>Einstellungen</small></div></div>'+
+        '<div class="settings-user-mini"><span>'+safe(String(name).trim().charAt(0).toUpperCase()||'M')+'</span><div><b>'+safe(name)+'</b><small>Archiv-Einstellungen</small></div></div>'+
         '<nav aria-label="Einstellungsbereiche">'+
+          '<button class="active" type="button" aria-current="page">'+sidebarIcon('themes')+'<span>Darstellung</span></button>'+
           '<a href="#/profile">'+sidebarIcon('profile')+'<span>Profil</span></a>'+
-          '<button type="button" disabled>'+sidebarIcon('team')+'<span>Team</span></button>'+
-          '<button type="button" disabled>'+sidebarIcon('alerts')+'<span>Benachrichtigungen</span></button>'+
-          '<a href="#/profile">'+sidebarIcon('security')+'<span>Sicherheit</span></a>'+
-          '<button class="active" type="button" aria-current="page">'+sidebarIcon('themes')+'<span>Themes</span></button>'+
-          '<button type="button" disabled>'+sidebarIcon('links')+'<span>Verbindungen</span></button>'+
-          '<button type="button" disabled>'+sidebarIcon('sub')+'<span>Abonnement</span></button>'+
-          '<button type="button" disabled>'+sidebarIcon('shortcuts')+'<span>Shortcuts</span></button>'+
-          '<button type="button" disabled>'+sidebarIcon('dev')+'<span>Entwickler Tools</span></button>'+
+          '<a href="#/live-map">'+sidebarIcon('links')+'<span>Live-Karte</span></a>'+
+          (['moderator','admin','owner'].includes(String(a.role||'').toLowerCase())?'<a href="#/admin">'+sidebarIcon('dev')+'<span>Admin Backend</span></a>':'')+
         '</nav>'+
       '</aside>'+
       '<main class="settings-content">'+
         '<section class="settings-controls">'+
-          '<header class="settings-titlebar"><div class="settings-title-icon">'+sidebarIcon('themes')+'</div><div><h1 id="settingsTitle">Themes</h1><p>Passe die visuelle Oberfläche deines Archivs an.</p></div></header>'+
+          '<header class="settings-titlebar"><div class="settings-title-icon">'+sidebarIcon('themes')+'</div><div><h1 id="settingsTitle">Archiv-Interface</h1><p>Darstellung für Admin Backend, Live-Karte und Profil.</p></div></header>'+
           '<div class="settings-segment" role="group" aria-label="Farbschema">'+
             ['auto','light','dark'].map(v=>'<button type="button" data-settings-theme="'+v+'" class="'+(p.theme===v?'active':'')+'">'+({auto:'Auto',light:'Hell',dark:'Dunkel'}[v])+'</button>').join('')+
           '</div>'+
@@ -92,24 +96,22 @@ function renderSettings(){
           '<div class="settings-toggles">'+
             toggle('settingsSmooth','Weiche Animationen','Flüssige Übergänge für Designelemente.',p.smooth)+
             toggle('settingsFocus','Starke Fokus-Ringe','Deutlichere Tastaturfokussierung.',p.focus)+
-            toggle('settingsGrid','Rasterlinien anzeigen','Feine Hilfslinien in der Designvorschau.',p.grid)+
-            toggle('settingsCompact','Kompakte Sidebar-Icons','Reduziert die Navigation auf engere Abstände.',p.compact)+
+            toggle('settingsGrid','HUD-Raster anzeigen','Feine Archiv-Rasterlinien in den angebundenen Bereichen.',p.grid)+
+            toggle('settingsCompact','Kompakte Navigation','Verringert Abstände in Admin, Karte und Profil.',p.compact)+
           '</div>'+
         '</section>'+
         '<section class="settings-live-preview" aria-label="Live-Vorschau">'+
-          '<header><label><span>⌕</span><input aria-label="Vorschau durchsuchen" placeholder="Designs, Assets, Items suchen …"></label><button class="settings-preview-primary" type="button" disabled>Neue Ansicht</button><button type="button" disabled>Zusammenarbeiten</button></header>'+
-          '<div class="settings-preview-head"><b>Vorschau</b><span>Aktueller Archivstil</span></div>'+
-          '<div class="settings-preview-grid">'+
-            routePreview('./assets/reference/news-hero.webp','Startseite')+
-            routePreview('./assets/reference/feature-map.webp','Karte')+
-            routePreview('./assets/reference/showcase-items.webp','Techwerkbank')+
-            routePreview('./assets/reference/feature-community.webp','Community')+
+          '<header class="settings-scope-header"><div><small>AKTIVER GELTUNGSBEREICH</small><b>3 Archivbereiche</b></div><span>Änderungen werden lokal gespeichert</span></header>'+
+          '<div class="settings-preview-head"><b>Live-Vorschau</b><span>Nur angebundene Bereiche</span></div>'+
+          '<div class="settings-preview-grid scoped">'+
+            routePreview('./assets/reference/news-hero.webp','Admin Backend')+
+            routePreview('./assets/map/once-human-world-map.webp','Live-Karte')+
             routePreview('./assets/reference/feature-builds.webp','Profil')+
-            routePreview('./assets/reference/showcase-weapons.webp','Datenbank')+
           '</div>'+
-          '<div class="settings-editor-preview">'+
-            '<aside><small>Layer</small><div class="active"><span>⌄</span><b>Theme</b><i>◉</i></div><div><span>⌁</span><b>Hintergrund</b><i>◉</i></div><div><span>›</span><b>Navigation</b><i>◉</i></div><div><span>›</span><b>Kartenbereich</b><i>◉</i></div><div><span>›</span><b>UI Elemente</b><i>◉</i></div></aside>'+
-            '<div class="settings-timeline"><div class="timeline-scale"><span>0</span><span>4</span><span>8</span><span>12</span><span>16</span><span>20</span></div><div class="timeline-row"><i style="--x:0%;--w:62%"></i></div><div class="timeline-row"><i style="--x:28%;--w:48%"></i></div><div class="timeline-row"><i style="--x:48%;--w:34%"></i></div><div class="timeline-row"><i style="--x:70%;--w:28%"></i></div><span class="timeline-playhead"></span></div>'+
+          '<div class="settings-scope-matrix">'+
+            '<article><small>01 / ADMIN</small><b>Control Center</b><span>Akzent · Radius · Dichte · Schrift · Bewegung</span><a href="#/admin">Öffnen ↗</a></article>'+
+            '<article><small>02 / KARTE</small><b>Live-Karte</b><span>Panels · Filter · HUD · Fokus · Bewegung</span><a href="#/live-map">Öffnen ↗</a></article>'+
+            '<article><small>03 / PROFIL</small><b>Profil</b><span>Panels · Tabs · Akzent · Radius · Schrift</span><a href="#/profile">Öffnen ↗</a></article>'+
           '</div>'+
         '</section>'+
       '</main>'+
