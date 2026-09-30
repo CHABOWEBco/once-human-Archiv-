@@ -86,9 +86,9 @@ function renderSettings(){
             ['auto','light','dark'].map(v=>'<button type="button" data-settings-theme="'+v+'" class="'+(p.theme===v?'active':'')+'">'+({auto:'Auto',light:'Hell',dark:'Dunkel'}[v])+'</button>').join('')+
           '</div>'+
           '<section class="settings-field"><label>Akzentfarbe</label><div class="settings-swatches">'+swatches(p.accent)+'</div><div class="settings-accent-name" id="settingsAccentName">'+safe(p.accent.charAt(0).toUpperCase()+p.accent.slice(1))+'</div></section>'+
-          '<section class="settings-field"><label for="settingsDensity">Dichte</label><input id="settingsDensity" class="settings-range" type="range" min="0" max="100" value="'+p.density+'"><div class="settings-range-labels"><span>Locker</span><span>Standard</span><span>Kompakt</span></div></section>'+
+          '<section class="settings-field"><label for="settingsDensity">Dichte</label><input id="settingsDensity" class="settings-range" type="range" min="0" max="100" value="'+p.density+'" style="--range-pct:'+p.density+'%"><div class="settings-range-labels"><span>Locker</span><span>Standard</span><span>Kompakt</span></div></section>'+
           '<section class="settings-field"><label for="settingsFont">Schriftart</label><select id="settingsFont"><option '+(p.font==='SF Pro'?'selected':'')+'>SF Pro</option><option '+(p.font==='Inter'?'selected':'')+'>Inter</option><option '+(p.font==='System'?'selected':'')+'>System</option></select></section>'+
-          '<section class="settings-field"><label for="settingsRadius">Eckenradius</label><input id="settingsRadius" class="settings-range radius" type="range" min="4" max="16" step="1" value="'+p.radius+'"><div class="settings-range-labels"><span>4</span><span>8</span><span>12</span><span>16</span></div></section>'+
+          '<section class="settings-field"><label for="settingsRadius">Eckenradius</label><input id="settingsRadius" class="settings-range radius" type="range" min="4" max="16" step="1" value="'+p.radius+'" style="--range-pct:'+Math.round((p.radius-4)/12*100)+'%"><div class="settings-range-labels"><span>4</span><span>8</span><span>12</span><span>16</span></div></section>'+
           '<div class="settings-toggles">'+
             toggle('settingsSmooth','Weiche Animationen','Flüssige Übergänge für Designelemente.',p.smooth)+
             toggle('settingsFocus','Starke Fokus-Ringe','Deutlichere Tastaturfokussierung.',p.focus)+
@@ -122,9 +122,9 @@ function bindSettings(){
   const flash=()=>{const el=q('#settingsUpdated');if(!el)return;el.classList.remove('show');void el.offsetWidth;el.classList.add('show');clearTimeout(flash.timer);flash.timer=setTimeout(()=>el.classList.remove('show'),2200)};
   qa('[data-settings-theme]').forEach(btn=>btn.onclick=()=>{write({theme:btn.dataset.settingsTheme});qa('[data-settings-theme]').forEach(x=>x.classList.toggle('active',x===btn));flash()});
   qa('[data-settings-accent]').forEach(btn=>btn.onclick=()=>{const accent=btn.dataset.settingsAccent;write({accent});qa('[data-settings-accent]').forEach(x=>{const active=x===btn;x.classList.toggle('active',active);x.setAttribute('aria-pressed',String(active))});const n=q('#settingsAccentName');if(n)n.textContent=accent.charAt(0).toUpperCase()+accent.slice(1);flash()});
-  q('#settingsDensity')?.addEventListener('input',e=>write({density:+e.target.value}));
+  q('#settingsDensity')?.addEventListener('input',e=>{e.target.style.setProperty('--range-pct',e.target.value+'%');write({density:+e.target.value})});
   q('#settingsDensity')?.addEventListener('change',flash);
-  q('#settingsRadius')?.addEventListener('input',e=>write({radius:+e.target.value}));
+  q('#settingsRadius')?.addEventListener('input',e=>{e.target.style.setProperty('--range-pct',Math.round((+e.target.value-4)/12*100)+'%');write({radius:+e.target.value})});
   q('#settingsRadius')?.addEventListener('change',flash);
   q('#settingsFont')?.addEventListener('change',e=>{write({font:e.target.value});flash()});
   [['#settingsSmooth','smooth'],['#settingsFocus','focus'],['#settingsGrid','grid'],['#settingsCompact','compact']].forEach(([sel,key])=>q(sel)?.addEventListener('change',e=>{write({[key]:e.target.checked});flash()}));
