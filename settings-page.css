@@ -345,8 +345,8 @@ html[data-ui-theme="auto"] .settings-page{color-scheme:dark}
   html[data-ui-theme="auto"] .settings-window{background:linear-gradient(145deg,rgba(245,248,252,.94),rgba(224,231,241,.96));border-color:rgba(66,83,108,.20)}
 }
 
-body.ui-smooth :is(a,button,input,select,.settings-switch i,.settings-switch i:after){transition-duration:.18s;transition-timing-function:ease}
-body.ui-bold-focus :is(a,button,input,select):focus-visible{outline:3px solid var(--ui-accent)!important;outline-offset:3px!important;box-shadow:0 0 0 6px color-mix(in srgb,var(--ui-accent) 18%,transparent)!important}
+body.ui-preferences-active.ui-smooth #app :is(a,button,input,select){transition-duration:.18s;transition-timing-function:ease}
+body.ui-preferences-active.ui-bold-focus #app :is(a,button,input,select,textarea):focus-visible{outline:3px solid var(--ui-accent)!important;outline-offset:3px!important;box-shadow:0 0 0 6px color-mix(in srgb,var(--ui-accent) 18%,transparent)!important}
 body.ui-show-grid .settings-live-preview{background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.014) 1px,transparent 1px),linear-gradient(180deg,rgba(22,29,40,.93),rgba(11,16,24,.96));background-size:24px 24px,24px 24px,auto}
 body.ui-compact-settings .settings-sidebar nav :is(a,button){min-height:37px}
 body.ui-compact-settings .settings-sidebar nav{gap:2px}
@@ -382,4 +382,78 @@ body.ui-compact-settings .settings-sidebar nav{gap:2px}
 }
 @media(prefers-reduced-motion:reduce){
   .settings-page *,.settings-page *:before,.settings-page *:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
+
+/* === Archive settings: real scope === */
+.settings-scope-header{min-height:58px!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:16px!important;padding:10px 12px!important}
+.settings-scope-header>div{display:grid;gap:3px}.settings-scope-header small{color:var(--ui-accent);font-size:8px;letter-spacing:.14em;font-weight:800}.settings-scope-header b{font-size:13px}.settings-scope-header>span{color:var(--settings-muted);font-size:9px}
+.settings-preview-grid.scoped{grid-template-columns:repeat(3,minmax(0,1fr))}
+.settings-preview-grid.scoped .settings-preview-card{min-height:132px}
+.settings-scope-matrix{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:12px;border-top:1px solid var(--settings-line)}
+.settings-scope-matrix article{min-width:0;padding:12px;border:1px solid var(--settings-line);border-radius:var(--ui-radius);background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.012));display:grid;gap:5px}
+.settings-scope-matrix small{color:var(--ui-accent);font-size:7px;letter-spacing:.12em;font-weight:800}.settings-scope-matrix b{font-size:11px}.settings-scope-matrix span{color:var(--settings-muted);font-size:8px;line-height:1.45}.settings-scope-matrix a{justify-self:start;margin-top:4px;color:color-mix(in srgb,var(--ui-accent) 74%,#fff);font-size:8px;font-weight:800;text-decoration:none}
+@media(max-width:900px){.settings-scope-matrix{grid-template-columns:1fr}.settings-preview-grid.scoped{grid-template-columns:1fr}}
+
+body.ui-preferences-active #app{font-family:var(--ui-font)}
+body.ui-preferences-active .topbar{border-bottom-color:color-mix(in srgb,var(--ui-accent) 38%,rgba(87,174,187,.38))}
+body.ui-preferences-active:not(.ui-smooth) #app *{animation-duration:0s!important;animation-delay:0s!important;transition-duration:0s!important}
+body.ui-preferences-active.ui-show-grid #app{
+  background-image:
+    linear-gradient(color-mix(in srgb,var(--ui-accent) 4%,transparent) 1px,transparent 1px),
+    linear-gradient(90deg,color-mix(in srgb,var(--ui-accent) 4%,transparent) 1px,transparent 1px);
+  background-size:32px 32px
+}
+body.ui-preferences-active:not(.ui-show-grid) #app{background-image:none}
+
+/* Admin Backend */
+body.route-admin.ui-preferences-active .admin-panel-page{
+  --admin-coral:var(--ui-accent);
+  --admin-coral-soft:color-mix(in srgb,var(--ui-accent) 14%,transparent);
+  --admin-line:color-mix(in srgb,var(--ui-accent) 10%,rgba(153,194,216,.14));
+  --admin-line-strong:color-mix(in srgb,var(--ui-accent) 18%,rgba(153,194,216,.24));
+  font-family:var(--ui-font)
+}
+body.route-admin.ui-preferences-active :is(.admin-glass,.admin-metric,.admin-module-card,.admin-content-row,.admin-inspector,.admin-editor-toolbar,.admin-editor-canvas,.admin-editor-card,.admin-editor-drawer,.admin-mini-status,.admin-map-preview,.admin-access-card){border-radius:var(--ui-radius)}
+body.route-admin.ui-preferences-active :is(.admin-dashboard,.admin-view){gap:var(--ui-density-gap)}
+body.route-admin.ui-preferences-active .admin-rail nav{gap:max(2px,calc(var(--ui-density-gap) / 2))}
+body.route-admin.ui-preferences-active :is(.admin-eyebrow,.admin-panel-head small,.admin-editor-canvas-head small,.admin-editor-drawer-head small){color:var(--ui-accent)}
+body.route-admin.ui-preferences-active .admin-nav-item.active{border-color:color-mix(in srgb,var(--ui-accent) 54%,transparent);background:linear-gradient(90deg,color-mix(in srgb,var(--ui-accent) 24%,transparent),color-mix(in srgb,var(--ui-accent) 6%,transparent));box-shadow:inset 3px 0 var(--ui-accent),0 0 22px color-mix(in srgb,var(--ui-accent) 9%,transparent)}
+body.route-admin.ui-preferences-active .admin-nav-item.active span{color:color-mix(in srgb,var(--ui-accent) 82%,#fff)}
+body.route-admin.ui-preferences-active .admin-primary{border-color:color-mix(in srgb,var(--ui-accent) 62%,#fff);background:linear-gradient(180deg,color-mix(in srgb,var(--ui-accent) 88%,#fff),color-mix(in srgb,var(--ui-accent) 72%,#41151c))}
+body.route-admin.ui-preferences-active.ui-compact-settings .admin-nav-item{padding-block:9px}
+body.route-admin.ui-preferences-active.ui-compact-settings .admin-rail{gap:12px}
+
+/* Live Map */
+body.route-live-map.ui-preferences-active{
+  --lm-red:var(--ui-accent);
+  font-family:var(--ui-font)
+}
+body.route-live-map.ui-preferences-active :is(.lm-command-head,.lm-glass,.lm-command-metrics article,.lm-board,.lm-field select,.lm-search input,.lm-reset,.lm-open-routes,.lm-detail-selected section,.lm-detail-actions button){border-radius:var(--ui-radius)}
+body.route-live-map.ui-preferences-active .lm-workspace{gap:var(--ui-density-gap)}
+body.route-live-map.ui-preferences-active.ui-compact-settings .lm-category-list button{min-height:32px}
+body.route-live-map.ui-preferences-active.ui-compact-settings .lm-rail,
+body.route-live-map.ui-preferences-active.ui-compact-settings .lm-detail{padding:11px}
+
+/* Profile */
+body.route-profile.ui-preferences-active{
+  --profile-red:var(--ui-accent);
+  font-family:var(--ui-font)
+}
+body.route-profile.ui-preferences-active :is(.profile-ref-banner,.profile-ref-avatar,.profile-ref-banner-note,.profile-ref-stats article,.profile-ref-tabs,.profile-ref-tabs button,.profile-ref-panel,.profile-ref-gallery-grid figure,.profile-ref-build-list article,.profile-ref-route-list article,.profile-ref-drawer){border-radius:var(--ui-radius)}
+body.route-profile.ui-preferences-active :is(.profile-ref-grid,.profile-ref-col){gap:var(--ui-density-gap)}
+body.route-profile.ui-preferences-active.ui-compact-settings .profile-ref-tabs{padding:9px;gap:4px}
+body.route-profile.ui-preferences-active.ui-compact-settings .profile-ref-tabs button{min-height:44px;padding-block:6px}
+
+/* Lighter archive theme: keeps the cinematic identity instead of turning the product white. */
+html[data-ui-theme="light"] body.route-admin.ui-preferences-active .admin-panel-page{background:radial-gradient(circle at 82% 8%,color-mix(in srgb,var(--ui-accent) 16%,transparent),transparent 30%),linear-gradient(180deg,#182733 0%,#101a23 100%)}
+html[data-ui-theme="light"] body.route-admin.ui-preferences-active :is(.admin-rail,.admin-glass,.admin-metric,.admin-editor-canvas,.admin-editor-drawer){background-color:rgba(25,38,49,.78)}
+html[data-ui-theme="light"] body.route-live-map.ui-preferences-active{background:radial-gradient(circle at 84% 9%,color-mix(in srgb,var(--ui-accent) 16%,transparent),transparent 29%),linear-gradient(180deg,#182733 0%,#101a23 100%)}
+html[data-ui-theme="light"] body.route-live-map.ui-preferences-active :is(.lm-glass,.lm-command-metrics article){background:linear-gradient(180deg,rgba(28,42,54,.94),rgba(17,28,38,.92))}
+html[data-ui-theme="light"] body.route-profile.ui-preferences-active{background:radial-gradient(circle at 82% 8%,color-mix(in srgb,var(--ui-accent) 16%,transparent),transparent 30%),linear-gradient(180deg,#182733 0%,#101a23 100%)}
+html[data-ui-theme="light"] body.route-profile.ui-preferences-active :is(.profile-ref-panel,.profile-ref-stats article,.profile-ref-tabs){background:linear-gradient(180deg,rgba(28,42,54,.94),rgba(17,28,38,.92))}
+
+@media(prefers-color-scheme:light){
+  html[data-ui-theme="auto"] body.route-admin.ui-preferences-active .admin-panel-page,
+  html[data-ui-theme="auto"] body.route-live-map.ui-preferences-active,
+  html[data-ui-theme="auto"] body.route-profile.ui-preferences-active{filter:brightness(1.12)}
 }
