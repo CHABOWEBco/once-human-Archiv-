@@ -1,3 +1,4 @@
+.route-settings .footer{display:none}
 /* Dedicated settings workspace inspired by the supplied reference.
    Scoped to #/settings so existing route DOM/CSS is not overlaid or duplicated. */
 :root{
@@ -183,10 +184,10 @@
 }
 .settings-range::-webkit-slider-runnable-track{
   height:4px;border-radius:6px;
-  background:linear-gradient(90deg,var(--ui-accent) 0 58%,rgba(119,137,163,.25) 58% 100%);
+  background:linear-gradient(90deg,var(--ui-accent) 0 var(--range-pct,58%),rgba(119,137,163,.25) var(--range-pct,58%) 100%);
   box-shadow:0 0 10px color-mix(in srgb,var(--ui-accent) 20%,transparent);
 }
-.settings-range.radius::-webkit-slider-runnable-track{background:linear-gradient(90deg,var(--ui-accent) 0 66%,rgba(119,137,163,.25) 66% 100%)}
+.settings-range.radius::-webkit-slider-runnable-track{background:linear-gradient(90deg,var(--ui-accent) 0 var(--range-pct,66%),rgba(119,137,163,.25) var(--range-pct,66%) 100%)}
 .settings-range::-webkit-slider-thumb{
   appearance:none;width:14px;height:14px;margin-top:-5px;border:0;border-radius:50%;
   background:#ffb0a9;box-shadow:0 0 13px var(--ui-accent),0 0 0 1px rgba(255,255,255,.42)
