@@ -206,3 +206,68 @@
     font-size:15px;
   }
 }
+
+
+/* === Admin brand balance refinement === */
+.route-admin .topbar .brand{
+  gap:10px;
+  align-items:center;
+}
+
+.route-admin .topbar .brand-mark{
+  width:36px;
+  height:36px;
+  flex:0 0 36px;
+}
+
+.route-admin .topbar .brand>span:last-child{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  min-width:0;
+}
+
+.route-admin .topbar .brand strong{
+  font-size:20px;
+  letter-spacing:.11em;
+  line-height:1;
+  margin:0;
+}
+
+.route-admin .topbar .brand small{
+  font-size:8px;
+  letter-spacing:.24em;
+  line-height:1;
+  margin-top:4px;
+}
+
+@media(max-width:1450px){
+  .route-admin .topbar .brand{
+    gap:9px;
+  }
+  .route-admin .topbar .brand-mark{
+    width:34px;
+    height:34px;
+    flex-basis:34px;
+  }
+  .route-admin .topbar .brand strong{
+    font-size:18px;
+  }
+}
+
+@media(max-width:640px){
+  .route-admin .topbar .brand{
+    gap:8px;
+  }
+  .route-admin .topbar .brand-mark{
+    width:30px;
+    height:30px;
+    flex-basis:30px;
+  }
+  .route-admin .topbar .brand strong{
+    font-size:14px;
+  }
+  .route-admin .topbar .brand small{
+    font-size:7px;
+  }
+}
