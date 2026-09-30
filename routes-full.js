@@ -359,8 +359,40 @@ function renderProfile(){
     </aside>
   </section>`;
 }
+function bindProfileHoloTabs(){
+  const cards=qsa('.profile-ref-tabs button:not(:first-child)');
+  cards.forEach(card=>{
+    let frame=0;
+    const reset=()=>{
+      cancelAnimationFrame(frame);
+      card.style.setProperty('--px','50%');
+      card.style.setProperty('--py','50%');
+      card.style.setProperty('--rx','0deg');
+      card.style.setProperty('--ry','0deg');
+    };
+    card.addEventListener('pointermove',event=>{
+      if(event.pointerType==='touch')return;
+      const rect=card.getBoundingClientRect();
+      const x=Math.max(0,Math.min(rect.width,event.clientX-rect.left));
+      const y=Math.max(0,Math.min(rect.height,event.clientY-rect.top));
+      const px=(x/rect.width)*100;
+      const py=(y/rect.height)*100;
+      const ry=((x/rect.width)-.5)*9;
+      const rx=((y/rect.height)-.5)*-7;
+      cancelAnimationFrame(frame);
+      frame=requestAnimationFrame(()=>{
+        card.style.setProperty('--px',px.toFixed(2)+'%');
+        card.style.setProperty('--py',py.toFixed(2)+'%');
+        card.style.setProperty('--rx',rx.toFixed(2)+'deg');
+        card.style.setProperty('--ry',ry.toFixed(2)+'deg');
+      });
+    });
+    card.addEventListener('pointerleave',reset);
+    card.addEventListener('pointercancel',reset);
+  });
+}
 function bindProfile(){
-  navBinds();globalThis.JMA_MEDIA.hydrate();bindProfileAppearance();
+  navBinds();globalThis.JMA_MEDIA.hydrate();bindProfileAppearance();bindProfileHoloTabs();
   const drawer=qs('#profileEditDrawer'),backdrop=qs('#profileEditBackdrop');
   const setDrawer=open=>{if(!drawer||!backdrop)return;drawer.hidden=!open;backdrop.hidden=!open;drawer.setAttribute('aria-hidden',open?'false':'true')};
   qsa('[data-profile-edit-open]').forEach(b=>b.onclick=()=>{setDrawer(true);qs('#profileEditClose').focus()});
