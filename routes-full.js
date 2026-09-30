@@ -608,8 +608,22 @@ function bindProfileAppearance(){
  profileDraft=appearance();const drawer=qs('#profileEditDrawer'),nav=qs('.profile-ref-drawer-nav'),content=qs('.profile-ref-drawer-content');
  for(const [id,title] of [['frames','RAHMEN'],['decorations','RINGE & KRÄNZE'],['trophies','TROPHÄEN']]){const b=document.createElement('button');b.type='button';b.dataset.profileEditTab=id;b.textContent=title;nav.append(b);const panel=document.createElement('section');panel.dataset.profileEditPanel=id;content.append(panel)}
  const choices=(kind,field)=>`<div class="profile-choices ${field}-choices"><button type="button" data-profile-choice="${field}" data-value="${field==='banner'?'kartenwelt':'none'}"><span>Standard</span></button>${globalThis.PROFILE_ASSETS[kind].map(x=>`<button type="button" data-profile-choice="${field}" data-value="${x.id}" aria-pressed="${profileDraft[field]===x.id}"><img src="${esc(x.src)}" alt=""><span>${esc(x.name)}</span></button>`).join('')}</div>`;
+ const avatarChoices=()=>{
+   const frame=globalThis.PROFILE_ASSETS.frames.find(x=>x.id===profileDraft.frame),initial=esc((account()?.name||'?').trim().charAt(0).toUpperCase()||'?');
+   const frameLayer=()=>`<img class="avatar-choice-frame" data-avatar-choice-frame src="${frame?esc(frame.src):''}" alt="" ${frame?'':'hidden'}>`;
+   return `<div class="profile-choices avatar-choices">
+     <button type="button" data-profile-choice="avatar" data-value="none" aria-pressed="${profileDraft.avatar==='none'}">
+       <span class="avatar-choice-stage"><i class="avatar-choice-initial">${initial}</i>${frameLayer()}</span>
+       <span>Standard</span>
+     </button>
+     ${globalThis.PROFILE_ASSETS.avatars.map(x=>`<button type="button" data-profile-choice="avatar" data-value="${x.id}" aria-pressed="${profileDraft.avatar===x.id}">
+       <span class="avatar-choice-stage"><img class="avatar-choice-image" src="${esc(x.src)}" alt="">${frameLayer()}</span>
+       <span>${esc(x.name)}</span>
+     </button>`).join('')}
+   </div>`;
+ };
  const fill=(id,html)=>qs(`[data-profile-edit-panel="${id}"]`).innerHTML=html+'<button type="button" data-profile-save>ÄNDERUNGEN SPEICHERN</button><p class="profile-save-message" role="status"></p>';
- fill('avatar','<h3>AVATAR</h3><label class="file-button">EIGENEN AVATAR HOCHLADEN<input id="avatarUpload" type="file" accept="image/png,image/jpeg,image/webp"></label>'+choices('avatars','avatar'));
+ fill('avatar','<h3>AVATAR</h3><p class="profile-choice-hint">Vorschau mit deinem aktuell gewählten Rahmen.</p><label class="file-button">EIGENEN AVATAR HOCHLADEN<input id="avatarUpload" type="file" accept="image/png,image/jpeg,image/webp"></label>'+avatarChoices());
  fill('frames','<h3>AVATARRAHMEN</h3>'+choices('frames','frame'));
  fill('banner','<h3>PROFILBANNER</h3>'+choices('banners','banner'));
  fill('colors','<h3>PROFILFARBEN</h3><div class="profile-choices">'+Object.entries(profileColors).map(([id,color])=>`<button type="button" data-profile-choice="color" data-value="${id}" style="border-color:${color}">${id}</button>`).join('')+'</div>');
@@ -618,7 +632,13 @@ function bindProfileAppearance(){
  fill('widgets','<h3>PROFILMODULE</h3>'+['gallery','builds','routes','activities','showcase'].map(id=>`<label><input type="checkbox" data-profile-widget="${id}" ${profileDraft.widgets.includes(id)?'checked':''}> ${id}</label>`).join(''));
  fill('decorations','<h3>RINGE</h3><div class="profile-choices">'+['none','cyan','red','gold'].map(id=>`<button type="button" data-profile-choice="ring" data-value="${id}">${id}</button>`).join('')+'</div><h3>KRÄNZE</h3><div class="profile-choices">'+['none','orbit','laurel'].map(id=>`<button type="button" data-profile-choice="wreath" data-value="${id}">${id}</button>`).join('')+'</div>');
  fill('trophies','<h3>ARCHIV-TROPHÄEN</h3><div class="profile-choices"><button type="button" data-profile-choice="trophy" data-value="">Ohne</button>'+achievements().map(t=>`<button type="button" data-profile-choice="trophy" data-value="${t.id}" ${t.earned?'':'disabled'}>${t.icon} ${esc(t.name)}${t.earned?'':' · gesperrt'}</button>`).join('')+'</div>');
- const preview=()=>{qs('.profile-ref-editor-avatar').innerHTML=avatar(profileDraft);qsa('[data-profile-choice]').forEach(b=>{const selected=profileDraft[b.dataset.profileChoice]===b.dataset.value;b.classList.toggle('active',selected);b.setAttribute('aria-pressed',selected)});globalThis.JMA_MEDIA.hydrate(drawer)};
+ const preview=()=>{
+   qs('.profile-ref-editor-avatar').innerHTML=avatar(profileDraft);
+   qsa('[data-profile-choice]').forEach(b=>{const selected=profileDraft[b.dataset.profileChoice]===b.dataset.value;b.classList.toggle('active',selected);b.setAttribute('aria-pressed',selected)});
+   const frame=globalThis.PROFILE_ASSETS.frames.find(x=>x.id===profileDraft.frame);
+   qsa('[data-avatar-choice-frame]').forEach(img=>{if(frame){img.src=frame.src;img.hidden=false}else{img.removeAttribute('src');img.hidden=true}});
+   globalThis.JMA_MEDIA.hydrate(drawer)
+ };
  qsa('[data-profile-choice]').forEach(b=>b.onclick=()=>{profileDraft[b.dataset.profileChoice]=b.dataset.value;preview()});
  on('#profileBio','input',e=>profileDraft.bio=e.target.value);on('#profileHighlight','change',e=>profileDraft.highlight=e.target.value);
  qsa('[data-profile-widget]').forEach(el=>el.onchange=()=>{profileDraft.widgets=el.checked?[...new Set([...profileDraft.widgets,el.dataset.profileWidget])]:profileDraft.widgets.filter(x=>x!==el.dataset.profileWidget)});
