@@ -24,6 +24,7 @@
           <a href="#/dashboard" data-account-menu-link>Kommandozentrale</a>
           <a href="#/profile" data-account-menu-link>Profil</a>
           <a href="#/settings" data-account-menu-link>Einstellungen</a>
+          <a href="#/admin" id="headerAdminLink" data-account-menu-link hidden>Admin Backend</a>
           <button type="button" id="headerLogout">Abmelden</button>
         </div>
       </div>
