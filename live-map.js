@@ -116,7 +116,7 @@ function renderLiveMap(){
             <svg class="lm-route-layer" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${line?`<polyline points="${line}" fill="none" vector-effect="non-scaling-stroke"/>`:''}</svg>
             ${s.visible.map(m=>`<button class="lm-marker ${m.id===s.selectedId?'active':''} ${m.custom?'custom':''}" type="button" data-lm-marker="${esc(m.id)}" title="${esc(m.name||'Marker')}" style="left:${markerCoord(m,'mapX')}%;top:${markerCoord(m,'mapY')}%"><span>⌖</span></button>`).join('')}
             <div class="lm-navigator" style="--nav-x:${navX}%;--nav-y:${navY}%" aria-hidden="true">
-              <div class="lm-nav-ring"></div><img src="./assets/live-map/shattered-maiden.webp" alt=""><span>${selectedOnScenario?esc(selectedOnScenario.name||'Marker'):'NAVIGATOR'}</span>
+              <div class="lm-nav-ring"></div><img src="./assets/live-map/shattered-maiden.png" alt=""><span>${selectedOnScenario?esc(selectedOnScenario.name||'Marker'):'NAVIGATOR'}</span>
             </div>
             <img class="lm-butterfly" src="./assets/live-map/butterfly-emissary.webp" alt="" aria-hidden="true">
           </div>
