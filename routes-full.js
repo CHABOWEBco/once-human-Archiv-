@@ -192,9 +192,22 @@ function avatar(p=appearance(),tiny=false){const a=globalThis.PROFILE_ASSETS.ava
 globalThis.JMA_PROFILE={avatar,appearance,stats:profileStats};
 globalThis.JMA_PROFILE_SETTINGS={render:renderProfileSettingsEditor,bind:()=>{bindProfileAppearance();bindProfileEditorTabs();on('#profileEditClose','click',()=>{location.hash='#/settings'})}};
 
-function renderProfileEditorBody(a,initial,email){
-  return `<div class="profile-ref-drawer-body">
-    <nav class="profile-ref-drawer-nav" aria-label="Profil bearbeiten">
+function renderProfileEditorBody(a,initial,email,embedded=false){
+  const p=appearance(),banner=globalThis.PROFILE_ASSETS.banners.find(x=>x.id===p.banner),bannerSrc=banner?.src||'./assets/reference/feature-map.webp';
+  const livePreview=embedded?`<section class="settings-profile-live" data-profile-live style="--profile-live-accent:${profileColors[p.color]};--profile-live-banner:url('${esc(bannerSrc)}')">
+    <div class="settings-profile-live-art">
+      <div class="settings-profile-live-avatar" data-profile-live-avatar>${avatar(p)}</div>
+      <div class="settings-profile-live-copy">
+        <small data-profile-live-mode>ALLGEMEIN // LIVE-VORSCHAU</small>
+        <h2 data-profile-live-name>${esc(a?.name||email||'Archiv-Nutzer')}</h2>
+        <p data-profile-live-bio>${esc(p.bio||'Dein persönliches Archivprofil.')}</p>
+        <span><i></i> ONLINE · VORSCHAU</span>
+      </div>
+      <div class="settings-profile-live-chip" data-profile-live-chip>PROFILIDENTITÄT</div>
+    </div>
+  </section>`:'';
+  return `<div class="profile-ref-drawer-body ${embedded?'settings-profile-docked':''}">
+    <nav class="profile-ref-drawer-nav ${embedded?'settings-profile-subnav':''}" aria-label="Profil bearbeiten">
       <button type="button" class="active" data-profile-edit-tab="general">ALLGEMEIN</button>
       <button type="button" data-profile-edit-tab="avatar">PROFILBILD</button>
       <button type="button" data-profile-edit-tab="banner">BANNER</button>
@@ -203,7 +216,8 @@ function renderProfileEditorBody(a,initial,email){
       <button type="button" data-profile-edit-tab="highlights">HIGHLIGHTS</button>
       <button type="button" data-profile-edit-tab="widgets">WIDGETS</button>
     </nav>
-    <div class="profile-ref-drawer-content">
+    <div class="profile-ref-drawer-content ${embedded?'settings-profile-work':''}">
+      ${livePreview}
       <section class="active" data-profile-edit-panel="general">
         <small>ALLGEMEIN</small><h3>PROFILIDENTITÄT</h3>
         <div class="profile-ref-editor-avatar"><span>${esc(initial)}</span></div>
@@ -226,7 +240,7 @@ function renderProfileSettingsEditor(){
       <div><small>PROFIL // EDITOR</small><h1 id="settingsProfileTitle">PROFIL ANPASSEN</h1><p>Identität, Darstellung und Profilmodule an einem zentralen Ort.</p></div>
       <button type="button" id="profileEditClose" aria-label="Zur Darstellung zurück">← DARSTELLUNG</button>
     </header>
-    ${renderProfileEditorBody(a,initial,email)}
+    ${renderProfileEditorBody(a,initial,email,true)}
   </section>`;
 }
 
@@ -394,12 +408,45 @@ function bindProfileHoloTabs(){
     card.addEventListener('pointercancel',reset);
   });
 }
+function updateProfileSettingsLivePreview(tab){
+  const live=qs('[data-profile-live]');
+  if(!live||!profileDraft)return;
+  const activeTab=tab||qs('[data-profile-edit-tab].active')?.dataset.profileEditTab||'general';
+  const labels={
+    general:['ALLGEMEIN // LIVE-VORSCHAU','PROFILIDENTITÄT'],
+    avatar:['PROFILBILD // LIVE-VORSCHAU','AVATAR + RAHMEN'],
+    banner:['BANNER // LIVE-VORSCHAU','BANNER + AVATAR'],
+    colors:['FARBEN // LIVE-VORSCHAU','AKZENTWIRKUNG'],
+    about:['ÜBER MICH // LIVE-VORSCHAU','PROFILTEXT'],
+    highlights:['HIGHLIGHTS // LIVE-VORSCHAU','BUILD-HIGHLIGHT'],
+    widgets:['WIDGETS // LIVE-VORSCHAU','PROFILMODULE'],
+    frames:['RAHMEN // LIVE-VORSCHAU','AVATAR + RAHMEN'],
+    decorations:['RINGE & KRÄNZE // LIVE-VORSCHAU','PROFILDEKORATION'],
+    trophies:['TROPHÄEN // LIVE-VORSCHAU','ARCHIV-TROPHÄE']
+  };
+  const banner=globalThis.PROFILE_ASSETS.banners.find(x=>x.id===profileDraft.banner);
+  const bannerSrc=banner?.src||'./assets/reference/feature-map.webp';
+  const name=qs('#profileNameForm input[name="name"]')?.value.trim()||account()?.name||account()?.email||'Archiv-Nutzer';
+  live.dataset.mode=activeTab;
+  live.style.setProperty('--profile-live-accent',profileColors[profileDraft.color]||profileColors.cyan);
+  live.style.setProperty('--profile-live-banner',`url("${bannerSrc}")`);
+  const avatarHost=qs('[data-profile-live-avatar]',live);
+  if(avatarHost) avatarHost.innerHTML=avatar(profileDraft);
+  const mode=qs('[data-profile-live-mode]',live),chip=qs('[data-profile-live-chip]',live),nameEl=qs('[data-profile-live-name]',live),bio=qs('[data-profile-live-bio]',live);
+  if(mode) mode.textContent=(labels[activeTab]||labels.general)[0];
+  if(chip) chip.textContent=(labels[activeTab]||labels.general)[1];
+  if(nameEl) nameEl.textContent=name;
+  if(bio) bio.textContent=profileDraft.bio||'Dein persönliches Archivprofil.';
+  globalThis.JMA_MEDIA.hydrate(live);
+}
 function bindProfileEditorTabs(){
   const editTabs=qsa('[data-profile-edit-tab]'),editPanels=qsa('[data-profile-edit-panel]');
   editTabs.forEach(b=>b.onclick=()=>{
     editTabs.forEach(x=>x.classList.toggle('active',x===b));
     editPanels.forEach(x=>x.classList.toggle('active',x.dataset.profileEditPanel===b.dataset.profileEditTab));
+    updateProfileSettingsLivePreview(b.dataset.profileEditTab);
   });
+  updateProfileSettingsLivePreview(editTabs.find(x=>x.classList.contains('active'))?.dataset.profileEditTab||'general');
 }
 function bindProfile(){
   navBinds();globalThis.JMA_MEDIA.hydrate();bindProfileAppearance();bindProfileHoloTabs();
@@ -637,10 +684,13 @@ function bindProfileAppearance(){
    qsa('[data-profile-choice]').forEach(b=>{const selected=profileDraft[b.dataset.profileChoice]===b.dataset.value;b.classList.toggle('active',selected);b.setAttribute('aria-pressed',selected)});
    const frame=globalThis.PROFILE_ASSETS.frames.find(x=>x.id===profileDraft.frame);
    qsa('[data-avatar-choice-frame]').forEach(img=>{if(frame){img.src=frame.src;img.hidden=false}else{img.removeAttribute('src');img.hidden=true}});
-   globalThis.JMA_MEDIA.hydrate(drawer)
+   globalThis.JMA_MEDIA.hydrate(drawer);
+   updateProfileSettingsLivePreview();
  };
  qsa('[data-profile-choice]').forEach(b=>b.onclick=()=>{profileDraft[b.dataset.profileChoice]=b.dataset.value;preview()});
- on('#profileBio','input',e=>profileDraft.bio=e.target.value);on('#profileHighlight','change',e=>profileDraft.highlight=e.target.value);
+ on('#profileBio','input',e=>{profileDraft.bio=e.target.value;updateProfileSettingsLivePreview('about')});
+ on('#profileHighlight','change',e=>{profileDraft.highlight=e.target.value;updateProfileSettingsLivePreview('highlights')});
+ on('#profileNameForm input[name="name"]','input',()=>updateProfileSettingsLivePreview('general'));
  qsa('[data-profile-widget]').forEach(el=>el.onchange=()=>{profileDraft.widgets=el.checked?[...new Set([...profileDraft.widgets,el.dataset.profileWidget])]:profileDraft.widgets.filter(x=>x!==el.dataset.profileWidget)});
  on('#avatarUpload','change',async e=>{try{profileDraft.avatar=await globalThis.JMA_MEDIA.save(e.target.files[0]);preview()}catch(error){toast(error.message)}});
  qsa('[data-profile-save]').forEach(b=>b.onclick=async()=>{b.disabled=true;try{await saveProfileAppearance(qs('#profileNameForm input[name="name"]').value.trim());refresh();toast('Profil gespeichert.')}catch(error){b.parentElement.querySelector('.profile-save-message').textContent=error.message;b.disabled=false}});
