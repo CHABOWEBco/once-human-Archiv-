@@ -26,11 +26,11 @@
 /* === Admin preview compact premium topbar === */
 /* Scoped to the isolated admin route only. */
 .route-admin .topbar{height:64px;gap:16px;padding-inline:clamp(20px,2.5vw,44px);background:linear-gradient(180deg,rgba(3,14,20,.985),rgba(2,9,14,.99));border-bottom-color:rgba(87,174,187,.38);box-shadow:0 10px 28px rgba(0,0,0,.26),inset 0 -1px 0 rgba(108,211,222,.06);backdrop-filter:blur(22px) saturate(125%);-webkit-backdrop-filter:blur(22px) saturate(125%)}
-.route-admin .topbar .brand{gap:10px;align-items:center}
-.route-admin .topbar .brand-mark{width:36px;height:36px;flex:0 0 36px}
-.route-admin .topbar .brand>span:last-child{display:flex;flex-direction:column;justify-content:center;min-width:0}
-.route-admin .topbar .brand strong{font-size:20px;letter-spacing:.11em;line-height:1;margin:0}
-.route-admin .topbar .brand small{font-size:8px;letter-spacing:.24em;line-height:1;margin-top:4px}
+.route-admin .topbar .brand{gap:9px;align-items:center}
+.route-admin .topbar .brand-mark{width:30px;height:30px;flex:0 0 30px}
+.route-admin .topbar .brand>span:last-child{display:flex;flex-direction:column;justify-content:center;min-width:0;transform:translateY(1px)}
+.route-admin .topbar .brand strong{font-size:20px;letter-spacing:.105em;line-height:1;margin:0}
+.route-admin .topbar .brand small{font-size:8px;letter-spacing:.22em;line-height:1;margin-top:4px}
 .route-admin .main-nav{height:64px;justify-content:center}
 .route-admin .main-nav a{gap:8px;padding-inline:12px;font-size:13px;font-weight:750;border-bottom-width:2px}
 .route-admin .main-nav a span{display:grid;place-items:center;font-size:22px;color:#92b8c1;transition:color .18s ease,transform .18s ease,filter .18s ease}
@@ -47,6 +47,6 @@
 .route-admin .header-account-copy small{font-size:6px;margin-top:2px}
 .route-admin .header-account-chevron{font-size:11px}
 @media(min-width:1451px){.route-admin .header-account-trigger{height:40px;min-width:164px}}
-@media(max-width:1450px){.route-admin .topbar{height:62px;gap:12px;padding-inline:22px}.route-admin .topbar .brand{gap:9px}.route-admin .topbar .brand-mark{width:34px;height:34px;flex-basis:34px}.route-admin .topbar .brand strong{font-size:18px}.route-admin .main-nav{height:62px}.route-admin .main-nav a{padding-inline:9px;font-size:12px}.route-admin .main-nav a svg{width:21px;height:21px}}
+@media(max-width:1450px){.route-admin .topbar{height:62px;gap:12px;padding-inline:22px}.route-admin .topbar .brand{gap:8px}.route-admin .topbar .brand-mark{width:28px;height:28px;flex-basis:28px}.route-admin .topbar .brand strong{font-size:18px}.route-admin .main-nav{height:62px}.route-admin .main-nav a{padding-inline:9px;font-size:12px}.route-admin .main-nav a svg{width:21px;height:21px}}
 @media(max-width:1100px){.route-admin .topbar{height:62px}.route-admin .main-nav{height:auto}}
-@media(max-width:640px){.route-admin .topbar{height:60px;padding-inline:10px}.route-admin .topbar .brand{gap:8px}.route-admin .topbar .brand-mark{width:30px;height:30px;flex-basis:30px}.route-admin .topbar .brand strong{font-size:14px}.route-admin .topbar .brand small{font-size:7px}}
+@media(max-width:640px){.route-admin .topbar{height:60px;padding-inline:10px}.route-admin .topbar .brand{gap:8px}.route-admin .topbar .brand-mark{width:26px;height:26px;flex-basis:26px}.route-admin .topbar .brand strong{font-size:14px}.route-admin .topbar .brand small{font-size:7px}}
