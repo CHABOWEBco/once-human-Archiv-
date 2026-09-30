@@ -627,3 +627,231 @@ html[data-ui-theme="light"] body.route-profile.ui-preferences-active :is(.profil
   }
   .settings-profile-editor .profile-ref-drawer-content{overflow:visible;padding:16px}
 }
+
+
+/* === Profile settings polish: fixed workspace + asset cards === */
+@media(min-width:701px){
+  .settings-page:has(.settings-content-profile){
+    height:calc(100vh - 64px);
+    min-height:0;
+    padding:clamp(20px,3vw,42px);
+    overflow:hidden
+  }
+  .settings-page:has(.settings-content-profile) .settings-window{
+    height:100%;
+    min-height:0;
+    max-height:100%;
+    overflow:hidden
+  }
+  .settings-page:has(.settings-content-profile) .settings-sidebar{
+    min-height:0;
+    overflow:auto
+  }
+  .settings-page:has(.settings-content-profile) .settings-content-profile{
+    min-height:0;
+    overflow:hidden
+  }
+  .settings-page:has(.settings-content-profile) .settings-profile-editor{
+    min-height:0;
+    height:100%;
+    overflow:hidden
+  }
+  .settings-page:has(.settings-content-profile) .settings-profile-editor>.profile-ref-drawer-body{
+    min-height:0;
+    height:100%;
+    overflow:hidden
+  }
+  .settings-page:has(.settings-content-profile) .settings-profile-editor .profile-ref-drawer-content{
+    min-height:0;
+    height:100%;
+    overflow-y:auto;
+    overflow-x:hidden;
+    overscroll-behavior:contain;
+    scrollbar-width:thin;
+    scrollbar-color:color-mix(in srgb,var(--ui-accent) 34%,transparent) rgba(255,255,255,.025)
+  }
+}
+
+.settings-profile-editor .profile-ref-drawer-content{
+  scroll-behavior:smooth
+}
+.settings-profile-editor .profile-ref-drawer-content>section{
+  padding:0 2px 22px
+}
+.settings-profile-editor .profile-ref-drawer-content>section.active{
+  display:block
+}
+.settings-profile-editor .profile-ref-drawer-content>section>h3{
+  margin-top:6px
+}
+
+/* One unified HUD card language for all profile editor asset choices */
+.settings-profile-editor .profile-choices{
+  align-items:stretch
+}
+.settings-profile-editor .profile-choices button{
+  position:relative;
+  min-width:0;
+  min-height:126px;
+  padding:12px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:9px;
+  overflow:hidden;
+  border:1px solid color-mix(in srgb,var(--ui-accent) 15%,rgba(153,194,216,.18));
+  border-radius:var(--ui-radius);
+  background:
+    linear-gradient(90deg,color-mix(in srgb,var(--ui-accent) 34%,transparent),transparent 26%) left top/18px 1px no-repeat,
+    linear-gradient(270deg,color-mix(in srgb,var(--ui-accent) 34%,transparent),transparent 26%) right bottom/18px 1px no-repeat,
+    linear-gradient(180deg,rgba(11,20,29,.82),rgba(6,13,20,.90));
+  color:#dce7ea;
+  box-shadow:inset 0 1px rgba(255,255,255,.025),0 8px 22px rgba(0,0,0,.12);
+  transition:border-color .16s ease,transform .16s ease,box-shadow .16s ease,background .16s ease
+}
+.settings-profile-editor .profile-choices button:hover{
+  transform:translateY(-2px);
+  border-color:color-mix(in srgb,var(--ui-accent) 38%,rgba(153,194,216,.20));
+  background:
+    radial-gradient(circle at 50% 34%,color-mix(in srgb,var(--ui-accent) 7%,transparent),transparent 48%),
+    linear-gradient(180deg,rgba(14,25,35,.90),rgba(7,14,22,.94));
+  box-shadow:inset 0 1px rgba(255,255,255,.035),0 14px 30px rgba(0,0,0,.18),0 0 22px color-mix(in srgb,var(--ui-accent) 5%,transparent)
+}
+.settings-profile-editor .profile-choices button.active{
+  outline:0;
+  border-color:color-mix(in srgb,var(--ui-accent) 72%,#fff);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb,var(--ui-accent) 25%,transparent),
+    0 0 0 1px color-mix(in srgb,var(--ui-accent) 12%,transparent),
+    0 0 24px color-mix(in srgb,var(--ui-accent) 14%,transparent)
+}
+.settings-profile-editor .profile-choices button.active:after{
+  content:"AKTIV";
+  position:absolute;
+  right:8px;
+  top:8px;
+  padding:3px 5px;
+  border:1px solid color-mix(in srgb,var(--ui-accent) 36%,transparent);
+  border-radius:6px;
+  background:rgba(4,12,18,.82);
+  color:color-mix(in srgb,var(--ui-accent) 78%,#fff);
+  font:800 6px var(--display);
+  letter-spacing:.10em
+}
+.settings-profile-editor .profile-choices button>span{
+  position:relative;
+  z-index:2;
+  max-width:100%;
+  color:#bac8cd;
+  font:800 10px/1.25 var(--display);
+  text-align:center;
+  text-wrap:balance
+}
+.settings-profile-editor .profile-choices button>img{
+  position:relative;
+  z-index:1;
+  display:block;
+  width:100%;
+  max-width:118px;
+  height:92px;
+  margin:0 auto;
+  object-fit:contain;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  filter:drop-shadow(0 7px 10px rgba(0,0,0,.38))
+}
+
+/* Profile images: no white/grey tile around transparent artwork */
+.settings-profile-editor .avatar-choices{
+  grid-template-columns:repeat(4,minmax(0,1fr))
+}
+.settings-profile-editor .avatar-choices button{
+  min-height:148px;
+  background:
+    radial-gradient(circle at 50% 38%,rgba(72,217,239,.045),transparent 40%),
+    linear-gradient(180deg,rgba(9,18,27,.86),rgba(5,12,18,.92))
+}
+.settings-profile-editor .avatar-choices button>img{
+  width:96px;
+  max-width:96px;
+  height:96px;
+  object-fit:contain;
+  border-radius:50%;
+  background:transparent!important
+}
+
+/* Frames: larger showcase so fine borders remain readable */
+.settings-profile-editor .frame-choices{
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:12px
+}
+.settings-profile-editor .frame-choices button{
+  min-height:180px;
+  padding:14px 12px 12px
+}
+.settings-profile-editor .frame-choices button>img{
+  width:132px;
+  max-width:132px;
+  height:132px;
+  object-fit:contain;
+  transform:scale(1.08);
+  filter:drop-shadow(0 10px 14px rgba(0,0,0,.48)) drop-shadow(0 0 10px color-mix(in srgb,var(--ui-accent) 5%,transparent))
+}
+
+/* Banners keep the same card language but use a wide crop */
+.settings-profile-editor .banner-choices{
+  grid-template-columns:repeat(2,minmax(0,1fr))
+}
+.settings-profile-editor .banner-choices button{
+  min-height:170px;
+  align-items:stretch
+}
+.settings-profile-editor .banner-choices button>img{
+  width:100%;
+  max-width:none;
+  height:112px;
+  object-fit:cover;
+  border-radius:calc(var(--ui-radius) - 3px);
+  filter:saturate(.95) contrast(1.03)
+}
+
+/* Upload control styled like the rest instead of a browser-white block */
+.settings-profile-editor .file-button{
+  width:100%;
+  margin:0 0 14px;
+  padding:12px;
+  border:1px solid color-mix(in srgb,var(--ui-accent) 16%,rgba(153,194,216,.18));
+  border-radius:var(--ui-radius);
+  background:rgba(255,255,255,.018);
+  color:#91a6ae;
+  font:800 8px var(--display);
+  letter-spacing:.08em
+}
+.settings-profile-editor .file-button input{
+  margin-top:8px;
+  min-height:38px;
+  padding:7px 9px;
+  border:1px solid rgba(153,194,216,.16);
+  border-radius:calc(var(--ui-radius) - 2px);
+  background:rgba(3,10,15,.78);
+  color:#aebfc5
+}
+
+@media(max-width:1180px){
+  .settings-profile-editor .avatar-choices{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .settings-profile-editor .frame-choices{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:820px){
+  .settings-profile-editor .avatar-choices,
+  .settings-profile-editor .frame-choices,
+  .settings-profile-editor .banner-choices{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .settings-profile-editor .frame-choices button{min-height:160px}
+  .settings-profile-editor .frame-choices button>img{width:116px;height:116px}
+}
+@media(max-width:520px){
+  .settings-profile-editor .avatar-choices,
+  .settings-profile-editor .frame-choices,
+  .settings-profile-editor .banner-choices{grid-template-columns:1fr}
+}
