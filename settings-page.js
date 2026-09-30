@@ -66,24 +66,32 @@ function swatches(active){
 function toggle(id,label,copy,checked){
   return '<label class="settings-toggle-row"><span class="settings-switch"><input id="'+id+'" type="checkbox" '+(checked?'checked':'')+'><i></i></span><span><b>'+safe(label)+'</b><small>'+safe(copy)+'</small></span></label>';
 }
+function settingsSection(){
+  const parts=location.hash.replace(/^#\/?/,'').split('/');
+  return parts[0]==='settings'&&parts[1]==='profile'?'profile':'appearance';
+}
 function routePreview(src,title){
   return '<article class="settings-preview-card"><div class="settings-preview-art" style="--preview:url(\''+src+'\')"></div><div><b>'+safe(title)+'</b><span>Archivbereich</span></div><i aria-hidden="true">•••</i></article>';
 }
 function renderSettings(){
-  const p=read(),a=globalThis.JMA_AUTH?.getAccount?.()||{},name=a.name||a.email||'Meta-Human';
+  const p=read(),a=globalThis.JMA_AUTH?.getAccount?.()||{},name=a.name||a.email||'Meta-Human',section=settingsSection(),profileMode=section==='profile';
   return '<section class="settings-page" aria-labelledby="settingsTitle">'+
     '<div class="settings-backdrop" aria-hidden="true"></div>'+
     '<div class="settings-window">'+
       '<aside class="settings-sidebar">'+
         '<div class="settings-user-mini"><span>'+safe(String(name).trim().charAt(0).toUpperCase()||'M')+'</span><div><b>'+safe(name)+'</b><small>Archiv-Einstellungen</small></div></div>'+
         '<nav aria-label="Einstellungsbereiche">'+
-          '<button class="active" type="button" aria-current="page">'+sidebarIcon('themes')+'<span>Darstellung</span></button>'+
-          '<a href="#/profile">'+sidebarIcon('profile')+'<span>Profil</span></a>'+
+          '<a href="#/settings" class="'+(!profileMode?'active':'')+'" '+(!profileMode?'aria-current="page"':'')+'>'+sidebarIcon('themes')+'<span>Darstellung</span></a>'+
+          '<a href="#/settings/profile" class="'+(profileMode?'active':'')+'" '+(profileMode?'aria-current="page"':'')+'>'+sidebarIcon('profile')+'<span>Profil</span></a>'+
           '<a href="#/live-map">'+sidebarIcon('links')+'<span>Live-Karte</span></a>'+
           (['moderator','admin','owner'].includes(String(a.role||'').toLowerCase())?'<a href="#/admin">'+sidebarIcon('dev')+'<span>Admin Backend</span></a>':'')+
         '</nav>'+
       '</aside>'+
-      '<main class="settings-content">'+
+      (profileMode
+        ?'<main class="settings-content settings-content-profile">'+
+          (globalThis.JMA_PROFILE_SETTINGS?.render?.()||'<section class="settings-profile-unavailable"><b>Profil-Editor nicht verfügbar.</b></section>')+
+        '</main>'
+        :'<main class="settings-content">'+
         '<section class="settings-controls">'+
           '<header class="settings-titlebar"><div class="settings-title-icon">'+sidebarIcon('themes')+'</div><div><h1 id="settingsTitle">Archiv-Interface</h1><p>Darstellung für Admin Backend, Live-Karte und Profil.</p></div></header>'+
           '<div class="settings-segment" role="group" aria-label="Farbschema">'+
@@ -114,13 +122,14 @@ function renderSettings(){
             '<article><small>03 / PROFIL</small><b>Profil</b><span>Panels · Tabs · Akzent · Radius · Schrift</span><a href="#/profile">Öffnen ↗</a></article>'+
           '</div>'+
         '</section>'+
-      '</main>'+
+      '</main>')+
       '<div class="settings-updated" id="settingsUpdated" role="status" aria-live="polite"><span>✓</span><div><b>Theme aktualisiert</b><small>Deine Einstellungen wurden gespeichert.</small></div></div>'+
     '</div>'+
   '</section>';
 }
 function bindSettings(){
   apply();
+  if(settingsSection()==='profile') globalThis.JMA_PROFILE_SETTINGS?.bind?.();
   const flash=()=>{const el=q('#settingsUpdated');if(!el)return;el.classList.remove('show');void el.offsetWidth;el.classList.add('show');clearTimeout(flash.timer);flash.timer=setTimeout(()=>el.classList.remove('show'),2200)};
   qa('[data-settings-theme]').forEach(btn=>btn.onclick=()=>{write({theme:btn.dataset.settingsTheme});qa('[data-settings-theme]').forEach(x=>x.classList.toggle('active',x===btn));flash()});
   qa('[data-settings-accent]').forEach(btn=>btn.onclick=()=>{const accent=btn.dataset.settingsAccent;write({accent});qa('[data-settings-accent]').forEach(x=>{const active=x===btn;x.classList.toggle('active',active);x.setAttribute('aria-pressed',String(active))});const n=q('#settingsAccentName');if(n)n.textContent=accent.charAt(0).toUpperCase()+accent.slice(1);flash()});
