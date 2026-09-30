@@ -1,6 +1,6 @@
 (()=>{'use strict';
 const KEY='jma_ui_preferences';
-const DEFAULTS={theme:'dark',accent:'coral',density:58,font:'SF Pro',radius:12,smooth:true,focus:false,grid:true,compact:false};
+const DEFAULTS={theme:'dark',accent:'coral',density:58,font:'SF Pro',radius:12,smooth:true,focus:false,grid:true,compact:false,welcome:true};
 const SCOPED_ROUTES=new Set(['admin','live-map','profile']);
 const ACCENTS={
   blue:'#238cff',green:'#1fcf97',yellow:'#ffd02e',orange:'#ff7a18',red:'#ff3349',
@@ -68,7 +68,8 @@ function toggle(id,label,copy,checked){
 }
 function settingsSection(){
   const parts=location.hash.replace(/^#\/?/,'').split('/');
-  return parts[0]==='settings'&&parts[1]==='profile'?'profile':'appearance';
+  if(parts[0]!=='settings') return 'appearance';
+  return ['profile','notifications','security'].includes(parts[1])?parts[1]:'appearance';
 }
 function routePreview(src,title){
   return '<article class="settings-preview-card"><div class="settings-preview-art" style="--preview:url(\''+src+'\')"></div><div><b>'+safe(title)+'</b><span>Archivbereich</span></div><i aria-hidden="true">•••</i></article>';
@@ -81,8 +82,10 @@ function renderSettings(){
       '<aside class="settings-sidebar">'+
         '<div class="settings-user-mini"><span>'+safe(String(name).trim().charAt(0).toUpperCase()||'M')+'</span><div><b>'+safe(name)+'</b><small>Archiv-Einstellungen</small></div></div>'+
         '<nav aria-label="Einstellungsbereiche">'+
-          '<a href="#/settings" class="'+(!profileMode?'active':'')+'" '+(!profileMode?'aria-current="page"':'')+'>'+sidebarIcon('themes')+'<span>Darstellung</span></a>'+
-          '<a href="#/settings/profile" class="'+(profileMode?'active':'')+'" '+(profileMode?'aria-current="page"':'')+'>'+sidebarIcon('profile')+'<span>Profil</span></a>'+
+          '<a href="#/settings" class="'+(section==='appearance'?'active':'')+'" '+(section==='appearance'?'aria-current="page"':'')+'>'+sidebarIcon('themes')+'<span>Darstellung</span></a>'+
+          '<a href="#/settings/profile" class="'+(section==='profile'?'active':'')+'" '+(section==='profile'?'aria-current="page"':'')+'>'+sidebarIcon('profile')+'<span>Profil</span></a>'+
+          '<a href="#/settings/notifications" class="'+(section==='notifications'?'active':'')+'" '+(section==='notifications'?'aria-current="page"':'')+'>'+sidebarIcon('alerts')+'<span>Benachrichtigungen</span></a>'+
+          '<a href="#/settings/security" class="'+(section==='security'?'active':'')+'" '+(section==='security'?'aria-current="page"':'')+'>'+sidebarIcon('security')+'<span>Sicherheit</span></a>'+
           '<a href="#/live-map">'+sidebarIcon('links')+'<span>Live-Karte</span></a>'+
           (['moderator','admin','owner'].includes(String(a.role||'').toLowerCase())?'<a href="#/admin">'+sidebarIcon('dev')+'<span>Admin Backend</span></a>':'')+
         '</nav>'+
@@ -91,7 +94,31 @@ function renderSettings(){
         ?'<main class="settings-content settings-content-profile">'+
           (globalThis.JMA_PROFILE_SETTINGS?.render?.()||'<section class="settings-profile-unavailable"><b>Profil-Editor nicht verfügbar.</b></section>')+
         '</main>'
-        :'<main class="settings-content">'+
+        :section==='notifications'
+          ?'<main class="settings-content settings-content-single">'+
+            '<section class="settings-single-panel">'+
+              '<header class="settings-titlebar"><div class="settings-title-icon">'+sidebarIcon('alerts')+'</div><div><h1 id="settingsTitle">Benachrichtigungen</h1><p>Steuere reale Hinweise des Archivs.</p></div></header>'+
+              '<div class="settings-toggles settings-toggles-single">'+
+                toggle('settingsWelcome','Login-Begrüßung','Zeigt nach einer echten Anmeldung kurz deine Archiv-Begrüßung.',p.welcome)+
+              '</div>'+
+              '<div class="settings-info-card"><small>AKTUELL ANGEBUNDEN</small><b>Login-Begrüßung</b><p>Weitere Benachrichtigungsarten werden erst ergänzt, wenn dafür echte Ereignisse vorhanden sind.</p></div>'+
+            '</section>'+
+          '</main>'
+          :section==='security'
+            ?'<main class="settings-content settings-content-single">'+
+              '<section class="settings-single-panel">'+
+                '<header class="settings-titlebar"><div class="settings-title-icon">'+sidebarIcon('security')+'</div><div><h1 id="settingsTitle">Sicherheit</h1><p>Kontosicherheit über deine bestehende Supabase-Sitzung.</p></div></header>'+
+                '<div class="settings-account-status"><small>ANGEMELDETES KONTO</small><b>'+safe(a.email||'Keine E-Mail verfügbar')+'</b><span>Passwortänderungen werden direkt über Supabase Auth gespeichert.</span></div>'+
+                '<form class="settings-security-form" id="settingsPasswordForm">'+
+                  '<label><span>NEUES PASSWORT</span><input type="password" name="password" minlength="6" autocomplete="new-password" required></label>'+
+                  '<label><span>PASSWORT WIEDERHOLEN</span><input type="password" name="repeat" minlength="6" autocomplete="new-password" required></label>'+
+                  '<button type="submit">PASSWORT AKTUALISIEREN</button>'+
+                  '<p id="settingsSecurityMessage" role="status"></p>'+
+                '</form>'+
+                '<div class="settings-info-card"><small>SICHERHEITSSTATUS</small><b>Supabase Auth aktiv</b><p>Keine erfundene 2FA- oder Geräteverwaltung: Hier werden nur tatsächlich vorhandene Sicherheitsfunktionen angeboten.</p></div>'+
+              '</section>'+
+            '</main>'
+            :'<main class="settings-content">'+
         '<section class="settings-controls">'+
           '<header class="settings-titlebar"><div class="settings-title-icon">'+sidebarIcon('themes')+'</div><div><h1 id="settingsTitle">Archiv-Interface</h1><p>Darstellung für Admin Backend, Live-Karte und Profil.</p></div></header>'+
           '<div class="settings-segment" role="group" aria-label="Farbschema">'+
@@ -130,6 +157,21 @@ function renderSettings(){
 function bindSettings(){
   apply();
   if(settingsSection()==='profile') globalThis.JMA_PROFILE_SETTINGS?.bind?.();
+  q('#settingsWelcome')?.addEventListener('change',e=>write({welcome:e.target.checked}));
+  q('#settingsPasswordForm')?.addEventListener('submit',async e=>{
+    e.preventDefault();
+    const form=e.currentTarget,fd=new FormData(form),password=String(fd.get('password')||''),repeat=String(fd.get('repeat')||''),message=q('#settingsSecurityMessage'),button=form.querySelector('button');
+    if(message) message.textContent='';
+    if(password!==repeat){if(message)message.textContent='Die Passwörter stimmen nicht überein.';return}
+    button.disabled=true;
+    try{
+      await globalThis.JMA_AUTH.updatePassword(password);
+      form.reset();
+      if(message){message.textContent='Passwort erfolgreich aktualisiert.';message.classList.add('success')}
+    }catch(error){
+      if(message){message.textContent=error?.message||'Passwort konnte nicht aktualisiert werden.';message.classList.remove('success')}
+    }finally{button.disabled=false}
+  });
   const flash=()=>{const el=q('#settingsUpdated');if(!el)return;el.classList.remove('show');void el.offsetWidth;el.classList.add('show');clearTimeout(flash.timer);flash.timer=setTimeout(()=>el.classList.remove('show'),2200)};
   qa('[data-settings-theme]').forEach(btn=>btn.onclick=()=>{write({theme:btn.dataset.settingsTheme});qa('[data-settings-theme]').forEach(x=>x.classList.toggle('active',x===btn));flash()});
   qa('[data-settings-accent]').forEach(btn=>btn.onclick=()=>{const accent=btn.dataset.settingsAccent;write({accent});qa('[data-settings-accent]').forEach(x=>{const active=x===btn;x.classList.toggle('active',active);x.setAttribute('aria-pressed',String(active))});const n=q('#settingsAccentName');if(n)n.textContent=accent.charAt(0).toUpperCase()+accent.slice(1);flash()});
