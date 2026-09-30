@@ -37,7 +37,7 @@ let authMode = 'login';
 const NAV = [
   ['home','Start','⌂'],['database','Datenbank','▱'],['map','Karte','⌖'],['builds','Builds','⚒'],['tech-workbench','Techwerkbank','⚙'],['community','Community','♙'],['guides','Guides','◫']
 ];
-const AUTH_REQUIRED_ROUTES = new Set(['database','map','builds','tech-workbench','community','guides','dashboard','profile','settings','admin','hunt','routes','planner','submissions','collection','exchange']);
+const AUTH_REQUIRED_ROUTES = new Set(['database','map','live-map','builds','tech-workbench','community','guides','dashboard','profile','settings','admin','hunt','routes','planner','submissions','collection','exchange']);
 mainNav.innerHTML = NAV.map(([id,label,icon])=>`<a href="#/${id}" data-nav="${id}"><span>${SITE_HEADER.icon(id)}</span>${label}</a>`).join('');
 
 function homeBrandText(value=''){
@@ -209,7 +209,7 @@ function render(){
     id='home';
     history.replaceState(null,'','#/home');
   }
-  let route=ROUTES.find(r=>r.id===id)||(id==='settings'?{id:'settings',label:'Einstellungen',icon:'◌',purpose:'Darstellung und Oberflächenoptionen'}:id==='admin'?{id:'admin',label:'Admin Backend',icon:'◇',purpose:'Geschütztes CMS und Verwaltungszentrum'}:null);
+  let route=ROUTES.find(r=>r.id===id)||(id==='live-map'?{id:'live-map',label:'Live Karte',icon:'⌖',purpose:'Isolierte interaktive Karten-Vorschau'}:id==='settings'?{id:'settings',label:'Einstellungen',icon:'◌',purpose:'Darstellung und Oberflächenoptionen'}:id==='admin'?{id:'admin',label:'Admin Backend',icon:'◇',purpose:'Geschütztes CMS und Verwaltungszentrum'}:null);
   if(!route){route=ROUTES[0];history.replaceState(null,'','#/home');}
   document.title=`Once Human Archiv // ${route.label}`;
   document.body.className=document.body.className.replace(/\broute-[^\s]+/g,'').trim(); document.body.classList.add(`route-${route.id}`);
@@ -266,6 +266,19 @@ function syncHeaderAccount(){
   $('#headerAccountName').textContent=name;
   $('#headerAccountStatus').textContent=account.role?String(account.role).toUpperCase():'ANGEMELDET';
   $('#headerAccountEmail').textContent=account.email||'';
+  const accountMenu=$('#headerAccountMenu');
+  let liveMapLink=$('#headerLiveMapLink');
+  if(routeFromHash()==='admin'){
+    liveMapLink?.remove();
+  }else if(accountMenu&&!liveMapLink){
+    liveMapLink=document.createElement('a');
+    liveMapLink.id='headerLiveMapLink';
+    liveMapLink.href='#/live-map';
+    liveMapLink.dataset.accountMenuLink='';
+    liveMapLink.textContent='Live Karte';
+    const settingsLink=accountMenu.querySelector('a[href="#/settings"]');
+    accountMenu.insertBefore(liveMapLink,settingsLink||$('#headerAdminLink')||$('#headerLogout'));
+  }
   const adminLink=$('#headerAdminLink');
   if(adminLink) adminLink.hidden=!['moderator','admin','owner'].includes(String(account.role||'').toLowerCase());
 }
