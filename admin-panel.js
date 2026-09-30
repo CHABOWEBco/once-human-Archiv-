@@ -210,6 +210,40 @@ function renderAdmin(){
   if(!ADMIN_ROLES.has(role())) return accessScreen();
   return shell(renderView());
 }
+
+function bindLiquidCards(){
+  const cards=document.querySelectorAll('.admin-system-list>span,.admin-cap-list>span');
+  cards.forEach(card=>{
+    let frame=0;
+    const reset=()=>{
+      cancelAnimationFrame(frame);
+      card.style.setProperty('--px','50%');
+      card.style.setProperty('--py','50%');
+      card.style.setProperty('--rx','0deg');
+      card.style.setProperty('--ry','0deg');
+    };
+    card.addEventListener('pointermove',event=>{
+      if(event.pointerType==='touch') return;
+      const rect=card.getBoundingClientRect();
+      const x=Math.max(0,Math.min(rect.width,event.clientX-rect.left));
+      const y=Math.max(0,Math.min(rect.height,event.clientY-rect.top));
+      const px=(x/rect.width)*100;
+      const py=(y/rect.height)*100;
+      const ry=((x/rect.width)-.5)*9;
+      const rx=((y/rect.height)-.5)*-7;
+      cancelAnimationFrame(frame);
+      frame=requestAnimationFrame(()=>{
+        card.style.setProperty('--px',px.toFixed(2)+'%');
+        card.style.setProperty('--py',py.toFixed(2)+'%');
+        card.style.setProperty('--rx',rx.toFixed(2)+'deg');
+        card.style.setProperty('--ry',ry.toFixed(2)+'deg');
+      });
+    });
+    card.addEventListener('pointerleave',reset);
+    card.addEventListener('pointercancel',reset);
+  });
+}
+
 function bindAdmin(){
   document.querySelectorAll('[data-admin-view]').forEach(button=>button.addEventListener('click',()=>{
     const view=button.dataset.adminView;
@@ -220,6 +254,7 @@ function bindAdmin(){
   document.querySelectorAll('[data-admin-go]').forEach(button=>button.addEventListener('click',()=>{
     location.hash='#/'+button.dataset.adminGo;
   }));
+  bindLiquidCards();
 }
 globalThis.ADMIN_PANEL={render:renderAdmin,bind:bindAdmin,allowed:()=>ADMIN_ROLES.has(role())};
 globalThis.FULL_ROUTE_RENDERERS=globalThis.FULL_ROUTE_RENDERERS||{};
