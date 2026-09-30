@@ -209,7 +209,7 @@ async function resetPasswordForEmail(email){
   const sb = getClient();
   const {error} = await sb.auth.resetPasswordForEmail(
     String(email || '').trim(),
-    {redirectTo: 'https://raw.githack.com/CHABOWEBco/once-human-Archiv-/design-preview/index.html'}
+    {redirectTo: 'https://raw.githack.com/CHABOWEBco/once-human-Archiv-/admin-editor-preview/index.html'}
   );
   if(error) throw error;
   return true;
