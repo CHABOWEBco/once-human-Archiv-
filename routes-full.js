@@ -194,7 +194,7 @@ globalThis.JMA_PROFILE_SETTINGS={render:renderProfileSettingsEditor,bind:()=>{bi
 
 function renderProfileEditorBody(a,initial,email,embedded=false){
   const p=appearance(),banner=globalThis.PROFILE_ASSETS.banners.find(x=>x.id===p.banner),bannerSrc=banner?.src||'./assets/reference/feature-map.webp';
-  const livePreview=embedded?`<section class="settings-profile-live" data-profile-live style="--profile-live-accent:${profileColors[p.color]};--profile-live-banner:url('${esc(bannerSrc)}')">
+  const livePreview=embedded?`<div class="settings-profile-live" data-profile-live style="--profile-live-accent:${profileColors[p.color]};--profile-live-banner:url('${esc(bannerSrc)}')">
     <div class="settings-profile-live-art">
       <div class="settings-profile-live-avatar" data-profile-live-avatar>${avatar(p)}</div>
       <div class="settings-profile-live-copy">
@@ -205,7 +205,7 @@ function renderProfileEditorBody(a,initial,email,embedded=false){
       </div>
       <div class="settings-profile-live-chip" data-profile-live-chip>PROFILIDENTITÄT</div>
     </div>
-  </section>`:'';
+  </div>`:'';
   return `<div class="profile-ref-drawer-body ${embedded?'settings-profile-docked':''}">
     <nav class="profile-ref-drawer-nav ${embedded?'settings-profile-subnav':''}" aria-label="Profil bearbeiten">
       <button type="button" class="active" data-profile-edit-tab="general">ALLGEMEIN</button>
