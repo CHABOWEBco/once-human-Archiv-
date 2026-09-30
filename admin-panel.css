@@ -601,6 +601,9 @@
 .admin-editor-canvas-head>span small{color:#687d88;letter-spacing:.06em}
 
 .admin-editor-card-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;align-content:start;flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;padding:1px 6px 8px 1px;scrollbar-width:thin;scrollbar-color:rgba(72,217,239,.34) rgba(255,255,255,.025)}
+.admin-visual-editor-shell.drawer-open .admin-editor-card-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.admin-visual-editor-shell.drawer-open .admin-editor-card{min-height:210px}
+.admin-visual-editor-shell.drawer-open .admin-editor-card-media{height:104px}
 .admin-editor-card-grid::-webkit-scrollbar{width:8px}
 .admin-editor-card-grid::-webkit-scrollbar-track{background:rgba(255,255,255,.02);border-radius:999px}
 .admin-editor-card-grid::-webkit-scrollbar-thumb{background:linear-gradient(180deg,rgba(72,217,239,.38),rgba(255,98,109,.22));border:2px solid transparent;background-clip:padding-box;border-radius:999px}
