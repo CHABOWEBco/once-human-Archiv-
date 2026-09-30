@@ -14,11 +14,19 @@
       <button class="ghost-btn" id="loginOpen" type="button">Anmelden</button>
       <button class="cyan-btn compact" id="registerOpen" type="button">Registrieren</button>
       <div class="header-account" id="headerAccount" hidden>
-        <button class="header-account-trigger" id="headerAccountTrigger" type="button" aria-haspopup="true" aria-expanded="false">
-          <span class="header-account-avatar" id="headerAccountAvatar">M</span>
-          <span class="header-account-copy"><strong id="headerAccountName">Meta-Human</strong><small id="headerAccountStatus">ANGEMELDET</small></span>
-          <span class="header-account-chevron" aria-hidden="true">⌄</span>
-        </button>
+        <div class="header-account-cluster" aria-label="Kontobereich">
+          <button class="header-hud-icon header-notification" type="button" aria-label="Benachrichtigungen" title="Benachrichtigungen werden später angebunden" disabled>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg>
+          </button>
+          <button class="header-account-trigger" id="headerAccountTrigger" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Account-Menü öffnen">
+            <span class="header-account-avatar" id="headerAccountAvatar">M</span>
+            <span class="header-account-presence" aria-hidden="true"></span>
+            <span class="header-account-copy"><strong id="headerAccountName">Meta-Human</strong><small id="headerAccountStatus">ANGEMELDET</small></span>
+          </button>
+          <a class="header-hud-icon header-settings-shortcut" href="#/settings" aria-label="Einstellungen öffnen" title="Einstellungen">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4Z"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.86 2.86-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21H9.55v-.1A1.7 1.7 0 0 0 8.4 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.86-2.86.06-.06A1.7 1.7 0 0 0 4 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H2.2V9.55h.1A1.7 1.7 0 0 0 4 8.4a1.7 1.7 0 0 0-.34-1.88l-.06-.06L6.46 3.6l.06.06A1.7 1.7 0 0 0 8.4 4a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V2.2h4.05v.1A1.7 1.7 0 0 0 15 4a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.86 2.86-.06.06A1.7 1.7 0 0 0 19.4 8.4a1.7 1.7 0 0 0 .6 1 1.7 1.7 0 0 0 1.1.4h.1v4.05h-.1A1.7 1.7 0 0 0 19.4 15Z"/></svg>
+          </a>
+        </div>
         <div class="header-account-menu" id="headerAccountMenu" hidden>
           <small class="header-account-email" id="headerAccountEmail"></small>
           <a href="#/dashboard" data-account-menu-link>Kommandozentrale</a>
