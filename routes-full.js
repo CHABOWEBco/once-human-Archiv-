@@ -360,7 +360,7 @@ function renderProfile(){
   </section>`;
 }
 function bindProfileHoloTabs(){
-  const cards=qsa('.profile-ref-tabs button:not(:first-child)');
+  const cards=qsa('.profile-ref-tabs button');
   cards.forEach(card=>{
     let frame=0;
     const reset=()=>{
