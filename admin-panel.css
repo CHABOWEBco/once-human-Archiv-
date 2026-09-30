@@ -163,7 +163,18 @@
 .admin-queue-list small,.admin-queue-list h3,.admin-queue-list p{display:block;margin:0;font-size:11px;color:#9eb0bb;}.admin-queue-list small{font-size:9px;color:#5f7480;}.admin-queue-list h3{font-size:14px;margin:3px 0;font-weight:800;}.admin-queue-list p{font-size:11px;color:#9eb0bb;}
 .admin-empty{min-height:155px;display:grid;place-items:center;align-content:center;text-align:center;color:#728691}.admin-empty.small{min-height:180px}.admin-empty>span{font-size:24px;color:#4cd9ab;margin-bottom:6px}.admin-empty b{font-size:10px}.admin-empty p{font-size:8px;max-width:280px;line-height:1.5}
 .admin-cap-list,.admin-system-list{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px}
-.admin-system-list>span,.admin-cap-list>span{border:1px solid rgba(255,255,255,.055);background:rgba(255,255,255,.018);border-radius:9px;padding:9px;display:grid;grid-template-columns:12px 1fr;column-gap:6px}
+.admin-system-list>span,.admin-cap-list>span{border:1px solid rgba(133,210,238,.12);background:radial-gradient(circle at var(--px) var(--py),rgba(91,227,246,.12),transparent 34%),
+    radial-gradient(circle at 82% 18%,rgba(255,91,106,.08),transparent 28%),
+    linear-gradient(180deg,rgba(15,25,37,.76),rgba(7,14,21,.88));border-radius:14px;padding:9px;display:grid;grid-template-columns:12px 1fr;column-gap:6px;--rx:0deg;--ry:0deg;--px:50%;--py:50%;--glow:.18;position:relative;overflow:hidden;isolation:isolate;transform-style:preserve-3d;will-change:transform;backdrop-filter:blur(22px) saturate(145%);-webkit-backdrop-filter:blur(22px) saturate(145%);box-shadow:inset 0 1px 0 rgba(255,255,255,.055),
+    inset 0 -1px 0 rgba(255,255,255,.018),
+    0 10px 26px rgba(0,0,0,.18);transform:perspective(920px)
+    rotateX(var(--rx))
+    rotateY(var(--ry))
+    translateZ(0)
+    translateY(0);transition:transform .16s ease-out,
+    box-shadow .18s ease,
+    border-color .18s ease,
+    background .18s ease;}
 .admin-cap-list i,.admin-system-list i{width:7px;height:7px;border-radius:50%;margin-top:2px}.admin-cap-list i.ok,.admin-system-list i.ok{background:#34dca2;box-shadow:0 0 10px rgba(52,220,162,.5)}.admin-cap-list i.off,.admin-system-list i.off{background:#ff6570;box-shadow:0 0 10px rgba(255,101,112,.35)}
 .admin-cap-list b,.admin-cap-list em,.admin-system-list b,.admin-system-list em{grid-column:2;display:block;font-style:normal}.admin-cap-list b,.admin-system-list b{font-size:12px;font-weight:700;}.admin-cap-list em,.admin-system-list em{font-size:10px;color:#98aab5;margin-top:3px;}
 .admin-view>.admin-panel-head{margin:0;padding:4px 2px 13px}
@@ -256,42 +267,7 @@
 
 
 /* === Admin liquid glass 3D hover === */
-.admin-system-list>span,
-.admin-cap-list>span{
-  --rx:0deg;
-  --ry:0deg;
-  --px:50%;
-  --py:50%;
-  --glow:.18;
-  position:relative;
-  overflow:hidden;
-  isolation:isolate;
-  transform-style:preserve-3d;
-  will-change:transform;
-  border:1px solid rgba(133,210,238,.12);
-  border-radius:14px;
-  background:
-    radial-gradient(circle at var(--px) var(--py),rgba(91,227,246,.12),transparent 34%),
-    radial-gradient(circle at 82% 18%,rgba(255,91,106,.08),transparent 28%),
-    linear-gradient(180deg,rgba(15,25,37,.76),rgba(7,14,21,.88));
-  backdrop-filter:blur(22px) saturate(145%);
-  -webkit-backdrop-filter:blur(22px) saturate(145%);
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.055),
-    inset 0 -1px 0 rgba(255,255,255,.018),
-    0 10px 26px rgba(0,0,0,.18);
-  transform:
-    perspective(920px)
-    rotateX(var(--rx))
-    rotateY(var(--ry))
-    translateZ(0)
-    translateY(0);
-  transition:
-    transform .16s ease-out,
-    box-shadow .18s ease,
-    border-color .18s ease,
-    background .18s ease;
-}
+
 
 .admin-system-list>span::before,
 .admin-cap-list>span::before{
