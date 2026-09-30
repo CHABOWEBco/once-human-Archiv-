@@ -126,20 +126,51 @@ function overview(){
   '</div>';
 }
 function contentView(){
-  const s=localStats();
-  const modules=[
-    ['Datenbank','Katalog, Filter, Einträge und Detailansichten.',s.catalog+' Einträge','database','▱'],
-    ['Karte','Marker, Kategorien, Routen und eigene Fundpunkte.',(s.baseMarkers+s.localMarkers)+' Marker','map','⌖'],
-    ['Techwerkbank','Reverse Engineering, Erfindung und Fertigung.','Route aktiv','tech-workbench','⚙'],
-    ['Neuigkeiten','Projektmeldungen und Archiv-Updates.',s.news+' Meldungen','news','▤'],
-    ['Guides','Wissensartikel und strukturierte Hilfen.','Route aktiv','guides','◫'],
-    ['Community','Räume, Beiträge und lokale Community-Daten.',s.posts+' lokale Beiträge','community','♙'],
-    ['Einreichungen','Funde, Korrekturen und Hinweise.',s.submissions+' lokal','submissions','⇧'],
-    ['Profil','Account, Darstellung und Sicherheitsbereich.','Accountbereich','profile','○']
-  ];
-  return '<section class="admin-view">'+panelHead('CONTENT MANAGEMENT','Inhalte & Seiten','<button type="button" class="admin-secondary compact" data-admin-go="home">Website-Vorschau ↗</button>')+
-    '<div class="admin-editor-layout"><div class="admin-content-list">'+modules.map((m,i)=>'<article class="admin-content-row"><span class="admin-content-no">'+String(i+1).padStart(2,'0')+'</span><span class="admin-content-icon">'+m[4]+'</span><div><small>'+esc(m[2])+'</small><h3>'+esc(m[0])+'</h3><p>'+esc(m[1])+'</p></div><button type="button" data-admin-go="'+m[3]+'">Öffnen ↗</button></article>').join('')+'</div>'+
-    '<aside class="admin-inspector"><small>EDITOR-PRINZIP</small><h3>Bearbeiten ohne Code</h3><p>Hier entsteht später der echte Inhaltseditor: links Datensätze auswählen, rechts Felder bearbeiten, Vorschau prüfen und erst danach speichern.</p><div class="admin-inspector-preview"><span>01</span><b>Auswählen</b><em>Seite oder Datensatz</em><span>02</span><b>Bearbeiten</b><em>Texte, Bilder, Status</em><span>03</span><b>Prüfen</b><em>Live-Vorschau</em><span>04</span><b>Speichern</b><em>über sichere Backend-Aktion</em></div><div class="admin-safe-note"><b>SAFE MODE</b><p>In Phase 1 verändert dieses Panel noch keine produktiven Daten.</p></div></aside></div>'+
+  const entries=catalog();
+  const categories=Array.isArray(globalThis.CATALOG_DATA?.categories)?globalThis.CATALOG_DATA.categories:[];
+  let selectedId='';
+  try{selectedId=sessionStorage.getItem('oha:admin-editor:selected')||''}catch{}
+  const selected=entries.find(x=>x.id===selectedId)||null;
+  const cards=entries.slice(0,36);
+  const categoryName=id=>categories.find(x=>x.id===id)?.label||id||'Ohne Kategorie';
+  const imageOf=item=>item?.image||'assets/branding/once-human-logo.png';
+  return '<section class="admin-view admin-visual-editor">'+
+    panelHead('VISUAL CONTENT EDITOR','Inhalte bearbeiten','<div class="admin-editor-head-actions"><span class="admin-editor-mode"><i></i>PREVIEW ONLY</span><button type="button" class="admin-secondary compact" data-admin-go="database">Datenbank ansehen ↗</button></div>')+
+    '<div class="admin-editor-toolbar">'+
+      '<label class="admin-editor-search"><span>⌕</span><input id="adminEditorSearch" type="search" placeholder="Item, Waffe oder Begriff suchen …" autocomplete="off"></label>'+
+      '<div class="admin-editor-filters"><button type="button" class="active" data-editor-filter="all">Alle</button>'+categories.slice(0,7).map(c=>'<button type="button" data-editor-filter="'+esc(c.id)+'">'+esc(c.label)+'</button>').join('')+'</div>'+
+      '<button type="button" class="admin-primary compact admin-editor-add" disabled title="Wird im nächsten Block angebunden">＋ Neues Item</button>'+
+    '</div>'+
+    '<div class="admin-visual-editor-shell '+(selected?'drawer-open':'')+'">'+
+      '<main class="admin-editor-canvas">'+
+        '<div class="admin-editor-canvas-head"><div><small>LIVE-BESTAND</small><h3>Archivkarten</h3><p>Element anklicken → rechts bearbeiten. Änderungen bleiben in diesem ersten Block nur in der Vorschau.</p></div><span><b>'+cards.length+'</b><small>von '+entries.length+' geladen</small></span></div>'+
+        '<div class="admin-editor-card-grid" id="adminEditorGrid">'+cards.map(item=>{
+          const search=[item.name_de,item.kind,item.description,(item.tags||[]).join(' ')].join(' ').toLowerCase();
+          return '<button type="button" class="admin-editor-card '+(selected?.id===item.id?'selected':'')+'" data-admin-edit-item="'+esc(item.id)+'" data-editor-card data-category="'+esc(item.category||'')+'" data-search="'+esc(search)+'">'+
+            '<span class="admin-editor-card-media"><img src="'+esc(imageOf(item))+'" alt=""><i>'+esc(categoryName(item.category))+'</i></span>'+
+            '<span class="admin-editor-card-copy"><small>'+esc(item.kind||categoryName(item.category))+'</small><strong>'+esc(item.name_de||item.id)+'</strong><em>'+esc(String(item.description||'Keine Beschreibung').slice(0,92))+'</em></span>'+
+            '<span class="admin-editor-card-open">BEARBEITEN ↗</span>'+
+          '</button>';
+        }).join('')+'</div>'+
+        '<div class="admin-editor-empty-filter" id="adminEditorEmpty" hidden><span>⌕</span><b>Keine Treffer</b><p>Suchbegriff oder Filter ändern.</p></div>'+
+      '</main>'+
+      (selected?'<aside class="admin-editor-drawer" aria-label="Item bearbeiten">'+
+        '<header class="admin-editor-drawer-head"><div><small>ITEM BEARBEITEN</small><h3>'+esc(selected.name_de||selected.id)+'</h3></div><button type="button" data-editor-close aria-label="Editor schließen">×</button></header>'+
+        '<div class="admin-editor-item-preview"><div class="admin-editor-preview-media"><img src="'+esc(imageOf(selected))+'" alt="" data-editor-preview-image></div><div><small>'+esc(categoryName(selected.category))+'</small><strong data-editor-preview-title>'+esc(selected.name_de||selected.id)+'</strong><p data-editor-preview-desc>'+esc(selected.description||'Keine Beschreibung')+'</p></div></div>'+
+        '<form class="admin-editor-form" onsubmit="return false">'+
+          '<label><span>Name</span><input type="text" value="'+esc(selected.name_de||'')+'" data-editor-input="name"></label>'+
+          '<label><span>Typ</span><input type="text" value="'+esc(selected.kind||'')+'" data-editor-input="kind"></label>'+
+          '<label class="wide"><span>Beschreibung</span><textarea rows="5" data-editor-input="description">'+esc(selected.description||'')+'</textarea></label>'+
+          '<label class="wide"><span>Fundort / Freischaltung</span><textarea rows="3" data-editor-input="acquisition">'+esc(selected.acquisition||'')+'</textarea></label>'+
+          '<label><span>Status</span><input type="text" value="'+esc(selected.status||'')+'" data-editor-input="status"></label>'+
+          '<label><span>Kategorie</span><input type="text" value="'+esc(categoryName(selected.category))+'" disabled></label>'+
+          '<label class="wide"><span>Tags</span><input type="text" value="'+esc((selected.tags||[]).join(', '))+'" data-editor-input="tags"></label>'+
+        '</form>'+
+        '<section class="admin-editor-media-control"><div><small>BILD</small><b>'+esc(selected.image||'Kein Bildpfad')+'</b></div><button type="button" disabled>Bild ersetzen</button></section>'+
+        '<div class="admin-safe-note"><b>BLOCK 1 · VORSCHAU</b><p>Du kannst die Felder hier bereits ausprobieren. Es wird noch nichts in Supabase, Git oder den Live-Katalog geschrieben.</p></div>'+
+        '<div class="admin-editor-drawer-actions"><button type="button" class="admin-secondary" data-editor-close>Schließen</button><button type="button" class="admin-primary" disabled>Speichern · Block 2</button></div>'+
+      '</aside>':'')+
+    '</div>'+
   '</section>';
 }
 function mapView(){
@@ -288,6 +319,55 @@ function bindAdmin(){
   document.querySelectorAll('[data-admin-go]').forEach(button=>button.addEventListener('click',()=>{
     location.hash='#/'+button.dataset.adminGo;
   }));
+  document.querySelectorAll('[data-admin-edit-item]').forEach(button=>button.addEventListener('click',()=>{
+    try{sessionStorage.setItem('oha:admin-editor:selected',button.dataset.adminEditItem||'')}catch{}
+    globalThis.JMA_RENDER?.();
+  }));
+  document.querySelectorAll('[data-editor-close]').forEach(button=>button.addEventListener('click',()=>{
+    try{sessionStorage.removeItem('oha:admin-editor:selected')}catch{}
+    globalThis.JMA_RENDER?.();
+  }));
+
+  const search=document.querySelector('#adminEditorSearch');
+  const filterButtons=[...document.querySelectorAll('[data-editor-filter]')];
+  const cards=[...document.querySelectorAll('[data-editor-card]')];
+  const empty=document.querySelector('#adminEditorEmpty');
+  let activeFilter='all';
+  const applyEditorFilter=()=>{
+    const query=String(search?.value||'').trim().toLowerCase();
+    let visible=0;
+    cards.forEach(card=>{
+      const category=card.dataset.category||'';
+      const text=card.dataset.search||'';
+      const show=(activeFilter==='all'||category===activeFilter)&&(!query||text.includes(query));
+      card.hidden=!show;
+      if(show) visible++;
+    });
+    if(empty) empty.hidden=visible!==0;
+  };
+  search?.addEventListener('input',applyEditorFilter);
+  filterButtons.forEach(button=>button.addEventListener('click',()=>{
+    activeFilter=button.dataset.editorFilter||'all';
+    filterButtons.forEach(x=>x.classList.toggle('active',x===button));
+    applyEditorFilter();
+  }));
+
+  document.querySelectorAll('[data-editor-input]').forEach(input=>{
+    const updatePreview=()=>{
+      const field=input.dataset.editorInput;
+      if(field==='name'){
+        const title=document.querySelector('[data-editor-preview-title]');
+        if(title) title.textContent=input.value||'Ohne Namen';
+      }
+      if(field==='description'){
+        const desc=document.querySelector('[data-editor-preview-desc]');
+        if(desc) desc.textContent=input.value||'Keine Beschreibung';
+      }
+    };
+    input.addEventListener('input',updatePreview);
+    input.addEventListener('change',updatePreview);
+  });
+
   bindLiquidCards();
   bindLiquidNav();
 }
