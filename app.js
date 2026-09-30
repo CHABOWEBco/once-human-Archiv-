@@ -37,7 +37,7 @@ let authMode = 'login';
 const NAV = [
   ['home','Start','⌂'],['database','Datenbank','▱'],['map','Karte','⌖'],['builds','Builds','⚒'],['tech-workbench','Techwerkbank','⚙'],['community','Community','♙'],['guides','Guides','◫']
 ];
-const AUTH_REQUIRED_ROUTES = new Set(['database','map','builds','tech-workbench','community','guides','dashboard','profile','hunt','routes','planner','submissions','collection','exchange']);
+const AUTH_REQUIRED_ROUTES = new Set(['database','map','builds','tech-workbench','community','guides','dashboard','profile','settings','hunt','routes','planner','submissions','collection','exchange']);
 mainNav.innerHTML = NAV.map(([id,label,icon])=>`<a href="#/${id}" data-nav="${id}"><span>${SITE_HEADER.icon(id)}</span>${label}</a>`).join('');
 
 function homeBrandText(value=''){
@@ -209,7 +209,7 @@ function render(){
     id='home';
     history.replaceState(null,'','#/home');
   }
-  let route=ROUTES.find(r=>r.id===id);
+  let route=ROUTES.find(r=>r.id===id)||(id==='settings'?{id:'settings',label:'Einstellungen',icon:'◌',purpose:'Darstellung und Oberflächenoptionen'}:null);
   if(!route){route=ROUTES[0];history.replaceState(null,'','#/home');}
   document.title=`Once Human Archiv // ${route.label}`;
   document.body.className=document.body.className.replace(/\broute-[^\s]+/g,'').trim(); document.body.classList.add(`route-${route.id}`);
