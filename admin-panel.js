@@ -148,7 +148,7 @@ function editorView(){
   const categories=Array.isArray(globalThis.CATALOG_DATA?.categories)?globalThis.CATALOG_DATA.categories:[];
   let selectedId='';
   try{selectedId=sessionStorage.getItem('oha:admin-editor:selected')||''}catch{}
-  const selected=entries.find(x=>x.id===selectedId)||null;
+  const selected=entries.find(x=>x.id===selectedId)||entries[0]||null;
   const cards=entries.slice(0,36);
   const categoryName=id=>categories.find(x=>x.id===id)?.label||id||'Ohne Kategorie';
   const imageOf=item=>item?.image||'assets/branding/once-human-logo.png';
@@ -173,7 +173,7 @@ function editorView(){
         '<div class="admin-editor-empty-filter" id="adminEditorEmpty" hidden><span>⌕</span><b>Keine Treffer</b><p>Suchbegriff oder Filter ändern.</p></div>'+
       '</main>'+
       (selected?'<aside class="admin-editor-drawer" aria-label="Item bearbeiten">'+
-        '<header class="admin-editor-drawer-head"><div><small>ITEM BEARBEITEN</small><h3>'+esc(selected.name_de||selected.id)+'</h3></div><button type="button" data-editor-close aria-label="Editor schließen">×</button></header>'+
+        '<header class="admin-editor-drawer-head"><div><small>ITEM BEARBEITEN</small><h3>'+esc(selected.name_de||selected.id)+'</h3></div></header>'+
         '<div class="admin-editor-item-preview"><div class="admin-editor-preview-media"><img src="'+esc(imageOf(selected))+'" alt="" data-editor-preview-image></div><div><small>'+esc(categoryName(selected.category))+'</small><strong data-editor-preview-title>'+esc(selected.name_de||selected.id)+'</strong><p data-editor-preview-desc>'+esc(selected.description||'Keine Beschreibung')+'</p></div></div>'+
         '<form class="admin-editor-form" onsubmit="return false">'+
           '<label><span>Name</span><input type="text" value="'+esc(selected.name_de||'')+'" data-editor-input="name"></label>'+
@@ -186,7 +186,7 @@ function editorView(){
         '</form>'+
         '<section class="admin-editor-media-control"><div><small>BILD</small><b>'+esc(selected.image||'Kein Bildpfad')+'</b></div><button type="button" disabled>Bild ersetzen</button></section>'+
         '<div class="admin-safe-note"><b>BLOCK 1 · VORSCHAU</b><p>Du kannst die Felder hier bereits ausprobieren. Es wird noch nichts in Supabase, Git oder den Live-Katalog geschrieben.</p></div>'+
-        '<div class="admin-editor-drawer-actions"><button type="button" class="admin-secondary" data-editor-close>Schließen</button><button type="button" class="admin-primary" disabled>Speichern · Block 2</button></div>'+
+        '<div class="admin-editor-drawer-actions"><button type="button" class="admin-primary" disabled>Speichern · Block 2</button></div>'+
       '</aside>':'')+
     '</div>'+
   '</section>';
@@ -340,10 +340,6 @@ function bindAdmin(){
   }));
   document.querySelectorAll('[data-admin-edit-item]').forEach(button=>button.addEventListener('click',()=>{
     try{sessionStorage.setItem('oha:admin-editor:selected',button.dataset.adminEditItem||'')}catch{}
-    globalThis.JMA_RENDER?.();
-  }));
-  document.querySelectorAll('[data-editor-close]').forEach(button=>button.addEventListener('click',()=>{
-    try{sessionStorage.removeItem('oha:admin-editor:selected')}catch{}
     globalThis.JMA_RENDER?.();
   }));
 
