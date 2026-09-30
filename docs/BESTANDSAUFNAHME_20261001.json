@@ -1,0 +1,1311 @@
+{
+  "assetInventory": {
+    "trackedFiles": 153,
+    "assetFiles": 88,
+    "assetBytes": 8425218,
+    "formats": {
+      "PNG": 68,
+      "WEBP": 19
+    },
+    "invalidImages": [
+      {
+        "path": "assets/live-map/shattered-maiden.webp",
+        "error": "cannot identify image file '/workspace/scratch/ffa1c2862d52/once-human-archiv/assets/live-map/shattered-maiden.webp'"
+      }
+    ],
+    "missingLiteralAssetReferences": {
+      "assets/r7/catalog-overview.svg": [
+        "archive-data.js"
+      ],
+      "assets/r7/catalog-items.svg": [
+        "archive-data.js",
+        "catalog-data.js",
+        "data-catalog.json"
+      ],
+      "assets/r7/catalog-weapons.svg": [
+        "archive-data.js",
+        "catalog-data.js",
+        "data-catalog.json"
+      ],
+      "assets/r7/catalog-gear.svg": [
+        "archive-data.js"
+      ],
+      "assets/r7/catalog-mods.svg": [
+        "archive-data.js"
+      ],
+      "assets/r7/catalog-deviations.svg": [
+        "archive-data.js",
+        "catalog-data.js",
+        "data-catalog.json"
+      ],
+      "assets/r7/catalog-animals.svg": [
+        "archive-data.js",
+        "catalog-data.js",
+        "data-catalog.json"
+      ],
+      "assets/r7/catalog-plants.svg": [
+        "archive-data.js"
+      ],
+      "assets/r7/catalog-furniture.svg": [
+        "archive-data.js",
+        "catalog-data.js",
+        "data-catalog.json"
+      ],
+      "assets/r7/catalog-resources.svg": [
+        "archive-data.js",
+        "catalog-data.js",
+        "data-catalog.json"
+      ],
+      "assets/r7/catalog-enemies.svg": [
+        "archive-data.js"
+      ],
+      "assets/r7/catalog-recipes.svg": [
+        "archive-data.js"
+      ],
+      "assets/r7/catalog-collectibles.svg": [
+        "archive-data.js"
+      ],
+      "assets/r7/catalog-vehicles.svg": [
+        "archive-data.js"
+      ],
+      "assets/r7/catalog-currencies.svg": [
+        "archive-data.js",
+        "catalog-data.js",
+        "data-catalog.json"
+      ],
+      "assets/r7/catalog-review.svg": [
+        "archive-data.js"
+      ],
+      "assets/ohdex/catalog/icon_sage_new.png": [
+        "archive-data.js",
+        "catalog-data.js",
+        "data-catalog.json"
+      ],
+      "assets/ohdex/catalog/icon_acid.png": [
+        "archive-data.js",
+        "catalog-data.js",
+        "data-catalog.json"
+      ],
+      "assets/r13/item-permit.svg": [
+        "archive-data.js",
+        "catalog-data.js",
+        "data-catalog.json"
+      ],
+      "assets/r13/creature.svg": [
+        "archive-data.js",
+        "catalog-data.js",
+        "data-catalog.json"
+      ],
+      "assets/r7/guide-start.svg": [
+        "archive-data.js"
+      ],
+      "assets/r7/guide-database.svg": [
+        "archive-data.js"
+      ],
+      "assets/r7/guide-map.svg": [
+        "archive-data.js"
+      ],
+      "assets/r7/guide-hunt.svg": [
+        "archive-data.js"
+      ],
+      "assets/r7/guide-community.svg": [
+        "archive-data.js"
+      ],
+      "assets/r7/guide-status.svg": [
+        "archive-data.js"
+      ]
+    },
+    "shatteredPngSha256": "f3ce113d68f9cfaad5855d173be1319a143e2f916e1ef0ceb02e4fef359adf01",
+    "shatteredOriginalIdentical": true,
+    "oldWebpReferenced": false,
+    "localRemoteDiffPaths": [
+      "docs/BLOCK_B_20261001.md",
+      "docs/audit-block-b/actions.json",
+      "docs/audit-block-b/admin-editor.png",
+      "docs/audit-block-b/compare-armors-390.png",
+      "docs/audit-block-b/contact-0.png",
+      "docs/audit-block-b/contact-1.png",
+      "docs/audit-block-b/contact-2.png",
+      "docs/audit-block-b/contact-3.png",
+      "docs/audit-block-b/contact-4.png",
+      "docs/audit-block-b/database.log",
+      "docs/audit-block-b/exchange.json",
+      "docs/audit-block-b/functional-transfer.log",
+      "docs/audit-block-b/live-map-1920.png",
+      "docs/audit-block-b/mobile-contact-0.png",
+      "docs/audit-block-b/mobile-contact-1.png",
+      "docs/audit-block-b/mobile-contact-2.png",
+      "docs/audit-block-b/navigation-map.log",
+      "docs/audit-block-b/profile-1920.png",
+      "docs/audit-block-b/results.json",
+      "docs/audit-block-b/secrets-390.png",
+      "docs/audit-block-b/settings-1920.png",
+      "docs/audit-block-b/settings-profile-mobile.png",
+      "docs/audit-block-b/settings-profile.png",
+      "docs/audit-block-b/supplement.json"
+    ],
+    "productFilesDiffer": false,
+    "cssDiffSinceBaseline": [],
+    "assetsNotFoundInLiteralPathScan": [
+      "assets/live-map/shattered-maiden.webp",
+      "assets/reference/feature-guides.webp"
+    ],
+    "verifiedUnusedAssetFiles": [
+      "assets/live-map/shattered-maiden.webp"
+    ],
+    "dynamicReferenceNotes": {
+      "assets/reference/feature-guides.webp": "Used by quick()/asset() in app.js; not an unused asset."
+    }
+  },
+  "routeRenderCount": 60,
+  "subviewCount": 25,
+  "roles": [
+    {
+      "role": "user",
+      "allowed": false,
+      "disabled": []
+    },
+    {
+      "role": "moderator",
+      "allowed": true,
+      "disabled": [
+        "♙Nutzer & RollenLOCK",
+        "≡Audit & AktivitätLOCK",
+        "◇System & SicherheitLOCK"
+      ]
+    },
+    {
+      "role": "admin",
+      "allowed": true,
+      "disabled": []
+    },
+    {
+      "role": "owner",
+      "allowed": true,
+      "disabled": []
+    }
+  ],
+  "runtimeErrors": [],
+  "image404Requests": [
+    {
+      "url": "http://127.0.0.1:4189/assets/r7/catalog-deviations.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/ohdex/catalog/icon_sage_new.png",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r7/catalog-animals.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r7/catalog-weapons.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r7/catalog-items.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/ohdex/catalog/icon_acid.png",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r7/catalog-resources.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r7/catalog-currencies.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r7/catalog-furniture.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r13/item-permit.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r13/creature.svg",
+      "status": 404
+    }
+  ],
+  "routeChecks": [
+    {
+      "id": "home",
+      "width": 1920,
+      "hash": "#/home",
+      "h1": [
+        "ONCE HUMANARCHIV"
+      ],
+      "main": 1,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": []
+    },
+    {
+      "id": "dashboard",
+      "width": 1920,
+      "hash": "#/dashboard",
+      "h1": [
+        "DEIN ARCHIV"
+      ],
+      "main": 1,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": []
+    },
+    {
+      "id": "news",
+      "width": 1920,
+      "hash": "#/news",
+      "h1": [
+        "NEUIGKEITEN"
+      ],
+      "main": 1,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": []
+    },
+    {
+      "id": "database",
+      "width": 1920,
+      "hash": "#/database",
+      "h1": [
+        "DATENBANKDER KATALOG DEINER NÄCHSTEN FUNDE."
+      ],
+      "main": 1,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": []
+    },
+    {
+      "id": "map",
+      "width": 1920,
+      "hash": "#/map",
+      "h1": [
+        "INTERAKTIVEKARTE"
+      ],
+      "main": 1,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": []
+    },
+    {
+      "id": "hunt",
+      "width": 1920,
+      "hash": "#/hunt",
+      "h1": [
+        "JAGDLISTE"
+      ],
+      "main": 1,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": []
+    },
+    {
+      "id": "routes",
+      "width": 1920,
+      "hash": "#/routes",
+      "h1": [
+        "FARMROUTEN"
+      ],
+      "main": 1,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": [
+        "name"
+      ]
+    },
+    {
+      "id": "planner",
+      "width": 1920,
+      "hash": "#/planner",
+      "h1": [
+        "EINSATZPLANER"
+      ],
+      "main": 1,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": []
+    },
+    {
+      "id": "guides",
+      "width": 1920,
+      "hash": "#/guides",
+      "h1": [
+        "GUIDES"
+      ],
+      "main": 1,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": [
+        "guideSearch",
+        "guideCategory"
+      ]
+    },
+    {
+      "id": "patchwatch",
+      "width": 1920,
+      "hash": "#/patchwatch",
+      "h1": [
+        "PATCH-WÄCHTER"
+      ],
+      "main": 1,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": []
+    },
+    {
+      "id": "secrets",
+      "width": 1920,
+      "hash": "#/secrets",
+      "h1": [
+        "GEHEIMNISSE & UNTERSUCHUNGEN"
+      ],
+      "main": 1,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": []
+    },
+    {
+      "id": "builds",
+      "width": 1920,
+      "hash": "#/builds",
+      "h1": [
+        "BUILD-PLANER"
+      ],
+      "main": 2,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "community",
+      "width": 1920,
+      "hash": "#/community",
+      "h1": [
+        "COMMUNITY"
+      ],
+      "main": 2,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": [
+        "text"
+      ]
+    },
+    {
+      "id": "submissions",
+      "width": 1920,
+      "hash": "#/submissions",
+      "h1": [
+        "EINREICHUNGEN"
+      ],
+      "main": 1,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": []
+    },
+    {
+      "id": "profile",
+      "width": 1920,
+      "hash": "#/profile",
+      "h1": [
+        "Referenzprüfung"
+      ],
+      "main": 2,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": []
+    },
+    {
+      "id": "weapon-blueprints",
+      "width": 1920,
+      "hash": "#/weapon-blueprints",
+      "h1": [
+        "WAFFEN-BLAUPAUSEN"
+      ],
+      "main": 1,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": [
+        "wbSearch",
+        "wbFamily"
+      ]
+    },
+    {
+      "id": "armor-blueprints",
+      "width": 1920,
+      "hash": "#/armor-blueprints",
+      "h1": [
+        "RÜSTUNGS-BLAUPAUSEN"
+      ],
+      "main": 1,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": []
+    },
+    {
+      "id": "armor-materials",
+      "width": 1920,
+      "hash": "#/armor-materials",
+      "h1": [
+        "RÜSTUNGSMATERIALIEN"
+      ],
+      "main": 1,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": [
+        "amSearch"
+      ]
+    },
+    {
+      "id": "deviations",
+      "width": 1920,
+      "hash": "#/deviations",
+      "h1": [
+        "ABWEICHLER"
+      ],
+      "main": 1,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": []
+    },
+    {
+      "id": "mods",
+      "width": 1920,
+      "hash": "#/mods",
+      "h1": [
+        "MODS"
+      ],
+      "main": 1,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": [
+        "modSearch",
+        "modSlot"
+      ]
+    },
+    {
+      "id": "compare-weapons",
+      "width": 1920,
+      "hash": "#/compare-weapons",
+      "h1": [
+        "WAFFENVERGLEICH"
+      ],
+      "main": 1,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": []
+    },
+    {
+      "id": "compare-armors",
+      "width": 1920,
+      "hash": "#/compare-armors",
+      "h1": [
+        "RÜSTUNGSVERGLEICH"
+      ],
+      "main": 1,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": []
+    },
+    {
+      "id": "memetics",
+      "width": 1920,
+      "hash": "#/memetics",
+      "h1": [
+        "MEMETIK"
+      ],
+      "main": 1,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": [
+        "memSearch"
+      ]
+    },
+    {
+      "id": "vehicles",
+      "width": 1920,
+      "hash": "#/vehicles",
+      "h1": [
+        "FAHRZEUGE"
+      ],
+      "main": 1,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": [
+        "vehSearch"
+      ]
+    },
+    {
+      "id": "creatures",
+      "width": 1920,
+      "hash": "#/creatures",
+      "h1": [
+        "KREATUREN"
+      ],
+      "main": 1,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": [
+        "creatureSearch"
+      ]
+    },
+    {
+      "id": "tech-workbench",
+      "width": 1920,
+      "hash": "#/tech-workbench",
+      "h1": [
+        "TECH-WERKBANK"
+      ],
+      "main": 2,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": []
+    },
+    {
+      "id": "exchange",
+      "width": 1920,
+      "hash": "#/exchange",
+      "h1": [
+        "COMMUNITY-WERKSTATT"
+      ],
+      "main": 2,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": []
+    },
+    {
+      "id": "live-map",
+      "width": 1920,
+      "hash": "#/live-map",
+      "h1": [
+        "LIVE KARTE"
+      ],
+      "main": 2,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": []
+    },
+    {
+      "id": "settings",
+      "width": 1920,
+      "hash": "#/settings",
+      "h1": [
+        "Archiv-Interface"
+      ],
+      "main": 2,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": []
+    },
+    {
+      "id": "admin",
+      "width": 1920,
+      "hash": "#/admin",
+      "h1": [
+        "Archiv Control Center"
+      ],
+      "main": 2,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": []
+    },
+    {
+      "id": "home",
+      "width": 390,
+      "hash": "#/home",
+      "h1": [
+        "ONCE HUMANARCHIV"
+      ],
+      "main": 1,
+      "duplicateIds": [],
+      "clipped": [
+        {
+          "tag": "H1",
+          "text": "ONCE HUMANARCHIV",
+          "id": "",
+          "left": 27,
+          "right": 395
+        },
+        {
+          "tag": "BUTTON",
+          "text": "▶ ARCHIV ANSEHEN",
+          "id": "videoInfo",
+          "left": 216,
+          "right": 395
+        }
+      ],
+      "brokenImages": [],
+      "unlabelled": []
+    },
+    {
+      "id": "dashboard",
+      "width": 390,
+      "hash": "#/dashboard",
+      "h1": [
+        "DEIN ARCHIV"
+      ],
+      "main": 1,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": []
+    },
+    {
+      "id": "news",
+      "width": 390,
+      "hash": "#/news",
+      "h1": [
+        "NEUIGKEITEN"
+      ],
+      "main": 1,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": []
+    },
+    {
+      "id": "database",
+      "width": 390,
+      "hash": "#/database",
+      "h1": [
+        "DATENBANKDER KATALOG DEINER NÄCHSTEN FUNDE."
+      ],
+      "main": 1,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": []
+    },
+    {
+      "id": "map",
+      "width": 390,
+      "hash": "#/map",
+      "h1": [
+        "INTERAKTIVEKARTE"
+      ],
+      "main": 1,
+      "duplicateIds": [],
+      "clipped": [
+        {
+          "tag": "BUTTON",
+          "text": "",
+          "id": "",
+          "left": -20,
+          "right": 8
+        }
+      ],
+      "brokenImages": [],
+      "unlabelled": []
+    },
+    {
+      "id": "hunt",
+      "width": 390,
+      "hash": "#/hunt",
+      "h1": [
+        "JAGDLISTE"
+      ],
+      "main": 1,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": []
+    },
+    {
+      "id": "routes",
+      "width": 390,
+      "hash": "#/routes",
+      "h1": [
+        "FARMROUTEN"
+      ],
+      "main": 1,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": [
+        "name"
+      ]
+    },
+    {
+      "id": "planner",
+      "width": 390,
+      "hash": "#/planner",
+      "h1": [
+        "EINSATZPLANER"
+      ],
+      "main": 1,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": []
+    },
+    {
+      "id": "guides",
+      "width": 390,
+      "hash": "#/guides",
+      "h1": [
+        "GUIDES"
+      ],
+      "main": 1,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": [
+        "guideSearch",
+        "guideCategory"
+      ]
+    },
+    {
+      "id": "patchwatch",
+      "width": 390,
+      "hash": "#/patchwatch",
+      "h1": [
+        "PATCH-WÄCHTER"
+      ],
+      "main": 1,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": []
+    },
+    {
+      "id": "secrets",
+      "width": 390,
+      "hash": "#/secrets",
+      "h1": [
+        "GEHEIMNISSE & UNTERSUCHUNGEN"
+      ],
+      "main": 1,
+      "duplicateIds": [],
+      "clipped": [
+        {
+          "tag": "H1",
+          "text": "GEHEIMNISSE & UNTERSUCHUNGEN",
+          "id": "",
+          "left": 29,
+          "right": 459
+        },
+        {
+          "tag": "H2",
+          "text": "Koordinaten-Archiv",
+          "id": "",
+          "left": 247,
+          "right": 461
+        },
+        {
+          "tag": "BUTTON",
+          "text": "＋ NOTIZ",
+          "id": "",
+          "left": 422,
+          "right": 461
+        },
+        {
+          "tag": "H2",
+          "text": "Unsichtbare Voraussetzungen",
+          "id": "",
+          "left": 247,
+          "right": 461
+        },
+        {
+          "tag": "BUTTON",
+          "text": "＋ NOTIZ",
+          "id": "",
+          "left": 417,
+          "right": 461
+        }
+      ],
+      "brokenImages": [],
+      "unlabelled": []
+    },
+    {
+      "id": "builds",
+      "width": 390,
+      "hash": "#/builds",
+      "h1": [
+        "BUILD-PLANER"
+      ],
+      "main": 2,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": "community",
+      "width": 390,
+      "hash": "#/community",
+      "h1": [
+        "COMMUNITY"
+      ],
+      "main": 2,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": [
+        "text"
+      ]
+    },
+    {
+      "id": "submissions",
+      "width": 390,
+      "hash": "#/submissions",
+      "h1": [
+        "EINREICHUNGEN"
+      ],
+      "main": 1,
+      "duplicateIds": [],
+      "clipped": [
+        {
+          "tag": "H1",
+          "text": "EINREICHUNGEN",
+          "id": "",
+          "left": 29,
+          "right": 394
+        }
+      ],
+      "brokenImages": [],
+      "unlabelled": []
+    },
+    {
+      "id": "profile",
+      "width": 390,
+      "hash": "#/profile",
+      "h1": [
+        "Referenzprüfung"
+      ],
+      "main": 2,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": []
+    },
+    {
+      "id": "weapon-blueprints",
+      "width": 390,
+      "hash": "#/weapon-blueprints",
+      "h1": [
+        "WAFFEN-BLAUPAUSEN"
+      ],
+      "main": 1,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": [
+        "wbSearch",
+        "wbFamily"
+      ]
+    },
+    {
+      "id": "armor-blueprints",
+      "width": 390,
+      "hash": "#/armor-blueprints",
+      "h1": [
+        "RÜSTUNGS-BLAUPAUSEN"
+      ],
+      "main": 1,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": []
+    },
+    {
+      "id": "armor-materials",
+      "width": 390,
+      "hash": "#/armor-materials",
+      "h1": [
+        "RÜSTUNGSMATERIALIEN"
+      ],
+      "main": 1,
+      "duplicateIds": [],
+      "clipped": [
+        {
+          "tag": "H1",
+          "text": "RÜSTUNGSMATERIALIEN",
+          "id": "",
+          "left": 29,
+          "right": 568
+        }
+      ],
+      "brokenImages": [],
+      "unlabelled": [
+        "amSearch"
+      ]
+    },
+    {
+      "id": "deviations",
+      "width": 390,
+      "hash": "#/deviations",
+      "h1": [
+        "ABWEICHLER"
+      ],
+      "main": 1,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": []
+    },
+    {
+      "id": "mods",
+      "width": 390,
+      "hash": "#/mods",
+      "h1": [
+        "MODS"
+      ],
+      "main": 1,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": [
+        "modSearch",
+        "modSlot"
+      ]
+    },
+    {
+      "id": "compare-weapons",
+      "width": 390,
+      "hash": "#/compare-weapons",
+      "h1": [
+        "WAFFENVERGLEICH"
+      ],
+      "main": 1,
+      "duplicateIds": [],
+      "clipped": [
+        {
+          "tag": "H1",
+          "text": "WAFFENVERGLEICH",
+          "id": "",
+          "left": 29,
+          "right": 464
+        }
+      ],
+      "brokenImages": [],
+      "unlabelled": []
+    },
+    {
+      "id": "compare-armors",
+      "width": 390,
+      "hash": "#/compare-armors",
+      "h1": [
+        "RÜSTUNGSVERGLEICH"
+      ],
+      "main": 1,
+      "duplicateIds": [],
+      "clipped": [
+        {
+          "tag": "H1",
+          "text": "RÜSTUNGSVERGLEICH",
+          "id": "",
+          "left": 29,
+          "right": 521
+        }
+      ],
+      "brokenImages": [],
+      "unlabelled": []
+    },
+    {
+      "id": "memetics",
+      "width": 390,
+      "hash": "#/memetics",
+      "h1": [
+        "MEMETIK"
+      ],
+      "main": 1,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": [
+        "memSearch"
+      ]
+    },
+    {
+      "id": "vehicles",
+      "width": 390,
+      "hash": "#/vehicles",
+      "h1": [
+        "FAHRZEUGE"
+      ],
+      "main": 1,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": [
+        "vehSearch"
+      ]
+    },
+    {
+      "id": "creatures",
+      "width": 390,
+      "hash": "#/creatures",
+      "h1": [
+        "KREATUREN"
+      ],
+      "main": 1,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": [
+        "creatureSearch"
+      ]
+    },
+    {
+      "id": "tech-workbench",
+      "width": 390,
+      "hash": "#/tech-workbench",
+      "h1": [
+        "TECH-WERKBANK"
+      ],
+      "main": 2,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": []
+    },
+    {
+      "id": "exchange",
+      "width": 390,
+      "hash": "#/exchange",
+      "h1": [
+        "COMMUNITY-WERKSTATT"
+      ],
+      "main": 2,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": []
+    },
+    {
+      "id": "live-map",
+      "width": 390,
+      "hash": "#/live-map",
+      "h1": [
+        "LIVE KARTE"
+      ],
+      "main": 2,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": []
+    },
+    {
+      "id": "settings",
+      "width": 390,
+      "hash": "#/settings",
+      "h1": [
+        "Archiv-Interface"
+      ],
+      "main": 2,
+      "duplicateIds": [],
+      "clipped": [],
+      "brokenImages": [],
+      "unlabelled": []
+    },
+    {
+      "id": "admin",
+      "width": 390,
+      "hash": "#/admin",
+      "h1": [
+        "Archiv Control Center"
+      ],
+      "main": 2,
+      "duplicateIds": [],
+      "clipped": [
+        {
+          "tag": "BUTTON",
+          "text": "✎Inhaltseditor",
+          "id": "",
+          "left": 311,
+          "right": 456
+        },
+        {
+          "tag": "BUTTON",
+          "text": "⌖Karte & Marker",
+          "id": "",
+          "left": 462,
+          "right": 607
+        },
+        {
+          "tag": "BUTTON",
+          "text": "⚑Moderation",
+          "id": "",
+          "left": 612,
+          "right": 757
+        },
+        {
+          "tag": "BUTTON",
+          "text": "♙Nutzer & Rollen",
+          "id": "",
+          "left": 763,
+          "right": 908
+        },
+        {
+          "tag": "BUTTON",
+          "text": "≡Audit & Aktivität",
+          "id": "",
+          "left": 913,
+          "right": 1058
+        },
+        {
+          "tag": "BUTTON",
+          "text": "◇System & Sicherheit",
+          "id": "",
+          "left": 1064,
+          "right": 1209
+        }
+      ],
+      "brokenImages": [],
+      "unlabelled": []
+    }
+  ],
+  "profilePreviewBounds": [
+    {
+      "id": "profile-tab/general",
+      "bounds": {
+        "x": 517,
+        "y": 287.4375,
+        "width": 1156,
+        "height": 167
+      }
+    },
+    {
+      "id": "profile-tab/avatar",
+      "bounds": {
+        "x": 517,
+        "y": 287.4375,
+        "width": 1156,
+        "height": 167
+      }
+    },
+    {
+      "id": "profile-tab/banner",
+      "bounds": {
+        "x": 517,
+        "y": 287.4375,
+        "width": 1156,
+        "height": 187
+      }
+    },
+    {
+      "id": "profile-tab/colors",
+      "bounds": {
+        "x": 517,
+        "y": 287.4375,
+        "width": 1156,
+        "height": 167
+      }
+    },
+    {
+      "id": "profile-tab/about",
+      "bounds": {
+        "x": 517,
+        "y": 287.4375,
+        "width": 1156,
+        "height": 167
+      }
+    },
+    {
+      "id": "profile-tab/highlights",
+      "bounds": {
+        "x": 517,
+        "y": 287.4375,
+        "width": 1156,
+        "height": 167
+      }
+    },
+    {
+      "id": "profile-tab/widgets",
+      "bounds": {
+        "x": 517,
+        "y": 287.4375,
+        "width": 1156,
+        "height": 167
+      }
+    },
+    {
+      "id": "profile-tab/frames",
+      "bounds": {
+        "x": 517,
+        "y": 287.4375,
+        "width": 1156,
+        "height": 167
+      }
+    },
+    {
+      "id": "profile-tab/decorations",
+      "bounds": {
+        "x": 517,
+        "y": 287.4375,
+        "width": 1156,
+        "height": 167
+      }
+    },
+    {
+      "id": "profile-tab/trophies",
+      "bounds": {
+        "x": 517,
+        "y": 287.4375,
+        "width": 1156,
+        "height": 167
+      }
+    }
+  ]
+}
