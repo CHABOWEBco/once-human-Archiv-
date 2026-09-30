@@ -194,6 +194,10 @@ globalThis.JMA_PROFILE_SETTINGS={render:renderProfileSettingsEditor,bind:()=>{bi
 
 function renderProfileEditorBody(a,initial,email,embedded=false){
   const p=appearance(),banner=globalThis.PROFILE_ASSETS.banners.find(x=>x.id===p.banner),bannerSrc=banner?.src||'./assets/reference/feature-map.webp';
+  const tabs=[
+    ['general','ALLGEMEIN'],['avatar','PROFILBILD'],['banner','BANNER'],['colors','FARBEN'],['about','ÜBER MICH'],
+    ['highlights','HIGHLIGHTS'],['widgets','WIDGETS'],['frames','RAHMEN'],['decorations','RINGE & KRÄNZE'],['trophies','TROPHÄEN']
+  ];
   const livePreview=embedded?`<div class="settings-profile-live" data-profile-live style="--profile-live-accent:${profileColors[p.color]};--profile-live-banner:url('${esc(bannerSrc)}')">
     <div class="settings-profile-live-art">
       <div class="settings-profile-live-avatar" data-profile-live-avatar>${avatar(p)}</div>
@@ -206,30 +210,31 @@ function renderProfileEditorBody(a,initial,email,embedded=false){
       <div class="settings-profile-live-chip" data-profile-live-chip>PROFILIDENTITÄT</div>
     </div>
   </div>`:'';
-  return `<div class="profile-ref-drawer-body ${embedded?'settings-profile-docked':''}">
-    <nav class="profile-ref-drawer-nav ${embedded?'settings-profile-subnav':''}" aria-label="Profil bearbeiten">
-      <button type="button" class="active" data-profile-edit-tab="general">ALLGEMEIN</button>
-      <button type="button" data-profile-edit-tab="avatar">PROFILBILD</button>
-      <button type="button" data-profile-edit-tab="banner">BANNER</button>
-      <button type="button" data-profile-edit-tab="colors">FARBEN</button>
-      <button type="button" data-profile-edit-tab="about">ÜBER MICH</button>
-      <button type="button" data-profile-edit-tab="highlights">HIGHLIGHTS</button>
-      <button type="button" data-profile-edit-tab="widgets">WIDGETS</button>
-    </nav>
+  const tabStrip=embedded?`<nav class="settings-profile-tabs" aria-label="Profilbereiche">
+    ${tabs.map(([id,label],index)=>`<button type="button" class="${index===0?'active':''}" data-profile-edit-tab="${id}">${label}</button>`).join('')}
+  </nav>`:`<nav class="profile-ref-drawer-nav" aria-label="Profil bearbeiten">
+    ${tabs.slice(0,7).map(([id,label],index)=>`<button type="button" class="${index===0?'active':''}" data-profile-edit-tab="${id}">${label}</button>`).join('')}
+  </nav>`;
+  return `<div class="profile-ref-drawer-body ${embedded?'settings-profile-flat':''}">
+    ${embedded?'':tabStrip}
     <div class="profile-ref-drawer-content ${embedded?'settings-profile-work':''}">
+      ${embedded?tabStrip:''}
       ${livePreview}
-      <section class="active" data-profile-edit-panel="general">
-        <small>ALLGEMEIN</small><h3>PROFILIDENTITÄT</h3>
-        <div class="profile-ref-editor-avatar"><span>${esc(initial)}</span></div>
-        <p>${esc(email)}</p>
-        <form id="profileNameForm"><label><span>ANZEIGENAME</span><input name="name" value="${esc(a?.name||'')}" required minlength="2" autocomplete="nickname"></label><button type="submit">ÄNDERUNGEN SPEICHERN</button></form>
-      </section>
-      <section data-profile-edit-panel="avatar"></section>
-      <section data-profile-edit-panel="banner"></section>
-      <section data-profile-edit-panel="colors"></section>
-      <section data-profile-edit-panel="about"></section>
-      <section data-profile-edit-panel="highlights"></section>
-      <section data-profile-edit-panel="widgets"></section>
+      <div class="settings-profile-panel-stage">
+        <section class="active" data-profile-edit-panel="general">
+          <small>ALLGEMEIN</small><h3>PROFILIDENTITÄT</h3>
+          <div class="profile-ref-editor-avatar"><span>${esc(initial)}</span></div>
+          <p>${esc(email)}</p>
+          <form id="profileNameForm"><label><span>ANZEIGENAME</span><input name="name" value="${esc(a?.name||'')}" required minlength="2" autocomplete="nickname"></label><button type="submit">ÄNDERUNGEN SPEICHERN</button></form>
+        </section>
+        <section data-profile-edit-panel="avatar"></section>
+        <section data-profile-edit-panel="banner"></section>
+        <section data-profile-edit-panel="colors"></section>
+        <section data-profile-edit-panel="about"></section>
+        <section data-profile-edit-panel="highlights"></section>
+        <section data-profile-edit-panel="widgets"></section>
+        ${embedded?'<section data-profile-edit-panel="frames"></section><section data-profile-edit-panel="decorations"></section><section data-profile-edit-panel="trophies"></section>':''}
+      </div>
     </div>
   </div>`;
 }
@@ -443,7 +448,11 @@ function bindProfileEditorTabs(){
   const editTabs=qsa('[data-profile-edit-tab]'),editPanels=qsa('[data-profile-edit-panel]');
   editTabs.forEach(b=>b.onclick=()=>{
     editTabs.forEach(x=>x.classList.toggle('active',x===b));
-    editPanels.forEach(x=>x.classList.toggle('active',x.dataset.profileEditPanel===b.dataset.profileEditTab));
+    editPanels.forEach(x=>{
+      const active=x.dataset.profileEditPanel===b.dataset.profileEditTab;
+      x.classList.toggle('active',active);
+      if(active){x.classList.remove('panel-enter');void x.offsetWidth;x.classList.add('panel-enter')}
+    });
     updateProfileSettingsLivePreview(b.dataset.profileEditTab);
   });
   updateProfileSettingsLivePreview(editTabs.find(x=>x.classList.contains('active'))?.dataset.profileEditTab||'general');
@@ -652,8 +661,8 @@ function downloadJSON(data,name){const url=URL.createObjectURL(new Blob([JSON.st
 let profileDraft=null;
 async function saveProfileAppearance(name){const p=appearance(profileDraft||appearance());await globalThis.JMA_AUTH.updateProfile({name,avatar:p.avatar,appearance:p});write('jma_profile_appearance',p)}
 function bindProfileAppearance(){
- profileDraft=appearance();const drawer=qs('#profileEditDrawer'),nav=qs('.profile-ref-drawer-nav'),content=qs('.profile-ref-drawer-content');
- for(const [id,title] of [['frames','RAHMEN'],['decorations','RINGE & KRÄNZE'],['trophies','TROPHÄEN']]){const b=document.createElement('button');b.type='button';b.dataset.profileEditTab=id;b.textContent=title;nav.append(b);const panel=document.createElement('section');panel.dataset.profileEditPanel=id;content.append(panel)}
+ profileDraft=appearance();const drawer=qs('#profileEditDrawer'),nav=qs('.profile-ref-drawer-nav'),content=qs('.profile-ref-drawer-content'),embedded=!!drawer?.classList.contains('settings-profile-editor');
+ if(!embedded&&nav&&content)for(const [id,title] of [['frames','RAHMEN'],['decorations','RINGE & KRÄNZE'],['trophies','TROPHÄEN']]){const b=document.createElement('button');b.type='button';b.dataset.profileEditTab=id;b.textContent=title;nav.append(b);const panel=document.createElement('section');panel.dataset.profileEditPanel=id;content.append(panel)}
  const choices=(kind,field)=>`<div class="profile-choices ${field}-choices"><button type="button" data-profile-choice="${field}" data-value="${field==='banner'?'kartenwelt':'none'}"><span>Standard</span></button>${globalThis.PROFILE_ASSETS[kind].map(x=>`<button type="button" data-profile-choice="${field}" data-value="${x.id}" aria-pressed="${profileDraft[field]===x.id}"><img src="${esc(x.src)}" alt=""><span>${esc(x.name)}</span></button>`).join('')}</div>`;
  const avatarChoices=()=>{
    const frame=globalThis.PROFILE_ASSETS.frames.find(x=>x.id===profileDraft.frame),initial=esc((account()?.name||'?').trim().charAt(0).toUpperCase()||'?');
