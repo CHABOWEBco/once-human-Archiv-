@@ -14,7 +14,6 @@ const ROUTES = [
   ['community','Community','♙','Fragen, Wissen und Community-Austausch'],
   ['submissions','Einreichungen','⇧','Funde, Korrekturen und Moderationsabläufe'],
   ['profile','Profil & Sicherheit','○','Profil, Fortschritt, Sicherheit und 2FA'],
-  ['collection','Meine Sammlung','▦','Favoriten, gefunden, Jagdziele und Sammlung'],
   ['weapon-blueprints','Waffen-Baupläne','⌁','Waffen-Baupläne und zugehörige Daten'],
   ['armor-blueprints','Rüstungs-Baupläne','⬡','Rüstungs-Baupläne und Sets'],
   ['armor-materials','Rüstungsmaterialien','▧','Materialien für Rüstung und Herstellung'],
@@ -37,7 +36,7 @@ let authMode = 'login';
 const NAV = [
   ['home','Start','⌂'],['database','Datenbank','▱'],['map','Karte','⌖'],['builds','Builds','⚒'],['tech-workbench','Techwerkbank','⚙'],['community','Community','♙'],['guides','Guides','◫']
 ];
-const AUTH_REQUIRED_ROUTES = new Set(['database','map','live-map','builds','tech-workbench','community','guides','dashboard','profile','settings','admin','hunt','routes','planner','submissions','collection','exchange']);
+const AUTH_REQUIRED_ROUTES = new Set(['database','map','live-map','builds','tech-workbench','community','guides','dashboard','profile','settings','admin','hunt','routes','planner','submissions','exchange']);
 mainNav.innerHTML = NAV.map(([id,label,icon])=>`<a href="#/${id}" data-nav="${id}"><span>${SITE_HEADER.icon(id)}</span>${label}</a>`).join('');
 
 function homeBrandText(value=''){
@@ -198,11 +197,16 @@ function renderHome(){
   </div>`;
 }
 function renderDevelopment(route){
-  return `<section class="development-page"><div class="route-number">ROUTE ${String(route.order).padStart(2,'0')} / 28</div><h1>${escapeHtml(route.label)}</h1><p>${escapeHtml(route.purpose)}.</p><div class="dev-notice"><b>ENTWICKLUNGSSTATUS:</b> Diese Route ist aus dem vorhandenen Altprojekt verifiziert und im Routing bereits vorhanden. Ihre endgültige Oberfläche und Fachlogik werden im nächsten Arbeitspaket aus den vorhandenen Projektdaten übernommen. Sie wird nicht als „fertig“ dokumentiert, bevor Funktionen und Browsertests bestanden sind.</div><div class="actions"><a class="cyan-btn compact" href="#/home" style="display:inline-flex;align-items:center;text-decoration:none">← ZUR STARTSEITE</a><button class="ghost-btn" type="button" id="openSearchFromDev">ARCHIV DURCHSUCHEN</button></div></section>`;
+  return `<section class="development-page"><div class="route-number">ROUTE ${String(route.order).padStart(2,'0')} / ${ROUTES.length}</div><h1>${escapeHtml(route.label)}</h1><p>${escapeHtml(route.purpose)}.</p><div class="dev-notice"><b>ENTWICKLUNGSSTATUS:</b> Diese Route ist aus dem vorhandenen Altprojekt verifiziert und im Routing bereits vorhanden. Ihre endgültige Oberfläche und Fachlogik werden im nächsten Arbeitspaket aus den vorhandenen Projektdaten übernommen. Sie wird nicht als „fertig“ dokumentiert, bevor Funktionen und Browsertests bestanden sind.</div><div class="actions"><a class="cyan-btn compact" href="#/home" style="display:inline-flex;align-items:center;text-decoration:none">← ZUR STARTSEITE</a><button class="ghost-btn" type="button" id="openSearchFromDev">ARCHIV DURCHSUCHEN</button></div></section>`;
 }
 function routeFromHash(){return (location.hash.replace(/^#\/?/,'').split('/')[0]||'home');}
 function render(){
   let id=routeFromHash();
+  if(id==='collection'){
+    globalThis.JMA_STORE?.write?.('jma_profile_view','collection');
+    id='profile';
+    history.replaceState(null,'','#/profile');
+  }
   const hasSession=!!globalThis.JMA_AUTH?.getState?.().session?.user;
   const blockedRoute=!hasSession&&AUTH_REQUIRED_ROUTES.has(id);
   if(blockedRoute){
