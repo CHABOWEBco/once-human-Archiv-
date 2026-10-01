@@ -1,6 +1,6 @@
 # Supabase setup – Kernschema
 
-Dieser Ordner enthält die Datenbankbasis im Repository. Die Website besitzt inzwischen eine konfigurierte Supabase-Verbindung in `supabase-client.js`, einschließlich öffentlichem Publishable-Key. Login, Registrierung, Session-Restore, Recovery und Profil-/Rollenbezug sind frontendseitig angebunden. Tabellen, Grants, RLS, Trigger und Auth-Konfiguration wurden am 01.10.2026 read-only live geprüft; Nachweis: `../docs/B12_LIVE_20261001.json`. Die Recovery-Allowlist enthält noch den alten Preview-Branch und muss separat freigegeben korrigiert werden. Ein geheimer `service_role`-Key ist kein Bestandteil der Frontend-Verbindung.
+Dieser Ordner enthält die Datenbankbasis im Repository. Die Website besitzt inzwischen eine konfigurierte Supabase-Verbindung in `supabase-client.js`, einschließlich öffentlichem Publishable-Key. Login, Registrierung, Session-Restore, Recovery und Profil-/Rollenbezug sind frontendseitig angebunden. Tabellen, Grants, RLS, Trigger und Auth-Konfiguration wurden am 01.10.2026 read-only live geprüft; Nachweis: `../docs/B12_LIVE_20261001.json`. Die Auth-URL-Konfiguration wurde am 01.10.2026 anschließend auf die aktuelle Preview ergänzt und nach Reload geprüft; Nachweis: `../docs/AUTH_REDIRECT_LIVE_20261001.md`. Ein geheimer `service_role`-Key ist kein Bestandteil der Frontend-Verbindung.
 
 ## Migration
 
@@ -55,7 +55,7 @@ Alternativ kann die SQL-Datei einmalig im Supabase SQL Editor ausgeführt werden
 - Der private Rollenhelfer verwendet die serverseitige Rolle (`user` < `moderator` < `admin` < `owner`), SECURITY DEFINER und einen leeren festen search_path. Trigger erzeugt ausschließlich Standardrolle `user`.
 - Live: 21 eindeutige Einträge, Revision 1, alle Originalfelder identisch zum erhaltenen JSON-Bestand. 14 Kategorien bleiben lokal definiert; acht davon werden von den 21 Einträgen verwendet.
 - Auth: E-Mail-Anmeldung aktiv, Registrierung erlaubt, E-Mail-Bestätigung erforderlich; externe Website-Login-Provider deaktiviert. Der GitHub-Login ins Supabase-Dashboard ist ein separater Dashboardzugang.
-- Site URL: `http://localhost:3000`; einzige Redirect-URL: `https://raw.githack.com/CHABOWEBco/once-human-Archiv-/design-preview/index.html`. Die vom Frontend verwendete `admin-editor-preview/index.html`-Recovery-URL fehlt. Nicht passende Redirects können auf Site URL zurückfallen. Kleinste vorgeschlagene Korrektur: exakte aktuelle Preview-Adresse ergänzen; Site URL separat auf das bestätigte Ziel setzen. Keine Konfigurationsänderung in diesem Durchgang.
+- Auth-URL-Nachtrag am 01.10.2026: Site URL ist `https://raw.githack.com/CHABOWEBco/once-human-Archiv-/admin-editor-preview/index.html`. Redirect-Allowlist enthält diese exakte URL sowie die bestehende `design-preview/index.html`-URL. Speicherung nach Dashboard-Reload bestätigt; keine Wildcard. Der ursprüngliche read-only B12-Nachweis dokumentiert weiterhin den vorherigen Stand. Details: `../docs/AUTH_REDIRECT_LIVE_20261001.md`.
 - Auth-Tokens: 3600 s Ablaufzeit, Replay-Erkennung für Refresh-Tokens aktiv, 10 s Wiederverwendungsintervall. Session-Timebox/Inaktivitätsgrenze beide 0; Single-Session nicht aktiviert. Diese erweiterten Sessionregeln sind im vorhandenen Free-Plan nicht konfigurierbar.
 - Frontend behält persistSession, autoRefreshToken und detectSessionInUrl sowie PASSWORD_RECOVERY/updateUser/finishRecovery. Keine Live-Reset-E-Mail versendet und kein Passwort geändert.
 - Ein Live-Owner vorhanden. Die vollständigen Schreibabläufe mit vier realen Rollen wurden nicht wiederholt: weitere Rollen-Testkonten existieren nicht. Read-only Grants/Policies/Helper-Prüfung bestanden; vorhandene isolierte Editor-/Reload-/Versionsschutztests bleiben der Integrationsnachweis.
@@ -68,7 +68,7 @@ Vorhanden: zentraler Frontend-Supabase-Client, Login/Registrierung/Recovery-Code
 
 Weiter offen:
 
-- Freigegebene Korrektur der oben dokumentierten Auth-Redirect-Konfiguration
+- Echter E-Mail-/Passwort-End-to-End-Test der Recovery; Auth-Redirect-Konfiguration ist korrigiert und nach Reload bestätigt
 - globale Migration/Synchronisierung lokaler Werkzeug- und Medienbestände
 - sichere globale Rollenverwaltung, Moderationsmutationen und Server-Audit
 - Builds, Routen, Posts, Einreichungen oder sonstige Fachtabellen
