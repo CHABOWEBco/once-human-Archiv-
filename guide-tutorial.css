@@ -1,0 +1,24 @@
+/* Native dialog and existing guide/HUD palette; no global overrides. */
+.rf-tutorial{
+  width:min(680px,calc(100% - 24px));max-height:calc(100dvh - 32px);
+  margin:auto;padding:24px;overflow:auto;
+  border:1px solid #20343e;background:linear-gradient(180deg,#08151b,#071015);
+  color:var(--text);font-family:var(--body);box-shadow:0 24px 70px #0008;
+}
+.rf-tutorial::backdrop{background:rgba(0,5,8,.72)}
+.rf-tutorial-head{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.rf-tutorial-head h2{flex:1;min-width:180px;margin:0;font-size:24px;overflow-wrap:anywhere}
+.rf-tutorial-step{margin:20px 0;padding:18px 0;border-block:1px solid #20353e}
+.rf-tutorial-step h3{margin:0 0 10px;font-size:16px}
+.rf-tutorial-step p{margin:0;color:#80939b;line-height:1.7;font-size:13px}
+.rf-tutorial-controls{display:flex;align-items:center;flex-wrap:wrap;gap:10px}
+.rf-tutorial-controls span{margin-inline:auto;color:#54d6de;white-space:nowrap;font-size:12px}
+.rf-tutorial button{min-height:44px;height:auto;max-width:100%;white-space:normal;padding:10px 14px;cursor:pointer}
+.rf-tutorial button:disabled{opacity:.45;cursor:not-allowed}
+.rf-tutorial button:focus-visible{outline:2px solid #54d6de;outline-offset:3px}
+.guides-page [data-tutorial-start]{margin:8px 0 0 8px}
+@media(max-width:560px){
+  .rf-tutorial{padding:16px}
+  .rf-tutorial-head h2{font-size:22px}
+  .rf-tutorial-controls [data-tutorial-next]{flex:1 1 100%}
+}
