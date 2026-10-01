@@ -16,6 +16,52 @@ const toast=msg=>{const t=qs('#toast');if(!t)return;t.textContent=msg;t.classLis
 const refresh=()=>globalThis.JMA_RENDER?.();
 const go=id=>{location.hash=`#/${id}`};
 
+// The intro belongs to a route visit, not to a render or the zoomable map plane.
+const flybyMotion=matchMedia('(prefers-reduced-motion: reduce)');
+let mapVisit=null;
+function stopMapFlyby(){
+  if(!mapVisit)return;
+  cancelAnimationFrame(mapVisit.frame);
+  mapVisit.layer?.remove();
+  mapVisit.layer=null;
+}
+function enterMapFlyby(){
+  if(mapVisit)return;
+  const visit=mapVisit={frame:0,layer:null};
+  if(flybyMotion.matches)return;
+  const image=new Image();
+  image.src='./assets/live-map/by-the-wind.png';
+  image.alt='';image.draggable=false;image.className='lm-flyby-creature';
+  image.decode().then(()=>{
+    if(mapVisit!==visit||flybyMotion.matches||!qs('#lmBoard'))return;
+    const layer=document.createElement('div');
+    layer.className=matchMedia('(max-width:820px)').matches?'lm-flyby lm-flyby-mobile':'lm-flyby';
+    layer.setAttribute('aria-hidden','true');
+    const scene=document.createElement('div');scene.className='lm-flyby-scene';
+    scene.append(image);layer.append(scene);visit.layer=layer;
+    // Keep one animation node outside #app so internal renders cannot restart it.
+    const followBoard=()=>{
+      const board=qs('#lmBoard');
+      if(mapVisit!==visit||!board||flybyMotion.matches){stopMapFlyby();return}
+      const rect=board.getBoundingClientRect();
+      layer.style.left=`${rect.left+board.clientLeft}px`;
+      layer.style.top=`${rect.top+board.clientTop}px`;
+      layer.style.width=`${board.clientWidth}px`;
+      layer.style.height=`${board.clientHeight}px`;
+      layer.style.setProperty('--fly-width',`${board.clientWidth}px`);
+      layer.style.setProperty('--fly-height',`${board.clientHeight}px`);
+      visit.frame=requestAnimationFrame(followBoard);
+    };
+    image.addEventListener('animationend',stopMapFlyby,{once:true});
+    followBoard();document.body.append(layer);
+  }).catch(()=>{/* An unavailable decorative image must never break the map. */});
+}
+window.addEventListener('hashchange',()=>{
+  const route=location.hash.split('/')[1];
+  if(route!=='map'&&route!=='live-map'){stopMapFlyby();mapVisit=null}
+});
+flybyMotion.addEventListener('change',e=>{if(e.matches)stopMapFlyby()});
+
 function state(){
   const scenarios=Array.isArray(AD().map?.scenarios)?AD().map.scenarios:[];
   const fallback=scenarios.some(x=>x.id==='way-of-winter')?'way-of-winter':scenarios[0]?.id||'way-of-winter';
@@ -153,6 +199,7 @@ function openMarkerDialog(mapX,mapY,scenario){
 }
 
 function bindLiveMap(){
+  enterMapFlyby();
   const current=state();
   qsa('[data-lm-go]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.lmGo)));
   qsa('[data-lm-focus-search]').forEach(b=>b.addEventListener('click',()=>qs('#lmSearch')?.focus()));
