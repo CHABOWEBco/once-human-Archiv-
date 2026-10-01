@@ -3,7 +3,7 @@ const ROUTES = [
   ['dashboard','Kommandozentrale','◈','Persönlicher Überblick und Fortschritt'],
   ['news','Neuigkeiten','▤','Updates, Events und Archivmeldungen'],
   ['database','Datenbank','▱','Zentraler Katalog mit Suche, Filtern und Details'],
-  ['map','Karte','⌖','Interaktive Karte, Marker, Filter und Routen'],
+  ['map','Karte','⌖','Live-Karte, Marker, Filter und Routen'],
   ['hunt','Jagdliste','◎','Persönliche Ziele und Prioritäten'],
   ['routes','Farmrouten','↝','Gespeicherte Fund- und Farmrouten'],
   ['planner','Einsatzplaner','◷','Session- und Einsatzplanung'],
@@ -36,6 +36,7 @@ let authMode = 'login';
 const NAV = [
   ['home','Start','⌂'],['database','Datenbank','▱'],['map','Karte','⌖'],['builds','Builds','⚒'],['tech-workbench','Techwerkbank','⚙'],['community','Community','♙'],['guides','Guides','◫']
 ];
+const ROUTE_ALIASES=Object.freeze({'live-map':'map'});
 const AUTH_REQUIRED_ROUTES = new Set(['database','map','live-map','builds','tech-workbench','community','guides','dashboard','profile','settings','admin','hunt','routes','planner','submissions','exchange']);
 mainNav.innerHTML = NAV.map(([id,label,icon])=>`<a href="#/${id}" data-nav="${id}"><span>${SITE_HEADER.icon(id)}</span>${label}</a>`).join('');
 
@@ -161,7 +162,7 @@ function renderHome(){
     <div class="landing-content">
       <section class="landing-quick-grid" aria-label="Schnellzugriffe">
         ${quick('database','Datenbank','Gegenstände, Waffen, Ausrüstung, Ressourcen und mehr.','feature-database.webp','▱',guest)}
-        ${quick('map','Interaktive Karte','Marker, Routen, Fundorte und Gebiete.','feature-map.webp','⌖',guest)}
+        ${quick('map','Live-Karte','Marker, Routen, Fundorte und Gebiete.','feature-map.webp','⌖',guest)}
         ${quick('builds','Builds','Vorlagen, Loadouts und gespeicherte Builds.','feature-builds.webp','⚒',guest)}
         ${quick('tech-workbench','Techwerkbank','Rezepte, Materialien und Herstellung.','feature-tech.webp','⚙',guest)}
         ${quick('community','Community','Wissen teilen und Beiträge austauschen.','feature-community.webp','♙',guest)}
@@ -202,6 +203,7 @@ function renderDevelopment(route){
 function routeFromHash(){return (location.hash.replace(/^#\/?/,'').split('/')[0]||'home');}
 function render(){
   let id=routeFromHash();
+  if(ROUTE_ALIASES[id]){id=ROUTE_ALIASES[id];history.replaceState(null,'',`#/${id}`)}
   if(id==='collection'){
     globalThis.JMA_STORE?.write?.('jma_profile_view','collection');
     id='profile';
@@ -278,9 +280,9 @@ function syncHeaderAccount(){
   }else if(accountMenu&&!liveMapLink){
     liveMapLink=document.createElement('a');
     liveMapLink.id='headerLiveMapLink';
-    liveMapLink.href='#/live-map';
+    liveMapLink.href='#/map';
     liveMapLink.dataset.accountMenuLink='';
-    liveMapLink.textContent='Live Karte';
+    liveMapLink.textContent='Karte';
     accountMenu.insertBefore(liveMapLink,$('#headerAdminLink')||$('#headerLogout'));
   }
   const adminLink=$('#headerAdminLink');

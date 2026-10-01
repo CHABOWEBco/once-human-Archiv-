@@ -24,7 +24,7 @@ const archive=()=>globalThis.ARCHIVE_DATA||{};
 const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]));
 const fmt=value=>{try{return new Date(value).toLocaleString('de-DE',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}catch{return '—'}};
 let editorWorking=null,editorBase=null,editorRevision=1,editorIsNew=false;
-const routeCount=()=>new Set([...ROUTES.map(route=>route.id),...Object.keys(globalThis.FULL_ROUTE_RENDERERS||{})]).size;
+const routeCount=()=>new Set([...ROUTES.map(route=>route.id),...Object.keys(globalThis.FULL_ROUTE_RENDERERS||{})].map(id=>ROUTE_ALIASES[id]||id)).size;
 
 function getView(){
   try{
@@ -100,7 +100,7 @@ function overview(){
   const queue=list('jma_submissions').slice(0,4);
   const modules=[
     ['Datenbank',s.catalog+' Einträge','database','▱','Katalog & Detaildaten'],
-    ['Interaktive Karte',(s.baseMarkers+s.localMarkers)+' Marker','map','⌖','Marker, Filter & Routen'],
+    ['Live-Karte',(s.baseMarkers+s.localMarkers)+' Marker','map','⌖','Marker, Filter & Routen'],
     ['Techwerkbank','Route aktiv','tech-workbench','⚙','Analyse & Werkzeuge'],
     ['Neuigkeiten',s.news+' Meldungen','news','▤','Archivmeldungen'],
     ['Community',s.posts+' lokale Beiträge','community','♙','Räume & Beiträge'],
@@ -201,7 +201,7 @@ function editorView(){
 }
 function mapView(){
   const s=localStats(),custom=list('jma_custom_markers').slice(0,6);
-  return '<section class="admin-view">'+panelHead('MAP CONTROL','Karte & Marker','<button type="button" class="admin-primary compact" data-admin-go="map">Interaktive Karte öffnen →</button>')+
+  return '<section class="admin-view">'+panelHead('MAP CONTROL','Karte & Marker','<button type="button" class="admin-primary compact" data-admin-go="map">Live-Karte öffnen →</button>')+
     '<div class="admin-map-layout"><article class="admin-map-preview"><div class="admin-map-image"><img src="./assets/map/once-human-world-map.webp" alt=""><span class="map-pulse p1"></span><span class="map-pulse p2"></span><span class="map-pulse p3"></span></div><div class="admin-map-stats"><span><b>'+s.scenarios+'</b><small>Szenarien</small></span><span><b>'+s.baseMarkers+'</b><small>Basis-Marker</small></span><span><b>'+s.localMarkers+'</b><small>lokale Marker</small></span><span><b>'+s.routes+'</b><small>eigene Routen</small></span></div></article>'+
     '<aside class="admin-glass">'+panelHead('LOKAL','Eigene Marker')+(custom.length?'<div class="admin-simple-list">'+custom.map(x=>'<span><i>⌖</i><div><b>'+esc(x.name||'Marker')+'</b><small>'+esc(x.category||x.scenario||'lokal')+'</small></div></span>').join('')+'</div>':'<div class="admin-empty small"><span>⌖</span><b>Keine lokalen Marker</b><p>Eigene Marker erscheinen nach dem Anlegen hier.</p></div>')+'<div class="admin-safe-note"><b>NÄCHSTER AUSBAU</b><p>Marker anklicken → Eigenschaften rechts bearbeiten → serverseitig freigeben.</p></div></aside></div>'+
   '</section>';

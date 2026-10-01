@@ -18,7 +18,7 @@ const go=id=>{location.hash=`#/${id}`};
 
 function state(){
   const scenarios=Array.isArray(AD().map?.scenarios)?AD().map.scenarios:[];
-  const fallback=scenarios[0]?.id||'way-of-winter';
+  const fallback=scenarios.some(x=>x.id==='way-of-winter')?'way-of-winter':scenarios[0]?.id||'way-of-winter';
   const scenario=read('jma_map_scenario',fallback)||fallback;
   const q=String(read('jma_map_q','')||'');
   const category=String(read('jma_map_cat','all')||'all');
@@ -35,11 +35,13 @@ function scenarioName(s,id){return s.scenarios.find(x=>x.id===id)?.name||id||'�
 
 function detailMarkup(s){
   const m=s.selected;
+  const tools=`<div class="lm-detail-actions"><button type="button" data-lm-focus-search>MARKER AUSWÄHLEN →</button><button type="button" data-lm-go="routes">ROUTEN VERWALTEN</button><button type="button" data-lm-filter-label="Ressourcen">RESSOURCEN</button><button type="button" data-lm-filter-label="Abweichler">ABWEICHLER</button></div>`;
   if(!m){
     return `<div class="lm-detail-empty">
       <div class="lm-detail-scan" aria-hidden="true"><i></i><span>⌖</span></div>
       <small>DETAILANSICHT</small><h2>MARKER AUSWÄHLEN</h2>
       <p>Wähle einen vorhandenen Marker auf der Karte. Angezeigt werden ausschließlich Daten aus dem bestehenden Kartenbestand oder aus deinen eigenen lokalen Markern.</p>
+      ${tools}
     </div>`;
   }
   const gx=m.gameX!==undefined&&m.gameX!==''?esc(m.gameX):'—';
@@ -52,12 +54,15 @@ function detailMarkup(s){
       <div><dt>Kategorie</dt><dd>${esc(m.category||'—')}</dd></div>
       <div><dt>Spiel X</dt><dd>${gx}</dd></div>
       <div><dt>Spiel Y</dt><dd>${gy}</dd></div>
+      <div><dt>Prüfstatus</dt><dd>${esc(m.verified||'lokal')}</dd></div>
     </dl>
     <section><small>NOTIZ / INFORMATION</small><p>${esc(m.note||m.location||'Für diesen Marker ist keine zusätzliche Beschreibung hinterlegt.')}</p></section>
     <div class="lm-detail-actions">
       <button type="button" class="${inDraft?'active':''}" data-lm-route-toggle="${esc(m.id)}">${inDraft?'✓ IN ROUTE':'＋ ZUR ROUTE'}</button>
       ${m.custom?`<button type="button" class="danger" data-lm-delete="${esc(m.id)}">MARKER LÖSCHEN</button>`:'<button type="button" data-lm-go="routes">ROUTEN ÖFFNEN</button>'}
     </div>
+    ${Array.isArray(m.catalogIds)&&m.catalogIds.length?`<section><small>VERKNÜPFTE KATALOGEINTRÄGE</small><div class="lm-detail-actions">${m.catalogIds.map(id=>{const entry=globalThis.CATALOG_DATA?.entries?.find(x=>x.id===id);return `<button type="button" data-lm-catalog="${esc(id)}" ${entry?'':'disabled'}>${esc(entry?.name_de||id)}</button>`}).join('')}</div></section>`:''}
+    ${tools}
   </div>`;
 }
 
@@ -69,12 +74,12 @@ function renderLiveMap(){
   const navX=selectedOnScenario?markerCoord(selectedOnScenario,'mapX'):48;
   const navY=selectedOnScenario?markerCoord(selectedOnScenario,'mapY'):52;
   const customCount=customMarkers().filter(m=>m.scenario===s.scenario).length;
-  return `<section class="lm-page" aria-label="Live Karten-Vorschau">
+  return `<section class="lm-page" aria-label="Live-Karte">
     <header class="lm-command-head">
       <div class="lm-heading">
-        <div class="lm-kicker"><i></i><span>LIVE MAP // ISOLIERTE VORSCHAU</span></div>
+        <div class="lm-kicker"><i></i><span>LIVE MAP // KARTENZENTRALE</span></div>
         <h1>LIVE <em>KARTE</em></h1>
-        <p>Interaktive Kartenoberfläche mit vorhandenem Markerbestand, lokalen Markern und deinen gespeicherten Routen. Die bestehende Karte bleibt davon unberührt.</p>
+        <p>Interaktive Kartenoberfläche mit vorhandenem Markerbestand, lokalen Markern und deinen gespeicherten Routen. Wähle Szenarien, erkunde Fundorte und öffne deine Farmrouten.</p>
       </div>
       <div class="lm-command-metrics" aria-label="Kartenstatus">
         <article><small>SZENARIEN</small><b>${s.scenarios.length}</b><span>vorhanden</span></article>
@@ -97,7 +102,7 @@ function renderLiveMap(){
 
         <div class="lm-panel-title lm-route-title"><div><small>ROUTENENTWURF</small><b>${s.draft.length} STATIONEN</b></div><span>02</span></div>
         <div class="lm-route-draft">${s.draft.length?s.draft.map((id,i)=>{const m=allMarkers().find(x=>x.id===id);return m?`<div><b>${String(i+1).padStart(2,'0')}</b><span>${esc(m.name||'Marker')}</span><button type="button" data-lm-route-remove="${esc(id)}" aria-label="Aus Route entfernen">×</button></div>`:''}).join(''):'<p>Noch keine Station ausgewählt.</p>'}</div>
-        <form class="lm-route-save" id="lmRouteSave"><input name="name" maxlength="80" placeholder="Routenname" aria-label="Routenname" ${s.draft.length?'':'disabled'}><button type="submit" ${s.draft.length?'':'disabled'}>SPEICHERN</button></form>
+        <form class="lm-route-save" id="lmRouteSave"><input name="name" required maxlength="80" placeholder="Routenname" aria-label="Routenname" ${s.draft.length?'':'disabled'}><button type="submit" ${s.draft.length?'':'disabled'}>SPEICHERN</button></form>
         <button class="lm-open-routes" type="button" data-lm-go="routes">GESPEICHERTE ROUTEN →</button>
       </aside>
 
@@ -150,6 +155,9 @@ function openMarkerDialog(mapX,mapY,scenario){
 function bindLiveMap(){
   const current=state();
   qsa('[data-lm-go]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.lmGo)));
+  qsa('[data-lm-focus-search]').forEach(b=>b.addEventListener('click',()=>qs('#lmSearch')?.focus()));
+  qsa('[data-lm-filter-label]').forEach(b=>b.addEventListener('click',()=>{write('jma_map_q',b.dataset.lmFilterLabel);refresh()}));
+  qsa('[data-lm-catalog]').forEach(b=>b.addEventListener('click',()=>{sessionStorage.setItem('jma_open_catalog',b.dataset.lmCatalog);go('database')}));
   qs('#lmScenario')?.addEventListener('change',e=>{write('jma_map_scenario',e.target.value);write('jma_map_selected','');write('jma_map_cat','all');write('jma_map_q','');refresh()});
   let searchTimer;
   qs('#lmSearch')?.addEventListener('input',e=>{
@@ -169,7 +177,7 @@ function bindLiveMap(){
   qsa('[data-lm-route-toggle]').forEach(b=>b.addEventListener('click',()=>{const id=b.dataset.lmRouteToggle,rows=arr('jma_route_draft');const next=rows.includes(id)?rows.filter(x=>x!==id):[...rows,id];write('jma_route_draft',next);refresh()}));
   qsa('[data-lm-route-remove]').forEach(b=>b.addEventListener('click',()=>{write('jma_route_draft',arr('jma_route_draft').filter(x=>x!==b.dataset.lmRouteRemove));refresh()}));
   qsa('[data-lm-delete]').forEach(b=>b.addEventListener('click',()=>{if(!confirm('Eigenen Marker löschen?'))return;const id=b.dataset.lmDelete;write('jma_custom_markers',customMarkers().filter(x=>x.id!==id));write('jma_map_selected','');write('jma_route_draft',arr('jma_route_draft').filter(x=>x!==id));write('jma_routes',arr('jma_routes').map(r=>({...r,markers:Array.isArray(r.markers)?r.markers.filter(x=>x!==id):[]})));refresh()}));
-  qs('#lmRouteSave')?.addEventListener('submit',e=>{e.preventDefault();const draft=arr('jma_route_draft'),name=String(new FormData(e.currentTarget).get('name')||'').trim();if(!draft.length||name.length<2)return;const rows=arr('jma_routes');rows.unshift({id:uid('route'),name,markers:[...draft],created:new Date().toISOString()});write('jma_routes',rows);write('jma_route_draft',[]);refresh();toast('Route gespeichert.');});
+  qs('#lmRouteSave')?.addEventListener('submit',e=>{e.preventDefault();const draft=arr('jma_route_draft'),name=String(new FormData(e.currentTarget).get('name')||'').trim();if(!draft.length||!name)return;const rows=arr('jma_routes');rows.unshift({id:uid('route'),name,markers:[...draft],created:new Date().toISOString()});write('jma_routes',rows);write('jma_route_draft',[]);refresh();toast('Route gespeichert.');});
 
   const board=qs('#lmBoard'),plane=qs('#lmPlane'),image=qs('#lmMapImage'),zoomLabel=qs('#lmZoomLabel'),instruction=qs('#lmInstruction');
   if(!board||!plane||!image)return;
@@ -192,6 +200,6 @@ function bindLiveMap(){
   const observer=new ResizeObserver(()=>{if(board.isConnected)apply();else observer.disconnect()});observer.observe(board);apply();
 }
 
-globalThis.FULL_ROUTE_RENDERERS={...(globalThis.FULL_ROUTE_RENDERERS||{}),'live-map':renderLiveMap};
-globalThis.FULL_ROUTE_BINDERS={...(globalThis.FULL_ROUTE_BINDERS||{}),'live-map':bindLiveMap};
+globalThis.FULL_ROUTE_RENDERERS={...(globalThis.FULL_ROUTE_RENDERERS||{}),map:renderLiveMap,'live-map':renderLiveMap};
+globalThis.FULL_ROUTE_BINDERS={...(globalThis.FULL_ROUTE_BINDERS||{}),map:bindLiveMap,'live-map':bindLiveMap};
 })();

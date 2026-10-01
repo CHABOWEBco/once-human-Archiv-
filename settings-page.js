@@ -1,7 +1,7 @@
 (()=>{'use strict';
 const KEY='jma_ui_preferences';
 const DEFAULTS={theme:'dark',accent:'coral',density:58,font:'SF Pro',radius:12,smooth:true,focus:false,grid:true,compact:false,welcome:true};
-const SCOPED_ROUTES=new Set(['admin','live-map','profile']);
+const SCOPED_ROUTES=new Set(['admin','map','profile']);
 const ACCENTS={
   blue:'#238cff',green:'#1fcf97',yellow:'#ffd02e',orange:'#ff7a18',red:'#ff3349',
   magenta:'#cf48df',violet:'#8454e8',cyan:'#22d0e8',coral:'#ff7d73'
@@ -86,7 +86,7 @@ function renderSettings(){
           '<a href="#/settings/profile" class="'+(section==='profile'?'active':'')+'" '+(section==='profile'?'aria-current="page"':'')+'>'+sidebarIcon('profile')+'<span>Profil</span></a>'+
           '<a href="#/settings/notifications" class="'+(section==='notifications'?'active':'')+'" '+(section==='notifications'?'aria-current="page"':'')+'>'+sidebarIcon('alerts')+'<span>Benachrichtigungen</span></a>'+
           '<a href="#/settings/security" class="'+(section==='security'?'active':'')+'" '+(section==='security'?'aria-current="page"':'')+'>'+sidebarIcon('security')+'<span>Sicherheit</span></a>'+
-          '<a href="#/live-map">'+sidebarIcon('links')+'<span>Live-Karte</span></a>'+
+          '<a href="#/map">'+sidebarIcon('links')+'<span>Live-Karte</span></a>'+
           (['moderator','admin','owner'].includes(String(a.role||'').toLowerCase())?'<a href="#/admin">'+sidebarIcon('dev')+'<span>Admin Backend</span></a>':'')+
         '</nav>'+
       '</aside>'+
@@ -145,7 +145,7 @@ function renderSettings(){
           '</div>'+
           '<div class="settings-scope-matrix">'+
             '<article><small>01 / ADMIN</small><b>Control Center</b><span>Akzent · Radius · Dichte · Schrift · Bewegung</span><a href="#/admin">Öffnen ↗</a></article>'+
-            '<article><small>02 / KARTE</small><b>Live-Karte</b><span>Panels · Filter · HUD · Fokus · Bewegung</span><a href="#/live-map">Öffnen ↗</a></article>'+
+            '<article><small>02 / KARTE</small><b>Live-Karte</b><span>Panels · Filter · HUD · Fokus · Bewegung</span><a href="#/map">Öffnen ↗</a></article>'+
             '<article><small>03 / PROFIL</small><b>Profil</b><span>Panels · Tabs · Akzent · Radius · Schrift</span><a href="#/profile">Öffnen ↗</a></article>'+
           '</div>'+
         '</section>'+
