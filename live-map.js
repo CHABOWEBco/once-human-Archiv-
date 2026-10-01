@@ -101,7 +101,7 @@ function renderLiveMap(){
         <button class="lm-open-routes" type="button" data-lm-go="routes">GESPEICHERTE ROUTEN →</button>
       </aside>
 
-      <main class="lm-map-column">
+      <div class="lm-map-column">
         <div class="lm-toolbar lm-glass">
           <div><small>AKTIVES SZENARIO</small><b>${esc(scenarioName(s,s.scenario))}</b></div>
           <div class="lm-toolbar-actions">
@@ -124,7 +124,7 @@ function renderLiveMap(){
           <div class="lm-compass" aria-hidden="true"><b>N</b><span>✥</span><small>W&nbsp;&nbsp;&nbsp;E</small></div>
           <div class="lm-instruction" id="lmInstruction">ZIEHEN = VERSCHIEBEN · MAUSRAD / ± = ZOOMEN</div>
         </div>
-      </main>
+      </div>
 
       <aside class="lm-detail lm-glass" id="lmDetail">
         <div class="lm-panel-title"><div><small>MARKERDOSSIER</small><b>DETAILS</b></div><span>03</span></div>

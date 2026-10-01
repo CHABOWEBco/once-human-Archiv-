@@ -23,7 +23,7 @@ const catalog=()=>Array.isArray(globalThis.CATALOG_DATA?.entries)?globalThis.CAT
 const archive=()=>globalThis.ARCHIVE_DATA||{};
 const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]));
 const fmt=value=>{try{return new Date(value).toLocaleString('de-DE',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}catch{return '—'}};
-const routeCount=28;
+const routeCount=()=>new Set([...ROUTES.map(route=>route.id),...Object.keys(globalThis.FULL_ROUTE_RENDERERS||{})]).size;
 
 function getView(){
   try{
@@ -76,11 +76,11 @@ function shell(content){
   return '<section class="admin-panel-page">'+
     '<div class="admin-ambient" aria-hidden="true"></div>'+
     '<div class="admin-shell">'+nav()+
-      '<main class="admin-main">'+
+      '<div class="admin-main">'+
         '<header class="admin-topline"><div><span class="admin-eyebrow">ADMINISTRATION / '+esc(getView().toUpperCase())+'</span><h1>Archiv Control Center</h1><p>Website-Inhalte, Community, Karte und Zugriffsbereiche in einer zentralen Arbeitsoberfläche.</p></div>'+
         '<div class="admin-identity"><span class="admin-avatar">'+esc((a?.name||a?.email||'A').slice(0,1).toUpperCase())+'</span><div><small>ANGEMELDET ALS</small><b>'+esc(a?.name||a?.email||'Meta-Human')+'</b><span>'+badge(r||'ohne rolle',r==='owner'?'owner':r==='admin'?'admin':'moderator')+'</span></div></div></header>'+
         content+
-      '</main>'+
+      '</div>'+
     '</div>'+
   '</section>';
 }
@@ -111,7 +111,7 @@ function overview(){
       metric('▱',s.catalog,'Katalogeinträge',s.categories+' Kategorien','cyan')+
       metric('⌖',s.baseMarkers+s.localMarkers,'Kartenmarker',s.localMarkers+' lokal ergänzt','coral')+
       metric('⚑',s.submissions,'Einreichungen','lokale Prüfqueue','amber')+
-      metric('◇',routeCount,'Website-Routen','bestehender Seitenbestand','violet')+
+      metric('◇',routeCount(),'Website-Routen','bestehender Seitenbestand','violet')+
     '</section>'+
     '<div class="admin-grid admin-grid-overview">'+
       '<section class="admin-glass admin-modules">'+panelHead('WEBSITE','Bereiche & Inhalte','<button type="button" data-admin-view="content">Alle Bereiche →</button>')+
@@ -160,7 +160,7 @@ function editorView(){
       '<button type="button" class="admin-primary compact admin-editor-add" disabled title="Wird im nächsten Block angebunden">＋ Neues Item</button>'+
     '</div>'+
     '<div class="admin-visual-editor-shell '+(selected?'drawer-open':'')+'">'+
-      '<main class="admin-editor-canvas">'+
+      '<div class="admin-editor-canvas">'+
         '<div class="admin-editor-canvas-head"><div><small>LIVE-BESTAND</small><h3>Archivkarten</h3><p>Element anklicken → rechts bearbeiten. Änderungen bleiben in diesem ersten Block nur in der Vorschau.</p></div><span><b>'+cards.length+'</b><small>von '+entries.length+' geladen</small></span></div>'+
         '<div class="admin-editor-card-grid" id="adminEditorGrid">'+cards.map(item=>{
           const search=[item.name_de,item.kind,item.description,(item.tags||[]).join(' ')].join(' ').toLowerCase();
@@ -171,7 +171,7 @@ function editorView(){
           '</button>';
         }).join('')+'</div>'+
         '<div class="admin-editor-empty-filter" id="adminEditorEmpty" hidden><span>⌕</span><b>Keine Treffer</b><p>Suchbegriff oder Filter ändern.</p></div>'+
-      '</main>'+
+      '</div>'+
       (selected?'<aside class="admin-editor-drawer" aria-label="Item bearbeiten">'+
         '<header class="admin-editor-drawer-head"><div><small>ITEM BEARBEITEN</small><h3 data-editor-drawer-title>'+esc(selected.name_de||selected.id)+'</h3></div></header>'+
         '<div class="admin-editor-item-preview"><div class="admin-editor-preview-media"><img src="'+esc(imageOf(selected))+'" alt="" data-editor-preview-image></div><div><small data-editor-preview-category>'+esc(categoryName(selected.category))+'</small><strong data-editor-preview-title>'+esc(selected.name_de||selected.id)+'</strong><p data-editor-preview-desc>'+esc(selected.description||'Keine Beschreibung')+'</p></div></div>'+

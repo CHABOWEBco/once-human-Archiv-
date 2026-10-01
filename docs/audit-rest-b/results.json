@@ -1,0 +1,857 @@
+{
+  "B09": {
+    "checks": [
+      {
+        "route": "home",
+        "width": 390,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "dashboard",
+        "width": 390,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "news",
+        "width": 390,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "database",
+        "width": 390,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "map",
+        "width": 390,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "hunt",
+        "width": 390,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "routes",
+        "width": 390,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "planner",
+        "width": 390,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "guides",
+        "width": 390,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "patchwatch",
+        "width": 390,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "secrets",
+        "width": 390,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "builds",
+        "width": 390,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "community",
+        "width": 390,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "submissions",
+        "width": 390,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "profile",
+        "width": 390,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "weapon-blueprints",
+        "width": 390,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "armor-blueprints",
+        "width": 390,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "armor-materials",
+        "width": 390,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "deviations",
+        "width": 390,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "mods",
+        "width": 390,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "compare-weapons",
+        "width": 390,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "compare-armors",
+        "width": 390,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "memetics",
+        "width": 390,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "vehicles",
+        "width": 390,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "creatures",
+        "width": 390,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "tech-workbench",
+        "width": 390,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "exchange",
+        "width": 390,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "live-map",
+        "width": 390,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "settings",
+        "width": 390,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "settings/profile",
+        "width": 390,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "settings/notifications",
+        "width": 390,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "settings/security",
+        "width": 390,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "admin",
+        "width": 390,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "home",
+        "width": 1920,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "dashboard",
+        "width": 1920,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "news",
+        "width": 1920,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "database",
+        "width": 1920,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "map",
+        "width": 1920,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "hunt",
+        "width": 1920,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "routes",
+        "width": 1920,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "planner",
+        "width": 1920,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "guides",
+        "width": 1920,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "patchwatch",
+        "width": 1920,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "secrets",
+        "width": 1920,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "builds",
+        "width": 1920,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "community",
+        "width": 1920,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "submissions",
+        "width": 1920,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "profile",
+        "width": 1920,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "weapon-blueprints",
+        "width": 1920,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "armor-blueprints",
+        "width": 1920,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "armor-materials",
+        "width": 1920,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "deviations",
+        "width": 1920,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "mods",
+        "width": 1920,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "compare-weapons",
+        "width": 1920,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "compare-armors",
+        "width": 1920,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "memetics",
+        "width": 1920,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "vehicles",
+        "width": 1920,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "creatures",
+        "width": 1920,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "tech-workbench",
+        "width": 1920,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "exchange",
+        "width": 1920,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "live-map",
+        "width": 1920,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "settings",
+        "width": 1920,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "settings/profile",
+        "width": 1920,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "settings/notifications",
+        "width": 1920,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "settings/security",
+        "width": 1920,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      },
+      {
+        "route": "admin",
+        "width": 1920,
+        "oneMain": true,
+        "ariaReferencesValid": true,
+        "visibleFieldsLabelled": true,
+        "geometryAndVisibleContentUnchanged": true
+      }
+    ],
+    "identicalScreenshots": 10,
+    "errors": []
+  },
+  "B10": {
+    "routes": [],
+    "checks": [
+      {
+        "route": "weapon-blueprints",
+        "width": 1920,
+        "noResultsMessage": true,
+        "resetRestoresOriginalCount": 12
+      },
+      {
+        "route": "armor-materials",
+        "width": 1920,
+        "noResultsMessage": true,
+        "resetRestoresOriginalCount": 8
+      },
+      {
+        "route": "mods",
+        "width": 1920,
+        "noResultsMessage": true,
+        "resetRestoresOriginalCount": 15
+      },
+      {
+        "route": "memetics",
+        "width": 1920,
+        "noResultsMessage": true,
+        "resetRestoresOriginalCount": 20
+      },
+      {
+        "route": "vehicles",
+        "width": 1920,
+        "noResultsMessage": true,
+        "resetRestoresOriginalCount": 11
+      },
+      {
+        "route": "creatures",
+        "width": 1920,
+        "noResultsMessage": true,
+        "resetRestoresOriginalCount": 44
+      },
+      {
+        "route": "weapon-blueprints",
+        "width": 390,
+        "noResultsMessage": true,
+        "resetRestoresOriginalCount": 12
+      },
+      {
+        "route": "armor-materials",
+        "width": 390,
+        "noResultsMessage": true,
+        "resetRestoresOriginalCount": 8
+      },
+      {
+        "route": "mods",
+        "width": 390,
+        "noResultsMessage": true,
+        "resetRestoresOriginalCount": 15
+      },
+      {
+        "route": "memetics",
+        "width": 390,
+        "noResultsMessage": true,
+        "resetRestoresOriginalCount": 20
+      },
+      {
+        "route": "vehicles",
+        "width": 390,
+        "noResultsMessage": true,
+        "resetRestoresOriginalCount": 11
+      },
+      {
+        "route": "creatures",
+        "width": 390,
+        "noResultsMessage": true,
+        "resetRestoresOriginalCount": 44
+      }
+    ],
+    "errors": []
+  },
+  "B11_export": {
+    "routes": [],
+    "checks": [
+      {
+        "sevenAdditionalToolStatesExported": true,
+        "existingFavoriteExportRetained": true,
+        "accountIsolation": true,
+        "authAndUnrelatedDataExcluded": true,
+        "originalDataPreserved": true,
+        "deleteHandlerUnchanged": true
+      }
+    ],
+    "errors": []
+  },
+  "B14_roles_and_count": {
+    "routes": [],
+    "checks": [
+      {
+        "block": "B-09",
+        "keyboardTabOrder": true,
+        "accessibleBuildNames": 12,
+        "profileRegionName": true
+      },
+      {
+        "block": "B-14",
+        "width": 1920,
+        "role": "user",
+        "allowed": false,
+        "routeCount": null
+      },
+      {
+        "block": "B-14",
+        "width": 1920,
+        "role": "moderator",
+        "allowed": true,
+        "routeCount": 30
+      },
+      {
+        "block": "B-14",
+        "width": 1920,
+        "role": "admin",
+        "allowed": true,
+        "routeCount": 30
+      },
+      {
+        "block": "B-14",
+        "width": 1920,
+        "role": "owner",
+        "allowed": true,
+        "routeCount": 30
+      },
+      {
+        "block": "B-14",
+        "width": 390,
+        "role": "user",
+        "allowed": false,
+        "routeCount": null
+      },
+      {
+        "block": "B-14",
+        "width": 390,
+        "role": "moderator",
+        "allowed": true,
+        "routeCount": 30
+      },
+      {
+        "block": "B-14",
+        "width": 390,
+        "role": "admin",
+        "allowed": true,
+        "routeCount": 30
+      },
+      {
+        "block": "B-14",
+        "width": 390,
+        "role": "owner",
+        "allowed": true,
+        "routeCount": 30
+      },
+      {
+        "block": "B-14",
+        "derivedCount": true,
+        "regularCount": 27,
+        "renderableCount": 30,
+        "additionalRendererCount": 31
+      }
+    ],
+    "errors": []
+  },
+  "final_appearance_guards": {
+    "checks": [
+      {
+        "route": "weapon-blueprints",
+        "width": 390,
+        "defaultGeometryUnchanged": true,
+        "controlsUnchanged": true,
+        "accessibleLabelsAndLandmarksValid": true
+      },
+      {
+        "route": "armor-materials",
+        "width": 390,
+        "defaultGeometryUnchanged": true,
+        "controlsUnchanged": true,
+        "accessibleLabelsAndLandmarksValid": true
+      },
+      {
+        "route": "mods",
+        "width": 390,
+        "defaultGeometryUnchanged": true,
+        "controlsUnchanged": true,
+        "accessibleLabelsAndLandmarksValid": true
+      },
+      {
+        "route": "memetics",
+        "width": 390,
+        "defaultGeometryUnchanged": true,
+        "controlsUnchanged": true,
+        "accessibleLabelsAndLandmarksValid": true
+      },
+      {
+        "route": "vehicles",
+        "width": 390,
+        "defaultGeometryUnchanged": true,
+        "controlsUnchanged": true,
+        "accessibleLabelsAndLandmarksValid": true
+      },
+      {
+        "route": "creatures",
+        "width": 390,
+        "defaultGeometryUnchanged": true,
+        "controlsUnchanged": true,
+        "accessibleLabelsAndLandmarksValid": true
+      },
+      {
+        "route": "profile",
+        "width": 390,
+        "defaultGeometryUnchanged": true,
+        "controlsUnchanged": true,
+        "accessibleLabelsAndLandmarksValid": true
+      },
+      {
+        "route": "settings/profile",
+        "width": 390,
+        "defaultGeometryUnchanged": true,
+        "controlsUnchanged": true,
+        "accessibleLabelsAndLandmarksValid": true
+      },
+      {
+        "route": "weapon-blueprints",
+        "width": 1920,
+        "defaultGeometryUnchanged": true,
+        "controlsUnchanged": true,
+        "accessibleLabelsAndLandmarksValid": true
+      },
+      {
+        "route": "armor-materials",
+        "width": 1920,
+        "defaultGeometryUnchanged": true,
+        "controlsUnchanged": true,
+        "accessibleLabelsAndLandmarksValid": true
+      },
+      {
+        "route": "mods",
+        "width": 1920,
+        "defaultGeometryUnchanged": true,
+        "controlsUnchanged": true,
+        "accessibleLabelsAndLandmarksValid": true
+      },
+      {
+        "route": "memetics",
+        "width": 1920,
+        "defaultGeometryUnchanged": true,
+        "controlsUnchanged": true,
+        "accessibleLabelsAndLandmarksValid": true
+      },
+      {
+        "route": "vehicles",
+        "width": 1920,
+        "defaultGeometryUnchanged": true,
+        "controlsUnchanged": true,
+        "accessibleLabelsAndLandmarksValid": true
+      },
+      {
+        "route": "creatures",
+        "width": 1920,
+        "defaultGeometryUnchanged": true,
+        "controlsUnchanged": true,
+        "accessibleLabelsAndLandmarksValid": true
+      },
+      {
+        "route": "profile",
+        "width": 1920,
+        "defaultGeometryUnchanged": true,
+        "controlsUnchanged": true,
+        "accessibleLabelsAndLandmarksValid": true
+      },
+      {
+        "route": "settings/profile",
+        "width": 1920,
+        "defaultGeometryUnchanged": true,
+        "controlsUnchanged": true,
+        "accessibleLabelsAndLandmarksValid": true
+      },
+      {
+        "route": "admin",
+        "width": 390,
+        "defaultGeometryUnchanged": true,
+        "controlsUnchanged": true,
+        "accessibleLabelsAndLandmarksValid": true
+      },
+      {
+        "route": "admin",
+        "width": 1920,
+        "defaultGeometryUnchanged": true,
+        "controlsUnchanged": true,
+        "accessibleLabelsAndLandmarksValid": true
+      }
+    ],
+    "errors": [],
+    "cssAuthDataStateNavigationUnchanged": true
+  },
+  "baselineRemote": "d203d85d9094bc23fdecb56e857c9a221ceb8ebf",
+  "main": "94ab9f8fa408fc1ed3bd1721961321c0cec2eb45",
+  "environment": "Local Chromium, 1920x1080 and 390x844; mocked auth/roles; isolated local tool data; no live database mutations or real email/provider tests.",
+  "B13_review": {
+    "cssFilesUnchanged": true,
+    "legacyDrawerRetained": true,
+    "historicalHelpersRetained": true,
+    "noConfirmedVisualRegressionSelectedForAutomaticCorrection": true,
+    "pending": "Separate CSS/cascade and legacy-structure decision; no removal or restyling authorized."
+  },
+  "unchangedB09ScreenshotSha256": {
+    "builds-1920.png": "421f68568beed2d745b69767db1a76be4e8de18a80fe9d8032cfeb41c1f495c9",
+    "settings-profile-1920.png": "83a2c301113f18356b9c801eaa2d6a19f3708b1fca89e9eaa7cf96f5a0600d72",
+    "settings-profile-390.png": "908eacc1b3a86a166f026243f089becb60de473af5dbead65058b4b01bf8505a",
+    "tech-workbench-1920.png": "03a69795da7f667d647b3201885acb5649f5a804619818bc119c73e21a7e09aa",
+    "profile-390.png": "4d1eb8988809e98474f99fd6aefcb3b568baafee6405789c2a0df0d9bea1631b",
+    "admin-390.png": "110100efcee42ef49c94300297636202302aff85f1e6041231457e7c8648ef31",
+    "builds-390.png": "7396c62ae7381065626da22f4988a6051aadf083aab9ec12bb895ea8a2e60cca",
+    "admin-1920.png": "47d2a65fda1e506c01db4c49fb5c73c54afa87b797b8c0fae4baba07204e4fb0",
+    "profile-1920.png": "9f669bba90da13081db2bba173a5eaf36ceda7f80f89486998a38e53ad248d76",
+    "tech-workbench-390.png": "20dfecc56a1f752154e5d9cb5d68aa9633a0093e88090bcf532b12a8f636125d"
+  }
+}

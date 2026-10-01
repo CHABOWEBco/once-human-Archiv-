@@ -76,7 +76,7 @@ function routePreview(src,title){
 }
 function renderSettings(){
   const p=read(),a=globalThis.JMA_AUTH?.getAccount?.()||{},name=a.name||a.email||'Meta-Human',section=settingsSection(),profileMode=section==='profile';
-  return '<section class="settings-page" aria-labelledby="settingsTitle">'+
+  return '<section class="settings-page" aria-labelledby="'+(profileMode?'settingsProfileTitle':'settingsTitle')+'">'+
     '<div class="settings-backdrop" aria-hidden="true"></div>'+
     '<div class="settings-window">'+
       '<aside class="settings-sidebar">'+
@@ -91,11 +91,11 @@ function renderSettings(){
         '</nav>'+
       '</aside>'+
       (profileMode
-        ?'<main class="settings-content settings-content-profile">'+
+        ?'<div class="settings-content settings-content-profile">'+
           (globalThis.JMA_PROFILE_SETTINGS?.render?.()||'<section class="settings-profile-unavailable"><b>Profil-Editor nicht verfügbar.</b></section>')+
-        '</main>'
+        '</div>'
         :section==='notifications'
-          ?'<main class="settings-content settings-content-single">'+
+          ?'<div class="settings-content settings-content-single">'+
             '<section class="settings-single-panel">'+
               '<header class="settings-titlebar"><div class="settings-title-icon">'+sidebarIcon('alerts')+'</div><div><h1 id="settingsTitle">Benachrichtigungen</h1><p>Steuere reale Hinweise des Archivs.</p></div></header>'+
               '<div class="settings-toggles settings-toggles-single">'+
@@ -103,9 +103,9 @@ function renderSettings(){
               '</div>'+
               '<div class="settings-info-card"><small>AKTUELL ANGEBUNDEN</small><b>Login-Begrüßung</b><p>Weitere Benachrichtigungsarten werden erst ergänzt, wenn dafür echte Ereignisse vorhanden sind.</p></div>'+
             '</section>'+
-          '</main>'
+          '</div>'
           :section==='security'
-            ?'<main class="settings-content settings-content-single">'+
+            ?'<div class="settings-content settings-content-single">'+
               '<section class="settings-single-panel">'+
                 '<header class="settings-titlebar"><div class="settings-title-icon">'+sidebarIcon('security')+'</div><div><h1 id="settingsTitle">Sicherheit</h1><p>Kontosicherheit über deine bestehende Supabase-Sitzung.</p></div></header>'+
                 '<div class="settings-account-status"><small>ANGEMELDETES KONTO</small><b>'+safe(a.email||'Keine E-Mail verfügbar')+'</b><span>Passwortänderungen werden direkt über Supabase Auth gespeichert.</span></div>'+
@@ -117,8 +117,8 @@ function renderSettings(){
                 '</form>'+
                 '<div class="settings-info-card"><small>SICHERHEITSSTATUS</small><b>Supabase Auth aktiv</b><p>Keine erfundene 2FA- oder Geräteverwaltung: Hier werden nur tatsächlich vorhandene Sicherheitsfunktionen angeboten.</p></div>'+
               '</section>'+
-            '</main>'
-            :'<main class="settings-content">'+
+            '</div>'
+            :'<div class="settings-content">'+
         '<section class="settings-controls">'+
           '<header class="settings-titlebar"><div class="settings-title-icon">'+sidebarIcon('themes')+'</div><div><h1 id="settingsTitle">Archiv-Interface</h1><p>Darstellung für Admin Backend, Live-Karte und Profil.</p></div></header>'+
           '<div class="settings-segment" role="group" aria-label="Farbschema">'+
@@ -149,7 +149,7 @@ function renderSettings(){
             '<article><small>03 / PROFIL</small><b>Profil</b><span>Panels · Tabs · Akzent · Radius · Schrift</span><a href="#/profile">Öffnen ↗</a></article>'+
           '</div>'+
         '</section>'+
-      '</main>')+
+      '</div>')+
       '<div class="settings-updated" id="settingsUpdated" role="status" aria-live="polite"><span>✓</span><div><b>Theme aktualisiert</b><small>Deine Einstellungen wurden gespeichert.</small></div></div>'+
     '</div>'+
   '</section>';

@@ -1,6 +1,6 @@
 # Supabase setup – Kernschema
 
-Dieser Ordner enthält die vorbereitete Supabase-Datenbankbasis. Die Website ist in diesem Stand **noch nicht** mit einem Supabase-Projekt verbunden. Es werden keine echten Projekt-Keys eingecheckt.
+Dieser Ordner enthält die Datenbankbasis im Repository. Die Website besitzt inzwischen eine konfigurierte Supabase-Verbindung in `supabase-client.js`, einschließlich öffentlichem Publishable-Key. Login, Registrierung, Session-Restore, Recovery und Profil-/Rollenbezug sind frontendseitig angebunden. Der tatsächliche Live-Datenbankstand und die Auth-Redirect-Allowlist sind durch diese Dokumentation nicht bestätigt. Ein geheimer `service_role`-Key ist kein Bestandteil der Frontend-Verbindung.
 
 ## Migration
 
@@ -31,9 +31,9 @@ Für `profiles` darf ein Benutzer nur seine eigene Zeile sehen und nur `display_
 
 Ein `service_role`-Schlüssel gehört niemals in Browsercode oder dieses Repository. Eine spätere Rollenverwaltung wird über einen separaten sicheren Server-/Adminweg aufgebaut.
 
-## Später in Supabase ausführen
+## Migration und Live-Abgleich
 
-Bevor die echte Verbindung hergestellt wird, ein Supabase-Projekt anlegen bzw. auswählen.
+Das Frontend-Projekt ist bereits konfiguriert. Vor einer erneuten Migration muss dessen aktueller Tabellen-/Policy-/Triggerstand read-only mit dieser Datei abgeglichen werden; diese Prüfung wurde hier nicht live ausgeführt. Die folgenden Befehle beschreiben den bestehenden Migrationsweg, keine Aufforderung zum ungeprüften erneuten Ausführen.
 
 Empfohlener Weg über die Supabase CLI:
 
@@ -44,10 +44,9 @@ Empfohlener Weg über die Supabase CLI:
 
 Alternativ kann die SQL-Datei einmalig im Supabase SQL Editor ausgeführt werden. Für reproduzierbare Änderungen sollte danach weiterhin die Migration im Repository die maßgebliche Quelle bleiben.
 
-## Für die echte Projektverbindung später benötigt
+## Konfiguration und noch offener Live-Nachweis
 
-- Supabase Project URL
-- öffentlicher Browser-Key (Publishable Key bzw. Legacy `anon` Key)
+- Project URL und öffentlicher Browser-Key sind bereits im zentralen Frontend-Client konfiguriert
 - Project Ref für CLI/Deployment
 - gewünschte Site URL und erlaubte Auth-Redirect-URLs
 - Entscheidung zu E-Mail-Bestätigung und Passwort-Reset
@@ -55,11 +54,15 @@ Alternativ kann die SQL-Datei einmalig im Supabase SQL Editor ausgeführt werden
 
 Der geheime `service_role`-Key wird für die Frontend-Verbindung nicht benötigt und darf dort nicht verwendet werden.
 
-## Noch nicht Bestandteil dieses Blocks
+## Vorhanden und weiter offen
 
-- Frontend-Supabase-Client
-- Login/Registrierung/Passwort-Reset
-- Migration der aktuellen localStorage-Daten
-- Admin-Oberfläche
-- Rollenänderungs-RPC
+Vorhanden: zentraler Frontend-Supabase-Client, Login/Registrierung/Recovery, Profil-/Rollenbezug und rollenabhängige sichere Admin-Vorschau.
+
+Weiter offen:
+
+- Live-Abgleich von Tabellen, Policies, Triggern und Redirect-Allowlist
+- globale Migration/Synchronisierung lokaler Werkzeug- und Medienbestände
+- sichere globale Rollenverwaltung, Moderationsmutationen und Server-Audit
 - Builds, Routen, Posts, Einreichungen oder sonstige Fachtabellen
+
+Unsichere Client-Mutationen bleiben im bestehenden Admin-Panel deaktiviert. Diese Aktualisierung korrigiert nur die Dokumentation; keine Datenbank- oder Auth-Konfiguration wurde verändert.
