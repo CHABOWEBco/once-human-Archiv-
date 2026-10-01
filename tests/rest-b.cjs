@@ -25,5 +25,27 @@ for(const width of [1920,390]){await page.setViewportSize({width,height:width===
 await page.evaluate(()=>localStorage.setItem('test:role',JSON.stringify('owner')));await page.reload();await page.waitForFunction(()=>JMA_AUTH.getState().ready);await page.evaluate(()=>location.hash='#/admin');await page.waitForSelector('[data-admin-view="system"]');await page.click('[data-admin-view="system"]');
 ok((await page.locator('.admin-system-list').innerText()).includes('Katalog-Speicherweg')&&(await page.locator('.admin-system-list').innerText()).includes('catalog_entries'),'Admin system correctly names real catalog storage');
 ok((await page.locator('.admin-system-list').innerText()).includes('Moderations-RPC')&&(await page.locator('.admin-system-list').innerText()).includes('nicht angebunden'),'Global backend boundaries retained');
+await page.setViewportSize({width:1920,height:1080});await page.click('[data-admin-view="overview"]');
+ok(await page.locator('.admin-metric').filter({hasText:'Website-Routen'}).locator('strong').innerText()==='30','Admin counts 30 distinct renderable routes');
+await page.click('[data-admin-view="content"]');
+ok((await page.locator('.admin-inspector').innerText()).includes('in Supabase speichern')&&!(await page.locator('.admin-inspector').innerText()).includes('entsteht später'),'Existing content inventory correctly identifies operational catalog editor');
+const inventory=await page.evaluate(()=>({regular:ROUTES.map(x=>x.id),renderable:[...new Set([...ROUTES.map(x=>x.id),...Object.keys(FULL_ROUTE_RENDERERS)])],nav:NAV.map(x=>x[0]),registered:ROUTES.every(r=>['home','database'].includes(r.id)||typeof FULL_ROUTE_RENDERERS[r.id]==='function')}));
+fs.writeFileSync(path.join(out,'route-inventory.json'),JSON.stringify(inventory,null,2));
+ok(inventory.regular.length===27&&inventory.renderable.length===30&&inventory.registered,'27 regular entries and all 30 render targets present');
+ok(['settings','live-map','admin'].every(id=>inventory.renderable.includes(id)&&!inventory.regular.includes(id))&&inventory.nav.length===7,'Three separate routes and seven main navigation entries preserved');
+await page.evaluate(()=>location.hash='#/home');await page.waitForSelector('.landing-stat');
+ok(await page.locator('.landing-stat').first().locator('b').innerText()==='27'&&await page.locator('.landing-stat').first().locator('small').innerText()==='Reguläre Routen','Home label accurately describes count of regular routes');
+ok(await page.locator('#headerLiveMapLink').getAttribute('href')==='#/live-map'&&await page.locator('#headerAdminLink').getAttribute('href')==='#/admin','Existing special-route account links preserved');
+await page.click('#searchTrigger');const emptySearch=await page.locator('#searchResults a').evaluateAll(rows=>rows.map(x=>x.getAttribute('href').slice(2)));
+ok(JSON.stringify(emptySearch)===JSON.stringify(inventory.regular),'Empty global search lists exactly the 27 regular routes');
+await page.fill('#globalSearch','profil');
+ok(!(await page.locator('#searchResults').innerText()).includes('2FA')&&(await page.locator('#searchResults').innerText()).includes('Sammlung'),'Profile search describes actual features without unsupported 2FA promise');
+await page.fill('#globalSearch','a');const expected=await page.evaluate(()=>CATALOG_DATA.entries.filter(e=>[e.name_de,e.kind,...(e.tags||[])].join(' ').toLowerCase().includes('a')).slice(0,8).map(e=>e.id));
+ok(JSON.stringify(await page.locator('[data-catalog-jump]').evaluateAll(rows=>rows.map(x=>x.dataset.catalogJump)))===JSON.stringify(expected)&&expected.length===8,'Global catalog search retains original fields and eight-result limit');
+const firstEntry=await page.evaluate(()=>({id:CATALOG_DATA.entries[0].id,name:CATALOG_DATA.entries[0].name_de}));await page.fill('#globalSearch',firstEntry.name);await page.locator('[data-catalog-jump="'+firstEntry.id+'"]').click();await page.waitForSelector('#catalogDialog[open]');
+ok(await page.locator('#catalogDetailTitle').innerText()===firstEntry.name,'Catalog search opens the matching saved catalog entry');
+await page.click('[data-db-close]');await page.evaluate(()=>location.hash='#/collection');await page.waitForSelector('[data-profile-view-panel="collection"]:not([hidden])');
+ok(await page.evaluate(()=>location.hash==='#/profile'&&JMA_STORE.read('jma_profile_view')==='collection'),'Collection alias still opens existing profile collection');
+for(const width of [1920,390]){await page.setViewportSize({width,height:width===390?844:1080});await page.evaluate(()=>location.hash='#/home');await page.waitForSelector('.landing-stat');ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth&&[...document.querySelectorAll('.landing-stat small')].every(el=>el.getBoundingClientRect().right<=el.closest('.landing-stat').getBoundingClientRect().right)),'Corrected home label fits '+width+'px');await page.screenshot({path:path.join(out,'home-'+width+'.png'),fullPage:true});await page.evaluate(()=>location.hash='#/admin');await page.waitForSelector('[data-admin-view="content"]');await page.click('[data-admin-view="content"]');ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'Corrected admin content text fits '+width+'px');await page.screenshot({path:path.join(out,'admin-content-'+width+'.png'),fullPage:true})}
 ok(errors.length===0,'No browser exceptions');console.log('PASS rest-b checks:',checks);
 }finally{await browser.close();server.close()}})().catch(e=>{console.error(e);server.close();process.exitCode=1});

@@ -13,7 +13,7 @@ const ROUTES = [
   ['builds','Builds','⚒','Build-Planer, Slots, Werte, Speichern und Laden'],
   ['community','Community','♙','Fragen, Wissen und Community-Austausch'],
   ['submissions','Einreichungen','⇧','Funde, Korrekturen und Moderationsabläufe'],
-  ['profile','Profil & Sicherheit','○','Profil, Fortschritt, Sicherheit und 2FA'],
+  ['profile','Profil & Sicherheit','○','Profil, Sammlung, Fortschritt und Kontoinformationen'],
   ['weapon-blueprints','Waffen-Baupläne','⌁','Waffen-Baupläne und zugehörige Daten'],
   ['armor-blueprints','Rüstungs-Baupläne','⬡','Rüstungs-Baupläne und Sets'],
   ['armor-materials','Rüstungsmaterialien','▧','Materialien für Rüstung und Herstellung'],
@@ -179,7 +179,7 @@ function renderHome(){
 
         <section class="landing-status">
           <div class="landing-section-head"><h2>Plattform in Zahlen</h2><a href="#/database"${gateAttr}>Mehr erfahren →</a></div>
-          <div class="landing-stats"><div class="landing-stat"><i>◫</i><span><b>${ROUTES.length}</b><small>Haupt-Routen</small></span></div><div class="landing-stat"><i>⚒</i><span><b>${builds.length}</b><small>Build-Vorlagen</small></span></div><div class="landing-stat"><i>▱</i><span><b>${entries.length}</b><small>kuratierte Einträge</small></span></div><div class="landing-stat"><i>◇</i><span><b>${cats.length}</b><small>Kategorien</small></span></div></div>
+          <div class="landing-stats"><div class="landing-stat"><i>◫</i><span><b>${ROUTES.length}</b><small>Reguläre Routen</small></span></div><div class="landing-stat"><i>⚒</i><span><b>${builds.length}</b><small>Build-Vorlagen</small></span></div><div class="landing-stat"><i>▱</i><span><b>${entries.length}</b><small>kuratierte Einträge</small></span></div><div class="landing-stat"><i>◇</i><span><b>${cats.length}</b><small>Kategorien</small></span></div></div>
           <div class="landing-community"><div><small>COMMUNITY CORE</small><h3>GEMEINSAM WISSEN AUFBAUEN</h3><p>Beiträge, Builds und geprüfte Archivdaten greifen auf denselben vorhandenen Datenstand zu.</p><a class="landing-secondary" href="#/community"${gateAttr}>ZUR COMMUNITY →</a></div></div>
         </section>
       </div>
