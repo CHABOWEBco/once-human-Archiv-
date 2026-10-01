@@ -1,6 +1,6 @@
 # Supabase setup – Kernschema
 
-Dieser Ordner enthält die Datenbankbasis im Repository. Die Website besitzt inzwischen eine konfigurierte Supabase-Verbindung in `supabase-client.js`, einschließlich öffentlichem Publishable-Key. Login, Registrierung, Session-Restore, Recovery und Profil-/Rollenbezug sind frontendseitig angebunden. Der tatsächliche Live-Datenbankstand und die Auth-Redirect-Allowlist sind durch diese Dokumentation nicht bestätigt. Ein geheimer `service_role`-Key ist kein Bestandteil der Frontend-Verbindung.
+Dieser Ordner enthält die Datenbankbasis im Repository. Die Website besitzt inzwischen eine konfigurierte Supabase-Verbindung in `supabase-client.js`, einschließlich öffentlichem Publishable-Key. Login, Registrierung, Session-Restore, Recovery und Profil-/Rollenbezug sind frontendseitig angebunden. Tabellen, Grants, RLS, Trigger und Auth-Konfiguration wurden am 01.10.2026 read-only live geprüft; Nachweis: `../docs/B12_LIVE_20261001.json`. Die Recovery-Allowlist enthält noch den alten Preview-Branch und muss separat freigegeben korrigiert werden. Ein geheimer `service_role`-Key ist kein Bestandteil der Frontend-Verbindung.
 
 ## Migration
 
@@ -46,23 +46,29 @@ Empfohlener Weg über die Supabase CLI:
 
 Alternativ kann die SQL-Datei einmalig im Supabase SQL Editor ausgeführt werden. Für reproduzierbare Änderungen sollte danach weiterhin die Migration im Repository die maßgebliche Quelle bleiben.
 
-## Konfiguration und noch offener Live-Nachweis
+## Live-Konfiguration und offene Grenzen
 
-- Project URL und öffentlicher Browser-Key sind bereits im zentralen Frontend-Client konfiguriert
-- Project Ref für CLI/Deployment
-- gewünschte Site URL und erlaubte Auth-Redirect-URLs
-- Entscheidung zu E-Mail-Bestätigung und Passwort-Reset
-- der Benutzer, der später initial die Rolle `owner` erhalten soll
+- Drei Live-Tabellen: `profiles` und `user_roles` mit RLS ENABLED/FORCED; `catalog_entries` mit RLS ENABLED (nicht FORCED, wie in der Migration).
+- Sechs Live-Policies: zwei eigene Profil-Policies, eine eigene Rollen-Lese-Policy und drei Katalog-Policies.
+- Authenticated darf ausschließlich `profiles.display_name`/`avatar_url` am eigenen Profil ändern. Rollen besitzen keine Client-Schreibrechte.
+- Katalog: anon SELECT; authenticated INSERT sowie UPDATE nur auf `entry`, `revision`, `updated_at`, `updated_by`, jeweils zusätzlich mit den vorhandenen Moderator-/Admin-/Owner-RLS-Prüfungen. Kein Client-DELETE und keine ID-/created_at-Änderung.
+- Der private Rollenhelfer verwendet die serverseitige Rolle (`user` < `moderator` < `admin` < `owner`), SECURITY DEFINER und einen leeren festen search_path. Trigger erzeugt ausschließlich Standardrolle `user`.
+- Live: 21 eindeutige Einträge, Revision 1, alle Originalfelder identisch zum erhaltenen JSON-Bestand. 14 Kategorien bleiben lokal definiert; acht davon werden von den 21 Einträgen verwendet.
+- Auth: E-Mail-Anmeldung aktiv, Registrierung erlaubt, E-Mail-Bestätigung erforderlich; externe Website-Login-Provider deaktiviert. Der GitHub-Login ins Supabase-Dashboard ist ein separater Dashboardzugang.
+- Site URL: `http://localhost:3000`; einzige Redirect-URL: `https://raw.githack.com/CHABOWEBco/once-human-Archiv-/design-preview/index.html`. Die vom Frontend verwendete `admin-editor-preview/index.html`-Recovery-URL fehlt. Nicht passende Redirects können auf Site URL zurückfallen. Kleinste vorgeschlagene Korrektur: exakte aktuelle Preview-Adresse ergänzen; Site URL separat auf das bestätigte Ziel setzen. Keine Konfigurationsänderung in diesem Durchgang.
+- Auth-Tokens: 3600 s Ablaufzeit, Replay-Erkennung für Refresh-Tokens aktiv, 10 s Wiederverwendungsintervall. Session-Timebox/Inaktivitätsgrenze beide 0; Single-Session nicht aktiviert. Diese erweiterten Sessionregeln sind im vorhandenen Free-Plan nicht konfigurierbar.
+- Frontend behält persistSession, autoRefreshToken und detectSessionInUrl sowie PASSWORD_RECOVERY/updateUser/finishRecovery. Keine Live-Reset-E-Mail versendet und kein Passwort geändert.
+- Ein Live-Owner vorhanden. Die vollständigen Schreibabläufe mit vier realen Rollen wurden nicht wiederholt: weitere Rollen-Testkonten existieren nicht. Read-only Grants/Policies/Helper-Prüfung bestanden; vorhandene isolierte Editor-/Reload-/Versionsschutztests bleiben der Integrationsnachweis.
 
 Der geheime `service_role`-Key wird für die Frontend-Verbindung nicht benötigt und darf dort nicht verwendet werden.
 
 ## Vorhanden und weiter offen
 
-Vorhanden: zentraler Frontend-Supabase-Client, Login/Registrierung/Recovery, Profil-/Rollenbezug und rollenabhängige sichere Admin-Vorschau.
+Vorhanden: zentraler Frontend-Supabase-Client, Login/Registrierung/Recovery-Code, Profil-/Rollenbezug, rollenabhängige Adminansichten und realer Katalog-Speicherweg.
 
 Weiter offen:
 
-- Live-Abgleich von Tabellen, Policies, Triggern und Redirect-Allowlist
+- Freigegebene Korrektur der oben dokumentierten Auth-Redirect-Konfiguration
 - globale Migration/Synchronisierung lokaler Werkzeug- und Medienbestände
 - sichere globale Rollenverwaltung, Moderationsmutationen und Server-Audit
 - Builds, Routen, Posts, Einreichungen oder sonstige Fachtabellen

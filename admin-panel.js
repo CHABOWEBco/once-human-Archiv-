@@ -244,11 +244,11 @@ function systemView(){
     ['Globale Rollenmutation','nicht angebunden',false],
     ['Moderations-RPC','nicht angebunden',false],
     ['Server-Audit','nicht angebunden',false],
-    ['Admin Live-Adapter','nicht vorhanden',false]
+    ['Katalog-Speicherweg','catalog_entries',true]
   ];
   return '<section class="admin-view">'+panelHead('SYSTEM','System & Sicherheit')+
     '<div class="admin-system-grid"><section class="admin-glass">'+panelHead('VERBINDUNGEN','Aktueller Integrationsstand')+'<div class="admin-system-list">'+facts.map(x=>'<span><i class="'+(x[2]?'ok':'off')+'"></i><b>'+esc(x[0])+'</b><em>'+esc(x[1])+'</em></span>').join('')+'</div></section>'+
-    '<aside class="admin-glass admin-security-card"><span class="security-ring"><i></i><b>SAFE</b></span><small>ADMIN PREVIEW</small><h3>Keine Scheinberechtigungen</h3><p>Die Oberfläche darf bereits hochwertig und vollständig aussehen. Kritische Aktionen bleiben jedoch deaktiviert, bis das Backend sie serverseitig erzwingt.</p><button type="button" class="admin-secondary" data-admin-go="profile">Profil & Sicherheit →</button></aside></div>'+
+    '<aside class="admin-glass admin-security-card"><span class="security-ring"><i></i><b>SAFE</b></span><small>ADMIN PREVIEW</small><h3>Keine Scheinberechtigungen</h3><p>Katalogänderungen werden über Supabase und die vorhandenen RLS-Policies gespeichert. Globale Rollen-, Sperr- und Moderationsaktionen bleiben deaktiviert.</p><button type="button" class="admin-secondary" data-admin-go="profile">Profil & Sicherheit →</button></aside></div>'+
   '</section>';
 }
 function renderView(){

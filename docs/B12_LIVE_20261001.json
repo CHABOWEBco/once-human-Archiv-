@@ -1,0 +1,122 @@
+{
+  "date": "2026-10-01",
+  "project": "pmoazkdpkxveloespevd",
+  "methods": [
+    "Supabase dashboard SQL read-only introspection",
+    "read-only transaction with privilege/helper assertions and ROLLBACK",
+    "public REST catalog GET",
+    "public Auth settings GET",
+    "dashboard Auth URL/session configuration"
+  ],
+  "database_changed": false,
+  "tables": [
+    {
+      "name": "profiles",
+      "rls": true,
+      "forced": true,
+      "columns": [
+        "id",
+        "display_name",
+        "avatar_url",
+        "created_at",
+        "updated_at"
+      ]
+    },
+    {
+      "name": "user_roles",
+      "rls": true,
+      "forced": true,
+      "columns": [
+        "user_id",
+        "role",
+        "created_at",
+        "updated_at"
+      ]
+    },
+    {
+      "name": "catalog_entries",
+      "rls": true,
+      "forced": false,
+      "columns": [
+        "id",
+        "entry",
+        "revision",
+        "created_at",
+        "updated_at",
+        "updated_by"
+      ]
+    }
+  ],
+  "role_enum": [
+    "user",
+    "moderator",
+    "admin",
+    "owner"
+  ],
+  "role_counts": {
+    "owner": 1
+  },
+  "policies": {
+    "profiles": [
+      "profiles_select_own",
+      "profiles_update_own"
+    ],
+    "user_roles": [
+      "user_roles_select_own"
+    ],
+    "catalog_entries": [
+      "catalog_entries_public_read",
+      "catalog_entries_moderator_insert",
+      "catalog_entries_moderator_update"
+    ]
+  },
+  "catalog": {
+    "rows": 21,
+    "distinct_ids": 21,
+    "invalid_ids": 0,
+    "revision_values": [
+      1
+    ],
+    "used_categories": 8,
+    "category_options": 14,
+    "anonymous_rest_status": 200,
+    "all_entry_fields_match_preserved_json": true
+  },
+  "permission_assertions": "passed",
+  "client_role_mutation": false,
+  "client_catalog_delete": false,
+  "helper_checks": {
+    "existing_owner_accepts_moderator_threshold": true,
+    "existing_owner_accepts_owner_threshold": true,
+    "unassigned_identity_rejected": true
+  },
+  "triggers": [
+    "profiles_set_updated_at",
+    "user_roles_set_updated_at",
+    "once_human_create_identity"
+  ],
+  "auth": {
+    "email_provider": true,
+    "signup_allowed": true,
+    "email_confirmation_required": true,
+    "external_providers_enabled": [],
+    "site_url": "http://localhost:3000",
+    "redirect_urls": [
+      "https://raw.githack.com/CHABOWEBco/once-human-Archiv-/design-preview/index.html"
+    ],
+    "current_preview_recovery_allowed": false,
+    "access_token_expiry_seconds": 3600,
+    "refresh_token_replay_detection": true,
+    "refresh_token_reuse_seconds": 10,
+    "session_timebox_hours": 0,
+    "inactivity_timeout_hours": 0,
+    "single_session": false,
+    "configuration_changed": false
+  },
+  "frontend_secret_key_findings": [],
+  "limits": [
+    "No production writes, user creation or reset mails used for testing.",
+    "Normal-user/moderator/admin real account CRUD not repeated because only owner account exists.",
+    "RLS is independent of frontend role/UI visibility."
+  ]
+}
