@@ -192,13 +192,13 @@ function avatar(p=appearance(),tiny=false){const a=globalThis.PROFILE_ASSETS.ava
 globalThis.JMA_PROFILE={avatar,appearance,stats:profileStats};
 globalThis.JMA_PROFILE_SETTINGS={render:renderProfileSettingsEditor,bind:()=>{bindProfileAppearance();bindProfileEditorTabs();on('#profileEditClose','click',()=>{location.hash='#/settings'})}};
 
-function renderProfileEditorBody(a,initial,email,embedded=false){
+function renderProfileEditorBody(a,initial,email){
   const p=appearance(),banner=globalThis.PROFILE_ASSETS.banners.find(x=>x.id===p.banner),bannerSrc=banner?.src||'./assets/reference/feature-map.webp';
   const tabs=[
     ['general','ALLGEMEIN'],['avatar','PROFILBILD'],['banner','BANNER'],['colors','FARBEN'],['about','ÜBER MICH'],
     ['highlights','HIGHLIGHTS'],['widgets','WIDGETS'],['frames','RAHMEN'],['decorations','RINGE & KRÄNZE'],['trophies','TROPHÄEN']
   ];
-  const livePreview=embedded?`<div class="settings-profile-live" data-profile-live style="--profile-live-accent:${profileColors[p.color]};--profile-live-banner:url('${esc(bannerSrc)}')">
+  const livePreview=`<div class="settings-profile-live" data-profile-live style="--profile-live-accent:${profileColors[p.color]};--profile-live-banner:url('${esc(bannerSrc)}')">
     <div class="settings-profile-live-art">
       <div class="settings-profile-live-avatar" data-profile-live-avatar>${avatar(p)}</div>
       <div class="settings-profile-live-copy">
@@ -209,16 +209,13 @@ function renderProfileEditorBody(a,initial,email,embedded=false){
       </div>
       <div class="settings-profile-live-chip" data-profile-live-chip>PROFILIDENTITÄT</div>
     </div>
-  </div>`:'';
-  const tabStrip=embedded?`<nav class="settings-profile-tabs" aria-label="Profilbereiche">
+  </div>`;
+  const tabStrip=`<nav class="settings-profile-tabs" aria-label="Profilbereiche">
     ${tabs.map(([id,label],index)=>`<button type="button" class="${index===0?'active':''}" data-profile-edit-tab="${id}">${label}</button>`).join('')}
-  </nav>`:`<nav class="profile-ref-drawer-nav" aria-label="Profil bearbeiten">
-    ${tabs.slice(0,7).map(([id,label],index)=>`<button type="button" class="${index===0?'active':''}" data-profile-edit-tab="${id}">${label}</button>`).join('')}
   </nav>`;
-  return `<div class="profile-ref-drawer-body ${embedded?'settings-profile-flat':''}">
-    ${embedded?'':tabStrip}
-    <div class="profile-ref-drawer-content ${embedded?'settings-profile-work':''}">
-      ${embedded?tabStrip:''}
+  return `<div class="profile-ref-drawer-body settings-profile-flat">
+    <div class="profile-ref-drawer-content settings-profile-work">
+      ${tabStrip}
       ${livePreview}
       <div class="settings-profile-panel-stage">
         <section class="active" data-profile-edit-panel="general">
@@ -233,7 +230,7 @@ function renderProfileEditorBody(a,initial,email,embedded=false){
         <section data-profile-edit-panel="about"></section>
         <section data-profile-edit-panel="highlights"></section>
         <section data-profile-edit-panel="widgets"></section>
-        ${embedded?'<section data-profile-edit-panel="frames"></section><section data-profile-edit-panel="decorations"></section><section data-profile-edit-panel="trophies"></section>':''}
+        <section data-profile-edit-panel="frames"></section><section data-profile-edit-panel="decorations"></section><section data-profile-edit-panel="trophies"></section>
       </div>
     </div>
   </div>`;
@@ -245,7 +242,7 @@ function renderProfileSettingsEditor(){
       <div><small>PROFIL // EDITOR</small><h1 id="settingsProfileTitle">PROFIL ANPASSEN</h1><p>Identität, Darstellung und Profilmodule an einem zentralen Ort.</p></div>
       <button type="button" id="profileEditClose" aria-label="Zur Darstellung zurück">← DARSTELLUNG</button>
     </header>
-    ${renderProfileEditorBody(a,initial,email,true)}
+    ${renderProfileEditorBody(a,initial,email)}
   </section>`;
 }
 
@@ -374,11 +371,6 @@ function renderProfile(){
       ${renderCollectionBody()}
     </div>
 
-    <div class="profile-ref-drawer-backdrop" id="profileEditBackdrop" hidden></div>
-    <aside class="profile-ref-drawer" id="profileEditDrawer" hidden aria-labelledby="profileEditTitle">
-      <header><div><small>PROFIL // EDITOR</small><h2 id="profileEditTitle">PROFIL ANPASSEN</h2></div><button type="button" id="profileEditClose" aria-label="Profil-Anpassen schließen">×</button></header>
-      ${renderProfileEditorBody(a,initial,email)}
-    </aside>
   </section>`;
 }
 function bindProfileHoloTabs(){
@@ -458,13 +450,11 @@ function bindProfileEditorTabs(){
   updateProfileSettingsLivePreview(editTabs.find(x=>x.classList.contains('active'))?.dataset.profileEditTab||'general');
 }
 function bindProfile(){
-  navBinds();globalThis.JMA_MEDIA.hydrate();bindProfileAppearance();bindProfileHoloTabs();
-  const drawer=qs('#profileEditDrawer'),backdrop=qs('#profileEditBackdrop');
-  const setDrawer=open=>{if(!drawer||!backdrop)return;drawer.hidden=!open;backdrop.hidden=!open;drawer.setAttribute('aria-hidden',open?'false':'true')};
+  navBinds();globalThis.JMA_MEDIA.hydrate();bindProfileHoloTabs();
+  const p=appearance();
+  const trophy=achievements().find(t=>t.id===p.trophy&&t.earned);if(trophy){const identity=qs('.profile-ref-identity');if(identity){const badge=document.createElement('span');badge.textContent=trophy.icon+' '+trophy.name;identity.append(badge)}}
+  const showcase=qs('.profile-ref-slot-row');if(showcase){showcase.innerHTML=[...set('jma_favorites')].map(id=>catalog().find(x=>x.id===id)).filter(Boolean).slice(0,4).map(x=>`<span title="${esc(x.name_de)}">★ ${esc(x.name_de)}</span>`).join('')||'<span>+</span><span>+</span><span>+</span><span>+</span>';showcase.closest('section').hidden=!p.widgets.includes('showcase')}
   qsa('[data-profile-edit-open]').forEach(b=>b.onclick=()=>{location.hash='#/settings/profile'});
-  on('#profileEditClose','click',()=>setDrawer(false));
-  on('#profileEditBackdrop','click',()=>setDrawer(false));
-  bindProfileEditorTabs();
   const setProfileView=view=>{view=view==='collection'?'collection':'overview';write('jma_profile_view',view);qsa('[data-profile-view]').forEach(x=>{const active=x.dataset.profileView===view;x.classList.toggle('active',active);active?x.setAttribute('aria-current','page'):x.removeAttribute('aria-current')});qsa('[data-profile-view-panel]').forEach(x=>x.hidden=x.dataset.profileViewPanel!==view)};
   qsa('[data-profile-view]').forEach(b=>b.onclick=()=>setProfileView(b.dataset.profileView));
   qsa('[data-profile-scroll]').forEach(b=>b.onclick=()=>{setProfileView('overview');requestAnimationFrame(()=>qs('#'+b.dataset.profileScroll)?.scrollIntoView({behavior:'smooth',block:'start'}))});
@@ -661,8 +651,7 @@ let profileDraft=null;
 async function saveProfileAppearance(name){const p=appearance(profileDraft||appearance());await globalThis.JMA_AUTH.updateProfile({name,avatar:p.avatar,appearance:p});write('jma_profile_appearance',p)}
 function bindProfileAppearance(){
   on('#profileNameForm','submit',async e=>{e.preventDefault();const name=new FormData(e.currentTarget).get('name').trim();try{await saveProfileAppearance(name);toast('Anzeigename gespeichert.');refresh()}catch(error){toast(error?.message||'Anzeigename konnte nicht gespeichert werden.')}});
- profileDraft=appearance();const drawer=qs('#profileEditDrawer'),nav=qs('.profile-ref-drawer-nav'),content=qs('.profile-ref-drawer-content'),embedded=!!drawer?.classList.contains('settings-profile-editor');
- if(!embedded&&nav&&content)for(const [id,title] of [['frames','RAHMEN'],['decorations','RINGE & KRÄNZE'],['trophies','TROPHÄEN']]){const b=document.createElement('button');b.type='button';b.dataset.profileEditTab=id;b.textContent=title;nav.append(b);const panel=document.createElement('section');panel.dataset.profileEditPanel=id;content.append(panel)}
+ profileDraft=appearance();const drawer=qs('#profileEditDrawer');
  const choices=(kind,field)=>`<div class="profile-choices ${field}-choices"><button type="button" data-profile-choice="${field}" data-value="${field==='banner'?'kartenwelt':'none'}"><span>Standard</span></button>${globalThis.PROFILE_ASSETS[kind].map(x=>`<button type="button" data-profile-choice="${field}" data-value="${x.id}" aria-pressed="${profileDraft[field]===x.id}"><img src="${esc(x.src)}" alt=""><span>${esc(x.name)}</span></button>`).join('')}</div>`;
  const avatarChoices=()=>{
    const frame=globalThis.PROFILE_ASSETS.frames.find(x=>x.id===profileDraft.frame),initial=esc((account()?.name||'?').trim().charAt(0).toUpperCase()||'?');
@@ -703,9 +692,6 @@ function bindProfileAppearance(){
  qsa('[data-profile-widget]').forEach(el=>el.onchange=()=>{profileDraft.widgets=el.checked?[...new Set([...profileDraft.widgets,el.dataset.profileWidget])]:profileDraft.widgets.filter(x=>x!==el.dataset.profileWidget)});
  on('#avatarUpload','change',async e=>{try{profileDraft.avatar=await globalThis.JMA_MEDIA.save(e.target.files[0]);preview()}catch(error){toast(error.message)}});
  qsa('[data-profile-save]').forEach(b=>b.onclick=async()=>{b.disabled=true;try{await saveProfileAppearance(qs('#profileNameForm input[name="name"]').value.trim());refresh();toast('Profil gespeichert.')}catch(error){b.parentElement.querySelector('.profile-save-message').textContent=error.message;b.disabled=false}});
- if(globalThis.__profileDrawerKey)document.removeEventListener('keydown',globalThis.__profileDrawerKey);globalThis.__profileDrawerKey=e=>{if(!drawer?.isConnected||drawer.hidden||!drawer.classList.contains('profile-ref-drawer'))return;if(e.key==='Escape'){qs('#profileEditClose').click();qs('[data-profile-edit-open]')?.focus()}if(e.key==='Tab'){const els=[...drawer.querySelectorAll('button,input,select,textarea')].filter(x=>!x.disabled&&x.getClientRects().length);const first=els[0],last=els.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}};document.addEventListener('keydown',globalThis.__profileDrawerKey);
- const trophy=achievements().find(t=>t.id===profileDraft.trophy&&t.earned);if(trophy){const identity=qs('.profile-ref-identity');if(identity){const badge=document.createElement('span');badge.textContent=trophy.icon+' '+trophy.name;identity.append(badge)}}
- const showcase=qs('.profile-ref-slot-row');if(showcase){showcase.innerHTML=[...set('jma_favorites')].map(id=>catalog().find(x=>x.id===id)).filter(Boolean).slice(0,4).map(x=>`<span title="${esc(x.name_de)}">★ ${esc(x.name_de)}</span>`).join('')||'<span>+</span><span>+</span><span>+</span><span>+</span>';showcase.closest('section').hidden=!profileDraft.widgets.includes('showcase')}
  preview();
 }
 

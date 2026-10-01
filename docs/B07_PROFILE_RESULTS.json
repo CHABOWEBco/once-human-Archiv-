@@ -1,0 +1,527 @@
+{
+  "base": "9b21c0c62ec81e600d751525b737721f29cf789a",
+  "checks": 42,
+  "results": [
+    "Visible profile geometry, text and computed styles preserved: 1920 / overview",
+    "Visible profile geometry, text and computed styles preserved: 1920 / collection",
+    "Visible profile geometry, text and computed styles preserved: 390 / overview",
+    "Visible profile geometry, text and computed styles preserved: 390 / collection",
+    "Main profile no longer builds the unreachable hidden drawer and its 95 choices",
+    "Both existing edit entry points retained",
+    "Earned trophy badge and favorites showcase preserved",
+    "Edit entry 1 opens the existing settings editor",
+    "Edit entry 2 opens the existing settings editor",
+    "All ten original categories retained at 1920",
+    "All 95 original editor choices retained at 1920",
+    "Preview height, content origin and sidebar stable across all ten categories at 1920",
+    "Every existing banner updates without moving the following content at 1920",
+    "All ten original categories retained at 1280",
+    "All 95 original editor choices retained at 1280",
+    "Preview height, content origin and sidebar stable across all ten categories at 1280",
+    "Every existing banner updates without moving the following content at 1280",
+    "All ten original categories retained at 768",
+    "All 95 original editor choices retained at 768",
+    "Preview height, content origin and sidebar stable across all ten categories at 768",
+    "Every existing banner updates without moving the following content at 768",
+    "All ten original categories retained at 390",
+    "All 95 original editor choices retained at 390",
+    "Preview height, content origin and sidebar stable across all ten categories at 390",
+    "Every existing banner updates without moving the following content at 390",
+    "All ten original categories retained at 360",
+    "All 95 original editor choices retained at 360",
+    "Preview height, content origin and sidebar stable across all ten categories at 360",
+    "Every existing banner updates without moving the following content at 360",
+    "Unsaved name updates live preview",
+    "Combined avatar and frame stay present across category switches",
+    "General Save and reload preserve all ten categories, name and widget choice",
+    "Saved name and earned trophy display on main profile without the drawer",
+    "Showcase widget visibility remains effective",
+    "Gallery upload and IndexedDB image survive reload",
+    "Integrated collection remains available",
+    "Existing collection alias still selects collection",
+    "Custom avatar upload/save/reload keeps the composed preview",
+    "Existing back-to-Appearance action preserved",
+    "No catalog writes; all entries and categories unchanged",
+    "No real Supabase requests or writes during isolated checks",
+    "No browser JavaScript exceptions"
+  ],
+  "measurements": [
+    {
+      "width": 1920,
+      "rows": [
+        {
+          "tab": "general",
+          "height": 167,
+          "width": 1156,
+          "y": 287.4375,
+          "stageY": 474.4375,
+          "workScroll": 0,
+          "sidebarHeight": 818
+        },
+        {
+          "tab": "avatar",
+          "height": 167,
+          "width": 1156,
+          "y": 287.4375,
+          "stageY": 474.4375,
+          "workScroll": 0,
+          "sidebarHeight": 818
+        },
+        {
+          "tab": "banner",
+          "height": 167,
+          "width": 1156,
+          "y": 287.4375,
+          "stageY": 474.4375,
+          "workScroll": 0,
+          "sidebarHeight": 818
+        },
+        {
+          "tab": "colors",
+          "height": 167,
+          "width": 1156,
+          "y": 287.4375,
+          "stageY": 474.4375,
+          "workScroll": 0,
+          "sidebarHeight": 818
+        },
+        {
+          "tab": "about",
+          "height": 167,
+          "width": 1156,
+          "y": 287.4375,
+          "stageY": 474.4375,
+          "workScroll": 0,
+          "sidebarHeight": 818
+        },
+        {
+          "tab": "highlights",
+          "height": 167,
+          "width": 1156,
+          "y": 287.4375,
+          "stageY": 474.4375,
+          "workScroll": 0,
+          "sidebarHeight": 818
+        },
+        {
+          "tab": "widgets",
+          "height": 167,
+          "width": 1156,
+          "y": 287.4375,
+          "stageY": 474.4375,
+          "workScroll": 0,
+          "sidebarHeight": 818
+        },
+        {
+          "tab": "frames",
+          "height": 167,
+          "width": 1156,
+          "y": 287.4375,
+          "stageY": 474.4375,
+          "workScroll": 0,
+          "sidebarHeight": 818
+        },
+        {
+          "tab": "decorations",
+          "height": 167,
+          "width": 1156,
+          "y": 287.4375,
+          "stageY": 474.4375,
+          "workScroll": 0,
+          "sidebarHeight": 818
+        },
+        {
+          "tab": "trophies",
+          "height": 167,
+          "width": 1156,
+          "y": 287.4375,
+          "stageY": 474.4375,
+          "workScroll": 0,
+          "sidebarHeight": 818
+        }
+      ]
+    },
+    {
+      "width": 1280,
+      "rows": [
+        {
+          "tab": "general",
+          "height": 167,
+          "width": 853.625,
+          "y": 274.625,
+          "stageY": 461.625,
+          "workScroll": 0,
+          "sidebarHeight": 818
+        },
+        {
+          "tab": "avatar",
+          "height": 167,
+          "width": 853.625,
+          "y": 274.625,
+          "stageY": 461.625,
+          "workScroll": 0,
+          "sidebarHeight": 818
+        },
+        {
+          "tab": "banner",
+          "height": 167,
+          "width": 853.625,
+          "y": 274.625,
+          "stageY": 461.625,
+          "workScroll": 0,
+          "sidebarHeight": 818
+        },
+        {
+          "tab": "colors",
+          "height": 167,
+          "width": 853.625,
+          "y": 274.625,
+          "stageY": 461.625,
+          "workScroll": 0,
+          "sidebarHeight": 818
+        },
+        {
+          "tab": "about",
+          "height": 167,
+          "width": 853.625,
+          "y": 274.625,
+          "stageY": 461.625,
+          "workScroll": 0,
+          "sidebarHeight": 818
+        },
+        {
+          "tab": "highlights",
+          "height": 167,
+          "width": 853.625,
+          "y": 274.625,
+          "stageY": 461.625,
+          "workScroll": 0,
+          "sidebarHeight": 818
+        },
+        {
+          "tab": "widgets",
+          "height": 167,
+          "width": 853.625,
+          "y": 274.625,
+          "stageY": 461.625,
+          "workScroll": 0,
+          "sidebarHeight": 818
+        },
+        {
+          "tab": "frames",
+          "height": 167,
+          "width": 853.625,
+          "y": 274.625,
+          "stageY": 461.625,
+          "workScroll": 0,
+          "sidebarHeight": 818
+        },
+        {
+          "tab": "decorations",
+          "height": 167,
+          "width": 853.625,
+          "y": 274.625,
+          "stageY": 461.625,
+          "workScroll": 0,
+          "sidebarHeight": 818
+        },
+        {
+          "tab": "trophies",
+          "height": 167,
+          "width": 853.625,
+          "y": 274.625,
+          "stageY": 461.625,
+          "workScroll": 0,
+          "sidebarHeight": 818
+        }
+      ]
+    },
+    {
+      "width": 768,
+      "rows": [
+        {
+          "tab": "general",
+          "height": 167,
+          "width": 664.5625,
+          "y": 333.15625,
+          "stageY": 520.15625,
+          "workScroll": 0,
+          "sidebarHeight": 85
+        },
+        {
+          "tab": "avatar",
+          "height": 167,
+          "width": 664.5625,
+          "y": 333.15625,
+          "stageY": 520.15625,
+          "workScroll": 0,
+          "sidebarHeight": 85
+        },
+        {
+          "tab": "banner",
+          "height": 167,
+          "width": 664.5625,
+          "y": 333.15625,
+          "stageY": 520.15625,
+          "workScroll": 0,
+          "sidebarHeight": 85
+        },
+        {
+          "tab": "colors",
+          "height": 167,
+          "width": 664.5625,
+          "y": 333.15625,
+          "stageY": 520.15625,
+          "workScroll": 0,
+          "sidebarHeight": 85
+        },
+        {
+          "tab": "about",
+          "height": 167,
+          "width": 664.5625,
+          "y": 333.15625,
+          "stageY": 520.15625,
+          "workScroll": 0,
+          "sidebarHeight": 85
+        },
+        {
+          "tab": "highlights",
+          "height": 167,
+          "width": 664.5625,
+          "y": 333.15625,
+          "stageY": 520.15625,
+          "workScroll": 0,
+          "sidebarHeight": 85
+        },
+        {
+          "tab": "widgets",
+          "height": 167,
+          "width": 664.5625,
+          "y": 333.15625,
+          "stageY": 520.15625,
+          "workScroll": 0,
+          "sidebarHeight": 85
+        },
+        {
+          "tab": "frames",
+          "height": 167,
+          "width": 664.5625,
+          "y": 333.15625,
+          "stageY": 520.15625,
+          "workScroll": 0,
+          "sidebarHeight": 85
+        },
+        {
+          "tab": "decorations",
+          "height": 167,
+          "width": 664.5625,
+          "y": 333.15625,
+          "stageY": 520.15625,
+          "workScroll": 0,
+          "sidebarHeight": 85
+        },
+        {
+          "tab": "trophies",
+          "height": 167,
+          "width": 664.5625,
+          "y": 333.15625,
+          "stageY": 520.15625,
+          "workScroll": 0,
+          "sidebarHeight": 85
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "rows": [
+        {
+          "tab": "general",
+          "height": 145,
+          "width": 356,
+          "y": 379.4375,
+          "stageY": 544.4375,
+          "workScroll": 0,
+          "sidebarHeight": 110
+        },
+        {
+          "tab": "avatar",
+          "height": 145,
+          "width": 356,
+          "y": 379.4375,
+          "stageY": 544.4375,
+          "workScroll": 0,
+          "sidebarHeight": 110
+        },
+        {
+          "tab": "banner",
+          "height": 145,
+          "width": 356,
+          "y": 379.4375,
+          "stageY": 544.4375,
+          "workScroll": 0,
+          "sidebarHeight": 110
+        },
+        {
+          "tab": "colors",
+          "height": 145,
+          "width": 356,
+          "y": 379.4375,
+          "stageY": 544.4375,
+          "workScroll": 0,
+          "sidebarHeight": 110
+        },
+        {
+          "tab": "about",
+          "height": 145,
+          "width": 356,
+          "y": 379.4375,
+          "stageY": 544.4375,
+          "workScroll": 0,
+          "sidebarHeight": 110
+        },
+        {
+          "tab": "highlights",
+          "height": 145,
+          "width": 356,
+          "y": 379.4375,
+          "stageY": 544.4375,
+          "workScroll": 0,
+          "sidebarHeight": 110
+        },
+        {
+          "tab": "widgets",
+          "height": 145,
+          "width": 356,
+          "y": 379.4375,
+          "stageY": 544.4375,
+          "workScroll": 0,
+          "sidebarHeight": 110
+        },
+        {
+          "tab": "frames",
+          "height": 145,
+          "width": 356,
+          "y": 379.4375,
+          "stageY": 544.4375,
+          "workScroll": 0,
+          "sidebarHeight": 110
+        },
+        {
+          "tab": "decorations",
+          "height": 145,
+          "width": 356,
+          "y": 379.4375,
+          "stageY": 544.4375,
+          "workScroll": 0,
+          "sidebarHeight": 110
+        },
+        {
+          "tab": "trophies",
+          "height": 145,
+          "width": 356,
+          "y": 379.4375,
+          "stageY": 544.4375,
+          "workScroll": 0,
+          "sidebarHeight": 110
+        }
+      ]
+    },
+    {
+      "width": 360,
+      "rows": [
+        {
+          "tab": "general",
+          "height": 145,
+          "width": 356,
+          "y": 379.4375,
+          "stageY": 544.4375,
+          "workScroll": 0,
+          "sidebarHeight": 110
+        },
+        {
+          "tab": "avatar",
+          "height": 145,
+          "width": 356,
+          "y": 379.4375,
+          "stageY": 544.4375,
+          "workScroll": 0,
+          "sidebarHeight": 110
+        },
+        {
+          "tab": "banner",
+          "height": 145,
+          "width": 356,
+          "y": 379.4375,
+          "stageY": 544.4375,
+          "workScroll": 0,
+          "sidebarHeight": 110
+        },
+        {
+          "tab": "colors",
+          "height": 145,
+          "width": 356,
+          "y": 379.4375,
+          "stageY": 544.4375,
+          "workScroll": 0,
+          "sidebarHeight": 110
+        },
+        {
+          "tab": "about",
+          "height": 145,
+          "width": 356,
+          "y": 379.4375,
+          "stageY": 544.4375,
+          "workScroll": 0,
+          "sidebarHeight": 110
+        },
+        {
+          "tab": "highlights",
+          "height": 145,
+          "width": 356,
+          "y": 379.4375,
+          "stageY": 544.4375,
+          "workScroll": 0,
+          "sidebarHeight": 110
+        },
+        {
+          "tab": "widgets",
+          "height": 145,
+          "width": 356,
+          "y": 379.4375,
+          "stageY": 544.4375,
+          "workScroll": 0,
+          "sidebarHeight": 110
+        },
+        {
+          "tab": "frames",
+          "height": 145,
+          "width": 356,
+          "y": 379.4375,
+          "stageY": 544.4375,
+          "workScroll": 0,
+          "sidebarHeight": 110
+        },
+        {
+          "tab": "decorations",
+          "height": 145,
+          "width": 356,
+          "y": 379.4375,
+          "stageY": 544.4375,
+          "workScroll": 0,
+          "sidebarHeight": 110
+        },
+        {
+          "tab": "trophies",
+          "height": 145,
+          "width": 356,
+          "y": 379.4375,
+          "stageY": 544.4375,
+          "workScroll": 0,
+          "sidebarHeight": 110
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "network": []
+}

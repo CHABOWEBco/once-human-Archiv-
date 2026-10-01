@@ -1243,7 +1243,6 @@ html[data-ui-theme="light"] body.route-profile.ui-preferences-active :is(.profil
 
 /* Per-tab emphasis in the preview without changing the underlying profile data. */
 .settings-profile-live[data-mode="banner"] .settings-profile-live-art{
-  min-height:174px;
   grid-template-columns:102px minmax(0,1fr) auto
 }
 .settings-profile-live[data-mode="frames"] .settings-profile-live-avatar,
@@ -1616,6 +1615,7 @@ html[data-ui-theme="light"] body.route-profile.ui-preferences-active :is(.profil
 }
 
 @media(max-width:900px){
+  .settings-page:has(.settings-content-profile) .settings-window{grid-template-rows:max-content minmax(0,1fr)}
   .settings-content-profile{padding:20px!important}
   .settings-content-profile .settings-profile-editor-head{padding-inline:0}
 }
