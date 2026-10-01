@@ -86,7 +86,6 @@ function renderSettings(){
           '<a href="#/settings/profile" class="'+(section==='profile'?'active':'')+'" '+(section==='profile'?'aria-current="page"':'')+'>'+sidebarIcon('profile')+'<span>Profil</span></a>'+
           '<a href="#/settings/notifications" class="'+(section==='notifications'?'active':'')+'" '+(section==='notifications'?'aria-current="page"':'')+'>'+sidebarIcon('alerts')+'<span>Benachrichtigungen</span></a>'+
           '<a href="#/settings/security" class="'+(section==='security'?'active':'')+'" '+(section==='security'?'aria-current="page"':'')+'>'+sidebarIcon('security')+'<span>Sicherheit</span></a>'+
-          '<a href="#/map">'+sidebarIcon('links')+'<span>Live-Karte</span></a>'+
           (['moderator','admin','owner'].includes(String(a.role||'').toLowerCase())?'<a href="#/admin">'+sidebarIcon('dev')+'<span>Admin Backend</span></a>':'')+
         '</nav>'+
       '</aside>'+

@@ -64,3 +64,10 @@ Tests in Chromium mit lokalem Auth-/Katalog-Fixture, ohne Produktions-Katalogsch
 ## Abgrenzung / offene Punkte
 
 Keine Backend-/RLS-/Revisionsänderung; keine Änderung an `public.catalog_entries`, bestehenden 21 Einträgen oder 14 Kategorien. B-01–B-06, B-08–B-12/B-14 und Editorarbeiten bleiben erhalten. `main` unverändert; Sicherungs-Checkpoint bleibt bestehen. B-07, B-13 und Live-Karten-Visual-Finish/Fly-by bleiben gesperrt. Der zuvor dokumentierte Supabase-Recovery-Redirect-Konfigurationspunkt bleibt außerhalb dieses Auftrags offen.
+
+
+## Nachtrag: doppelter Profil-/Account-Kartenpunkt entfernt
+
+Ausgang `dcaca4b8b5782668065f6a94aa3a376d32bb832d`, vor Änderung lokal und auf GitHub als `checkpoint-before-account-map-entry-20261001-dcaca4b` gesichert. Ausschließlich dynamischen Kartenlink im Account-Dropdown (`app.js`) und den separaten Live-Karten-Reiter der Profil-/Einstellungs-Sidebar (`settings-page.js`) entfernt. Alle übrigen Account-/Sidebar-Punkte exakt mit dem Ausgangsstand verglichen und erhalten; bestehende Darstellungsvorschauen in den Einstellungen behalten. Cache-Versionen der beiden Skripte aktualisiert; zwei bestehende Testaussagen auf den nun ausdrücklich gewünschten fehlenden Account-Link angepasst.
+
+20 gezielte Chromium-Prüfungen mit lokalem Auth-/Katalog-Fixture bestanden: unveränderte Hauptnavigation, Header „Karte“ öffnet Live-Oberfläche unter `#/map`, direkter `#/live-map`-Alias, Reload, kein Kartenpunkt in Account-/Profil-/Einstellungsnavigation, übrige Menüpunkte unverändert, Desktop 1920 und Mobil 390 px, keine Browserfehler. Screenshots kontrolliert. Syntax/Diff-Check bestanden. Kartenimplementierung, CSS/Layout, Animationen, Profilimplementierung, Headerimplementierung, Assets, State, Auth, Admin-Editor und Supabase gegenüber Ausgang unverändert. `main` unverändert. Keine anderen Arbeiten begonnen.

@@ -273,18 +273,6 @@ function syncHeaderAccount(){
   $('#headerAccountName').textContent=name;
   $('#headerAccountStatus').textContent=account.role?String(account.role).toUpperCase():'ANGEMELDET';
   $('#headerAccountEmail').textContent=account.email||'';
-  const accountMenu=$('#headerAccountMenu');
-  let liveMapLink=$('#headerLiveMapLink');
-  if(routeFromHash()==='admin'){
-    liveMapLink?.remove();
-  }else if(accountMenu&&!liveMapLink){
-    liveMapLink=document.createElement('a');
-    liveMapLink.id='headerLiveMapLink';
-    liveMapLink.href='#/map';
-    liveMapLink.dataset.accountMenuLink='';
-    liveMapLink.textContent='Karte';
-    accountMenu.insertBefore(liveMapLink,$('#headerAdminLink')||$('#headerLogout'));
-  }
   const adminLink=$('#headerAdminLink');
   if(adminLink) adminLink.hidden=!['moderator','admin','owner'].includes(String(account.role||'').toLowerCase());
 }

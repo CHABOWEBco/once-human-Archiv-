@@ -35,7 +35,7 @@ ok(inventory.regular.length===27&&inventory.renderable.length===29&&inventory.re
 ok(['settings','admin'].every(id=>inventory.renderable.includes(id)&&!inventory.regular.includes(id))&&inventory.aliases['live-map']==='map'&&inventory.nav.length===7,'Two separate routes, compatible map alias and seven main navigation entries preserved');
 await page.evaluate(()=>location.hash='#/home');await page.waitForSelector('.landing-stat');
 ok(await page.locator('.landing-stat').first().locator('b').innerText()==='27'&&await page.locator('.landing-stat').first().locator('small').innerText()==='Reguläre Routen','Home label accurately describes count of regular routes');
-ok(await page.locator('#headerLiveMapLink').getAttribute('href')==='#/map'&&await page.locator('#headerAdminLink').getAttribute('href')==='#/admin','Existing special-route account links preserved');
+ok(await page.locator('#headerLiveMapLink').count()===0&&await page.locator('#headerAdminLink').getAttribute('href')==='#/admin','Duplicate account map entry absent; admin account link preserved');
 await page.click('#searchTrigger');const emptySearch=await page.locator('#searchResults a').evaluateAll(rows=>rows.map(x=>x.getAttribute('href').slice(2)));
 ok(JSON.stringify(emptySearch)===JSON.stringify(inventory.regular),'Empty global search lists exactly the 27 regular routes');
 await page.fill('#globalSearch','profil');
