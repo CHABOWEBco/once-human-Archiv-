@@ -33,7 +33,9 @@ Ein `service_role`-Schlüssel gehört niemals in Browsercode oder dieses Reposit
 
 ## Migration und Live-Abgleich
 
-Das Frontend-Projekt ist bereits konfiguriert. Vor einer erneuten Migration muss dessen aktueller Tabellen-/Policy-/Triggerstand read-only mit dieser Datei abgeglichen werden; diese Prüfung wurde hier nicht live ausgeführt. Die folgenden Befehle beschreiben den bestehenden Migrationsweg, keine Aufforderung zum ungeprüften erneuten Ausführen.
+Das Frontend-Projekt ist bereits konfiguriert. Die Live-Instanz wurde am 01.10.2026 read-only geprüft: `public` enthält `profiles` und `user_roles`, eine passende Katalogtabelle fehlte. Der private Rollenhelfer `private.has_role_at_least(public.app_role)` und die vorhandenen RLS-Policies für Profile und Rollen sind vorhanden.
+
+`migrations/20261001010000_catalog_entries.sql` legt genau eine Katalogtabelle an. Sie speichert vorhandene Einträge als JSONB unter der stabilen ID, bewahrt alle bestehenden Eintragsfelder und seeded die 21 aktuellen Katalogeinträge mit `ON CONFLICT DO NOTHING`. Die 14 Kategorien bleiben in `catalog-data.js` und werden im Editor unverändert angeboten. Öffentliche Leserollen dürfen den Katalog laden; Moderator, Admin und Owner dürfen erstellen und ändern. Löschen ist nicht freigegeben. Updates enthalten eine Revisionsprüfung, damit ein veralteter Editorstand keinen neueren Datensatz überschreibt.
 
 Empfohlener Weg über die Supabase CLI:
 
@@ -64,5 +66,3 @@ Weiter offen:
 - globale Migration/Synchronisierung lokaler Werkzeug- und Medienbestände
 - sichere globale Rollenverwaltung, Moderationsmutationen und Server-Audit
 - Builds, Routen, Posts, Einreichungen oder sonstige Fachtabellen
-
-Unsichere Client-Mutationen bleiben im bestehenden Admin-Panel deaktiviert. Diese Aktualisierung korrigiert nur die Dokumentation; keine Datenbank- oder Auth-Konfiguration wurde verändert.

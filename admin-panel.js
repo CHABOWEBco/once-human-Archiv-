@@ -23,6 +23,7 @@ const catalog=()=>Array.isArray(globalThis.CATALOG_DATA?.entries)?globalThis.CAT
 const archive=()=>globalThis.ARCHIVE_DATA||{};
 const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]));
 const fmt=value=>{try{return new Date(value).toLocaleString('de-DE',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}catch{return '—'}};
+let editorWorking=null,editorBase=null,editorRevision=1,editorIsNew=false;
 const routeCount=()=>new Set([...ROUTES.map(route=>route.id),...Object.keys(globalThis.FULL_ROUTE_RENDERERS||{})]).size;
 
 function getView(){
@@ -146,25 +147,33 @@ function contentView(){
 function editorView(){
   const entries=catalog();
   const categories=Array.isArray(globalThis.CATALOG_DATA?.categories)?globalThis.CATALOG_DATA.categories:[];
-  let selectedId='';
-  try{selectedId=sessionStorage.getItem('oha:admin-editor:selected')||''}catch{}
-  const selected=entries.find(x=>x.id===selectedId)||entries[0]||null;
-  const cards=entries.slice(0,36);
+  if(!editorWorking){
+    let selectedId='';
+    try{selectedId=sessionStorage.getItem('oha:admin-editor:selected')||''}catch{}
+    const selected=entries.find(x=>x.id===selectedId)||entries[0]||null;
+    editorWorking=selected?structuredClone(selected):null;
+    editorBase=selected?structuredClone(selected):null;
+    editorRevision=selected?(globalThis.JMA_CATALOG?.revision?.(selected.id)||1):1;
+    editorIsNew=false;
+  }
+  const selected=editorWorking;
+  const cards=entries;
   const categoryName=id=>categories.find(x=>x.id===id)?.label||id||'Ohne Kategorie';
   const imageOf=item=>item?.image||'assets/branding/once-human-logo.png';
+  const editable=allowed('editor');
   return '<section class="admin-view admin-visual-editor">'+
-    panelHead('VISUAL CONTENT EDITOR','Inhalte bearbeiten','<div class="admin-editor-head-actions"><span class="admin-editor-mode"><i></i>PREVIEW ONLY</span><button type="button" class="admin-secondary compact" data-admin-go="database">Datenbank ansehen ↗</button></div>')+
+    panelHead('VISUAL CONTENT EDITOR','Inhalte bearbeiten','<div class="admin-editor-head-actions"><span class="admin-editor-mode"><i></i>SUPABASE · ECHTZEIT</span><button type="button" class="admin-secondary compact" data-admin-go="database">Datenbank ansehen ↗</button></div>')+
     '<div class="admin-editor-toolbar">'+
       '<label class="admin-editor-search"><span>⌕</span><input id="adminEditorSearch" type="search" placeholder="Item, Waffe oder Begriff suchen …" autocomplete="off"></label>'+
-      '<div class="admin-editor-filters"><button type="button" class="active" data-editor-filter="all">Alle</button>'+categories.slice(0,7).map(c=>'<button type="button" data-editor-filter="'+esc(c.id)+'">'+esc(c.label)+'</button>').join('')+'</div>'+
-      '<button type="button" class="admin-primary compact admin-editor-add" disabled title="Wird im nächsten Block angebunden">＋ Neues Item</button>'+
+      '<div class="admin-editor-filters"><button type="button" class="active" data-editor-filter="all">Alle</button>'+categories.map(c=>'<button type="button" data-editor-filter="'+esc(c.id)+'">'+esc(c.label)+'</button>').join('')+'</div>'+
+      '<button type="button" class="admin-primary compact admin-editor-add" data-editor-add '+(!editable?'disabled title="Moderator-, Admin- oder Owner-Rolle erforderlich"':'')+'>＋ Neues Item</button>'+
     '</div>'+
     '<div class="admin-visual-editor-shell '+(selected?'drawer-open':'')+'">'+
       '<div class="admin-editor-canvas">'+
-        '<div class="admin-editor-canvas-head"><div><small>LIVE-BESTAND</small><h3>Archivkarten</h3><p>Element anklicken → rechts bearbeiten. Änderungen bleiben in diesem ersten Block nur in der Vorschau.</p></div><span><b>'+cards.length+'</b><small>von '+entries.length+' geladen</small></span></div>'+
+        '<div class="admin-editor-canvas-head"><div><small>LIVE-BESTAND</small><h3>Archivkarten</h3><p>Einträge aus Supabase auswählen, prüfen und dauerhaft speichern.</p></div><span><b>'+cards.length+'</b><small>von '+entries.length+' geladen</small></span></div>'+
         '<div class="admin-editor-card-grid" id="adminEditorGrid">'+cards.map(item=>{
-          const search=[item.name_de,item.kind,item.description,(item.tags||[]).join(' ')].join(' ').toLowerCase();
-          return '<button type="button" class="admin-editor-card '+(selected?.id===item.id?'selected':'')+'" data-admin-edit-item="'+esc(item.id)+'" data-editor-card data-category="'+esc(item.category||'')+'" data-search="'+esc(search)+'">'+
+          const search=[item.id,item.name_de,item.kind,item.description,item.acquisition,item.status,(item.tags||[]).join(' ')].join(' ').toLowerCase();
+          return '<button type="button" class="admin-editor-card '+(!editorIsNew&&selected?.id===item.id?'selected':'')+'" data-admin-edit-item="'+esc(item.id)+'" data-editor-card data-category="'+esc(item.category||'')+'" data-search="'+esc(search)+'">'+
             '<span class="admin-editor-card-media"><img src="'+esc(imageOf(item))+'" alt=""><i>'+esc(categoryName(item.category))+'</i></span>'+
             '<span class="admin-editor-card-copy"><small>'+esc(item.kind||categoryName(item.category))+'</small><strong>'+esc(item.name_de||item.id)+'</strong><em>'+esc(String(item.description||'Keine Beschreibung').slice(0,92))+'</em></span>'+
             '<span class="admin-editor-card-open">BEARBEITEN ↗</span>'+
@@ -172,24 +181,23 @@ function editorView(){
         }).join('')+'</div>'+
         '<div class="admin-editor-empty-filter" id="adminEditorEmpty" hidden><span>⌕</span><b>Keine Treffer</b><p>Suchbegriff oder Filter ändern.</p></div>'+
       '</div>'+
-      (selected?'<aside class="admin-editor-drawer" aria-label="Item bearbeiten">'+
-        '<header class="admin-editor-drawer-head"><div><small>ITEM BEARBEITEN</small><h3 data-editor-drawer-title>'+esc(selected.name_de||selected.id)+'</h3></div></header>'+
-        '<div class="admin-editor-item-preview"><div class="admin-editor-preview-media"><img src="'+esc(imageOf(selected))+'" alt="" data-editor-preview-image></div><div><small data-editor-preview-category>'+esc(categoryName(selected.category))+'</small><strong data-editor-preview-title>'+esc(selected.name_de||selected.id)+'</strong><p data-editor-preview-desc>'+esc(selected.description||'Keine Beschreibung')+'</p></div></div>'+
-        '<form class="admin-editor-form" onsubmit="return false">'+
-          '<label><span>Name</span><input type="text" value="'+esc(selected.name_de||'')+'" data-editor-input="name"></label>'+
-          '<label><span>Typ</span><input type="text" value="'+esc(selected.kind||'')+'" data-editor-input="kind"></label>'+
-          '<label class="wide"><span>Beschreibung</span><textarea rows="5" data-editor-input="description">'+esc(selected.description||'')+'</textarea></label>'+
-          '<label class="wide"><span>Fundort / Freischaltung</span><textarea rows="3" data-editor-input="acquisition">'+esc(selected.acquisition||'')+'</textarea></label>'+
-          '<label><span>Status</span><input type="text" value="'+esc(selected.status||'')+'" data-editor-input="status"></label>'+
-          '<label><span>Kategorie</span><input type="text" value="'+esc(categoryName(selected.category))+'" data-editor-category disabled></label>'+
-          '<label class="wide"><span>Tags</span><input type="text" value="'+esc((selected.tags||[]).join(', '))+'" data-editor-input="tags"></label>'+
+      (selected?'<aside class="admin-editor-drawer" aria-label="'+(editorIsNew?'Neuen Katalogeintrag anlegen':'Item bearbeiten')+'">'+
+        '<header class="admin-editor-drawer-head"><div><small>'+(editorIsNew?'NEUER KATALOGEINTRAG':'ITEM BEARBEITEN')+'</small><h3 data-editor-drawer-title>'+esc(selected.name_de||'Neues Item')+'</h3></div></header>'+
+        '<div class="admin-editor-item-preview"><div class="admin-editor-preview-media"><img src="'+esc(imageOf(selected))+'" alt="" data-editor-preview-image></div><div><small data-editor-preview-category>'+esc(categoryName(selected.category))+'</small><strong data-editor-preview-title>'+esc(selected.name_de||'Ohne Namen')+'</strong><p data-editor-preview-desc>'+esc(selected.description||'Keine Beschreibung')+'</p></div></div>'+
+        '<form class="admin-editor-form" data-editor-form onsubmit="return false">'+
+          '<label><span>Name *</span><input type="text" value="'+esc(selected.name_de||'')+'" data-editor-input="name" required maxlength="200"></label>'+
+          '<label><span>Typ</span><input type="text" value="'+esc(selected.kind||'')+'" data-editor-input="kind" maxlength="500"></label>'+
+          '<label class="wide"><span>Beschreibung</span><textarea rows="5" data-editor-input="description" maxlength="5000">'+esc(selected.description||'')+'</textarea></label>'+
+          '<label class="wide"><span>Fundort / Freischaltung</span><textarea rows="3" data-editor-input="acquisition" maxlength="5000">'+esc(selected.acquisition||'')+'</textarea></label>'+
+          '<label><span>Status</span><input type="text" value="'+esc(selected.status||'')+'" data-editor-input="status" maxlength="500"></label>'+
+          '<label><span>Kategorie *</span><select data-editor-category required>'+categories.map(c=>'<option value="'+esc(c.id)+'" '+(selected.category===c.id?'selected':'')+'>'+esc(c.label)+'</option>').join('')+'</select></label>'+
+          '<label class="wide"><span>Tags</span><input type="text" value="'+esc((selected.tags||[]).join(', '))+'" data-editor-input="tags" maxlength="4096"></label>'+
         '</form>'+
-        '<section class="admin-editor-media-control"><div><small>BILD</small><b data-editor-media-path>'+esc(selected.image||'Kein Bildpfad')+'</b></div><button type="button" disabled>Bild ersetzen</button></section>'+
-        '<div class="admin-safe-note"><b>BLOCK 1 · VORSCHAU</b><p>Du kannst die Felder hier bereits ausprobieren. Es wird noch nichts in Supabase, Git oder den Live-Katalog geschrieben.</p></div>'+
-        '<div class="admin-editor-drawer-actions"><button type="button" class="admin-primary" disabled>Speichern · Block 2</button></div>'+
+        '<section class="admin-editor-media-control"><div><small>BILD</small><b data-editor-media-path>'+esc(selected.image||'Kein Bildpfad · Kategorie-Fallback')+'</b></div><button type="button" data-editor-image '+(!editable?'disabled':'')+'>Bildpfad ändern</button></section>'+
+        '<div class="admin-safe-note" role="status" data-editor-status><b>SUPABASE · GESICHERT</b><p>Änderungen werden mit deiner Moderator-, Admin- oder Owner-Rolle in den gemeinsamen Katalog geschrieben. Ohne Originalbild bleibt der vorhandene Fallback erhalten.</p></div>'+
+        '<div class="admin-editor-drawer-actions"><button type="button" class="admin-primary" data-editor-save '+(!editable?'disabled title="Moderator-, Admin- oder Owner-Rolle erforderlich"':'')+'>'+(editorIsNew?'Eintrag anlegen':'Änderungen speichern')+'</button></div>'+
       '</aside>':'')+
-    '</div>'+
-  '</section>';
+    '</div>';
 }
 function mapView(){
   const s=localStats(),custom=list('jma_custom_markers').slice(0,6);
@@ -339,83 +347,156 @@ function bindAdmin(){
     const view=button.dataset.adminView;
     if(!allowed(view)) return;
     setView(view);
+    if(view!=='editor'){editorWorking=null;editorBase=null;editorIsNew=false}
     globalThis.JMA_RENDER?.();
   }));
   document.querySelectorAll('[data-admin-go]').forEach(button=>button.addEventListener('click',()=>{
     location.hash='#/'+button.dataset.adminGo;
   }));
+  const status=(message,error=false)=>{
+    const target=document.querySelector('[data-editor-status]');
+    if(!target)return;
+    target.querySelector('b').textContent=error?'NICHT GESPEICHERT':'SUPABASE · GESICHERT';
+    target.querySelector('p').textContent=message;
+  };
+  const readForm=()=>{
+    const form=document.querySelector('[data-editor-form]');
+    if(!form||!editorWorking)return null;
+    const value=structuredClone(editorWorking);
+    value.name_de=form.querySelector('[data-editor-input="name"]').value.trim();
+    value.kind=form.querySelector('[data-editor-input="kind"]').value.trim();
+    value.description=form.querySelector('[data-editor-input="description"]').value.trim();
+    value.acquisition=form.querySelector('[data-editor-input="acquisition"]').value.trim();
+    value.status=form.querySelector('[data-editor-input="status"]').value.trim();
+    value.category=form.querySelector('[data-editor-category]').value;
+    value.tags=form.querySelector('[data-editor-input="tags"]').value.split(',').map(tag=>tag.trim()).filter(Boolean);
+    return value;
+  };
+  const updatePreview=()=>{
+    const value=readForm();if(!value)return;
+    editorWorking=value;
+    const name=value.name_de||'Ohne Namen';
+    const set=(selector,text)=>{const el=document.querySelector(selector);if(el)el.textContent=text};
+    set('[data-editor-drawer-title]',name);
+    set('[data-editor-preview-title]',name);
+    set('[data-editor-preview-desc]',value.description||'Keine Beschreibung');
+    const categories=globalThis.CATALOG_DATA?.categories||[];
+    set('[data-editor-preview-category]',categories.find(x=>x.id===value.category)?.label||value.category);
+    set('[data-editor-media-path]',value.image||'Kein Bildpfad · Kategorie-Fallback');
+    const card=editorIsNew?null:document.querySelector('[data-admin-edit-item="'+CSS.escape(value.id)+'"]');
+    const strong=card?.querySelector('.admin-editor-card-copy strong');
+    if(strong)strong.textContent=name;
+    const desc=card?.querySelector('.admin-editor-card-copy em');
+    if(desc)desc.textContent=(value.description||'Keine Beschreibung').slice(0,92);
+    if(card)card.dataset.search=[value.id,value.name_de,value.kind,value.description,value.acquisition,value.status,...value.tags].join(' ').toLowerCase();
+  };
+  document.querySelectorAll('[data-editor-input],[data-editor-category]').forEach(input=>input.addEventListener('input',updatePreview));
+  document.querySelectorAll('[data-editor-category]').forEach(input=>input.addEventListener('change',updatePreview));
+  const imageButton=document.querySelector('[data-editor-image]');
+  imageButton?.addEventListener('click',()=>{
+    const answer=window.prompt('Relativer Bildpfad unter assets/ (neue Originale unter assets/items/; leer = Kategorie-Fallback):',editorWorking?.image||'');
+    if(answer===null)return;
+    const path=answer.trim();
+    editorWorking.image=path||null;
+    const preview=document.querySelector('[data-editor-preview-image]');
+    if(preview)preview.src=editorWorking.image?'./'+editorWorking.image:'./assets/branding/once-human-logo.png';
+    document.querySelectorAll('[data-admin-edit-item="'+CSS.escape(editorWorking.id||'')+'"] .admin-editor-card-media img').forEach(image=>image.src=editorWorking.image?'./'+editorWorking.image:'./assets/branding/once-human-logo.png');
+    updatePreview();
+  });
+  const discardDraft=()=>{
+    const current=readForm();
+    const dirty=editorIsNew?Boolean(current&&(current.name_de||current.kind||current.description||current.acquisition||current.status||current.tags.length||current.image)):
+      Boolean(current&&editorBase&&JSON.stringify(current)!==JSON.stringify(editorBase));
+    return !dirty||window.confirm('Ungespeicherte Änderungen verwerfen?');
+  };
   document.querySelectorAll('[data-admin-edit-item]').forEach(button=>button.addEventListener('click',()=>{
     const itemId=button.dataset.adminEditItem||'';
+    if(!discardDraft())return;
     const item=catalog().find(entry=>entry.id===itemId);
-    if(!item) return;
+    if(!item)return;
+    editorWorking=structuredClone(item);editorBase=structuredClone(item);editorIsNew=false;
+    editorRevision=globalThis.JMA_CATALOG?.revision?.(item.id)||1;
     try{sessionStorage.setItem('oha:admin-editor:selected',itemId)}catch{}
-
-    const categories=Array.isArray(globalThis.CATALOG_DATA?.categories)?globalThis.CATALOG_DATA.categories:[];
-    const categoryName=id=>categories.find(x=>x.id===id)?.label||id||'Ohne Kategorie';
-    const imageOf=item=>item?.image||'assets/branding/once-human-logo.png';
-    const setText=(selector,value)=>{const el=document.querySelector(selector);if(el) el.textContent=value};
-    const setValue=(selector,value)=>{const el=document.querySelector(selector);if(el) el.value=value};
-
     document.querySelectorAll('[data-admin-edit-item]').forEach(card=>card.classList.toggle('selected',card===button));
+    const categories=globalThis.CATALOG_DATA?.categories||[];
+    const categoryName=categories.find(x=>x.id===item.category)?.label||item.category;
+    const setText=(selector,value)=>{const el=document.querySelector(selector);if(el)el.textContent=value};
+    const setValue=(selector,value)=>{const el=document.querySelector(selector);if(el)el.value=value};
     setText('[data-editor-drawer-title]',item.name_de||item.id);
-    setText('[data-editor-preview-category]',categoryName(item.category));
+    setText('[data-editor-preview-category]',categoryName);
     setText('[data-editor-preview-title]',item.name_de||item.id);
     setText('[data-editor-preview-desc]',item.description||'Keine Beschreibung');
-    setText('[data-editor-media-path]',item.image||'Kein Bildpfad');
+    setText('[data-editor-media-path]',item.image||'Kein Bildpfad · Kategorie-Fallback');
     setValue('[data-editor-input="name"]',item.name_de||'');
     setValue('[data-editor-input="kind"]',item.kind||'');
     setValue('[data-editor-input="description"]',item.description||'');
     setValue('[data-editor-input="acquisition"]',item.acquisition||'');
     setValue('[data-editor-input="status"]',item.status||'');
     setValue('[data-editor-input="tags"]',(item.tags||[]).join(', '));
-    setValue('[data-editor-category]',categoryName(item.category));
-    const image=document.querySelector('[data-editor-preview-image]');
-    if(image) image.src=imageOf(item);
+    setValue('[data-editor-category]',item.category||'');
+    const image=document.querySelector('[data-editor-preview-image]');if(image)image.src=item.image?'./'+item.image:'./assets/branding/once-human-logo.png';
   }));
-
   const search=document.querySelector('#adminEditorSearch');
   const filterButtons=[...document.querySelectorAll('[data-editor-filter]')];
   const cards=[...document.querySelectorAll('[data-editor-card]')];
   const empty=document.querySelector('#adminEditorEmpty');
   let activeFilter='all';
   const applyEditorFilter=()=>{
-    const query=String(search?.value||'').trim().toLowerCase();
-    let visible=0;
+    const query=String(search?.value||'').trim().toLowerCase();let visible=0;
     cards.forEach(card=>{
-      const category=card.dataset.category||'';
-      const text=card.dataset.search||'';
-      const show=(activeFilter==='all'||category===activeFilter)&&(!query||text.includes(query));
-      card.hidden=!show;
-      if(show) visible++;
+      const show=(activeFilter==='all'||card.dataset.category===activeFilter)&&(!query||(card.dataset.search||'').includes(query));
+      card.hidden=!show;if(show)visible++;
     });
-    if(empty) empty.hidden=visible!==0;
+    if(empty)empty.hidden=visible!==0;
   };
   search?.addEventListener('input',applyEditorFilter);
   filterButtons.forEach(button=>button.addEventListener('click',()=>{
-    activeFilter=button.dataset.editorFilter||'all';
-    filterButtons.forEach(x=>x.classList.toggle('active',x===button));
-    applyEditorFilter();
+    activeFilter=button.dataset.editorFilter||'all';filterButtons.forEach(item=>item.classList.toggle('active',item===button));applyEditorFilter();
   }));
-
-  document.querySelectorAll('[data-editor-input]').forEach(input=>{
-    const updatePreview=()=>{
-      const field=input.dataset.editorInput;
-      if(field==='name'){
-        const title=document.querySelector('[data-editor-preview-title]');
-        if(title) title.textContent=input.value||'Ohne Namen';
-      }
-      if(field==='description'){
-        const desc=document.querySelector('[data-editor-preview-desc]');
-        if(desc) desc.textContent=input.value||'Keine Beschreibung';
-      }
-    };
-    input.addEventListener('input',updatePreview);
-    input.addEventListener('change',updatePreview);
+  document.querySelector('[data-editor-add]')?.addEventListener('click',()=>{
+    if(!discardDraft())return;
+    const categories=globalThis.CATALOG_DATA?.categories||[];
+    if(!categories.length){status('Es sind keine Katalogkategorien geladen.',true);return}
+    editorWorking={id:'',category:categories[0].id,name_de:'',kind:'',description:'',acquisition:'',status:'Wird geprüft',tags:[],image:null,sources:[]};
+    editorBase=null;editorRevision=0;editorIsNew=true;
+    globalThis.JMA_RENDER?.();
   });
-
+  document.querySelector('[data-editor-save]')?.addEventListener('click',async event=>{
+    const button=event.currentTarget;
+    const form=document.querySelector('[data-editor-form]');
+    if(!form?.reportValidity())return;
+    const entry=readForm();
+    if(!entry)return;
+    if(editorIsNew){
+      const normalized=entry.name_de.normalize('NFKC').toLocaleLowerCase('de-DE');
+      const duplicate=catalog().find(item=>item.category===entry.category&&item.name_de.normalize('NFKC').toLocaleLowerCase('de-DE')===normalized);
+      if(duplicate){status('Ein gleichnamiger Eintrag ist in dieser Kategorie bereits vorhanden ('+duplicate.id+'). Lade ihn stattdessen zum Bearbeiten.',true);return}
+      const slug=normalized.normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').replace(/[^a-z0-9._-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,95)||'eintrag';
+      const prefix='cat-'+slug;
+      const ids=new Set(catalog().map(item=>item.id));let id=prefix,suffix=2;
+      while(ids.has(id))id=prefix+'-'+suffix++;
+      entry.id=id;
+    }
+    try{
+      if(entry.image && entry.image!==(editorBase?.image||null)){
+        if(!/^assets\/items\/.+\.(png|webp|jpg|jpeg)$/i.test(entry.image)||entry.image.includes('..')||entry.image.includes('\\'))throw new Error('Neue Originalbilder müssen unter assets/items/ liegen. Ohne Bild den Pfad leeren, um den Kategorie-Fallback zu verwenden.');
+        const image=new Image();image.src='./'+entry.image;
+        try{await image.decode()}catch{throw new Error('Das Bild ist nicht erreichbar oder beschädigt. Pfad prüfen oder leeren, um den Kategorie-Fallback zu verwenden.')}
+      }
+      button.disabled=true;
+      const saved=editorIsNew?await globalThis.JMA_CATALOG.create(entry):await globalThis.JMA_CATALOG.update(entry,editorRevision);
+      editorWorking=structuredClone(saved.entry);editorBase=structuredClone(saved.entry);editorRevision=saved.revision;editorIsNew=false;
+      try{sessionStorage.setItem('oha:admin-editor:selected',saved.id)}catch{}
+      globalThis.JMA_RENDER?.();
+      status('Eintrag '+saved.id+' wurde in Supabase gespeichert.');
+    }catch(error){
+      status(error?.message||'Katalogänderung konnte nicht gespeichert werden.',true);
+    }finally{button.disabled=false}
+  });
   bindLiquidCards();
   bindLiquidNav();
 }
+
 globalThis.ADMIN_PANEL={render:renderAdmin,bind:bindAdmin,allowed:()=>ADMIN_ROLES.has(role())};
 globalThis.FULL_ROUTE_RENDERERS=globalThis.FULL_ROUTE_RENDERERS||{};
 globalThis.FULL_ROUTE_BINDERS=globalThis.FULL_ROUTE_BINDERS||{};

@@ -230,6 +230,98 @@ async function finishRecovery(){
   return true;
 }
 
+const CATALOG_WRITE_ROLES = new Set(['moderator', 'admin', 'owner']);
+const catalogRevisions = new Map();
+
+function requireCatalogEditor(){
+  if(!state.user || !state.session) throw new Error('Bitte zuerst im Archiv anmelden.');
+  if(!CATALOG_WRITE_ROLES.has(state.role)) throw new Error('Für Katalogänderungen ist eine Moderator-, Admin- oder Owner-Rolle erforderlich.');
+}
+
+function validateCatalogEntry(entry){
+  if(!entry || typeof entry !== 'object' || Array.isArray(entry)) throw new Error('Ungültiger Katalogdatensatz.');
+  if(typeof entry.id !== 'string' || !/^[a-z0-9][a-z0-9._-]{0,119}$/i.test(entry.id)) throw new Error('Ungültige Eintrags-ID.');
+  const categories=globalThis.CATALOG_DATA?.categories;
+  if(!Array.isArray(categories) || !categories.some(category=>category.id===entry.category)) throw new Error('Bitte eine vorhandene Kategorie auswählen.');
+  if(typeof entry.name_de!=='string' || !entry.name_de.trim() || entry.name_de.trim().length>200) throw new Error('Name muss 1 bis 200 Zeichen enthalten.');
+  for(const field of ['kind','description','acquisition','status']){
+    if(entry[field]!==undefined && (typeof entry[field]!=='string' || entry[field].length>5000)) throw new Error('Ungültiger Text im Feld „'+field+'“.');
+  }
+  if(entry.tags!==undefined && (!Array.isArray(entry.tags) || entry.tags.length>50 || entry.tags.some(tag=>typeof tag!=='string' || tag.length>80))) throw new Error('Tags müssen aus höchstens 50 Textwerten mit maximal 80 Zeichen bestehen.');
+  if(entry.last_checked!==undefined && (typeof entry.last_checked!=='string' || !/^\d{4}-\d{2}-\d{2}$/.test(entry.last_checked) || !Number.isFinite(Date.parse(entry.last_checked)))) throw new Error('Ungültiges Prüfdatum.');
+  if(entry.image!==undefined && entry.image!==null && (typeof entry.image!=='string' || !/^assets\/.+\.(png|webp|jpg|jpeg|svg)$/i.test(entry.image) || entry.image.includes('..') || entry.image.includes('\\') || /[?#\u0000]/.test(entry.image))) throw new Error('Ungültiger lokaler Bildpfad. Ohne Bild den Pfad leeren.');
+  return entry;
+}
+
+function mergeCatalogEntry(entry){
+  const entries=Array.isArray(globalThis.CATALOG_DATA?.entries)?globalThis.CATALOG_DATA.entries:[];
+  const index=entries.findIndex(item=>item.id===entry.id);
+  if(index<0) entries.push(entry);
+  else entries[index]=entry;
+  globalThis.CATALOG_DATA.entries=entries;
+}
+
+async function loadCatalog(){
+  const rows=[];
+  const pageSize=500;
+  for(let start=0;;start+=pageSize){
+    const {data,error}=await getClient().from('catalog_entries')
+      .select('id, entry, revision, updated_at')
+      .order('id',{ascending:true})
+      .range(start,start+pageSize-1);
+    if(error) throw error;
+    const page=Array.isArray(data)?data:[];
+    rows.push(...page);
+    if(page.length<pageSize) break;
+  }
+  const byId=new Map();
+  for(const item of globalThis.CATALOG_DATA?.entries||[]) byId.set(item.id,item);
+  catalogRevisions.clear();
+  for(const row of rows){
+    if(!row || typeof row.id!=='string' || !row.entry || row.entry.id!==row.id) throw new Error('Supabase lieferte einen ungültigen Katalogdatensatz.');
+    byId.set(row.id,row.entry);
+    catalogRevisions.set(row.id,Number(row.revision)||1);
+  }
+  globalThis.CATALOG_DATA.entries=[...byId.values()];
+  return globalThis.CATALOG_DATA.entries;
+}
+
+function catalogRevision(id){return catalogRevisions.get(id)||1}
+
+async function createCatalogEntry(entry){
+  requireCatalogEditor();
+  validateCatalogEntry(entry);
+  const {data,error}=await getClient().from('catalog_entries')
+    .insert({id:entry.id,entry,updated_by:state.user.id})
+    .select('id, entry, revision, updated_at')
+    .single();
+  if(error){
+    if(error.code==='23505') throw new Error('Diese Eintrags-ID existiert bereits. Lade den Katalog neu, bevor du weiterarbeitest.');
+    throw error;
+  }
+  catalogRevisions.set(data.id,Number(data.revision)||1);
+  mergeCatalogEntry(data.entry);
+  return data;
+}
+
+async function updateCatalogEntry(entry,expectedRevision){
+  requireCatalogEditor();
+  validateCatalogEntry(entry);
+  if(!Number.isInteger(expectedRevision) || expectedRevision<1) throw new Error('Die geladene Datensatzversion fehlt. Bitte Katalog neu laden.');
+  const nextRevision=expectedRevision+1;
+  const {data,error}=await getClient().from('catalog_entries')
+    .update({entry,revision:nextRevision,updated_at:new Date().toISOString(),updated_by:state.user.id})
+    .eq('id',entry.id)
+    .eq('revision',expectedRevision)
+    .select('id, entry, revision, updated_at')
+    .maybeSingle();
+  if(error) throw error;
+  if(!data) throw new Error('Dieser Eintrag wurde seit dem Laden geändert. Lade ihn neu, damit keine fremde Änderung überschrieben wird.');
+  catalogRevisions.set(data.id,Number(data.revision)||nextRevision);
+  mergeCatalogEntry(data.entry);
+  return data;
+}
+
 async function updateDisplayName(displayName){
   if(!state.user) throw new Error('Keine aktive Anmeldung.');
   const name = String(displayName || '').trim();
@@ -283,6 +375,14 @@ function destroy(){
   initialized = false;
   state.ready = false;
 }
+
+globalThis.JMA_CATALOG = {
+  load: loadCatalog,
+  create: createCatalogEntry,
+  update: updateCatalogEntry,
+  revision: catalogRevision,
+  validate: validateCatalogEntry
+};
 
 globalThis.JMA_AUTH = {
   init,

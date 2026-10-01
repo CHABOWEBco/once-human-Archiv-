@@ -487,6 +487,12 @@ async function boot(){
     console.error('Supabase Auth konnte nicht initialisiert werden:',error);
     toast('Anmeldung konnte nicht initialisiert werden.');
   }
+  try{
+    await globalThis.JMA_CATALOG.load();
+  }catch(error){
+    console.error('Supabase-Katalog konnte nicht geladen werden:',error);
+    toast('Katalog wird mit dem zuletzt eingebundenen Grundbestand angezeigt.');
+  }
   render();
   if(globalThis.JMA_AUTH.isRecovery()) openAuth('recovery');
 }
