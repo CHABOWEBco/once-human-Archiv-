@@ -396,7 +396,7 @@ body.ui-compact-settings .settings-sidebar nav{gap:2px}
 
 body.ui-preferences-active #app{font-family:var(--ui-font)}
 body.ui-preferences-active .topbar{border-bottom-color:color-mix(in srgb,var(--ui-accent) 38%,rgba(87,174,187,.38))}
-body.ui-preferences-active:not(.ui-smooth) #app *{animation-duration:0s!important;animation-delay:0s!important;transition-duration:0s!important}
+body.ui-preferences-active:not(.ui-smooth) #app *:where(:not(.signal-orbit)){animation-duration:0s!important;animation-delay:0s!important;transition-duration:0s!important}
 body.ui-preferences-active.ui-show-grid #app{
   background-image:
     linear-gradient(color-mix(in srgb,var(--ui-accent) 4%,transparent) 1px,transparent 1px),
