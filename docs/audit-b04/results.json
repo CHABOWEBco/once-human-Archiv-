@@ -1,0 +1,869 @@
+{
+  "baselineRemote": "eb19caf3de0aa325464bf8f6858971e181ba9d91",
+  "main": "94ab9f8fa408fc1ed3bd1721961321c0cec2eb45",
+  "scope": "B-04 confirmed mobile clipping only",
+  "viewports": [
+    {
+      "width": 390,
+      "height": 844
+    },
+    {
+      "width": 1920,
+      "height": 1080
+    }
+  ],
+  "states": [
+    {
+      "route": "home",
+      "width": 390,
+      "controlsUnchanged": true,
+      "desktopGeometryIdentical": null,
+      "confirmedClips": 0,
+      "beforeScreenshotSha256": "7a620abcbc0228212f04603581496be4d332e4eb807e57fdba208386628096c3",
+      "afterScreenshotSha256": "1b2e87ae9343399e65390d5f0625af9af4ee4a4efae236f3c7b12de3a8c468f9",
+      "beforeClippedElements": [
+        {
+          "tag": "DIV",
+          "cls": "landing-copy",
+          "text": "ONCE HUMAN\n          ONCE HUMANARCHIV\n          DEINE ZENTRALE WISSENS",
+          "x": 14,
+          "y": 356.421875,
+          "w": 381.34375,
+          "h": 304.140625,
+          "right": 395.34375,
+          "grid": "none",
+          "minWidth": "auto",
+          "parent": "landing-hero-shell"
+        },
+        {
+          "tag": "DIV",
+          "cls": "landing-kicker",
+          "text": "ONCE HUMAN",
+          "x": 27,
+          "y": 356.421875,
+          "w": 368.34375,
+          "h": 16,
+          "right": 395.34375,
+          "grid": "none",
+          "minWidth": "0px",
+          "parent": "landing-copy"
+        },
+        {
+          "tag": "H1",
+          "cls": "landing-title",
+          "text": "ONCE HUMANARCHIV",
+          "x": 27,
+          "y": 380.421875,
+          "w": 368.34375,
+          "h": 81,
+          "right": 395.34375,
+          "grid": "none",
+          "minWidth": "0px",
+          "parent": "landing-copy"
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "ARCHIV",
+          "x": 214.40625,
+          "y": 380.421875,
+          "w": 180.9375,
+          "h": 40.5,
+          "right": 395.34375,
+          "grid": "none",
+          "minWidth": "auto",
+          "parent": "landing-title"
+        },
+        {
+          "tag": "DIV",
+          "cls": "landing-subtitle",
+          "text": "DEINE ZENTRALE WISSENSPLATTFORM FÜR ONCE HUMAN",
+          "x": 27,
+          "y": 470.421875,
+          "w": 368.34375,
+          "h": 27,
+          "right": 395.34375,
+          "grid": "none",
+          "minWidth": "0px",
+          "parent": "landing-copy"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "Guides, Daten, Builds, Karten, Community und Werkzeuge an einem Ort. Ü",
+          "x": 27,
+          "y": 515.421875,
+          "w": 368.34375,
+          "h": 51.140625,
+          "right": 395.34375,
+          "grid": "none",
+          "minWidth": "0px",
+          "parent": "landing-copy"
+        },
+        {
+          "tag": "DIV",
+          "cls": "landing-actions",
+          "text": "JETZT ENTDECKEN→▶ ARCHIV ANSEHEN",
+          "x": 27,
+          "y": 585.5625,
+          "w": 368.34375,
+          "h": 46,
+          "right": 395.34375,
+          "grid": "none",
+          "minWidth": "0px",
+          "parent": "landing-copy"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "landing-video",
+          "text": "▶ ARCHIV ANSEHEN",
+          "x": 216.171875,
+          "y": 585.5625,
+          "w": 179.171875,
+          "h": 46,
+          "right": 395.34375,
+          "grid": "none",
+          "minWidth": "0px",
+          "parent": "landing-actions"
+        },
+        {
+          "tag": "DIV",
+          "cls": "landing-trust",
+          "text": "◷ Aktuell♙ Community-getrieben◇ Werbefrei⌁ Für alle Spieler",
+          "x": 27,
+          "y": 650.5625,
+          "w": 368.34375,
+          "h": 10,
+          "right": 395.34375,
+          "grid": "none",
+          "minWidth": "0px",
+          "parent": "landing-copy"
+        },
+        {
+          "tag": "B",
+          "cls": "",
+          "text": "›",
+          "x": 386.3125,
+          "y": 1080,
+          "w": 10,
+          "h": 30,
+          "right": 396.3125,
+          "grid": "none",
+          "minWidth": "auto",
+          "parent": "landing-quick-body"
+        }
+      ],
+      "afterClippedElements": [
+        {
+          "tag": "B",
+          "cls": "",
+          "text": "›",
+          "x": 386.3125,
+          "y": 1080,
+          "w": 10,
+          "h": 30,
+          "right": 396.3125,
+          "grid": "none",
+          "minWidth": "auto",
+          "parent": "landing-quick-body"
+        }
+      ],
+      "afterClippedText": [
+        {
+          "cls": "",
+          "text": "›",
+          "left": 386.3125,
+          "right": 396.71875
+        },
+        {
+          "cls": "",
+          "text": "Once Human Archiv – neue Seitenarchitektur aktiv",
+          "left": 39,
+          "right": 442.546875
+        }
+      ],
+      "afterTitleBounds": {
+        "tag": "H1",
+        "cls": "landing-title",
+        "x": 27,
+        "y": 368.953125,
+        "w": 349,
+        "h": 85.9375,
+        "right": 376
+      }
+    },
+    {
+      "route": "submissions",
+      "width": 390,
+      "controlsUnchanged": true,
+      "desktopGeometryIdentical": null,
+      "confirmedClips": 0,
+      "beforeScreenshotSha256": "0ae69826240afd25b4baf43d2350c15e06d83d8a6e0befd8dadfca4a767883ef",
+      "afterScreenshotSha256": "1c871bec7e3f2a09419aadf2b2b1158f363632f0699b69d58e6698d7b144bc6f",
+      "beforeClippedElements": [
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "COMMUNITY // PRÜFQUEUEEINREICHUNGENFunde, Korrekturen und Tech-Formeln",
+          "x": 29,
+          "y": 153.828125,
+          "w": 365.109375,
+          "h": 160.171875,
+          "right": 394.109375,
+          "grid": "none",
+          "minWidth": "auto",
+          "parent": "rf-hero"
+        },
+        {
+          "tag": "DIV",
+          "cls": "section-kicker",
+          "text": "COMMUNITY // PRÜFQUEUE",
+          "x": 29,
+          "y": 153.828125,
+          "w": 365.109375,
+          "h": 11,
+          "right": 394.109375,
+          "grid": "none",
+          "minWidth": "0px",
+          "parent": ""
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "EINREICHUNGEN",
+          "x": 29,
+          "y": 173.828125,
+          "w": 365.109375,
+          "h": 37.796875,
+          "right": 394.109375,
+          "grid": "none",
+          "minWidth": "0px",
+          "parent": ""
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "Funde, Korrekturen und Tech-Formeln strukturiert erfassen. Im aktuelle",
+          "x": 29,
+          "y": 225.625,
+          "w": 365.109375,
+          "h": 88.375,
+          "right": 394.109375,
+          "grid": "none",
+          "minWidth": "0px",
+          "parent": ""
+        }
+      ],
+      "afterClippedElements": [],
+      "afterClippedText": [],
+      "afterTitleBounds": {
+        "tag": "H1",
+        "cls": "",
+        "x": 29,
+        "y": 136.03125,
+        "w": 332,
+        "h": 75.59375,
+        "right": 361
+      }
+    },
+    {
+      "route": "secrets",
+      "width": 390,
+      "controlsUnchanged": true,
+      "desktopGeometryIdentical": null,
+      "confirmedClips": 0,
+      "beforeScreenshotSha256": "f5184cc8e44cda8091c055d466b62fd6c20596764edb2f7f1009e94d2b5aebfd",
+      "afterScreenshotSha256": "27d299a5c069de9e2dcd53a298548f4e3dfcce0096d54d3573777f2dc73d0d0b",
+      "beforeClippedElements": [
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "KANINCHENBAU // ANALYSEGEHEIMNISSE & UNTERSUCHUNGENMethodische Hinweis",
+          "x": 29,
+          "y": 160.21875,
+          "w": 430.375,
+          "h": 153.78125,
+          "right": 459.375,
+          "grid": "none",
+          "minWidth": "auto",
+          "parent": "rf-hero"
+        },
+        {
+          "tag": "DIV",
+          "cls": "section-kicker",
+          "text": "KANINCHENBAU // ANALYSE",
+          "x": 29,
+          "y": 160.21875,
+          "w": 430.375,
+          "h": 11,
+          "right": 459.375,
+          "grid": "none",
+          "minWidth": "0px",
+          "parent": ""
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "GEHEIMNISSE & UNTERSUCHUNGEN",
+          "x": 29,
+          "y": 180.21875,
+          "w": 430.375,
+          "h": 75.59375,
+          "right": 459.375,
+          "grid": "none",
+          "minWidth": "0px",
+          "parent": ""
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "Methodische Hinweise und Prüfstände aus dem bestehenden Projekt – best",
+          "x": 29,
+          "y": 269.8125,
+          "w": 430.375,
+          "h": 44.1875,
+          "right": 459.375,
+          "grid": "none",
+          "minWidth": "0px",
+          "parent": ""
+        },
+        {
+          "tag": "ARTICLE",
+          "cls": "",
+          "text": "MittelErkundung · BestätigtKoordinaten-ArchivNicht nur Koordinaten spe",
+          "x": 226.03125,
+          "y": 397,
+          "w": 256.390625,
+          "h": 419.515625,
+          "right": 482.421875,
+          "grid": "none",
+          "minWidth": "auto",
+          "parent": "rf-secret-grid"
+        },
+        {
+          "tag": "H2",
+          "cls": "",
+          "text": "Koordinaten-Archiv",
+          "x": 247.03125,
+          "y": 443,
+          "w": 214.390625,
+          "h": 50,
+          "right": 461.421875,
+          "grid": "none",
+          "minWidth": "0px",
+          "parent": ""
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "Nicht nur Koordinaten speichern, sondern auch Teleportpunkt, Route und",
+          "x": 247.03125,
+          "y": 509,
+          "w": 214.390625,
+          "h": 131.953125,
+          "right": 461.421875,
+          "grid": "none",
+          "minWidth": "0px",
+          "parent": ""
+        },
+        {
+          "tag": "FOOTER",
+          "cls": "",
+          "text": "Methodischer Hinweis – kein konkreter Spielfund.＋ NOTIZ",
+          "x": 247.03125,
+          "y": 656.953125,
+          "w": 214.390625,
+          "h": 33,
+          "right": 461.421875,
+          "grid": "none",
+          "minWidth": "0px",
+          "parent": ""
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "Methodischer Hinweis – kein konkreter Spielfund.",
+          "x": 247.03125,
+          "y": 669.953125,
+          "w": 165.234375,
+          "h": 20,
+          "right": 412.265625,
+          "grid": "none",
+          "minWidth": "auto",
+          "parent": ""
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "",
+          "text": "＋ NOTIZ",
+          "x": 422.265625,
+          "y": 669.953125,
+          "w": 39.15625,
+          "h": 20,
+          "right": 461.421875,
+          "grid": "none",
+          "minWidth": "auto",
+          "parent": ""
+        },
+        {
+          "tag": "ARTICLE",
+          "cls": "",
+          "text": "HochGeheimnis · Wird geprüftUnsichtbare VoraussetzungenVorherige Dialo",
+          "x": 226.03125,
+          "y": 825.515625,
+          "w": 256.390625,
+          "h": 366.734375,
+          "right": 482.421875,
+          "grid": "none",
+          "minWidth": "auto",
+          "parent": "rf-secret-grid"
+        },
+        {
+          "tag": "H2",
+          "cls": "",
+          "text": "Unsichtbare Voraussetzungen",
+          "x": 247.03125,
+          "y": 871.515625,
+          "w": 214.390625,
+          "h": 50,
+          "right": 461.421875,
+          "grid": "none",
+          "minWidth": "0px",
+          "parent": ""
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "Vorherige Dialoge, Quests, Schlüssel, Kisten und bereits aktivierte Me",
+          "x": 247.03125,
+          "y": 937.515625,
+          "w": 214.390625,
+          "h": 131.953125,
+          "right": 461.421875,
+          "grid": "none",
+          "minWidth": "0px",
+          "parent": ""
+        },
+        {
+          "tag": "FOOTER",
+          "cls": "",
+          "text": "Vorlage für Ursachenanalyse.＋ NOTIZ",
+          "x": 247.03125,
+          "y": 1085.46875,
+          "w": 214.390625,
+          "h": 24,
+          "right": 461.421875,
+          "grid": "none",
+          "minWidth": "0px",
+          "parent": ""
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "",
+          "text": "＋ NOTIZ",
+          "x": 417.0625,
+          "y": 1098.46875,
+          "w": 44.359375,
+          "h": 11,
+          "right": 461.421875,
+          "grid": "none",
+          "minWidth": "auto",
+          "parent": ""
+        }
+      ],
+      "afterClippedElements": [],
+      "afterClippedText": [],
+      "afterTitleBounds": {
+        "tag": "H1",
+        "cls": "",
+        "x": 29,
+        "y": 122,
+        "w": 332,
+        "h": 151.1875,
+        "right": 361
+      }
+    },
+    {
+      "route": "armor-materials",
+      "width": 390,
+      "controlsUnchanged": true,
+      "desktopGeometryIdentical": null,
+      "confirmedClips": 0,
+      "beforeScreenshotSha256": "414b80ce017f576fbf597e9c5b1dd90c2130e5e36eabcbe78f1bd6c7113d3368",
+      "afterScreenshotSha256": "576f216f6f5d99eddb1520cdaf75875f0521815c1bec30fc7ed86c63cfa384a4",
+      "beforeClippedElements": [
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "DATENBANK // MATERIALKUNDERÜSTUNGSMATERIALIEN57 Materialien im Referen",
+          "x": 29,
+          "y": 198.015625,
+          "w": 538.5,
+          "h": 115.984375,
+          "right": 567.5,
+          "grid": "none",
+          "minWidth": "auto",
+          "parent": "rf-hero"
+        },
+        {
+          "tag": "DIV",
+          "cls": "section-kicker",
+          "text": "DATENBANK // MATERIALKUNDE",
+          "x": 29,
+          "y": 198.015625,
+          "w": 538.5,
+          "h": 11,
+          "right": 567.5,
+          "grid": "none",
+          "minWidth": "0px",
+          "parent": ""
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "RÜSTUNGSMATERIALIEN",
+          "x": 29,
+          "y": 218.015625,
+          "w": 538.5,
+          "h": 37.796875,
+          "right": 567.5,
+          "grid": "none",
+          "minWidth": "0px",
+          "parent": ""
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "57 Materialien im Referenzbestand; hier die kuratierte Auswahl mit Her",
+          "x": 29,
+          "y": 269.8125,
+          "w": 538.5,
+          "h": 44.1875,
+          "right": 567.5,
+          "grid": "none",
+          "minWidth": "0px",
+          "parent": ""
+        }
+      ],
+      "afterClippedElements": [],
+      "afterClippedText": [],
+      "afterTitleBounds": {
+        "tag": "H1",
+        "cls": "",
+        "x": 29,
+        "y": 180.21875,
+        "w": 332,
+        "h": 75.59375,
+        "right": 361
+      }
+    },
+    {
+      "route": "compare-weapons",
+      "width": 390,
+      "controlsUnchanged": true,
+      "desktopGeometryIdentical": null,
+      "confirmedClips": 0,
+      "beforeScreenshotSha256": "87cdf6ffcdfd9d3673e0a1781c6789b370348ae0147586c9dcb7950f4392e50e",
+      "afterScreenshotSha256": "e769970f84258ff05b99956caa45ee1d88d1a770f4296a6a7d8b6146615cad65",
+      "beforeClippedElements": [
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "LABOR // TRANSPARENTER INDEXWAFFENVERGLEICHBis zu drei Waffen nebenein",
+          "x": 29,
+          "y": 175.921875,
+          "w": 434.890625,
+          "h": 138.078125,
+          "right": 463.890625,
+          "grid": "none",
+          "minWidth": "auto",
+          "parent": "rf-hero"
+        },
+        {
+          "tag": "DIV",
+          "cls": "section-kicker",
+          "text": "LABOR // TRANSPARENTER INDEX",
+          "x": 29,
+          "y": 175.921875,
+          "w": 434.890625,
+          "h": 11,
+          "right": 463.890625,
+          "grid": "none",
+          "minWidth": "0px",
+          "parent": ""
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "WAFFENVERGLEICH",
+          "x": 29,
+          "y": 195.921875,
+          "w": 434.890625,
+          "h": 37.796875,
+          "right": 463.890625,
+          "grid": "none",
+          "minWidth": "0px",
+          "parent": ""
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "Bis zu drei Waffen nebeneinander mit offen sichtbaren Gewichtungen. Me",
+          "x": 29,
+          "y": 247.71875,
+          "w": 434.890625,
+          "h": 66.28125,
+          "right": 463.890625,
+          "grid": "none",
+          "minWidth": "0px",
+          "parent": ""
+        }
+      ],
+      "afterClippedElements": [],
+      "afterClippedText": [],
+      "afterTitleBounds": {
+        "tag": "H1",
+        "cls": "",
+        "x": 29,
+        "y": 136.03125,
+        "w": 332,
+        "h": 75.59375,
+        "right": 361
+      }
+    },
+    {
+      "route": "compare-armors",
+      "width": 390,
+      "controlsUnchanged": true,
+      "desktopGeometryIdentical": null,
+      "confirmedClips": 0,
+      "beforeScreenshotSha256": "2b09634fc9ac05f56975df43708cb7e4b5203f2fa81ab1d54e87e57ed3f8071a",
+      "afterScreenshotSha256": "b17e08916a9045c3dc19038ffad9758a982bb69883346cf20fa1db19463ce2f3",
+      "beforeClippedElements": [
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "LABOR // SCHUTZWERTERÜSTUNGSVERGLEICHZwei vorhandene Referenzstufen di",
+          "x": 29,
+          "y": 198.015625,
+          "w": 492.265625,
+          "h": 115.984375,
+          "right": 521.265625,
+          "grid": "none",
+          "minWidth": "auto",
+          "parent": "rf-hero"
+        },
+        {
+          "tag": "DIV",
+          "cls": "section-kicker",
+          "text": "LABOR // SCHUTZWERTE",
+          "x": 29,
+          "y": 198.015625,
+          "w": 492.265625,
+          "h": 11,
+          "right": 521.265625,
+          "grid": "none",
+          "minWidth": "0px",
+          "parent": ""
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "RÜSTUNGSVERGLEICH",
+          "x": 29,
+          "y": 218.015625,
+          "w": 492.265625,
+          "h": 37.796875,
+          "right": 521.265625,
+          "grid": "none",
+          "minWidth": "0px",
+          "parent": ""
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "Zwei vorhandene Referenzstufen direkt gegenüberstellen; fehlende Werte",
+          "x": 29,
+          "y": 269.8125,
+          "w": 492.265625,
+          "h": 44.1875,
+          "right": 521.265625,
+          "grid": "none",
+          "minWidth": "0px",
+          "parent": ""
+        }
+      ],
+      "afterClippedElements": [],
+      "afterClippedText": [],
+      "afterTitleBounds": {
+        "tag": "H1",
+        "cls": "",
+        "x": 29,
+        "y": 158.125,
+        "w": 332,
+        "h": 75.59375,
+        "right": 361
+      }
+    },
+    {
+      "route": "home",
+      "width": 1920,
+      "controlsUnchanged": true,
+      "desktopGeometryIdentical": true,
+      "confirmedClips": 0,
+      "beforeScreenshotSha256": "45af2d9e870e6eab543758abe192df173e4ef0f4e3183a1dc94180993ca09fbd",
+      "afterScreenshotSha256": "45af2d9e870e6eab543758abe192df173e4ef0f4e3183a1dc94180993ca09fbd",
+      "beforeClippedElements": [],
+      "afterClippedElements": [],
+      "afterClippedText": [],
+      "afterTitleBounds": {
+        "tag": "H1",
+        "cls": "landing-title",
+        "x": 64,
+        "y": 199.53125,
+        "w": 696,
+        "h": 79.1875,
+        "right": 760
+      }
+    },
+    {
+      "route": "submissions",
+      "width": 1920,
+      "controlsUnchanged": true,
+      "desktopGeometryIdentical": true,
+      "confirmedClips": 0,
+      "beforeScreenshotSha256": "b8d7f54c7ef05a46d549799e630b40c307f098b41bc0eb387697fd8ca262afcf",
+      "afterScreenshotSha256": "b8d7f54c7ef05a46d549799e630b40c307f098b41bc0eb387697fd8ca262afcf",
+      "beforeClippedElements": [],
+      "afterClippedElements": [],
+      "afterClippedText": [],
+      "afterTitleBounds": {
+        "tag": "H1",
+        "cls": "",
+        "x": 233,
+        "y": 155,
+        "w": 1430,
+        "h": 66.59375,
+        "right": 1663
+      }
+    },
+    {
+      "route": "secrets",
+      "width": 1920,
+      "controlsUnchanged": true,
+      "desktopGeometryIdentical": true,
+      "confirmedClips": 0,
+      "beforeScreenshotSha256": "db86a670fce6e5d7d0278fcfe3e45fbf1b053557949c2bb9fadf432c1912b858",
+      "afterScreenshotSha256": "db86a670fce6e5d7d0278fcfe3e45fbf1b053557949c2bb9fadf432c1912b858",
+      "beforeClippedElements": [],
+      "afterClippedElements": [],
+      "afterClippedText": [],
+      "afterTitleBounds": {
+        "tag": "H1",
+        "cls": "",
+        "x": 233,
+        "y": 174.3125,
+        "w": 1430,
+        "h": 66.59375,
+        "right": 1663
+      }
+    },
+    {
+      "route": "armor-materials",
+      "width": 1920,
+      "controlsUnchanged": true,
+      "desktopGeometryIdentical": true,
+      "confirmedClips": 0,
+      "beforeScreenshotSha256": "7daf11bf2b7d763b0ad2e1f696700897534f6f7efbb05acfbbc198e12b01564e",
+      "afterScreenshotSha256": "7daf11bf2b7d763b0ad2e1f696700897534f6f7efbb05acfbbc198e12b01564e",
+      "beforeClippedElements": [],
+      "afterClippedElements": [],
+      "afterClippedText": [],
+      "afterTitleBounds": {
+        "tag": "H1",
+        "cls": "",
+        "x": 233,
+        "y": 174.3125,
+        "w": 1430,
+        "h": 66.59375,
+        "right": 1663
+      }
+    },
+    {
+      "route": "compare-weapons",
+      "width": 1920,
+      "controlsUnchanged": true,
+      "desktopGeometryIdentical": true,
+      "confirmedClips": 0,
+      "beforeScreenshotSha256": "9484f865ee441fbba595828f9a8bd43f67e12bb08662a0cacb8ec45c83c88f51",
+      "afterScreenshotSha256": "9484f865ee441fbba595828f9a8bd43f67e12bb08662a0cacb8ec45c83c88f51",
+      "beforeClippedElements": [],
+      "afterClippedElements": [],
+      "afterClippedText": [],
+      "afterTitleBounds": {
+        "tag": "H1",
+        "cls": "",
+        "x": 233,
+        "y": 155,
+        "w": 1430,
+        "h": 66.59375,
+        "right": 1663
+      }
+    },
+    {
+      "route": "compare-armors",
+      "width": 1920,
+      "controlsUnchanged": true,
+      "desktopGeometryIdentical": true,
+      "confirmedClips": 0,
+      "beforeScreenshotSha256": "bed3de3980dd34df1d2812a24e489e893e07c5326e7e46374f6810c537b2b6e1",
+      "afterScreenshotSha256": "bed3de3980dd34df1d2812a24e489e893e07c5326e7e46374f6810c537b2b6e1",
+      "beforeClippedElements": [],
+      "afterClippedElements": [],
+      "afterClippedText": [],
+      "afterTitleBounds": {
+        "tag": "H1",
+        "cls": "",
+        "x": 233,
+        "y": 155,
+        "w": 1430,
+        "h": 66.59375,
+        "right": 1663
+      }
+    }
+  ],
+  "browserErrors": [],
+  "interactions": [
+    {
+      "name": "home video button reachable and existing toast",
+      "ok": true,
+      "value": true
+    },
+    {
+      "name": "secrets note buttons reachable; local note persists",
+      "ok": true,
+      "value": true
+    },
+    {
+      "name": "submissions form reachable and existing local save",
+      "ok": true,
+      "value": true
+    },
+    {
+      "name": "materials search filters and clears",
+      "ok": true,
+      "value": true
+    },
+    {
+      "name": "weapon comparison selection responds",
+      "ok": true,
+      "value": true
+    },
+    {
+      "name": "armor comparison selection responds",
+      "ok": true,
+      "value": true
+    }
+  ],
+  "limitations": "Local Chromium, mocked owner auth; no live Supabase or raw.githack cache verification. Additional home arrow/news-title diagnostics outside the confirmed B-04 areas are retained unchanged."
+}
