@@ -1,0 +1,51 @@
+PASS Guest auth controls visible on mobile
+PASS Shared header home
+PASS Shared header dashboard
+PASS Shared header news
+PASS Shared header database
+PASS Shared header map
+PASS Shared header hunt
+PASS Shared header routes
+PASS Shared header planner
+PASS Shared header guides
+PASS Shared header patchwatch
+PASS Shared header secrets
+PASS Shared header builds
+PASS Shared header community
+PASS Shared header submissions
+PASS Shared header profile
+PASS Shared header weapon-blueprints
+PASS Shared header armor-blueprints
+PASS Shared header armor-materials
+PASS Shared header deviations
+PASS Shared header mods
+PASS Shared header compare-weapons
+PASS Shared header compare-armors
+PASS Shared header memetics
+PASS Shared header vehicles
+PASS Shared header creatures
+PASS Shared header tech-workbench
+PASS Shared header exchange
+PASS Map zoom control
+PASS Mouse drag moves map
+PASS Reset map view
+PASS Clickable marker
+PASS Save route
+PASS Saved route opens map
+PASS Map search filters
+PASS Filter reset
+PASS Header fits 1280
+PASS Header fits 390
+PASS Mobile menu opens 390
+PASS Escape closes menu 390
+PASS Header fits 360
+PASS Mobile menu opens 360
+PASS Escape closes menu 360
+PASS Native touch pinch gesture
+PASS Native touch drag
+PASS Touch pinch zoom
+PASS Map viewport persistence
+PASS Mobile custom marker control
+PASS Mobile map no horizontal overflow
+PASS No browser errors
+PASS navigation/map checks: 50

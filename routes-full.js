@@ -351,9 +351,9 @@ function renderProfile(){
 
         <section class="profile-ref-panel profile-ref-data">
           <header><div><span></span><h2>DATEN & SICHERHEIT</h2></div><small>LOKAL + SUPABASE</small></header>
-          <p>Werkzeugdaten werden derzeit teilweise lokal im Browser gespeichert. Passwort- und Sitzungsdaten gehören nicht zum Export.</p>
+          <p>Der JSON-Export enthält lokale Werkzeugdaten dieses Kontos. Galerie-/Upload-Bilder, Profilgestaltung und Supabase-Daten sind nicht enthalten.</p>
           <div class="profile-ref-data-actions"><button type="button" id="profileExport">DATEN EXPORTIEREN</button><button type="button" id="profileClear" class="danger">WERKZEUGDATEN LÖSCHEN</button></div>
-          <small class="profile-ref-data-note">Lokales Löschen beendet deine bestehende Kontositzung nicht.</small>
+          <small class="profile-ref-data-note">Werkzeugdaten löschen erhält Galerie, Profilgestaltung, Kontositzung und Cloud-Katalog.</small>
         </section>
 
         <section class="profile-ref-panel profile-ref-prepared">
@@ -470,8 +470,8 @@ function bindProfile(){
   qsa('[data-profile-scroll]').forEach(b=>b.onclick=()=>{setProfileView('overview');requestAnimationFrame(()=>qs('#'+b.dataset.profileScroll)?.scrollIntoView({behavior:'smooth',block:'start'}))});
   bindCollectionControls();
   on('#galleryUpload','change',async e=>{try{const file=e.target.files[0],rows=arr('jma_gallery');if(rows.length>=6)throw new Error('Maximal sechs Galerie-Bilder.');const id=await globalThis.JMA_MEDIA.save(file);rows.push({id,name:file.name,created:new Date().toISOString()});write('jma_gallery',rows);refresh()}catch(error){toast(error.message)}});qsa('[data-gallery-remove]').forEach(b=>b.onclick=async()=>{if(!confirm('Galeriebild löschen?'))return;await globalThis.JMA_MEDIA.remove(b.dataset.galleryRemove);write('jma_gallery',arr('jma_gallery').filter(x=>x.id!==b.dataset.galleryRemove));refresh()});
-  on('#profileExport','click',()=>{const out={exported:new Date().toISOString()};['jma_favorites','jma_hunt','jma_hunt_meta','jma_saved_builds','jma_routes','jma_plans','jma_submissions','jma_community_posts','jma_found','jma_custom_markers','jma_exchange_posts','jma_build_draft','jma_route_draft','jma_secret_notes','jma_patch_notes','jma_tech_seen','jma_invention_slots','jma_invention_saved'].forEach(k=>{if(read(k)!==null)out[k]=read(k)});const blob=new Blob([JSON.stringify(out,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='once-human-archiv-export.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000)});
-  on('#profileClear','click',()=>{if(!confirm('Lokale Werkzeugdaten löschen? Konto/Anmeldung bleiben erhalten.'))return;['jma_favorites','jma_hunt','jma_hunt_meta','jma_saved_builds','jma_build_draft','jma_routes','jma_route_draft','jma_plans','jma_submissions','jma_community_posts','jma_found','jma_custom_markers','jma_exchange_posts'].forEach(k=>globalThis.JMA_STORE.remove(k));toast('Werkzeugdaten gelöscht.');refresh()});
+  on('#profileExport','click',()=>{const out={exported:new Date().toISOString(),scope:'local-tools',includesImageBytes:false,includesCloudData:false};globalThis.JMA_STORE.tools.forEach(k=>{if(read(k)!==null)out[k]=read(k)});const blob=new Blob([JSON.stringify(out,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='once-human-archiv-export.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000)});
+  on('#profileClear','click',()=>{if(!confirm('Lokale Werkzeugdaten dieses Kontos löschen (inklusive Notizen und Tech-Fortschritt)? Galerie, Profilgestaltung, Kontositzung und Supabase-Katalog bleiben erhalten.'))return;globalThis.JMA_STORE.tools.forEach(k=>globalThis.JMA_STORE.remove(k));toast('Werkzeugdaten gelöscht.');refresh()});
 }
 
 

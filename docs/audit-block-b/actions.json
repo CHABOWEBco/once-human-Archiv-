@@ -1,0 +1,649 @@
+{
+  "routes": [],
+  "checks": [
+    {
+      "name": "guest protected map redirects",
+      "ok": true,
+      "value": true
+    },
+    {
+      "name": "login fixture",
+      "ok": true,
+      "value": true
+    },
+    {
+      "name": "home primary action",
+      "ok": true,
+      "value": "Projektvorschau: Das Archiv ist echte programmierte UI; die Bereiche greifen auf denselben lokalen Arbeitsstand zu."
+    },
+    {
+      "name": "news primary action",
+      "ok": true,
+      "value": true
+    },
+    {
+      "name": "guides primary action",
+      "ok": true,
+      "value": true
+    },
+    {
+      "name": "hunt priority/done/remove",
+      "ok": true,
+      "value": {
+        "meta": {
+          "cat-schmetterling": {
+            "priority": "Hoch",
+            "done": true
+          }
+        },
+        "remaining": 0
+      }
+    },
+    {
+      "name": "map real marker route selection",
+      "ok": true,
+      "value": {
+        "selected": "loc-silo08",
+        "draft": [
+          "loc-silo08"
+        ]
+      }
+    },
+    {
+      "name": "map save route",
+      "ok": true,
+      "value": 1
+    },
+    {
+      "name": "live-map real marker route selection",
+      "ok": true,
+      "value": {
+        "selected": "loc-silo08",
+        "draft": [
+          "loc-silo08"
+        ]
+      }
+    },
+    {
+      "name": "live-map save route",
+      "ok": true,
+      "value": 2
+    },
+    {
+      "name": "saved route reopens map",
+      "ok": true,
+      "value": true
+    },
+    {
+      "name": "planner create/delete",
+      "ok": true,
+      "value": true
+    },
+    {
+      "name": "patch note save",
+      "ok": true,
+      "value": true
+    },
+    {
+      "name": "secret note create/delete",
+      "ok": true,
+      "value": true
+    },
+    {
+      "name": "community post like/delete",
+      "ok": true,
+      "value": true
+    },
+    {
+      "name": "submission create/delete",
+      "ok": true,
+      "value": true
+    },
+    {
+      "name": "weapon-blueprints no-match filter",
+      "ok": true,
+      "value": {
+        "value": "audit_no_match",
+        "text": "ie, Seltenheit und offensiven Referenzwerten durchsuchen.\n\n12\nBLAUPAUSEN\n6\nFAMILIEN\nAlle Familien\nJuggernaut\nWanderer\nBeyonder\nJäger\nOperator\nFremdling\n⇄ VERGLEICH ÖFFNEN",
+        "articleCount": 0
+      }
+    },
+    {
+      "name": "armor-materials no-match filter",
+      "ok": true,
+      "value": {
+        "value": "audit_no_match",
+        "text": "DATENBANK // MATERIALKUNDE\nRÜSTUNGSMATERIALIEN\n\n57 Materialien im Referenzbestand; hier die kuratierte Auswahl mit Herkunft und Kurzfunktion.",
+        "articleCount": 0
+      }
+    },
+    {
+      "name": "mods no-match filter",
+      "ok": true,
+      "value": {
+        "value": "audit_no_match",
+        "text": "Hose\nHelm\nTop\nAlle Waffen\nSchuhe\nHandschuhe\nMaske\nNormal\nBrand\nKraftverstärkung\nFrostvortex\nDas Bullenbild\nFestung\nUnstabiler Bomber\nSchneller Geschütze\nSprung\nSchrapnell",
+        "articleCount": 0
+      }
+    },
+    {
+      "name": "memetics no-match filter",
+      "ok": true,
+      "value": {
+        "value": "audit_no_match",
+        "text": "DATENBANK // WISSENSKNOTEN\nMEMETIK\n\nReferenzliste der vorhandenen Memetik-Namen; Tech-Rework und Werkbank bleiben als eigener Bereich getrennt.\n\n⚙ TECH-WERKBANK",
+        "articleCount": 0
+      }
+    },
+    {
+      "name": "vehicles no-match filter",
+      "ok": true,
+      "value": {
+        "value": "audit_no_match",
+        "text": "DATENBANK // MOBILITÄT\nFAHRZEUGE\n\nFahrzeugtypen aus dem Referenzstand inklusive hinterlegter Skin-Zähler.",
+        "articleCount": 0
+      }
+    },
+    {
+      "name": "creatures no-match filter",
+      "ok": true,
+      "value": {
+        "value": "audit_no_match",
+        "text": "tere beobachtete Wildtiere bewusst getrennt; unbestätigte Verfügbarkeit bleibt als solche markiert.\n\nNUTZTIERE / BESTAND\n0\nWEITERE WILDTIERE\nVerfügbarkeit unbestätigt · 0",
+        "articleCount": 0
+      }
+    },
+    {
+      "name": "guides no-match filter",
+      "ok": true,
+      "value": {
+        "value": "audit_no_match",
+        "text": "DES\n27\nKAPITEL\nAlle Kategorien\nEinsteiger\nDatenbank\nKarte\nPlanung\nCommunity\nQualität\nKeine Guides gefunden\nHier gibt es im aktuellen lokalen Stand noch nichts anzuzeigen.",
+        "articleCount": 0
+      }
+    },
+    {
+      "name": "armor-blueprints category filter",
+      "ok": true,
+      "value": {
+        "before": 3,
+        "after": 1
+      }
+    },
+    {
+      "name": "deviations category filter",
+      "ok": true,
+      "value": {
+        "before": 11,
+        "after": 11
+      }
+    },
+    {
+      "name": "compare-weapons comparison change",
+      "ok": true,
+      "value": {
+        "value": "crit",
+        "scores": [
+          "77.7",
+          "67.2",
+          "12.7"
+        ]
+      }
+    },
+    {
+      "name": "compare-armors comparison change",
+      "ok": true,
+      "value": {
+        "value": "1",
+        "scores": [
+          "HP180001800POLLUTION———PSI———CAPTURE202DURABILITY———MOVEMENT0.0200.02GLIDE0.0400.04"
+        ]
+      }
+    },
+    {
+      "name": "gallery upload/reload/delete",
+      "ok": true,
+      "value": true
+    },
+    {
+      "name": "switch via visible label + persistence",
+      "ok": true,
+      "value": true
+    },
+    {
+      "name": "welcome notification toggle",
+      "ok": true,
+      "value": true
+    },
+    {
+      "name": "password API invoked fixture",
+      "ok": true,
+      "value": true
+    },
+    {
+      "name": "admin broken image count",
+      "ok": true,
+      "value": 22
+    },
+    {
+      "name": "admin filters/search",
+      "ok": true,
+      "value": {
+        "noMatchCount": 0,
+        "categoryCount": 2
+      }
+    },
+    {
+      "name": "admin drawer stable + preview-only edit",
+      "ok": true,
+      "value": {
+        "before": {
+          "x": 1506,
+          "y": 292,
+          "width": 390,
+          "height": 690
+        },
+        "after": {
+          "x": 1506,
+          "y": 292,
+          "width": 390,
+          "height": 690
+        },
+        "preview": "Audittitel",
+        "catalogUnchanged": true
+      }
+    },
+    {
+      "name": "live-map native touch pinch/drag",
+      "ok": true,
+      "value": {
+        "pinchZoom": 1.75,
+        "after": {
+          "zoom": 1.75,
+          "x": 50,
+          "y": 50
+        }
+      }
+    },
+    {
+      "name": "live-map reduced motion respected",
+      "ok": true,
+      "value": true
+    },
+    {
+      "name": "embedded name form lacks submit listener",
+      "ok": true,
+      "value": []
+    },
+    {
+      "name": "profile old hidden drawer still built",
+      "ok": true,
+      "value": {
+        "hidden": true,
+        "choices": 95
+      }
+    },
+    {
+      "name": "footer logo bounds",
+      "ok": true,
+      "value": {
+        "logo": "{\"x\":66,\"y\":1630.78125,\"width\":27,\"height\":33.8125,\"top\":1630.78125,\"right\":93,\"bottom\":1664.59375,\"left\":66}",
+        "footer": "{\"x\":0,\"y\":1600.78125,\"width\":1920,\"height\":133,\"top\":1600.78125,\"right\":1920,\"bottom\":1733.78125,\"left\":0}"
+      }
+    },
+    {
+      "name": "mobile admin horizontal rail scrollable",
+      "ok": true,
+      "value": {
+        "scrollWidth": 1199,
+        "clientWidth": 370,
+        "overflowX": "auto"
+      }
+    },
+    {
+      "name": "logout fixture clears identity",
+      "ok": true,
+      "value": true
+    }
+  ],
+  "errors": [],
+  "requests": [
+    {
+      "url": "http://127.0.0.1:4189/assets/r7/catalog-deviations.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/ohdex/catalog/icon_sage_new.png",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r7/catalog-animals.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r7/catalog-weapons.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r7/catalog-items.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/ohdex/catalog/icon_acid.png",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r7/catalog-resources.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r7/catalog-currencies.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r7/catalog-furniture.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r13/item-permit.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r13/creature.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r7/catalog-deviations.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r7/catalog-deviations.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r7/catalog-animals.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r7/catalog-weapons.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r7/catalog-items.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/ohdex/catalog/icon_sage_new.png",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/ohdex/catalog/icon_acid.png",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r7/catalog-resources.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r7/catalog-currencies.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r7/catalog-furniture.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r13/item-permit.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r13/creature.svg",
+      "status": 404
+    }
+  ],
+  "roles": [],
+  "sections": [],
+  "inventory": {
+    "scenarios": [
+      {
+        "id": "nalcott",
+        "name": "Nalcott",
+        "background": "",
+        "note": "Eigene Kartenebene"
+      },
+      {
+        "id": "manibus",
+        "name": "Manibus",
+        "background": "",
+        "note": "Eigene Ebene vorbereitet"
+      },
+      {
+        "id": "way-of-winter",
+        "name": "The Way of Winter",
+        "background": "",
+        "note": "Eigene Ebene vorbereitet"
+      },
+      {
+        "id": "endless-dream",
+        "name": "Endloser Traum",
+        "background": "",
+        "note": "Eigene Ebene vorbereitet"
+      },
+      {
+        "id": "raidzone",
+        "name": "RaidZone",
+        "background": "",
+        "note": "Eigene Ebene vorbereitet"
+      },
+      {
+        "id": "custom",
+        "name": "Custom Server",
+        "background": "",
+        "note": "Eigene Ebene"
+      }
+    ],
+    "markers": [
+      {
+        "id": "loc-silo08",
+        "scenario": "way-of-winter",
+        "name": "Sicherungssilo 08",
+        "category": "Mod-Fundort",
+        "gameX": "",
+        "gameY": "",
+        "mapX": 18,
+        "mapY": 30,
+        "location": "The Way of Winter",
+        "note": "Helm-Mods werden diesem Silo zugeordnet. Exakte Koordinaten können im Kartenstudio ergänzt werden.",
+        "catalogIds": [],
+        "verified": "Ort belegt"
+      },
+      {
+        "id": "loc-psi",
+        "scenario": "way-of-winter",
+        "name": "Sicherungssilo PSI",
+        "category": "Mod-Fundort",
+        "gameX": "",
+        "gameY": "",
+        "mapX": 45,
+        "mapY": 44,
+        "location": "The Way of Winter",
+        "note": "Hosen- und Oberteil-Mods werden diesem Silo zugeordnet.",
+        "catalogIds": [],
+        "verified": "Ort belegt"
+      },
+      {
+        "id": "loc-ex1",
+        "scenario": "way-of-winter",
+        "name": "Sicherungssilo EX1",
+        "category": "Mod-Fundort",
+        "gameX": "",
+        "gameY": "",
+        "mapX": 67,
+        "mapY": 33,
+        "location": "The Way of Winter",
+        "note": "Masken-Mods werden diesem Silo zugeordnet.",
+        "catalogIds": [],
+        "verified": "Ort belegt"
+      },
+      {
+        "id": "loc-delta",
+        "scenario": "way-of-winter",
+        "name": "Sicherungssilo Delta",
+        "category": "Mod-Fundort",
+        "gameX": "",
+        "gameY": "",
+        "mapX": 77,
+        "mapY": 65,
+        "location": "The Way of Winter",
+        "note": "Handschuh- und Schuh-Mods werden diesem Silo zugeordnet.",
+        "catalogIds": [],
+        "verified": "Ort belegt"
+      }
+    ],
+    "entries": [
+      "cat-zitteraal",
+      "cat-nussknacker",
+      "cat-schmetterling",
+      "cat-salbei",
+      "cat-rohes-fleisch",
+      "cat-tec9",
+      "cat-ebr14",
+      "cat-aug",
+      "cat-he-splittergranate",
+      "cat-saeure",
+      "cat-sternenstaub-quelle",
+      "cat-energieverbindung",
+      "cat-kuerbislaterne-formel",
+      "cat-tier-wildbueffel",
+      "cat-tier-eisbaer",
+      "cat-tier-schneefuchs",
+      "cat-tier-fuchs",
+      "cat-tier-schnappschildkroete",
+      "cat-tier-meeresschildkroete",
+      "blackfell-extraction-i",
+      "creature-bock"
+    ]
+  },
+  "css": [
+    {
+      "sheet": "http://127.0.0.1:4189/styles.css",
+      "context": "root",
+      "selector": ".route-home .newsletter .cyan-btn"
+    },
+    {
+      "sheet": "http://127.0.0.1:4189/admin-panel.css?v=59003cf",
+      "context": "root (min-width: 901px)",
+      "selector": ".admin-main:has(.admin-visual-editor)"
+    },
+    {
+      "sheet": "http://127.0.0.1:4189/admin-panel.css?v=59003cf",
+      "context": "root (min-width: 901px)",
+      "selector": ".admin-main:has(.admin-visual-editor) > .admin-topline"
+    },
+    {
+      "sheet": "http://127.0.0.1:4189/routes-full.css",
+      "context": "root",
+      "selector": ".profile-ref-drawer-nav"
+    },
+    {
+      "sheet": "http://127.0.0.1:4189/routes-full.css",
+      "context": "root",
+      "selector": ".profile-ref-gallery-grid figure"
+    },
+    {
+      "sheet": "http://127.0.0.1:4189/settings-page.css?v=a2e013c",
+      "context": "root",
+      "selector": ".settings-profile-editor .profile-ref-drawer-content"
+    },
+    {
+      "sheet": "http://127.0.0.1:4189/settings-page.css?v=a2e013c",
+      "context": "root",
+      "selector": ".settings-profile-editor .profile-ref-drawer-content > section"
+    },
+    {
+      "sheet": "http://127.0.0.1:4189/settings-page.css?v=a2e013c",
+      "context": "root",
+      "selector": ".settings-profile-editor .profile-choices"
+    },
+    {
+      "sheet": "http://127.0.0.1:4189/settings-page.css?v=a2e013c",
+      "context": "root",
+      "selector": ".settings-profile-editor .profile-choices button"
+    },
+    {
+      "sheet": "http://127.0.0.1:4189/settings-page.css?v=a2e013c",
+      "context": "root",
+      "selector": ".settings-profile-editor .profile-choices button.active"
+    },
+    {
+      "sheet": "http://127.0.0.1:4189/settings-page.css?v=a2e013c",
+      "context": "root",
+      "selector": ".settings-content-profile"
+    },
+    {
+      "sheet": "http://127.0.0.1:4189/settings-page.css?v=a2e013c",
+      "context": "root",
+      "selector": ".settings-profile-editor"
+    },
+    {
+      "sheet": "http://127.0.0.1:4189/settings-page.css?v=a2e013c",
+      "context": "root",
+      "selector": ".settings-profile-editor-head"
+    },
+    {
+      "sheet": "http://127.0.0.1:4189/settings-page.css?v=a2e013c",
+      "context": "root",
+      "selector": ".settings-profile-editor-head h1"
+    },
+    {
+      "sheet": "http://127.0.0.1:4189/settings-page.css?v=a2e013c",
+      "context": "root",
+      "selector": ".settings-profile-editor-head p"
+    },
+    {
+      "sheet": "http://127.0.0.1:4189/settings-page.css?v=a2e013c",
+      "context": "root",
+      "selector": ".settings-profile-editor > .profile-ref-drawer-body"
+    },
+    {
+      "sheet": "http://127.0.0.1:4189/settings-page.css?v=a2e013c",
+      "context": "root",
+      "selector": ".settings-profile-editor .profile-ref-drawer-nav"
+    },
+    {
+      "sheet": "http://127.0.0.1:4189/settings-page.css?v=a2e013c",
+      "context": "root",
+      "selector": ".settings-profile-editor .profile-ref-drawer-content"
+    },
+    {
+      "sheet": "http://127.0.0.1:4189/settings-page.css?v=a2e013c",
+      "context": "root",
+      "selector": ".settings-profile-editor .profile-ref-drawer-content > section"
+    },
+    {
+      "sheet": "http://127.0.0.1:4189/settings-page.css?v=a2e013c",
+      "context": "root",
+      "selector": ".settings-profile-editor .profile-ref-drawer-content section > small"
+    },
+    {
+      "sheet": "http://127.0.0.1:4189/settings-page.css?v=a2e013c",
+      "context": "root",
+      "selector": ".settings-profile-editor .profile-ref-drawer-content section > h3"
+    },
+    {
+      "sheet": "http://127.0.0.1:4189/settings-page.css?v=a2e013c",
+      "context": "root",
+      "selector": ".settings-profile-editor .avatar-choices"
+    },
+    {
+      "sheet": "http://127.0.0.1:4189/settings-page.css?v=a2e013c",
+      "context": "root",
+      "selector": ".settings-profile-editor .avatar-choices button"
+    },
+    {
+      "sheet": "http://127.0.0.1:4189/settings-page.css?v=a2e013c",
+      "context": "root",
+      "selector": ".settings-content-profile"
+    }
+  ]
+}

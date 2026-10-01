@@ -1,0 +1,38 @@
+PASS 1 Unique DOM IDs: database
+PASS 2 12-entry pagination
+PASS 3 Second page contains remaining 9
+PASS 4 Search
+PASS 5 Favorite/hunt/found persistence
+PASS 6 Original detail dialog
+PASS 7 Global search on current database route
+PASS 8 List view
+PASS 9 Favorites filter
+PASS 10 Sort control
+PASS 11 Unique DOM IDs: builds
+PASS 12 Build save
+PASS 13 Build JSON export
+PASS 14 Validated JSON import
+PASS 15 Reject unknown equipment
+PASS 16 Existing load control
+PASS 17 Unique DOM IDs: map
+PASS 18 Marker to route
+PASS 19 Unique DOM IDs: routes
+PASS 20 Route persistence
+PASS 21 Map zoom
+PASS 22 Custom marker persistence
+PASS 23 Original sidebar search wired
+PASS 24 Unique DOM IDs: tech-workbench
+PASS 25 Real tier filter
+PASS 26 Tech detail
+PASS 27 Analysis state
+PASS 28 Verified recipe multiplier
+PASS 29 Original material menu + saved mix
+PASS 30 Unique DOM IDs: profile
+page.waitForSelector: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for locator('.profile-ref-page') to be visible[22m
+
+    at /workspace/scratch/ffa1c2862d52/audit-b/legacy-functional-transfer.cjs:7:1036 {
+  log: [ "  - waiting for locator('.profile-ref-page') to be visible" ],
+  name: 'TimeoutError'
+}

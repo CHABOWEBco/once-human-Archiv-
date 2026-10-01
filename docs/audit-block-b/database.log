@@ -1,0 +1,42 @@
+PASS 1 Desktop 1920 has no horizontal overflow:
+PASS 2 Desktop 1920 unique DOM IDs
+PASS 3 Single main landmark, no nested main
+PASS 4 12 cards on first page
+PASS 5 9 cards on second page
+PASS 6 Correct displayed range
+PASS 7 Search resets pagination
+PASS 8 All three collection actions persist
+PASS 9 Real found count updates
+PASS 10 Detail opens
+PASS 11 Correct detail title
+PASS 12 Detail favorite toggle removes
+PASS 13 Detail favorite toggle adds
+PASS 14 Native Escape closes detail
+PASS 15 Favorite filter
+PASS 16 Active filter indicator
+PASS 17 Category filter
+PASS 18 Status filter
+PASS 19 Name sort
+PASS 20 category sort works
+PASS 21 checked sort works
+PASS 22 List control state
+PASS 23 Desktop list has no horizontal overflow:
+PASS 24 Desktop list unique DOM IDs
+PASS 25 Desktop 1280 has no horizontal overflow:
+PASS 26 Desktop 1280 unique DOM IDs
+PASS 27 Mobile 390 has no horizontal overflow:
+PASS 28 Mobile 390 unique DOM IDs
+PASS 29 Mobile filters initially collapsed
+PASS 30 Persistence after reload
+PASS 31 Mobile favorite filter
+PASS 32 Mobile detail
+PASS 33 Mobile dialog fits viewport
+PASS 34 Mobile list has no horizontal overflow:
+PASS 35 Mobile list unique DOM IDs
+PASS 36 Mobile 360 has no horizontal overflow:
+PASS 37 Mobile 360 unique DOM IDs
+PASS 38 Truthful empty search
+PASS 39 Empty state has no horizontal overflow:
+PASS 40 Empty state unique DOM IDs
+PASS 41 No browser exceptions:
+PASS database checks: 41

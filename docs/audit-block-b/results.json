@@ -1,0 +1,5209 @@
+{
+  "routes": [
+    {
+      "width": 1920,
+      "id": "home",
+      "hash": "#/home",
+      "title": "Once Human Archiv // Start",
+      "h1": [
+        "ONCE HUMANARCHIV"
+      ],
+      "text": "ONCE HUMAN\nONCE HUMAN\nARCHIV\nDEINE ZENTRALE WISSENSPLATTFORM FÜR ONCE HUMAN\n\nGuides, Daten, Builds, Karten, Community und Werkzeuge an einem Ort. Übersichtlich verbunden mit den vorhandenen Archivfunktionen und deinem lokalen Fortschritt.\n\nJETZT ENTDECKEN\n→\n▶\nARCHIV ANSEHEN\n◷\nAktuell\n♙\nCommunity-getrieben\n◇\nWerbefrei\n⌁\nFür alle Spieler\n▱\nDATENBANK\n\nGegenstände, Waffen, Ausrüstung, Ressourcen und mehr.\n\n›\n⌖\nINTERAKTIVE KARTE\n\nMarker, Routen, Fundorte und Gebiete.\n\n›\n⚒\nBUILDS\n\nVorlagen, Loadouts u",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [
+        "#/database",
+        "#/database",
+        "#/map",
+        "#/builds",
+        "#/tech-workbench",
+        "#/community",
+        "#/guides",
+        "#/news",
+        "#/news",
+        "#/news",
+        "#/news",
+        "#/database",
+        "#/database",
+        "#/community",
+        "#/database",
+        "#/database",
+        "#/builds",
+        "#/dashboard"
+      ],
+      "buttons": 1,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 1920,
+      "id": "dashboard",
+      "hash": "#/dashboard",
+      "title": "Once Human Archiv // Kommandozentrale",
+      "h1": [
+        "DEIN ARCHIV"
+      ],
+      "text": "KOMMANDOZENTRALE\nDEIN ARCHIV\n\nWillkommen zurück, Referenzprüfung. Deine lokalen Werkzeuge laufen in einem gemeinsamen Arbeitsbereich.\n\n0\nFAVORITEN\n0\nJAGDZIEL(E)\n0\nGESPEICHERTE BUILDS\n0\nROUTEN\n0\nEINSATZPLÄNE\n◎\nNÄCHSTER SCHRITT\nErstes Jagdziel setzen\n\nÜbernimm aus der Datenbank einen Eintrag direkt in deine Jagdliste.\n\nDATENBANK ÖFFNEN\nWERKZEUGE\ndein Arbeitsraum\n⌖ INTERAKTIVE KARTE\n⚒ BUILD-WERKSTATT\n◷ EINSATZPLANER\n★ MEINE SAMMLUNG\nARCHIVSTATUS\n27 feste Routen\nStartseite\naktiv\nDatenbank\naktiv\nPers",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 5,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 1920,
+      "id": "news",
+      "hash": "#/news",
+      "title": "Once Human Archiv // Neuigkeiten",
+      "h1": [
+        "NEUIGKEITEN"
+      ],
+      "text": "ARCHIV // SIGNAL\nNEUIGKEITEN\n\nProjektmeldungen und dokumentierte Archiv-Updates aus dem erhaltenen Projektstand.\n\nALLE\nUPDATE\nFUND\nCOMMUNITY\nUpdate · 25. Sept. 2026\nJazzeMeow Archive – neue Seitenarchitektur aktiv\n\nÖffentliche Landingpage, Login-getrennte Kommandozentrale, Untermenüs und persönliche Werkzeuge sind als Seitenarchitektur aktiv.\n\nMELDUNG LESEN →\n25. Sept. 2026 · Update\nJazzeMeow Archive – neue Seitenarchitektur aktiv\n\nÖffentliche Landingpage, Login-getrennte Kommandozentrale, Unter",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 8,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 1920,
+      "id": "database",
+      "hash": "#/database",
+      "title": "Once Human Archiv // Datenbank",
+      "h1": [
+        "DATENBANKDER KATALOG DEINER NÄCHSTEN FUNDE."
+      ],
+      "text": "ARCHIV / WISSEN & FUNDORTE\nDATENBANK\nDER KATALOG DEINER NÄCHSTEN FUNDE.\n\nAusrüstung, Ressourcen und Anomalien. Durchsuche das Archiv, prüfe Fundwege und halte deine Sammlung auf Kurs.\n\nQUELLSTAND\n2026-09-26\nKURATIERTER ARCHIVBESTAND\n21\nEinträge im Katalog\n14\nArchivbereiche\n0\nVon dir gefunden\n◎ DEINE JAGDLISTE\n↗\nKATALOG EINGRENZEN\nFILTER & BEREICHE\n⌄\n⌘\nAlle Einträge\n21\n◇\nGegenstände\n2\n⌁\nWaffen\n3\n⬡\nAusrüstung\n0\n⚙\nMods & Zubehör\n0\nΨ\nAbweichler\n3\n◌\nTiere & Fisch\n7\n✦\nPflanzen & Nahrung\n2\n▣\nMöbel & Fo",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [
+        "#/hunt"
+      ],
+      "buttons": 92,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Katalogseiten",
+          "tabs": [
+            "← ZURÜCK",
+            "WEITER →"
+          ]
+        }
+      ]
+    },
+    {
+      "width": 1920,
+      "id": "map",
+      "hash": "#/map",
+      "title": "Once Human Archiv // Karte",
+      "h1": [
+        "INTERAKTIVEKARTE"
+      ],
+      "text": "✦\nKARTENZENTRALE // INTERN\nINTERAKTIVE\nKARTE\n\nSzenarioebenen, vorhandene Marker und gespeicherte Routen in einer kompakten Kartenoberfläche. Ziehe die Karte mit Maus oder Touch, zoome und verbinde echte Fundorte zu deinen eigenen Farmrouten.\n\n▦\n6\nSZENARIEN\nvorhandener Projektstand\n⌖\n4\nMARKER\nvorhandene Einträge\n◉\n4\nSICHTBAR\naktuelle Auswahl\n⌁\n0\nROUTEN\nlokal gespeichert\n▦Marker & Filter\n▤Meine Karten\n⌕\nFILTER\nMARKER-KATEGORIEN\nLIVE FILTER\n⌖\nAlle Marker\n4\n⌖\nMod-Fundort\n4\n↻ FILTER ZURÜCKSETZEN\nSZEN",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 19,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 1920,
+      "id": "hunt",
+      "hash": "#/hunt",
+      "title": "Once Human Archiv // Jagdliste",
+      "h1": [
+        "JAGDLISTE"
+      ],
+      "text": "PERSÖNLICH // ZIELE\nJAGDLISTE\n\nKatalogziele priorisieren, als erledigt markieren oder direkt zur Datenbank zurückspringen.\n\n0\nAKTIVE EINTRÄGE\n0\nERLEDIGT\nKeine Jagdziele\nHier gibt es im aktuellen lokalen Stand noch nichts anzuzeigen.\n＋ AUS DATENBANK HINZUFÜGEN",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 1,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 1920,
+      "id": "routes",
+      "hash": "#/routes",
+      "title": "Once Human Archiv // Farmrouten",
+      "h1": [
+        "FARMROUTEN"
+      ],
+      "text": "KARTE // PLANUNG\nFARMROUTEN\n\nMarker zu eigenen Routen verbinden. Gespeicherte Routen bleiben lokal im Browser und öffnen ihre Stationen wieder auf der Karte.\n\nAKTUELLER ENTWURF\n0 Stationen\nEntwurf leer\nHier gibt es im aktuellen lokalen Stand noch nichts anzuzeigen.\nROUTE SPEICHERN\n⌖ MARKER AUF KARTE WÄHLEN\nGESPEICHERTE ROUTEN\n0\nNoch keine Route gespeichert\nHier gibt es im aktuellen lokalen Stand noch nichts anzuzeigen.",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 2,
+      "unlabelled": [
+        "name"
+      ],
+      "sections": []
+    },
+    {
+      "width": 1920,
+      "id": "planner",
+      "hash": "#/planner",
+      "title": "Once Human Archiv // Einsatzplaner",
+      "h1": [
+        "EINSATZPLANER"
+      ],
+      "text": "SESSION // PLANUNG\nEINSATZPLANER\n\nEine Spielsitzung aus Jagdzielen, Build und Kartenroute zusammensetzen und lokal speichern.\n\nNEUER EINSATZ\nlokaler Plan\nTITEL\nDATUM\nFOKUS\nFarm\nBoss\nErkundung\nTech\nCommunity\nJAGDZIEL\nKeins\nBUILD\nKein Build\nROUTE\nKeine Route\nNOTIZ\nEINSATZ SPEICHERN\nGEPLANTE EINSÄTZE\n0\nNoch kein Einsatz geplant\nHier gibt es im aktuellen lokalen Stand noch nichts anzuzeigen.",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 1,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 1920,
+      "id": "guides",
+      "hash": "#/guides",
+      "title": "Once Human Archiv // Guides",
+      "h1": [
+        "GUIDES"
+      ],
+      "text": "WISSEN // SCHRITT FÜR SCHRITT\nGUIDES\n\nOnboarding- und Funktionsguides aus dem vorhandenen Projektstand – mit Kapiteln statt reiner Linkliste.\n\n6\nGUIDES\n27\nKAPITEL\nAlle Kategorien\nEinsteiger\nDatenbank\nKarte\nPlanung\nCommunity\nQualität\nEinsteiger\nDie ersten 5 Minuten im JazzeMeow Archive\n\nVom ersten Login bis zur ersten gespeicherten Mission.\n\nKAPITEL ANZEIGEN\nDatenbank\nVollkatalog richtig benutzen\n\nKategorien, Suchstatus und Datenqualität verstehen.\n\nKAPITEL ANZEIGEN\nKarte\nLive-Karte ohne Pin-Wand",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 6,
+      "unlabelled": [
+        "guideSearch",
+        "guideCategory"
+      ],
+      "sections": []
+    },
+    {
+      "width": 1920,
+      "id": "patchwatch",
+      "hash": "#/patchwatch",
+      "title": "Once Human Archiv // Patch-Wächter",
+      "h1": [
+        "PATCH-WÄCHTER"
+      ],
+      "text": "DATENQUALITÄT // MONITOR\nPATCH-WÄCHTER\n\nPrüfstatus und Alter der übernommenen Katalogdaten sichtbar machen, ohne ungeprüfte Änderungen als Fakten auszugeben.\n\n3\nDEUTSCH BELEGT\n11\nOFFIZIELLER DEUTSCHER BEGRIFF\n1\nBEGRIFF PRÜFEN\n3\nMODELLNAME SICHER\n1\nHISTORISCH OFFIZIELL / VERFÜGBARKEIT PRÜFEN\n2\nDATENBLATT VORHANDEN\nPRÜFQUEUE\nälteste zuerst\nDeutsch belegt\nZitteraal\nzuletzt geprüft: 2026-09-26\n2 Tage\nLOKAL NOTIEREN\nOffizieller deutscher Begriff\nNussknacker\nzuletzt geprüft: 2026-09-26\n2 Tage\nLOKAL NO",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 21,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 1920,
+      "id": "secrets",
+      "hash": "#/secrets",
+      "title": "Once Human Archiv // Kaninchenbau",
+      "h1": [
+        "GEHEIMNISSE & UNTERSUCHUNGEN"
+      ],
+      "text": "KANINCHENBAU // ANALYSE\nGEHEIMNISSE & UNTERSUCHUNGEN\n\nMethodische Hinweise und Prüfstände aus dem bestehenden Projekt – bestätigt und in Prüfung klar getrennt.\n\nALLE\nBESTÄTIGT\nWIRD GEPRÜFT\nHoch\nMechanik · Bestätigt\nTrigger & Bedingungen\n\nBei seltenen Ereignissen Uhrzeit, Wetter, Serverphase, Queststatus und benötigte Gegenstände getrennt dokumentieren.\n\nMethodischer Hinweis – kein konkreter Spielfund.\n＋ NOTIZ\nMittel\nErkundung · Bestätigt\nKoordinaten-Archiv\n\nNicht nur Koordinaten speichern, sonde",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 7,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 1920,
+      "id": "builds",
+      "hash": "#/builds",
+      "title": "Once Human Archiv // Builds",
+      "h1": [
+        "BUILD-PLANER"
+      ],
+      "text": "WERKSTATT // LOADOUT\nBUILD-PLANER\n\nWaffen, Rüstung, Abweichler, Cradle und Nahrung in einem speicherbaren Loadout zusammenstellen – basierend auf den vorhandenen Planner-Slots.\n\n12\nSLOTS\n0\nBELEGT\n0\nGESPEICHERT\nBUILD-PROFIL\nlokaler Entwurf\nNAME\nVORLAGE\nEigener Build\nBoss-Schaden · PvE\nGebiets-Farming · Farm\nÜberleben & Kontrolle · Solo\nEFFEKT-FOKUS\nKein Fokus\nBrand\nKraftverstärkung\nFrostvortex\nDas Bullenbild\nFestung\nUnstabiler Bomber\nSchneller Geschütze\nSprung\nSchrapnell\nNOTIZ\nBUILD SPEICHERN\nENT",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 3,
+      "unlabelled": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "sections": []
+    },
+    {
+      "width": 1920,
+      "id": "community",
+      "hash": "#/community",
+      "title": "Once Human Archiv // Community",
+      "h1": [
+        "COMMUNITY"
+      ],
+      "text": "COMMUNITY // LOKALER PROTOTYP\nCOMMUNITY\n\nThemenräume und Beiträge sind funktional als lokaler Browserzustand umgesetzt; ein Server-Backend ist im aktuellen Projekt noch nicht angeschlossen.\n\nArchiv-Hilfe\nFragen zu Katalog, Karte und Werkzeugen\n0\nFunde & Korrekturen\nWissen gemeinsam prüfen\n0\nBuild-Labor\nLoadouts und Ideen diskutieren\n0\nArchiv-Hilfe\nlokal gespeichert\nNoch keine Beiträge in diesem Raum\nHier gibt es im aktuellen lokalen Stand noch nichts anzuzeigen.\nBEITRAG LOKAL SPEICHERN",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 4,
+      "unlabelled": [
+        "text"
+      ],
+      "sections": []
+    },
+    {
+      "width": 1920,
+      "id": "submissions",
+      "hash": "#/submissions",
+      "title": "Once Human Archiv // Einreichungen",
+      "h1": [
+        "EINREICHUNGEN"
+      ],
+      "text": "COMMUNITY // PRÜFQUEUE\nEINREICHUNGEN\n\nFunde, Korrekturen und Tech-Formeln strukturiert erfassen. Im aktuellen statischen Projekt werden sie lokal gespeichert und klar nicht als veröffentlicht ausgegeben.\n\nNEUE EINREICHUNG\nlokaler Entwurf\nTYP\nFund / Ort\nKatalog-Korrektur\nTech-Formel\nGuide-Hinweis\nTITEL\nBEOBACHTUNG\nBELEG / QUELLE\nIN LOKALE PRÜFQUEUE\nMEINE EINREICHUNGEN\n0\nNoch keine lokalen Einreichungen\nHier gibt es im aktuellen lokalen Stand noch nichts anzuzeigen.",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 1,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 1920,
+      "id": "profile",
+      "hash": "#/profile",
+      "title": "Once Human Archiv // Profil & Sicherheit",
+      "h1": [
+        "Referenzprüfung"
+      ],
+      "text": "R\nONCE HUMAN ARCHIV // PROFIL\nReferenzprüfung\nACCOUNT VERBUNDEN\npreview@example.invalid\n\nSammeln. Planen. Bauen. Archivieren. Dein persönlicher Arbeitsbereich für die vorhandenen Werkzeuge und lokalen Archivdaten.\n\nSAMMLUNGSFORTSCHRITT\n0 / 21\n✎ PROFIL ANPASSEN\nARCHIVSTATUS\n0% ERFASST\nBerechnet aus deinen tatsächlich als gefunden markierten Katalogeinträgen.\n▣\n0\nGEFUNDENE ITEMS\n⌖\n0\nGESPEICHERTE ROUTEN\n⚒\n0\nGESPEICHERTE BUILDS\n♥\n0\nFAVORITEN\n⌂\nÜBERSICHT\n◇\nSAMMLUNG\n⚒\nBUILDS\n⌖\nROUTEN\n▥\nSTATISTIKEN\n▧\nG",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 135,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Profilbereiche",
+          "tabs": [
+            "⌂ÜBERSICHT",
+            "◇SAMMLUNG",
+            "⚒BUILDS",
+            "⌖ROUTEN",
+            "▥STATISTIKEN",
+            "▧GALERIE"
+          ]
+        },
+        {
+          "label": "Profil bearbeiten",
+          "tabs": [
+            "ALLGEMEIN",
+            "PROFILBILD",
+            "BANNER",
+            "FARBEN",
+            "ÜBER MICH",
+            "HIGHLIGHTS",
+            "WIDGETS",
+            "RAHMEN",
+            "RINGE & KRÄNZE",
+            "TROPHÄEN"
+          ]
+        }
+      ]
+    },
+    {
+      "width": 1920,
+      "id": "weapon-blueprints",
+      "hash": "#/weapon-blueprints",
+      "title": "Once Human Archiv // Waffen-Baupläne",
+      "h1": [
+        "WAFFEN-BLAUPAUSEN"
+      ],
+      "text": "DATENBANK // ARSENAL\nWAFFEN-BLAUPAUSEN\n\nBlaupausen nach Familie, Seltenheit und offensiven Referenzwerten durchsuchen.\n\n12\nBLAUPAUSEN\n6\nFAMILIEN\nAlle Familien\nJuggernaut\nWanderer\nBeyonder\nJäger\nOperator\nFremdling\n⇄ VERGLEICH ÖFFNEN\n⌁\nLegendär · Juggernaut\nACS12 – Pyroklasma-Starter\nKrit-Rate\n8%\nKrit-Schaden\n27%\nSchwachstelle\n15%\n⌁\nLegendär · Wanderer\nEBR-14 - Tintenfisch! Gegrillte Ringe!\nKrit-Rate\n5%\nKrit-Schaden\n40%\nSchwachstelle\n50%\n⌁\nLegendär · Wanderer\nM416 – Stille Anabasis\nKrit-Rate\n6%\nKr",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 1,
+      "unlabelled": [
+        "wbSearch",
+        "wbFamily"
+      ],
+      "sections": []
+    },
+    {
+      "width": 1920,
+      "id": "armor-blueprints",
+      "hash": "#/armor-blueprints",
+      "title": "Once Human Archiv // Rüstungs-Baupläne",
+      "h1": [
+        "RÜSTUNGS-BLAUPAUSEN"
+      ],
+      "text": "DATENBANK // SCHUTZ\nRÜSTUNGS-BLAUPAUSEN\n\nRüstungsteile nach Slot, Familie, Tier und hinterlegten Basiswerten ansehen.\n\nALLE\nHANDSCHUHE\nMASKE\nSCHUHE\n⬡\nHandschuhe · Beyonder · Tier 1\n„Geist-Link“-Handschuhe\nLP\n90\nPSI\n12\nVERSCHMUTZUNG\n3\nHALTBARKEIT\n100\n⬡\nMaske · Beyonder · Tier 1\n„Geist-Link“-Maske\nLP\n30\nPSI\n20\nVERSCHMUTZUNG\n4\nHALTBARKEIT\n100\n⬡\nSchuhe · Beyonder · Tier 1\n„Ghost Link“-Schuhe\nLP\n120\nPSI\n8\nVERSCHMUTZUNG\n3\nHALTBARKEIT\n100\nRÜSTUNG VERGLEICHEN",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 5,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 1920,
+      "id": "armor-materials",
+      "hash": "#/armor-materials",
+      "title": "Once Human Archiv // Rüstungsmaterialien",
+      "h1": [
+        "RÜSTUNGSMATERIALIEN"
+      ],
+      "text": "DATENBANK // MATERIALKUNDE\nRÜSTUNGSMATERIALIEN\n\n57 Materialien im Referenzbestand; hier die kuratierte Auswahl mit Herkunft und Kurzfunktion.\n\nQUALITÄT 4 · 0.1 KG · STAPEL 1000\nBastille-Genstoff\n\nErhöht die Ausrüstungshaltbarkeit und kann im Kohärenzstatus beschädigte Ausrüstung regenerieren.\n\nQUELLE\nFortschrittliche Nachschubwerkbank\nQUALITÄT 4 · 0.1 KG · STAPEL 1000\nBerg-Rindsleder\n\nDefensiv- und Ausdauerboni; unterstützt Kältewiderstand und maximale Last.\n\nQUELLE\nBüffel jagen\nQUALITÄT 4 · 0.1",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 0,
+      "unlabelled": [
+        "amSearch"
+      ],
+      "sections": []
+    },
+    {
+      "width": 1920,
+      "id": "deviations",
+      "hash": "#/deviations",
+      "title": "Once Human Archiv // Abweichler",
+      "h1": [
+        "ABWEICHLER"
+      ],
+      "text": "DATENBANK // ANOMALIE\nABWEICHLER\n\nAbweichler und Varianten nach Typ, Aktion und Zielverhalten sortiert.\n\nALLE\nKAMPF\nΨ\nKampf\nAbgesandte des Schmetterlings\nAKTION\nAuto-Angriff\nZIEL\nAusgewähltes Ziel\nΨ\nKampf\nAbgesandte des Schmetterlings - Alte Schriftrolle\nAKTION\nAuto-Angriff\nZIEL\nAusgewähltes Ziel\nΨ\nKampf\nAbgesandte des Schmetterlings - Infraschall-Illusion\nAKTION\nAuto-Angriff\nZIEL\nAusgewähltes Ziel\nΨ\nKampf\nAbgesandte des Schmetterlings – Funkelndes Blau\nAKTION\nAuto-Angriff\nZIEL\nAusgewähltes Ziel",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 2,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 1920,
+      "id": "mods",
+      "hash": "#/mods",
+      "title": "Once Human Archiv // Mods",
+      "h1": [
+        "MODS"
+      ],
+      "text": "DATENBANK // MODIFIKATION\nMODS\n\n698 Einträge im referenzierten Filterstand; die lokale Auswahl zeigt Slot und Tier.\n\nAlle Slots\nHose\nHelm\nTop\nAlle Waffen\nSchuhe\nHandschuhe\nMaske\n⚙\nTIER V · Hose\nAbnormale Erhöhung\n⚙\nTIER V · Helm\nAufschwung\n⚙\nTIER V · Top\nAusdauernder Schild\n⚙\nTIER V · Alle Waffen\nBumerang-Geschoss\n⚙\nTIER V · Hose\nDrei Treffer\n⚙\nTIER V · Schuhe\nEile mit Weile\n⚙\nTIER V · Helm\nElementare Verwüstung\n⚙\nTIER V · Handschuhe\nElementare Überlastung\n⚙\nTIER V · Hose\nElementarresonanz\n⚙\nTIE",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 0,
+      "unlabelled": [
+        "modSearch",
+        "modSlot"
+      ],
+      "sections": []
+    },
+    {
+      "width": 1920,
+      "id": "compare-weapons",
+      "hash": "#/compare-weapons",
+      "title": "Once Human Archiv // Waffenvergleich",
+      "h1": [
+        "WAFFENVERGLEICH"
+      ],
+      "text": "LABOR // TRANSPARENTER INDEX\nWAFFENVERGLEICH\n\nBis zu drei Waffen nebeneinander mit offen sichtbaren Gewichtungen. Mechanik-/Build-Synergien werden nicht als pauschaler versteckter Bonus behauptet.\n\nFOKUS\nBasis-DPS\nKrit-Fokus\nSchwachstellen-Fokus\nHandling\nWAFFE 1\nM416 – Stille Anabasis\nACS12 – Pyroklasma-Starter\nKVD – Bumm! Bumm!\nSOCR – Letzte Heldentat\nAWS.338 – Bingo\nWAFFE 2\nM416 – Stille Anabasis\nACS12 – Pyroklasma-Starter\nKVD – Bumm! Bumm!\nSOCR – Letzte Heldentat\nAWS.338 – Bingo\nWAFFE 3\nM416 ",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 0,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 1920,
+      "id": "compare-armors",
+      "hash": "#/compare-armors",
+      "title": "Once Human Archiv // Rüstungsvergleich",
+      "h1": [
+        "RÜSTUNGSVERGLEICH"
+      ],
+      "text": "LABOR // SCHUTZWERTE\nRÜSTUNGSVERGLEICH\n\nZwei vorhandene Referenzstufen direkt gegenüberstellen; fehlende Werte bleiben sichtbar leer statt erfunden zu werden.\n\nRÜSTUNG 1\nAbtrünnigen-Handschuhe · Tier 1\nAbtrünnigen-Handschuhe · Tier 2\nRÜSTUNG 2\nAbtrünnigen-Handschuhe · Tier 1\nAbtrünnigen-Handschuhe · Tier 2\nTier 1\nAbtrünnigen-Handschuhe\nHP\n1110\n+690\n1800\nPOLLUTION\n12\n—\n—\nPSI\n69\n—\n—\nCAPTURE\n5\n-3\n2\nDURABILITY\n400\n—\n—\nMOVEMENT\n—\n—\n0.02\nGLIDE\n—\n—\n0.04\nTier 2\nAbtrünnigen-Handschuhe",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 0,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 1920,
+      "id": "memetics",
+      "hash": "#/memetics",
+      "title": "Once Human Archiv // Memetik",
+      "h1": [
+        "MEMETIK"
+      ],
+      "text": "DATENBANK // WISSENSKNOTEN\nMEMETIK\n\nReferenzliste der vorhandenen Memetik-Namen; Tech-Rework und Werkbank bleiben als eigener Bereich getrennt.\n\n⚙ TECH-WERKBANK\n01\nMEMETIK\nAdrenalininjektion: Phönix\n02\nMEMETIK\nAktivkohlefilterung\n03\nMEMETIK\nAufwind-Kanone: Gravitation leicht gemacht\n04\nMEMETIK\nAusrüstungswerkbank: Anpassung\n05\nMEMETIK\nBaumeister\n06\nMEMETIK\nBett: Eine kuschelige Heimat\n07\nMEMETIK\nBett: Wärmeerhaltung\n08\nMEMETIK\nBiomassegenerator: Hitzegenerator\n09\nMEMETIK\nBiomassegenerator: Konti",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 1,
+      "unlabelled": [
+        "memSearch"
+      ],
+      "sections": []
+    },
+    {
+      "width": 1920,
+      "id": "vehicles",
+      "hash": "#/vehicles",
+      "title": "Once Human Archiv // Fahrzeuge",
+      "h1": [
+        "FAHRZEUGE"
+      ],
+      "text": "DATENBANK // MOBILITÄT\nFAHRZEUGE\n\nFahrzeugtypen aus dem Referenzstand inklusive hinterlegter Skin-Zähler.\n\n▱\nFAHRZEUGTYP\nAnhängerkopf - LKW\n1 Skin im Referenzstand\n▱\nFAHRZEUGTYP\nDoppel-Jetski\n1 Skin im Referenzstand\n▱\nFAHRZEUGTYP\nFüße\n2 Skins im Referenzstand\n▱\nFAHRZEUGTYP\nGeländefahrzeug\n3 Skins im Referenzstand\n▱\nFAHRZEUGTYP\nNuke-Panzer\n1 Skin im Referenzstand\n▱\nFAHRZEUGTYP\nRetro-Coupé\n6 Skins im Referenzstand\n▱\nFAHRZEUGTYP\nSchwebe-Motorrad\n1 Skin im Referenzstand\n▱\nFAHRZEUGTYP\nStraßenmotorrad",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 0,
+      "unlabelled": [
+        "vehSearch"
+      ],
+      "sections": []
+    },
+    {
+      "width": 1920,
+      "id": "creatures",
+      "hash": "#/creatures",
+      "title": "Once Human Archiv // Kreaturen",
+      "h1": [
+        "KREATUREN"
+      ],
+      "text": "DATENBANK // FAUNA\nKREATUREN\n\nNutztiere und weitere beobachtete Wildtiere bewusst getrennt; unbestätigte Verfügbarkeit bleibt als solche markiert.\n\nNUTZTIERE / BESTAND\n34\n◌\nBock\n◌\nKitz\n◌\nBär\n◌\nKleiner Bär\n◌\nEisbär\n◌\nKleiner Eisbär\n◌\nFlamingo\n◌\nKleiner Flamingo\n◌\nFuchs\n◌\nKleiner Fuchs\n◌\nHase\n◌\nKleiner Hase\n◌\nKrokodile\n◌\nKleines Krokodil\n◌\nLamm\n◌\nLeopard\n◌\nKleiner Leopard\n◌\nMeeresschildkröte\n◌\nKleine Meeresschildkröte\n◌\nReh\n◌\nSchaf\n◌\nSchnappschildkröte\n◌\nKleine Schnappschildkröte\n◌\nSchneefuchs\n◌\nK",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 0,
+      "unlabelled": [
+        "creatureSearch"
+      ],
+      "sections": []
+    },
+    {
+      "width": 1920,
+      "id": "tech-workbench",
+      "hash": "#/tech-workbench",
+      "title": "Once Human Archiv // Techwerkbank",
+      "h1": [
+        "TECH-WERKBANK"
+      ],
+      "text": "✦\nSYSTEME / HERSTELLUNG\nTECH-WERKBANK\n\nReverse Engineering, Erfindung und Fertigungsformeln in einem kompakten Werkstatt-Terminal. Bestehende R12-Daten bilden die Basis dieser visuellen Arbeitsoberfläche.\n\n⌁\n7\nREVERSE-EINTRÄGE\nGesammelte Daten\n◇\n14\nERFINDUNGS-POOL\nMaterialkombinationen\n▦\n13\nFERTIGUNGSFORMELN\nGeprüfte Rezepte\nWORKBENCH // ONLINE\n⚙\nREVERSE ENGINEERING\nItems zerlegen & analysieren\n→\n◇\nERFINDUNG\nMaterial-Mix & Pool\n→\n▦\nFERTIGUNGSRECHNER\nFormeln & Materialbedarf\n→\nKATEGORIEN\nARCHIVFI",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 21,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Techwerkbank-Modus",
+          "tabs": [
+            "⚙REVERSE ENGINEERINGItems zerlegen & analysieren→",
+            "◇ERFINDUNGMaterial-Mix & Pool→",
+            "▦FERTIGUNGSRECHNERFormeln & Materialbedarf→"
+          ]
+        }
+      ]
+    },
+    {
+      "width": 1920,
+      "id": "exchange",
+      "hash": "#/exchange",
+      "title": "Once Human Archiv // Community-Werkstatt",
+      "h1": [
+        "COMMUNITY-WERKSTATT"
+      ],
+      "text": "COMMUNITY // WERKSTATT\nCOMMUNITY-WERKSTATT\n\nLokales Teilen gespeicherter Builds sowie Suche/Biete-Posts. Echtgeld-Handel ist gemäß vorhandener Projektregel nicht vorgesehen.\n\nBEITRAG ERSTELLEN\nlokal\nTYP\nBuild teilen\nSuche\nBiete\nBUILD\nKein Build\nTITEL\nTEXT\nVERÖFFENTLICHUNG LOKAL SIMULIEREN\n\nKein Server-Backend: Beitrag bleibt in diesem Browser.\n\nNoch keine Werkstatt-Beiträge\nHier gibt es im aktuellen lokalen Stand noch nichts anzuzeigen.",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 1,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 1920,
+      "id": "live-map",
+      "hash": "#/live-map",
+      "title": "Once Human Archiv // Live Karte",
+      "h1": [
+        "LIVE KARTE"
+      ],
+      "text": "LIVE MAP // ISOLIERTE VORSCHAU\nLIVE KARTE\n\nInteraktive Kartenoberfläche mit vorhandenem Markerbestand, lokalen Markern und deinen gespeicherten Routen. Die bestehende Karte bleibt davon unberührt.\n\nSZENARIEN\n6\nvorhanden\nSICHTBAR\n0\naktuelle Filterung\nROUTE\n0\nStationen im Entwurf\nEIGENE\n0\nMarker im Szenario\nKARTENSTEUERUNG\nNAVIGATION\n01\nSZENARIO\nNalcott\nManibus\nThe Way of Winter\nEndloser Traum\nRaidZone\nCustom Server\n⌕\n⌖\nAlle Marker\n0\n↻ FILTER ZURÜCKSETZEN\nROUTENENTWURF\n0 STATIONEN\n02\n\nNoch keine S",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [
+        "./assets/live-map/shattered-maiden.webp"
+      ],
+      "links": [],
+      "buttons": 8,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 1920,
+      "id": "settings",
+      "hash": "#/settings",
+      "title": "Once Human Archiv // Einstellungen",
+      "h1": [
+        "Archiv-Interface"
+      ],
+      "text": "R\nReferenzprüfung\nArchiv-Einstellungen\nDarstellung\nProfil\nBenachrichtigungen\nSicherheit\nLive-Karte\nAdmin Backend\nArchiv-Interface\n\nDarstellung für Admin Backend, Live-Karte und Profil.\n\nAuto\nHell\nDunkel\nAkzentfarbe\nCoral\nDichte\nLocker\nStandard\nKompakt\nSchriftart\nSF Pro\nInter\nSystem\nEckenradius\n4\n8\n12\n16\nWeiche Animationen\nFlüssige Übergänge für Designelemente.\nStarke Fokus-Ringe\nDeutlichere Tastaturfokussierung.\nHUD-Raster anzeigen\nFeine Archiv-Rasterlinien in den angebundenen Bereichen.\nKompakt",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [
+        "#/settings",
+        "#/settings/profile",
+        "#/settings/notifications",
+        "#/settings/security",
+        "#/live-map",
+        "#/admin",
+        "#/admin",
+        "#/live-map",
+        "#/profile"
+      ],
+      "buttons": 12,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Einstellungsbereiche",
+          "tabs": [
+            "Darstellung",
+            "Profil",
+            "Benachrichtigungen",
+            "Sicherheit",
+            "Live-Karte",
+            "Admin Backend"
+          ]
+        }
+      ]
+    },
+    {
+      "width": 1920,
+      "id": "admin",
+      "hash": "#/admin",
+      "title": "Once Human Archiv // Admin Backend",
+      "h1": [
+        "Archiv Control Center"
+      ],
+      "text": "A\nONCE HUMAN ARCHIV\nADMIN BACKEND\n⌂\nÜbersicht\n▤\nInhalte & Seiten\n✎\nInhaltseditor\n⌖\nKarte & Marker\n⚑\nModeration\n♙\nNutzer & Rollen\n≡\nAudit & Aktivität\n◇\nSystem & Sicherheit\nPreview-Safe-Mode\nKeine unsicheren Admin-Mutationen\n⚙ Website-Einstellungen\n← Website öffnen\nADMINISTRATION / OVERVIEW\nArchiv Control Center\n\nWebsite-Inhalte, Community, Karte und Zugriffsbereiche in einer zentralen Arbeitsoberfläche.\n\nR\nANGEMELDET ALS\nReferenzprüfung\nOWNER\nOWNER / ADMIN WORKSPACE\nSteuere das Archiv.\nOhne die W",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 20,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Adminbereiche",
+          "tabs": [
+            "⌂Übersicht",
+            "▤Inhalte & Seiten",
+            "✎Inhaltseditor",
+            "⌖Karte & Marker",
+            "⚑Moderation",
+            "♙Nutzer & Rollen",
+            "≡Audit & Aktivität",
+            "◇System & Sicherheit"
+          ]
+        }
+      ]
+    },
+    {
+      "width": 1280,
+      "id": "home",
+      "hash": "#/home",
+      "title": "Once Human Archiv // Start",
+      "h1": [
+        "ONCE HUMANARCHIV"
+      ],
+      "text": "ONCE HUMAN\nONCE HUMAN\nARCHIV\nDEINE ZENTRALE WISSENSPLATTFORM FÜR ONCE HUMAN\n\nGuides, Daten, Builds, Karten, Community und Werkzeuge an einem Ort. Übersichtlich verbunden mit den vorhandenen Archivfunktionen und deinem lokalen Fortschritt.\n\nJETZT ENTDECKEN\n→\n▶\nARCHIV ANSEHEN\n◷\nAktuell\n♙\nCommunity-getrieben\n◇\nWerbefrei\n⌁\nFür alle Spieler\n▱\nDATENBANK\n\nGegenstände, Waffen, Ausrüstung, Ressourcen und mehr.\n\n›\n⌖\nINTERAKTIVE KARTE\n\nMarker, Routen, Fundorte und Gebiete.\n\n›\n⚒\nBUILDS\n\nVorlagen, Loadouts u",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [
+        "#/database",
+        "#/database",
+        "#/map",
+        "#/builds",
+        "#/tech-workbench",
+        "#/community",
+        "#/guides",
+        "#/news",
+        "#/news",
+        "#/news",
+        "#/news",
+        "#/database",
+        "#/database",
+        "#/community",
+        "#/database",
+        "#/database",
+        "#/builds",
+        "#/dashboard"
+      ],
+      "buttons": 1,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 1280,
+      "id": "dashboard",
+      "hash": "#/dashboard",
+      "title": "Once Human Archiv // Kommandozentrale",
+      "h1": [
+        "DEIN ARCHIV"
+      ],
+      "text": "KOMMANDOZENTRALE\nDEIN ARCHIV\n\nWillkommen zurück, Referenzprüfung. Deine lokalen Werkzeuge laufen in einem gemeinsamen Arbeitsbereich.\n\n0\nFAVORITEN\n0\nJAGDZIEL(E)\n0\nGESPEICHERTE BUILDS\n0\nROUTEN\n0\nEINSATZPLÄNE\n◎\nNÄCHSTER SCHRITT\nErstes Jagdziel setzen\n\nÜbernimm aus der Datenbank einen Eintrag direkt in deine Jagdliste.\n\nDATENBANK ÖFFNEN\nWERKZEUGE\ndein Arbeitsraum\n⌖ INTERAKTIVE KARTE\n⚒ BUILD-WERKSTATT\n◷ EINSATZPLANER\n★ MEINE SAMMLUNG\nARCHIVSTATUS\n27 feste Routen\nStartseite\naktiv\nDatenbank\naktiv\nPers",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 5,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 1280,
+      "id": "news",
+      "hash": "#/news",
+      "title": "Once Human Archiv // Neuigkeiten",
+      "h1": [
+        "NEUIGKEITEN"
+      ],
+      "text": "ARCHIV // SIGNAL\nNEUIGKEITEN\n\nProjektmeldungen und dokumentierte Archiv-Updates aus dem erhaltenen Projektstand.\n\nALLE\nUPDATE\nFUND\nCOMMUNITY\nUpdate · 25. Sept. 2026\nJazzeMeow Archive – neue Seitenarchitektur aktiv\n\nÖffentliche Landingpage, Login-getrennte Kommandozentrale, Untermenüs und persönliche Werkzeuge sind als Seitenarchitektur aktiv.\n\nMELDUNG LESEN →\n25. Sept. 2026 · Update\nJazzeMeow Archive – neue Seitenarchitektur aktiv\n\nÖffentliche Landingpage, Login-getrennte Kommandozentrale, Unter",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 8,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 1280,
+      "id": "database",
+      "hash": "#/database",
+      "title": "Once Human Archiv // Datenbank",
+      "h1": [
+        "DATENBANKDER KATALOG DEINER NÄCHSTEN FUNDE."
+      ],
+      "text": "ARCHIV / WISSEN & FUNDORTE\nDATENBANK\nDER KATALOG DEINER NÄCHSTEN FUNDE.\n\nAusrüstung, Ressourcen und Anomalien. Durchsuche das Archiv, prüfe Fundwege und halte deine Sammlung auf Kurs.\n\nQUELLSTAND\n2026-09-26\nKURATIERTER ARCHIVBESTAND\n21\nEinträge im Katalog\n14\nArchivbereiche\n0\nVon dir gefunden\n◎ DEINE JAGDLISTE\n↗\nKATALOG EINGRENZEN\nFILTER & BEREICHE\n⌄\n⌘\nAlle Einträge\n21\n◇\nGegenstände\n2\n⌁\nWaffen\n3\n⬡\nAusrüstung\n0\n⚙\nMods & Zubehör\n0\nΨ\nAbweichler\n3\n◌\nTiere & Fisch\n7\n✦\nPflanzen & Nahrung\n2\n▣\nMöbel & Fo",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [
+        "#/hunt"
+      ],
+      "buttons": 92,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Katalogseiten",
+          "tabs": [
+            "← ZURÜCK",
+            "WEITER →"
+          ]
+        }
+      ]
+    },
+    {
+      "width": 1280,
+      "id": "map",
+      "hash": "#/map",
+      "title": "Once Human Archiv // Karte",
+      "h1": [
+        "INTERAKTIVEKARTE"
+      ],
+      "text": "✦\nKARTENZENTRALE // INTERN\nINTERAKTIVE\nKARTE\n\nSzenarioebenen, vorhandene Marker und gespeicherte Routen in einer kompakten Kartenoberfläche. Ziehe die Karte mit Maus oder Touch, zoome und verbinde echte Fundorte zu deinen eigenen Farmrouten.\n\n▦\n6\nSZENARIEN\nvorhandener Projektstand\n⌖\n4\nMARKER\nvorhandene Einträge\n◉\n4\nSICHTBAR\naktuelle Auswahl\n⌁\n0\nROUTEN\nlokal gespeichert\n▦Marker & Filter\n▤Meine Karten\n⌕\nFILTER\nMARKER-KATEGORIEN\nLIVE FILTER\n⌖\nAlle Marker\n4\n⌖\nMod-Fundort\n4\n↻ FILTER ZURÜCKSETZEN\nSZEN",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 19,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 1280,
+      "id": "hunt",
+      "hash": "#/hunt",
+      "title": "Once Human Archiv // Jagdliste",
+      "h1": [
+        "JAGDLISTE"
+      ],
+      "text": "PERSÖNLICH // ZIELE\nJAGDLISTE\n\nKatalogziele priorisieren, als erledigt markieren oder direkt zur Datenbank zurückspringen.\n\n0\nAKTIVE EINTRÄGE\n0\nERLEDIGT\nKeine Jagdziele\nHier gibt es im aktuellen lokalen Stand noch nichts anzuzeigen.\n＋ AUS DATENBANK HINZUFÜGEN",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 1,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 1280,
+      "id": "routes",
+      "hash": "#/routes",
+      "title": "Once Human Archiv // Farmrouten",
+      "h1": [
+        "FARMROUTEN"
+      ],
+      "text": "KARTE // PLANUNG\nFARMROUTEN\n\nMarker zu eigenen Routen verbinden. Gespeicherte Routen bleiben lokal im Browser und öffnen ihre Stationen wieder auf der Karte.\n\nAKTUELLER ENTWURF\n0 Stationen\nEntwurf leer\nHier gibt es im aktuellen lokalen Stand noch nichts anzuzeigen.\nROUTE SPEICHERN\n⌖ MARKER AUF KARTE WÄHLEN\nGESPEICHERTE ROUTEN\n0\nNoch keine Route gespeichert\nHier gibt es im aktuellen lokalen Stand noch nichts anzuzeigen.",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 2,
+      "unlabelled": [
+        "name"
+      ],
+      "sections": []
+    },
+    {
+      "width": 1280,
+      "id": "planner",
+      "hash": "#/planner",
+      "title": "Once Human Archiv // Einsatzplaner",
+      "h1": [
+        "EINSATZPLANER"
+      ],
+      "text": "SESSION // PLANUNG\nEINSATZPLANER\n\nEine Spielsitzung aus Jagdzielen, Build und Kartenroute zusammensetzen und lokal speichern.\n\nNEUER EINSATZ\nlokaler Plan\nTITEL\nDATUM\nFOKUS\nFarm\nBoss\nErkundung\nTech\nCommunity\nJAGDZIEL\nKeins\nBUILD\nKein Build\nROUTE\nKeine Route\nNOTIZ\nEINSATZ SPEICHERN\nGEPLANTE EINSÄTZE\n0\nNoch kein Einsatz geplant\nHier gibt es im aktuellen lokalen Stand noch nichts anzuzeigen.",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 1,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 1280,
+      "id": "guides",
+      "hash": "#/guides",
+      "title": "Once Human Archiv // Guides",
+      "h1": [
+        "GUIDES"
+      ],
+      "text": "WISSEN // SCHRITT FÜR SCHRITT\nGUIDES\n\nOnboarding- und Funktionsguides aus dem vorhandenen Projektstand – mit Kapiteln statt reiner Linkliste.\n\n6\nGUIDES\n27\nKAPITEL\nAlle Kategorien\nEinsteiger\nDatenbank\nKarte\nPlanung\nCommunity\nQualität\nEinsteiger\nDie ersten 5 Minuten im JazzeMeow Archive\n\nVom ersten Login bis zur ersten gespeicherten Mission.\n\nKAPITEL ANZEIGEN\nDatenbank\nVollkatalog richtig benutzen\n\nKategorien, Suchstatus und Datenqualität verstehen.\n\nKAPITEL ANZEIGEN\nKarte\nLive-Karte ohne Pin-Wand",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 6,
+      "unlabelled": [
+        "guideSearch",
+        "guideCategory"
+      ],
+      "sections": []
+    },
+    {
+      "width": 1280,
+      "id": "patchwatch",
+      "hash": "#/patchwatch",
+      "title": "Once Human Archiv // Patch-Wächter",
+      "h1": [
+        "PATCH-WÄCHTER"
+      ],
+      "text": "DATENQUALITÄT // MONITOR\nPATCH-WÄCHTER\n\nPrüfstatus und Alter der übernommenen Katalogdaten sichtbar machen, ohne ungeprüfte Änderungen als Fakten auszugeben.\n\n3\nDEUTSCH BELEGT\n11\nOFFIZIELLER DEUTSCHER BEGRIFF\n1\nBEGRIFF PRÜFEN\n3\nMODELLNAME SICHER\n1\nHISTORISCH OFFIZIELL / VERFÜGBARKEIT PRÜFEN\n2\nDATENBLATT VORHANDEN\nPRÜFQUEUE\nälteste zuerst\nDeutsch belegt\nZitteraal\nzuletzt geprüft: 2026-09-26\n2 Tage\nLOKAL NOTIEREN\nOffizieller deutscher Begriff\nNussknacker\nzuletzt geprüft: 2026-09-26\n2 Tage\nLOKAL NO",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 21,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 1280,
+      "id": "secrets",
+      "hash": "#/secrets",
+      "title": "Once Human Archiv // Kaninchenbau",
+      "h1": [
+        "GEHEIMNISSE & UNTERSUCHUNGEN"
+      ],
+      "text": "KANINCHENBAU // ANALYSE\nGEHEIMNISSE & UNTERSUCHUNGEN\n\nMethodische Hinweise und Prüfstände aus dem bestehenden Projekt – bestätigt und in Prüfung klar getrennt.\n\nALLE\nBESTÄTIGT\nWIRD GEPRÜFT\nHoch\nMechanik · Bestätigt\nTrigger & Bedingungen\n\nBei seltenen Ereignissen Uhrzeit, Wetter, Serverphase, Queststatus und benötigte Gegenstände getrennt dokumentieren.\n\nMethodischer Hinweis – kein konkreter Spielfund.\n＋ NOTIZ\nMittel\nErkundung · Bestätigt\nKoordinaten-Archiv\n\nNicht nur Koordinaten speichern, sonde",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 7,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 1280,
+      "id": "builds",
+      "hash": "#/builds",
+      "title": "Once Human Archiv // Builds",
+      "h1": [
+        "BUILD-PLANER"
+      ],
+      "text": "WERKSTATT // LOADOUT\nBUILD-PLANER\n\nWaffen, Rüstung, Abweichler, Cradle und Nahrung in einem speicherbaren Loadout zusammenstellen – basierend auf den vorhandenen Planner-Slots.\n\n12\nSLOTS\n0\nBELEGT\n0\nGESPEICHERT\nBUILD-PROFIL\nlokaler Entwurf\nNAME\nVORLAGE\nEigener Build\nBoss-Schaden · PvE\nGebiets-Farming · Farm\nÜberleben & Kontrolle · Solo\nEFFEKT-FOKUS\nKein Fokus\nBrand\nKraftverstärkung\nFrostvortex\nDas Bullenbild\nFestung\nUnstabiler Bomber\nSchneller Geschütze\nSprung\nSchrapnell\nNOTIZ\nBUILD SPEICHERN\nENT",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 3,
+      "unlabelled": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "sections": []
+    },
+    {
+      "width": 1280,
+      "id": "community",
+      "hash": "#/community",
+      "title": "Once Human Archiv // Community",
+      "h1": [
+        "COMMUNITY"
+      ],
+      "text": "COMMUNITY // LOKALER PROTOTYP\nCOMMUNITY\n\nThemenräume und Beiträge sind funktional als lokaler Browserzustand umgesetzt; ein Server-Backend ist im aktuellen Projekt noch nicht angeschlossen.\n\nArchiv-Hilfe\nFragen zu Katalog, Karte und Werkzeugen\n0\nFunde & Korrekturen\nWissen gemeinsam prüfen\n0\nBuild-Labor\nLoadouts und Ideen diskutieren\n0\nArchiv-Hilfe\nlokal gespeichert\nNoch keine Beiträge in diesem Raum\nHier gibt es im aktuellen lokalen Stand noch nichts anzuzeigen.\nBEITRAG LOKAL SPEICHERN",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 4,
+      "unlabelled": [
+        "text"
+      ],
+      "sections": []
+    },
+    {
+      "width": 1280,
+      "id": "submissions",
+      "hash": "#/submissions",
+      "title": "Once Human Archiv // Einreichungen",
+      "h1": [
+        "EINREICHUNGEN"
+      ],
+      "text": "COMMUNITY // PRÜFQUEUE\nEINREICHUNGEN\n\nFunde, Korrekturen und Tech-Formeln strukturiert erfassen. Im aktuellen statischen Projekt werden sie lokal gespeichert und klar nicht als veröffentlicht ausgegeben.\n\nNEUE EINREICHUNG\nlokaler Entwurf\nTYP\nFund / Ort\nKatalog-Korrektur\nTech-Formel\nGuide-Hinweis\nTITEL\nBEOBACHTUNG\nBELEG / QUELLE\nIN LOKALE PRÜFQUEUE\nMEINE EINREICHUNGEN\n0\nNoch keine lokalen Einreichungen\nHier gibt es im aktuellen lokalen Stand noch nichts anzuzeigen.",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 1,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 1280,
+      "id": "profile",
+      "hash": "#/profile",
+      "title": "Once Human Archiv // Profil & Sicherheit",
+      "h1": [
+        "Referenzprüfung"
+      ],
+      "text": "R\nONCE HUMAN ARCHIV // PROFIL\nReferenzprüfung\nACCOUNT VERBUNDEN\npreview@example.invalid\n\nSammeln. Planen. Bauen. Archivieren. Dein persönlicher Arbeitsbereich für die vorhandenen Werkzeuge und lokalen Archivdaten.\n\nSAMMLUNGSFORTSCHRITT\n0 / 21\n✎ PROFIL ANPASSEN\nARCHIVSTATUS\n0% ERFASST\nBerechnet aus deinen tatsächlich als gefunden markierten Katalogeinträgen.\n▣\n0\nGEFUNDENE ITEMS\n⌖\n0\nGESPEICHERTE ROUTEN\n⚒\n0\nGESPEICHERTE BUILDS\n♥\n0\nFAVORITEN\n⌂\nÜBERSICHT\n◇\nSAMMLUNG\n⚒\nBUILDS\n⌖\nROUTEN\n▥\nSTATISTIKEN\n▧\nG",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 135,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Profilbereiche",
+          "tabs": [
+            "⌂ÜBERSICHT",
+            "◇SAMMLUNG",
+            "⚒BUILDS",
+            "⌖ROUTEN",
+            "▥STATISTIKEN",
+            "▧GALERIE"
+          ]
+        },
+        {
+          "label": "Profil bearbeiten",
+          "tabs": [
+            "ALLGEMEIN",
+            "PROFILBILD",
+            "BANNER",
+            "FARBEN",
+            "ÜBER MICH",
+            "HIGHLIGHTS",
+            "WIDGETS",
+            "RAHMEN",
+            "RINGE & KRÄNZE",
+            "TROPHÄEN"
+          ]
+        }
+      ]
+    },
+    {
+      "width": 1280,
+      "id": "weapon-blueprints",
+      "hash": "#/weapon-blueprints",
+      "title": "Once Human Archiv // Waffen-Baupläne",
+      "h1": [
+        "WAFFEN-BLAUPAUSEN"
+      ],
+      "text": "DATENBANK // ARSENAL\nWAFFEN-BLAUPAUSEN\n\nBlaupausen nach Familie, Seltenheit und offensiven Referenzwerten durchsuchen.\n\n12\nBLAUPAUSEN\n6\nFAMILIEN\nAlle Familien\nJuggernaut\nWanderer\nBeyonder\nJäger\nOperator\nFremdling\n⇄ VERGLEICH ÖFFNEN\n⌁\nLegendär · Juggernaut\nACS12 – Pyroklasma-Starter\nKrit-Rate\n8%\nKrit-Schaden\n27%\nSchwachstelle\n15%\n⌁\nLegendär · Wanderer\nEBR-14 - Tintenfisch! Gegrillte Ringe!\nKrit-Rate\n5%\nKrit-Schaden\n40%\nSchwachstelle\n50%\n⌁\nLegendär · Wanderer\nM416 – Stille Anabasis\nKrit-Rate\n6%\nKr",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 1,
+      "unlabelled": [
+        "wbSearch",
+        "wbFamily"
+      ],
+      "sections": []
+    },
+    {
+      "width": 1280,
+      "id": "armor-blueprints",
+      "hash": "#/armor-blueprints",
+      "title": "Once Human Archiv // Rüstungs-Baupläne",
+      "h1": [
+        "RÜSTUNGS-BLAUPAUSEN"
+      ],
+      "text": "DATENBANK // SCHUTZ\nRÜSTUNGS-BLAUPAUSEN\n\nRüstungsteile nach Slot, Familie, Tier und hinterlegten Basiswerten ansehen.\n\nALLE\nHANDSCHUHE\nMASKE\nSCHUHE\n⬡\nHandschuhe · Beyonder · Tier 1\n„Geist-Link“-Handschuhe\nLP\n90\nPSI\n12\nVERSCHMUTZUNG\n3\nHALTBARKEIT\n100\n⬡\nMaske · Beyonder · Tier 1\n„Geist-Link“-Maske\nLP\n30\nPSI\n20\nVERSCHMUTZUNG\n4\nHALTBARKEIT\n100\n⬡\nSchuhe · Beyonder · Tier 1\n„Ghost Link“-Schuhe\nLP\n120\nPSI\n8\nVERSCHMUTZUNG\n3\nHALTBARKEIT\n100\nRÜSTUNG VERGLEICHEN",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 5,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 1280,
+      "id": "armor-materials",
+      "hash": "#/armor-materials",
+      "title": "Once Human Archiv // Rüstungsmaterialien",
+      "h1": [
+        "RÜSTUNGSMATERIALIEN"
+      ],
+      "text": "DATENBANK // MATERIALKUNDE\nRÜSTUNGSMATERIALIEN\n\n57 Materialien im Referenzbestand; hier die kuratierte Auswahl mit Herkunft und Kurzfunktion.\n\nQUALITÄT 4 · 0.1 KG · STAPEL 1000\nBastille-Genstoff\n\nErhöht die Ausrüstungshaltbarkeit und kann im Kohärenzstatus beschädigte Ausrüstung regenerieren.\n\nQUELLE\nFortschrittliche Nachschubwerkbank\nQUALITÄT 4 · 0.1 KG · STAPEL 1000\nBerg-Rindsleder\n\nDefensiv- und Ausdauerboni; unterstützt Kältewiderstand und maximale Last.\n\nQUELLE\nBüffel jagen\nQUALITÄT 4 · 0.1",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 0,
+      "unlabelled": [
+        "amSearch"
+      ],
+      "sections": []
+    },
+    {
+      "width": 1280,
+      "id": "deviations",
+      "hash": "#/deviations",
+      "title": "Once Human Archiv // Abweichler",
+      "h1": [
+        "ABWEICHLER"
+      ],
+      "text": "DATENBANK // ANOMALIE\nABWEICHLER\n\nAbweichler und Varianten nach Typ, Aktion und Zielverhalten sortiert.\n\nALLE\nKAMPF\nΨ\nKampf\nAbgesandte des Schmetterlings\nAKTION\nAuto-Angriff\nZIEL\nAusgewähltes Ziel\nΨ\nKampf\nAbgesandte des Schmetterlings - Alte Schriftrolle\nAKTION\nAuto-Angriff\nZIEL\nAusgewähltes Ziel\nΨ\nKampf\nAbgesandte des Schmetterlings - Infraschall-Illusion\nAKTION\nAuto-Angriff\nZIEL\nAusgewähltes Ziel\nΨ\nKampf\nAbgesandte des Schmetterlings – Funkelndes Blau\nAKTION\nAuto-Angriff\nZIEL\nAusgewähltes Ziel",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 2,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 1280,
+      "id": "mods",
+      "hash": "#/mods",
+      "title": "Once Human Archiv // Mods",
+      "h1": [
+        "MODS"
+      ],
+      "text": "DATENBANK // MODIFIKATION\nMODS\n\n698 Einträge im referenzierten Filterstand; die lokale Auswahl zeigt Slot und Tier.\n\nAlle Slots\nHose\nHelm\nTop\nAlle Waffen\nSchuhe\nHandschuhe\nMaske\n⚙\nTIER V · Hose\nAbnormale Erhöhung\n⚙\nTIER V · Helm\nAufschwung\n⚙\nTIER V · Top\nAusdauernder Schild\n⚙\nTIER V · Alle Waffen\nBumerang-Geschoss\n⚙\nTIER V · Hose\nDrei Treffer\n⚙\nTIER V · Schuhe\nEile mit Weile\n⚙\nTIER V · Helm\nElementare Verwüstung\n⚙\nTIER V · Handschuhe\nElementare Überlastung\n⚙\nTIER V · Hose\nElementarresonanz\n⚙\nTIE",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 0,
+      "unlabelled": [
+        "modSearch",
+        "modSlot"
+      ],
+      "sections": []
+    },
+    {
+      "width": 1280,
+      "id": "compare-weapons",
+      "hash": "#/compare-weapons",
+      "title": "Once Human Archiv // Waffenvergleich",
+      "h1": [
+        "WAFFENVERGLEICH"
+      ],
+      "text": "LABOR // TRANSPARENTER INDEX\nWAFFENVERGLEICH\n\nBis zu drei Waffen nebeneinander mit offen sichtbaren Gewichtungen. Mechanik-/Build-Synergien werden nicht als pauschaler versteckter Bonus behauptet.\n\nFOKUS\nBasis-DPS\nKrit-Fokus\nSchwachstellen-Fokus\nHandling\nWAFFE 1\nM416 – Stille Anabasis\nACS12 – Pyroklasma-Starter\nKVD – Bumm! Bumm!\nSOCR – Letzte Heldentat\nAWS.338 – Bingo\nWAFFE 2\nM416 – Stille Anabasis\nACS12 – Pyroklasma-Starter\nKVD – Bumm! Bumm!\nSOCR – Letzte Heldentat\nAWS.338 – Bingo\nWAFFE 3\nM416 ",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 0,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 1280,
+      "id": "compare-armors",
+      "hash": "#/compare-armors",
+      "title": "Once Human Archiv // Rüstungsvergleich",
+      "h1": [
+        "RÜSTUNGSVERGLEICH"
+      ],
+      "text": "LABOR // SCHUTZWERTE\nRÜSTUNGSVERGLEICH\n\nZwei vorhandene Referenzstufen direkt gegenüberstellen; fehlende Werte bleiben sichtbar leer statt erfunden zu werden.\n\nRÜSTUNG 1\nAbtrünnigen-Handschuhe · Tier 1\nAbtrünnigen-Handschuhe · Tier 2\nRÜSTUNG 2\nAbtrünnigen-Handschuhe · Tier 1\nAbtrünnigen-Handschuhe · Tier 2\nTier 1\nAbtrünnigen-Handschuhe\nHP\n1110\n+690\n1800\nPOLLUTION\n12\n—\n—\nPSI\n69\n—\n—\nCAPTURE\n5\n-3\n2\nDURABILITY\n400\n—\n—\nMOVEMENT\n—\n—\n0.02\nGLIDE\n—\n—\n0.04\nTier 2\nAbtrünnigen-Handschuhe",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 0,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 1280,
+      "id": "memetics",
+      "hash": "#/memetics",
+      "title": "Once Human Archiv // Memetik",
+      "h1": [
+        "MEMETIK"
+      ],
+      "text": "DATENBANK // WISSENSKNOTEN\nMEMETIK\n\nReferenzliste der vorhandenen Memetik-Namen; Tech-Rework und Werkbank bleiben als eigener Bereich getrennt.\n\n⚙ TECH-WERKBANK\n01\nMEMETIK\nAdrenalininjektion: Phönix\n02\nMEMETIK\nAktivkohlefilterung\n03\nMEMETIK\nAufwind-Kanone: Gravitation leicht gemacht\n04\nMEMETIK\nAusrüstungswerkbank: Anpassung\n05\nMEMETIK\nBaumeister\n06\nMEMETIK\nBett: Eine kuschelige Heimat\n07\nMEMETIK\nBett: Wärmeerhaltung\n08\nMEMETIK\nBiomassegenerator: Hitzegenerator\n09\nMEMETIK\nBiomassegenerator: Konti",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 1,
+      "unlabelled": [
+        "memSearch"
+      ],
+      "sections": []
+    },
+    {
+      "width": 1280,
+      "id": "vehicles",
+      "hash": "#/vehicles",
+      "title": "Once Human Archiv // Fahrzeuge",
+      "h1": [
+        "FAHRZEUGE"
+      ],
+      "text": "DATENBANK // MOBILITÄT\nFAHRZEUGE\n\nFahrzeugtypen aus dem Referenzstand inklusive hinterlegter Skin-Zähler.\n\n▱\nFAHRZEUGTYP\nAnhängerkopf - LKW\n1 Skin im Referenzstand\n▱\nFAHRZEUGTYP\nDoppel-Jetski\n1 Skin im Referenzstand\n▱\nFAHRZEUGTYP\nFüße\n2 Skins im Referenzstand\n▱\nFAHRZEUGTYP\nGeländefahrzeug\n3 Skins im Referenzstand\n▱\nFAHRZEUGTYP\nNuke-Panzer\n1 Skin im Referenzstand\n▱\nFAHRZEUGTYP\nRetro-Coupé\n6 Skins im Referenzstand\n▱\nFAHRZEUGTYP\nSchwebe-Motorrad\n1 Skin im Referenzstand\n▱\nFAHRZEUGTYP\nStraßenmotorrad",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 0,
+      "unlabelled": [
+        "vehSearch"
+      ],
+      "sections": []
+    },
+    {
+      "width": 1280,
+      "id": "creatures",
+      "hash": "#/creatures",
+      "title": "Once Human Archiv // Kreaturen",
+      "h1": [
+        "KREATUREN"
+      ],
+      "text": "DATENBANK // FAUNA\nKREATUREN\n\nNutztiere und weitere beobachtete Wildtiere bewusst getrennt; unbestätigte Verfügbarkeit bleibt als solche markiert.\n\nNUTZTIERE / BESTAND\n34\n◌\nBock\n◌\nKitz\n◌\nBär\n◌\nKleiner Bär\n◌\nEisbär\n◌\nKleiner Eisbär\n◌\nFlamingo\n◌\nKleiner Flamingo\n◌\nFuchs\n◌\nKleiner Fuchs\n◌\nHase\n◌\nKleiner Hase\n◌\nKrokodile\n◌\nKleines Krokodil\n◌\nLamm\n◌\nLeopard\n◌\nKleiner Leopard\n◌\nMeeresschildkröte\n◌\nKleine Meeresschildkröte\n◌\nReh\n◌\nSchaf\n◌\nSchnappschildkröte\n◌\nKleine Schnappschildkröte\n◌\nSchneefuchs\n◌\nK",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 0,
+      "unlabelled": [
+        "creatureSearch"
+      ],
+      "sections": []
+    },
+    {
+      "width": 1280,
+      "id": "tech-workbench",
+      "hash": "#/tech-workbench",
+      "title": "Once Human Archiv // Techwerkbank",
+      "h1": [
+        "TECH-WERKBANK"
+      ],
+      "text": "✦\nSYSTEME / HERSTELLUNG\nTECH-WERKBANK\n\nReverse Engineering, Erfindung und Fertigungsformeln in einem kompakten Werkstatt-Terminal. Bestehende R12-Daten bilden die Basis dieser visuellen Arbeitsoberfläche.\n\n⌁\n7\nREVERSE-EINTRÄGE\nGesammelte Daten\n◇\n14\nERFINDUNGS-POOL\nMaterialkombinationen\n▦\n13\nFERTIGUNGSFORMELN\nGeprüfte Rezepte\nWORKBENCH // ONLINE\n⚙\nREVERSE ENGINEERING\nItems zerlegen & analysieren\n→\n◇\nERFINDUNG\nMaterial-Mix & Pool\n→\n▦\nFERTIGUNGSRECHNER\nFormeln & Materialbedarf\n→\nKATEGORIEN\nARCHIVFI",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 21,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Techwerkbank-Modus",
+          "tabs": [
+            "⚙REVERSE ENGINEERINGItems zerlegen & analysieren→",
+            "◇ERFINDUNGMaterial-Mix & Pool→",
+            "▦FERTIGUNGSRECHNERFormeln & Materialbedarf→"
+          ]
+        }
+      ]
+    },
+    {
+      "width": 1280,
+      "id": "exchange",
+      "hash": "#/exchange",
+      "title": "Once Human Archiv // Community-Werkstatt",
+      "h1": [
+        "COMMUNITY-WERKSTATT"
+      ],
+      "text": "COMMUNITY // WERKSTATT\nCOMMUNITY-WERKSTATT\n\nLokales Teilen gespeicherter Builds sowie Suche/Biete-Posts. Echtgeld-Handel ist gemäß vorhandener Projektregel nicht vorgesehen.\n\nBEITRAG ERSTELLEN\nlokal\nTYP\nBuild teilen\nSuche\nBiete\nBUILD\nKein Build\nTITEL\nTEXT\nVERÖFFENTLICHUNG LOKAL SIMULIEREN\n\nKein Server-Backend: Beitrag bleibt in diesem Browser.\n\nNoch keine Werkstatt-Beiträge\nHier gibt es im aktuellen lokalen Stand noch nichts anzuzeigen.",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 1,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 1280,
+      "id": "live-map",
+      "hash": "#/live-map",
+      "title": "Once Human Archiv // Live Karte",
+      "h1": [
+        "LIVE KARTE"
+      ],
+      "text": "LIVE MAP // ISOLIERTE VORSCHAU\nLIVE KARTE\n\nInteraktive Kartenoberfläche mit vorhandenem Markerbestand, lokalen Markern und deinen gespeicherten Routen. Die bestehende Karte bleibt davon unberührt.\n\nSZENARIEN\n6\nvorhanden\nSICHTBAR\n0\naktuelle Filterung\nROUTE\n0\nStationen im Entwurf\nEIGENE\n0\nMarker im Szenario\nKARTENSTEUERUNG\nNAVIGATION\n01\nSZENARIO\nNalcott\nManibus\nThe Way of Winter\nEndloser Traum\nRaidZone\nCustom Server\n⌕\n⌖\nAlle Marker\n0\n↻ FILTER ZURÜCKSETZEN\nROUTENENTWURF\n0 STATIONEN\n02\n\nNoch keine S",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [
+        "./assets/live-map/shattered-maiden.webp"
+      ],
+      "links": [],
+      "buttons": 8,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 1280,
+      "id": "settings",
+      "hash": "#/settings",
+      "title": "Once Human Archiv // Einstellungen",
+      "h1": [
+        "Archiv-Interface"
+      ],
+      "text": "R\nReferenzprüfung\nArchiv-Einstellungen\nDarstellung\nProfil\nBenachrichtigungen\nSicherheit\nLive-Karte\nAdmin Backend\nArchiv-Interface\n\nDarstellung für Admin Backend, Live-Karte und Profil.\n\nAuto\nHell\nDunkel\nAkzentfarbe\nCoral\nDichte\nLocker\nStandard\nKompakt\nSchriftart\nSF Pro\nInter\nSystem\nEckenradius\n4\n8\n12\n16\nWeiche Animationen\nFlüssige Übergänge für Designelemente.\nStarke Fokus-Ringe\nDeutlichere Tastaturfokussierung.\nHUD-Raster anzeigen\nFeine Archiv-Rasterlinien in den angebundenen Bereichen.\nKompakt",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [
+        "#/settings",
+        "#/settings/profile",
+        "#/settings/notifications",
+        "#/settings/security",
+        "#/live-map",
+        "#/admin",
+        "#/admin",
+        "#/live-map",
+        "#/profile"
+      ],
+      "buttons": 12,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Einstellungsbereiche",
+          "tabs": [
+            "Darstellung",
+            "Profil",
+            "Benachrichtigungen",
+            "Sicherheit",
+            "Live-Karte",
+            "Admin Backend"
+          ]
+        }
+      ]
+    },
+    {
+      "width": 1280,
+      "id": "admin",
+      "hash": "#/admin",
+      "title": "Once Human Archiv // Admin Backend",
+      "h1": [
+        "Archiv Control Center"
+      ],
+      "text": "A\nONCE HUMAN ARCHIV\nADMIN BACKEND\n⌂\nÜbersicht\n▤\nInhalte & Seiten\n✎\nInhaltseditor\n⌖\nKarte & Marker\n⚑\nModeration\n♙\nNutzer & Rollen\n≡\nAudit & Aktivität\n◇\nSystem & Sicherheit\nPreview-Safe-Mode\nKeine unsicheren Admin-Mutationen\n⚙ Website-Einstellungen\n← Website öffnen\nADMINISTRATION / OVERVIEW\nArchiv Control Center\n\nWebsite-Inhalte, Community, Karte und Zugriffsbereiche in einer zentralen Arbeitsoberfläche.\n\nR\nANGEMELDET ALS\nReferenzprüfung\nOWNER\nOWNER / ADMIN WORKSPACE\nSteuere das Archiv.\nOhne die W",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 20,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Adminbereiche",
+          "tabs": [
+            "⌂Übersicht",
+            "▤Inhalte & Seiten",
+            "✎Inhaltseditor",
+            "⌖Karte & Marker",
+            "⚑Moderation",
+            "♙Nutzer & Rollen",
+            "≡Audit & Aktivität",
+            "◇System & Sicherheit"
+          ]
+        }
+      ]
+    },
+    {
+      "width": 768,
+      "id": "home",
+      "hash": "#/home",
+      "title": "Once Human Archiv // Start",
+      "h1": [
+        "ONCE HUMANARCHIV"
+      ],
+      "text": "ONCE HUMAN\nONCE HUMAN\nARCHIV\nDEINE ZENTRALE WISSENSPLATTFORM FÜR ONCE HUMAN\n\nGuides, Daten, Builds, Karten, Community und Werkzeuge an einem Ort. Übersichtlich verbunden mit den vorhandenen Archivfunktionen und deinem lokalen Fortschritt.\n\nJETZT ENTDECKEN\n→\n▶\nARCHIV ANSEHEN\n◷\nAktuell\n♙\nCommunity-getrieben\n◇\nWerbefrei\n⌁\nFür alle Spieler\n▱\nDATENBANK\n\nGegenstände, Waffen, Ausrüstung, Ressourcen und mehr.\n\n›\n⌖\nINTERAKTIVE KARTE\n\nMarker, Routen, Fundorte und Gebiete.\n\n›\n⚒\nBUILDS\n\nVorlagen, Loadouts u",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [
+        "#/database",
+        "#/database",
+        "#/map",
+        "#/builds",
+        "#/tech-workbench",
+        "#/community",
+        "#/guides",
+        "#/news",
+        "#/news",
+        "#/news",
+        "#/news",
+        "#/database",
+        "#/database",
+        "#/community",
+        "#/database",
+        "#/database",
+        "#/builds",
+        "#/dashboard"
+      ],
+      "buttons": 1,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 768,
+      "id": "dashboard",
+      "hash": "#/dashboard",
+      "title": "Once Human Archiv // Kommandozentrale",
+      "h1": [
+        "DEIN ARCHIV"
+      ],
+      "text": "KOMMANDOZENTRALE\nDEIN ARCHIV\n\nWillkommen zurück, Referenzprüfung. Deine lokalen Werkzeuge laufen in einem gemeinsamen Arbeitsbereich.\n\n0\nFAVORITEN\n0\nJAGDZIEL(E)\n0\nGESPEICHERTE BUILDS\n0\nROUTEN\n0\nEINSATZPLÄNE\n◎\nNÄCHSTER SCHRITT\nErstes Jagdziel setzen\n\nÜbernimm aus der Datenbank einen Eintrag direkt in deine Jagdliste.\n\nDATENBANK ÖFFNEN\nWERKZEUGE\ndein Arbeitsraum\n⌖ INTERAKTIVE KARTE\n⚒ BUILD-WERKSTATT\n◷ EINSATZPLANER\n★ MEINE SAMMLUNG\nARCHIVSTATUS\n27 feste Routen\nStartseite\naktiv\nDatenbank\naktiv\nPers",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 5,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 768,
+      "id": "news",
+      "hash": "#/news",
+      "title": "Once Human Archiv // Neuigkeiten",
+      "h1": [
+        "NEUIGKEITEN"
+      ],
+      "text": "ARCHIV // SIGNAL\nNEUIGKEITEN\n\nProjektmeldungen und dokumentierte Archiv-Updates aus dem erhaltenen Projektstand.\n\nALLE\nUPDATE\nFUND\nCOMMUNITY\nUpdate · 25. Sept. 2026\nJazzeMeow Archive – neue Seitenarchitektur aktiv\n\nÖffentliche Landingpage, Login-getrennte Kommandozentrale, Untermenüs und persönliche Werkzeuge sind als Seitenarchitektur aktiv.\n\nMELDUNG LESEN →\n25. Sept. 2026 · Update\nJazzeMeow Archive – neue Seitenarchitektur aktiv\n\nÖffentliche Landingpage, Login-getrennte Kommandozentrale, Unter",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 8,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 768,
+      "id": "database",
+      "hash": "#/database",
+      "title": "Once Human Archiv // Datenbank",
+      "h1": [
+        "DATENBANKDER KATALOG DEINER NÄCHSTEN FUNDE."
+      ],
+      "text": "ARCHIV / WISSEN & FUNDORTE\nDATENBANK\nDER KATALOG DEINER NÄCHSTEN FUNDE.\n\nAusrüstung, Ressourcen und Anomalien. Durchsuche das Archiv, prüfe Fundwege und halte deine Sammlung auf Kurs.\n\nQUELLSTAND\n2026-09-26\nKURATIERTER ARCHIVBESTAND\n21\nEinträge im Katalog\n14\nArchivbereiche\n0\nVon dir gefunden\n◎ DEINE JAGDLISTE\n↗\nKATALOG EINGRENZEN\nFILTER & BEREICHE\n⌄\n⌕\nDEINE AUSWAHL\n21 / 21 Einträge\nName A–Z\nKategorie\nZuletzt geprüft\n▦\n☷\ncat-schmetterling\nΨ\nORIGINALBILD AUSSTEHEND\nABWEICHLER\nAbgesandte des Schmet",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [
+        "#/hunt"
+      ],
+      "buttons": 92,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Katalogseiten",
+          "tabs": [
+            "← ZURÜCK",
+            "WEITER →"
+          ]
+        }
+      ]
+    },
+    {
+      "width": 768,
+      "id": "map",
+      "hash": "#/map",
+      "title": "Once Human Archiv // Karte",
+      "h1": [
+        "INTERAKTIVEKARTE"
+      ],
+      "text": "✦\nKARTENZENTRALE // INTERN\nINTERAKTIVE\nKARTE\n\nSzenarioebenen, vorhandene Marker und gespeicherte Routen in einer kompakten Kartenoberfläche. Ziehe die Karte mit Maus oder Touch, zoome und verbinde echte Fundorte zu deinen eigenen Farmrouten.\n\n▦\n6\nSZENARIEN\nvorhandener Projektstand\n⌖\n4\nMARKER\nvorhandene Einträge\n◉\n4\nSICHTBAR\naktuelle Auswahl\n⌁\n0\nROUTEN\nlokal gespeichert\n▦Marker & Filter\n▤Meine Karten\n⌕\nFILTER\nMARKER-KATEGORIEN\nLIVE FILTER\n⌖\nAlle Marker\n4\n⌖\nMod-Fundort\n4\n↻ FILTER ZURÜCKSETZEN\nSZEN",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 19,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 768,
+      "id": "hunt",
+      "hash": "#/hunt",
+      "title": "Once Human Archiv // Jagdliste",
+      "h1": [
+        "JAGDLISTE"
+      ],
+      "text": "PERSÖNLICH // ZIELE\nJAGDLISTE\n\nKatalogziele priorisieren, als erledigt markieren oder direkt zur Datenbank zurückspringen.\n\n0\nAKTIVE EINTRÄGE\n0\nERLEDIGT\nKeine Jagdziele\nHier gibt es im aktuellen lokalen Stand noch nichts anzuzeigen.\n＋ AUS DATENBANK HINZUFÜGEN",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 1,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 768,
+      "id": "routes",
+      "hash": "#/routes",
+      "title": "Once Human Archiv // Farmrouten",
+      "h1": [
+        "FARMROUTEN"
+      ],
+      "text": "KARTE // PLANUNG\nFARMROUTEN\n\nMarker zu eigenen Routen verbinden. Gespeicherte Routen bleiben lokal im Browser und öffnen ihre Stationen wieder auf der Karte.\n\nAKTUELLER ENTWURF\n0 Stationen\nEntwurf leer\nHier gibt es im aktuellen lokalen Stand noch nichts anzuzeigen.\nROUTE SPEICHERN\n⌖ MARKER AUF KARTE WÄHLEN\nGESPEICHERTE ROUTEN\n0\nNoch keine Route gespeichert\nHier gibt es im aktuellen lokalen Stand noch nichts anzuzeigen.",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 2,
+      "unlabelled": [
+        "name"
+      ],
+      "sections": []
+    },
+    {
+      "width": 768,
+      "id": "planner",
+      "hash": "#/planner",
+      "title": "Once Human Archiv // Einsatzplaner",
+      "h1": [
+        "EINSATZPLANER"
+      ],
+      "text": "SESSION // PLANUNG\nEINSATZPLANER\n\nEine Spielsitzung aus Jagdzielen, Build und Kartenroute zusammensetzen und lokal speichern.\n\nNEUER EINSATZ\nlokaler Plan\nTITEL\nDATUM\nFOKUS\nFarm\nBoss\nErkundung\nTech\nCommunity\nJAGDZIEL\nKeins\nBUILD\nKein Build\nROUTE\nKeine Route\nNOTIZ\nEINSATZ SPEICHERN\nGEPLANTE EINSÄTZE\n0\nNoch kein Einsatz geplant\nHier gibt es im aktuellen lokalen Stand noch nichts anzuzeigen.",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 1,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 768,
+      "id": "guides",
+      "hash": "#/guides",
+      "title": "Once Human Archiv // Guides",
+      "h1": [
+        "GUIDES"
+      ],
+      "text": "WISSEN // SCHRITT FÜR SCHRITT\nGUIDES\n\nOnboarding- und Funktionsguides aus dem vorhandenen Projektstand – mit Kapiteln statt reiner Linkliste.\n\n6\nGUIDES\n27\nKAPITEL\nAlle Kategorien\nEinsteiger\nDatenbank\nKarte\nPlanung\nCommunity\nQualität\nEinsteiger\nDie ersten 5 Minuten im JazzeMeow Archive\n\nVom ersten Login bis zur ersten gespeicherten Mission.\n\nKAPITEL ANZEIGEN\nDatenbank\nVollkatalog richtig benutzen\n\nKategorien, Suchstatus und Datenqualität verstehen.\n\nKAPITEL ANZEIGEN\nKarte\nLive-Karte ohne Pin-Wand",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 6,
+      "unlabelled": [
+        "guideSearch",
+        "guideCategory"
+      ],
+      "sections": []
+    },
+    {
+      "width": 768,
+      "id": "patchwatch",
+      "hash": "#/patchwatch",
+      "title": "Once Human Archiv // Patch-Wächter",
+      "h1": [
+        "PATCH-WÄCHTER"
+      ],
+      "text": "DATENQUALITÄT // MONITOR\nPATCH-WÄCHTER\n\nPrüfstatus und Alter der übernommenen Katalogdaten sichtbar machen, ohne ungeprüfte Änderungen als Fakten auszugeben.\n\n3\nDEUTSCH BELEGT\n11\nOFFIZIELLER DEUTSCHER BEGRIFF\n1\nBEGRIFF PRÜFEN\n3\nMODELLNAME SICHER\n1\nHISTORISCH OFFIZIELL / VERFÜGBARKEIT PRÜFEN\n2\nDATENBLATT VORHANDEN\nPRÜFQUEUE\nälteste zuerst\nDeutsch belegt\nZitteraal\nzuletzt geprüft: 2026-09-26\n2 Tage\nLOKAL NOTIEREN\nOffizieller deutscher Begriff\nNussknacker\nzuletzt geprüft: 2026-09-26\n2 Tage\nLOKAL NO",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 21,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 768,
+      "id": "secrets",
+      "hash": "#/secrets",
+      "title": "Once Human Archiv // Kaninchenbau",
+      "h1": [
+        "GEHEIMNISSE & UNTERSUCHUNGEN"
+      ],
+      "text": "KANINCHENBAU // ANALYSE\nGEHEIMNISSE & UNTERSUCHUNGEN\n\nMethodische Hinweise und Prüfstände aus dem bestehenden Projekt – bestätigt und in Prüfung klar getrennt.\n\nALLE\nBESTÄTIGT\nWIRD GEPRÜFT\nHoch\nMechanik · Bestätigt\nTrigger & Bedingungen\n\nBei seltenen Ereignissen Uhrzeit, Wetter, Serverphase, Queststatus und benötigte Gegenstände getrennt dokumentieren.\n\nMethodischer Hinweis – kein konkreter Spielfund.\n＋ NOTIZ\nMittel\nErkundung · Bestätigt\nKoordinaten-Archiv\n\nNicht nur Koordinaten speichern, sonde",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 7,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 768,
+      "id": "builds",
+      "hash": "#/builds",
+      "title": "Once Human Archiv // Builds",
+      "h1": [
+        "BUILD-PLANER"
+      ],
+      "text": "WERKSTATT // LOADOUT\nBUILD-PLANER\n\nWaffen, Rüstung, Abweichler, Cradle und Nahrung in einem speicherbaren Loadout zusammenstellen – basierend auf den vorhandenen Planner-Slots.\n\n12\nSLOTS\n0\nBELEGT\n0\nGESPEICHERT\nBUILD-PROFIL\nlokaler Entwurf\nNAME\nVORLAGE\nEigener Build\nBoss-Schaden · PvE\nGebiets-Farming · Farm\nÜberleben & Kontrolle · Solo\nEFFEKT-FOKUS\nKein Fokus\nBrand\nKraftverstärkung\nFrostvortex\nDas Bullenbild\nFestung\nUnstabiler Bomber\nSchneller Geschütze\nSprung\nSchrapnell\nNOTIZ\nBUILD SPEICHERN\nENT",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 3,
+      "unlabelled": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "sections": []
+    },
+    {
+      "width": 768,
+      "id": "community",
+      "hash": "#/community",
+      "title": "Once Human Archiv // Community",
+      "h1": [
+        "COMMUNITY"
+      ],
+      "text": "COMMUNITY // LOKALER PROTOTYP\nCOMMUNITY\n\nThemenräume und Beiträge sind funktional als lokaler Browserzustand umgesetzt; ein Server-Backend ist im aktuellen Projekt noch nicht angeschlossen.\n\nArchiv-Hilfe\nFragen zu Katalog, Karte und Werkzeugen\n0\nFunde & Korrekturen\nWissen gemeinsam prüfen\n0\nBuild-Labor\nLoadouts und Ideen diskutieren\n0\nArchiv-Hilfe\nlokal gespeichert\nNoch keine Beiträge in diesem Raum\nHier gibt es im aktuellen lokalen Stand noch nichts anzuzeigen.\nBEITRAG LOKAL SPEICHERN",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 4,
+      "unlabelled": [
+        "text"
+      ],
+      "sections": []
+    },
+    {
+      "width": 768,
+      "id": "submissions",
+      "hash": "#/submissions",
+      "title": "Once Human Archiv // Einreichungen",
+      "h1": [
+        "EINREICHUNGEN"
+      ],
+      "text": "COMMUNITY // PRÜFQUEUE\nEINREICHUNGEN\n\nFunde, Korrekturen und Tech-Formeln strukturiert erfassen. Im aktuellen statischen Projekt werden sie lokal gespeichert und klar nicht als veröffentlicht ausgegeben.\n\nNEUE EINREICHUNG\nlokaler Entwurf\nTYP\nFund / Ort\nKatalog-Korrektur\nTech-Formel\nGuide-Hinweis\nTITEL\nBEOBACHTUNG\nBELEG / QUELLE\nIN LOKALE PRÜFQUEUE\nMEINE EINREICHUNGEN\n0\nNoch keine lokalen Einreichungen\nHier gibt es im aktuellen lokalen Stand noch nichts anzuzeigen.",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 1,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 768,
+      "id": "profile",
+      "hash": "#/profile",
+      "title": "Once Human Archiv // Profil & Sicherheit",
+      "h1": [
+        "Referenzprüfung"
+      ],
+      "text": "R\nONCE HUMAN ARCHIV // PROFIL\nReferenzprüfung\nACCOUNT VERBUNDEN\npreview@example.invalid\n\nSammeln. Planen. Bauen. Archivieren. Dein persönlicher Arbeitsbereich für die vorhandenen Werkzeuge und lokalen Archivdaten.\n\nSAMMLUNGSFORTSCHRITT\n0 / 21\n✎ PROFIL ANPASSEN\nARCHIVSTATUS\n0% ERFASST\nBerechnet aus deinen tatsächlich als gefunden markierten Katalogeinträgen.\n▣\n0\nGEFUNDENE ITEMS\n⌖\n0\nGESPEICHERTE ROUTEN\n⚒\n0\nGESPEICHERTE BUILDS\n♥\n0\nFAVORITEN\n⌂\nÜBERSICHT\n◇\nSAMMLUNG\n⚒\nBUILDS\n⌖\nROUTEN\n▥\nSTATISTIKEN\n▧\nG",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 135,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Profilbereiche",
+          "tabs": [
+            "⌂ÜBERSICHT",
+            "◇SAMMLUNG",
+            "⚒BUILDS",
+            "⌖ROUTEN",
+            "▥STATISTIKEN",
+            "▧GALERIE"
+          ]
+        },
+        {
+          "label": "Profil bearbeiten",
+          "tabs": [
+            "ALLGEMEIN",
+            "PROFILBILD",
+            "BANNER",
+            "FARBEN",
+            "ÜBER MICH",
+            "HIGHLIGHTS",
+            "WIDGETS",
+            "RAHMEN",
+            "RINGE & KRÄNZE",
+            "TROPHÄEN"
+          ]
+        }
+      ]
+    },
+    {
+      "width": 768,
+      "id": "weapon-blueprints",
+      "hash": "#/weapon-blueprints",
+      "title": "Once Human Archiv // Waffen-Baupläne",
+      "h1": [
+        "WAFFEN-BLAUPAUSEN"
+      ],
+      "text": "DATENBANK // ARSENAL\nWAFFEN-BLAUPAUSEN\n\nBlaupausen nach Familie, Seltenheit und offensiven Referenzwerten durchsuchen.\n\n12\nBLAUPAUSEN\n6\nFAMILIEN\nAlle Familien\nJuggernaut\nWanderer\nBeyonder\nJäger\nOperator\nFremdling\n⇄ VERGLEICH ÖFFNEN\n⌁\nLegendär · Juggernaut\nACS12 – Pyroklasma-Starter\nKrit-Rate\n8%\nKrit-Schaden\n27%\nSchwachstelle\n15%\n⌁\nLegendär · Wanderer\nEBR-14 - Tintenfisch! Gegrillte Ringe!\nKrit-Rate\n5%\nKrit-Schaden\n40%\nSchwachstelle\n50%\n⌁\nLegendär · Wanderer\nM416 – Stille Anabasis\nKrit-Rate\n6%\nKr",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 1,
+      "unlabelled": [
+        "wbSearch",
+        "wbFamily"
+      ],
+      "sections": []
+    },
+    {
+      "width": 768,
+      "id": "armor-blueprints",
+      "hash": "#/armor-blueprints",
+      "title": "Once Human Archiv // Rüstungs-Baupläne",
+      "h1": [
+        "RÜSTUNGS-BLAUPAUSEN"
+      ],
+      "text": "DATENBANK // SCHUTZ\nRÜSTUNGS-BLAUPAUSEN\n\nRüstungsteile nach Slot, Familie, Tier und hinterlegten Basiswerten ansehen.\n\nALLE\nHANDSCHUHE\nMASKE\nSCHUHE\n⬡\nHandschuhe · Beyonder · Tier 1\n„Geist-Link“-Handschuhe\nLP\n90\nPSI\n12\nVERSCHMUTZUNG\n3\nHALTBARKEIT\n100\n⬡\nMaske · Beyonder · Tier 1\n„Geist-Link“-Maske\nLP\n30\nPSI\n20\nVERSCHMUTZUNG\n4\nHALTBARKEIT\n100\n⬡\nSchuhe · Beyonder · Tier 1\n„Ghost Link“-Schuhe\nLP\n120\nPSI\n8\nVERSCHMUTZUNG\n3\nHALTBARKEIT\n100\nRÜSTUNG VERGLEICHEN",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 5,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 768,
+      "id": "armor-materials",
+      "hash": "#/armor-materials",
+      "title": "Once Human Archiv // Rüstungsmaterialien",
+      "h1": [
+        "RÜSTUNGSMATERIALIEN"
+      ],
+      "text": "DATENBANK // MATERIALKUNDE\nRÜSTUNGSMATERIALIEN\n\n57 Materialien im Referenzbestand; hier die kuratierte Auswahl mit Herkunft und Kurzfunktion.\n\nQUALITÄT 4 · 0.1 KG · STAPEL 1000\nBastille-Genstoff\n\nErhöht die Ausrüstungshaltbarkeit und kann im Kohärenzstatus beschädigte Ausrüstung regenerieren.\n\nQUELLE\nFortschrittliche Nachschubwerkbank\nQUALITÄT 4 · 0.1 KG · STAPEL 1000\nBerg-Rindsleder\n\nDefensiv- und Ausdauerboni; unterstützt Kältewiderstand und maximale Last.\n\nQUELLE\nBüffel jagen\nQUALITÄT 4 · 0.1",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 0,
+      "unlabelled": [
+        "amSearch"
+      ],
+      "sections": []
+    },
+    {
+      "width": 768,
+      "id": "deviations",
+      "hash": "#/deviations",
+      "title": "Once Human Archiv // Abweichler",
+      "h1": [
+        "ABWEICHLER"
+      ],
+      "text": "DATENBANK // ANOMALIE\nABWEICHLER\n\nAbweichler und Varianten nach Typ, Aktion und Zielverhalten sortiert.\n\nALLE\nKAMPF\nΨ\nKampf\nAbgesandte des Schmetterlings\nAKTION\nAuto-Angriff\nZIEL\nAusgewähltes Ziel\nΨ\nKampf\nAbgesandte des Schmetterlings - Alte Schriftrolle\nAKTION\nAuto-Angriff\nZIEL\nAusgewähltes Ziel\nΨ\nKampf\nAbgesandte des Schmetterlings - Infraschall-Illusion\nAKTION\nAuto-Angriff\nZIEL\nAusgewähltes Ziel\nΨ\nKampf\nAbgesandte des Schmetterlings – Funkelndes Blau\nAKTION\nAuto-Angriff\nZIEL\nAusgewähltes Ziel",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 2,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 768,
+      "id": "mods",
+      "hash": "#/mods",
+      "title": "Once Human Archiv // Mods",
+      "h1": [
+        "MODS"
+      ],
+      "text": "DATENBANK // MODIFIKATION\nMODS\n\n698 Einträge im referenzierten Filterstand; die lokale Auswahl zeigt Slot und Tier.\n\nAlle Slots\nHose\nHelm\nTop\nAlle Waffen\nSchuhe\nHandschuhe\nMaske\n⚙\nTIER V · Hose\nAbnormale Erhöhung\n⚙\nTIER V · Helm\nAufschwung\n⚙\nTIER V · Top\nAusdauernder Schild\n⚙\nTIER V · Alle Waffen\nBumerang-Geschoss\n⚙\nTIER V · Hose\nDrei Treffer\n⚙\nTIER V · Schuhe\nEile mit Weile\n⚙\nTIER V · Helm\nElementare Verwüstung\n⚙\nTIER V · Handschuhe\nElementare Überlastung\n⚙\nTIER V · Hose\nElementarresonanz\n⚙\nTIE",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 0,
+      "unlabelled": [
+        "modSearch",
+        "modSlot"
+      ],
+      "sections": []
+    },
+    {
+      "width": 768,
+      "id": "compare-weapons",
+      "hash": "#/compare-weapons",
+      "title": "Once Human Archiv // Waffenvergleich",
+      "h1": [
+        "WAFFENVERGLEICH"
+      ],
+      "text": "LABOR // TRANSPARENTER INDEX\nWAFFENVERGLEICH\n\nBis zu drei Waffen nebeneinander mit offen sichtbaren Gewichtungen. Mechanik-/Build-Synergien werden nicht als pauschaler versteckter Bonus behauptet.\n\nFOKUS\nBasis-DPS\nKrit-Fokus\nSchwachstellen-Fokus\nHandling\nWAFFE 1\nM416 – Stille Anabasis\nACS12 – Pyroklasma-Starter\nKVD – Bumm! Bumm!\nSOCR – Letzte Heldentat\nAWS.338 – Bingo\nWAFFE 2\nM416 – Stille Anabasis\nACS12 – Pyroklasma-Starter\nKVD – Bumm! Bumm!\nSOCR – Letzte Heldentat\nAWS.338 – Bingo\nWAFFE 3\nM416 ",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 0,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 768,
+      "id": "compare-armors",
+      "hash": "#/compare-armors",
+      "title": "Once Human Archiv // Rüstungsvergleich",
+      "h1": [
+        "RÜSTUNGSVERGLEICH"
+      ],
+      "text": "LABOR // SCHUTZWERTE\nRÜSTUNGSVERGLEICH\n\nZwei vorhandene Referenzstufen direkt gegenüberstellen; fehlende Werte bleiben sichtbar leer statt erfunden zu werden.\n\nRÜSTUNG 1\nAbtrünnigen-Handschuhe · Tier 1\nAbtrünnigen-Handschuhe · Tier 2\nRÜSTUNG 2\nAbtrünnigen-Handschuhe · Tier 1\nAbtrünnigen-Handschuhe · Tier 2\nTier 1\nAbtrünnigen-Handschuhe\nHP\n1110\n+690\n1800\nPOLLUTION\n12\n—\n—\nPSI\n69\n—\n—\nCAPTURE\n5\n-3\n2\nDURABILITY\n400\n—\n—\nMOVEMENT\n—\n—\n0.02\nGLIDE\n—\n—\n0.04\nTier 2\nAbtrünnigen-Handschuhe",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 0,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 768,
+      "id": "memetics",
+      "hash": "#/memetics",
+      "title": "Once Human Archiv // Memetik",
+      "h1": [
+        "MEMETIK"
+      ],
+      "text": "DATENBANK // WISSENSKNOTEN\nMEMETIK\n\nReferenzliste der vorhandenen Memetik-Namen; Tech-Rework und Werkbank bleiben als eigener Bereich getrennt.\n\n⚙ TECH-WERKBANK\n01\nMEMETIK\nAdrenalininjektion: Phönix\n02\nMEMETIK\nAktivkohlefilterung\n03\nMEMETIK\nAufwind-Kanone: Gravitation leicht gemacht\n04\nMEMETIK\nAusrüstungswerkbank: Anpassung\n05\nMEMETIK\nBaumeister\n06\nMEMETIK\nBett: Eine kuschelige Heimat\n07\nMEMETIK\nBett: Wärmeerhaltung\n08\nMEMETIK\nBiomassegenerator: Hitzegenerator\n09\nMEMETIK\nBiomassegenerator: Konti",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 1,
+      "unlabelled": [
+        "memSearch"
+      ],
+      "sections": []
+    },
+    {
+      "width": 768,
+      "id": "vehicles",
+      "hash": "#/vehicles",
+      "title": "Once Human Archiv // Fahrzeuge",
+      "h1": [
+        "FAHRZEUGE"
+      ],
+      "text": "DATENBANK // MOBILITÄT\nFAHRZEUGE\n\nFahrzeugtypen aus dem Referenzstand inklusive hinterlegter Skin-Zähler.\n\n▱\nFAHRZEUGTYP\nAnhängerkopf - LKW\n1 Skin im Referenzstand\n▱\nFAHRZEUGTYP\nDoppel-Jetski\n1 Skin im Referenzstand\n▱\nFAHRZEUGTYP\nFüße\n2 Skins im Referenzstand\n▱\nFAHRZEUGTYP\nGeländefahrzeug\n3 Skins im Referenzstand\n▱\nFAHRZEUGTYP\nNuke-Panzer\n1 Skin im Referenzstand\n▱\nFAHRZEUGTYP\nRetro-Coupé\n6 Skins im Referenzstand\n▱\nFAHRZEUGTYP\nSchwebe-Motorrad\n1 Skin im Referenzstand\n▱\nFAHRZEUGTYP\nStraßenmotorrad",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 0,
+      "unlabelled": [
+        "vehSearch"
+      ],
+      "sections": []
+    },
+    {
+      "width": 768,
+      "id": "creatures",
+      "hash": "#/creatures",
+      "title": "Once Human Archiv // Kreaturen",
+      "h1": [
+        "KREATUREN"
+      ],
+      "text": "DATENBANK // FAUNA\nKREATUREN\n\nNutztiere und weitere beobachtete Wildtiere bewusst getrennt; unbestätigte Verfügbarkeit bleibt als solche markiert.\n\nNUTZTIERE / BESTAND\n34\n◌\nBock\n◌\nKitz\n◌\nBär\n◌\nKleiner Bär\n◌\nEisbär\n◌\nKleiner Eisbär\n◌\nFlamingo\n◌\nKleiner Flamingo\n◌\nFuchs\n◌\nKleiner Fuchs\n◌\nHase\n◌\nKleiner Hase\n◌\nKrokodile\n◌\nKleines Krokodil\n◌\nLamm\n◌\nLeopard\n◌\nKleiner Leopard\n◌\nMeeresschildkröte\n◌\nKleine Meeresschildkröte\n◌\nReh\n◌\nSchaf\n◌\nSchnappschildkröte\n◌\nKleine Schnappschildkröte\n◌\nSchneefuchs\n◌\nK",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 0,
+      "unlabelled": [
+        "creatureSearch"
+      ],
+      "sections": []
+    },
+    {
+      "width": 768,
+      "id": "tech-workbench",
+      "hash": "#/tech-workbench",
+      "title": "Once Human Archiv // Techwerkbank",
+      "h1": [
+        "TECH-WERKBANK"
+      ],
+      "text": "✦\nSYSTEME / HERSTELLUNG\nTECH-WERKBANK\n\nReverse Engineering, Erfindung und Fertigungsformeln in einem kompakten Werkstatt-Terminal. Bestehende R12-Daten bilden die Basis dieser visuellen Arbeitsoberfläche.\n\n⌁\n7\nREVERSE-EINTRÄGE\nGesammelte Daten\n◇\n14\nERFINDUNGS-POOL\nMaterialkombinationen\n▦\n13\nFERTIGUNGSFORMELN\nGeprüfte Rezepte\n⚙\nREVERSE ENGINEERING\nItems zerlegen & analysieren\n→\n◇\nERFINDUNG\nMaterial-Mix & Pool\n→\n▦\nFERTIGUNGSRECHNER\nFormeln & Materialbedarf\n→\nKATEGORIEN\nARCHIVFILTER\n◉\nAlle\n7\n⚒\nWerk",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 21,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Techwerkbank-Modus",
+          "tabs": [
+            "⚙REVERSE ENGINEERINGItems zerlegen & analysieren→",
+            "◇ERFINDUNGMaterial-Mix & Pool→",
+            "▦FERTIGUNGSRECHNERFormeln & Materialbedarf→"
+          ]
+        }
+      ]
+    },
+    {
+      "width": 768,
+      "id": "exchange",
+      "hash": "#/exchange",
+      "title": "Once Human Archiv // Community-Werkstatt",
+      "h1": [
+        "COMMUNITY-WERKSTATT"
+      ],
+      "text": "COMMUNITY // WERKSTATT\nCOMMUNITY-WERKSTATT\n\nLokales Teilen gespeicherter Builds sowie Suche/Biete-Posts. Echtgeld-Handel ist gemäß vorhandener Projektregel nicht vorgesehen.\n\nBEITRAG ERSTELLEN\nlokal\nTYP\nBuild teilen\nSuche\nBiete\nBUILD\nKein Build\nTITEL\nTEXT\nVERÖFFENTLICHUNG LOKAL SIMULIEREN\n\nKein Server-Backend: Beitrag bleibt in diesem Browser.\n\nNoch keine Werkstatt-Beiträge\nHier gibt es im aktuellen lokalen Stand noch nichts anzuzeigen.",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 1,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 768,
+      "id": "live-map",
+      "hash": "#/live-map",
+      "title": "Once Human Archiv // Live Karte",
+      "h1": [
+        "LIVE KARTE"
+      ],
+      "text": "LIVE MAP // ISOLIERTE VORSCHAU\nLIVE KARTE\n\nInteraktive Kartenoberfläche mit vorhandenem Markerbestand, lokalen Markern und deinen gespeicherten Routen. Die bestehende Karte bleibt davon unberührt.\n\nSZENARIEN\n6\nvorhanden\nSICHTBAR\n0\naktuelle Filterung\nROUTE\n0\nStationen im Entwurf\nEIGENE\n0\nMarker im Szenario\nKARTENSTEUERUNG\nNAVIGATION\n01\nSZENARIO\nNalcott\nManibus\nThe Way of Winter\nEndloser Traum\nRaidZone\nCustom Server\n⌕\n⌖\nAlle Marker\n0\n↻ FILTER ZURÜCKSETZEN\nROUTENENTWURF\n0 STATIONEN\n02\n\nNoch keine S",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [
+        "./assets/live-map/shattered-maiden.webp"
+      ],
+      "links": [],
+      "buttons": 8,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 768,
+      "id": "settings",
+      "hash": "#/settings",
+      "title": "Once Human Archiv // Einstellungen",
+      "h1": [
+        "Archiv-Interface"
+      ],
+      "text": "Darstellung\nProfil\nBenachrichtigungen\nSicherheit\nLive-Karte\nAdmin Backend\nArchiv-Interface\n\nDarstellung für Admin Backend, Live-Karte und Profil.\n\nAuto\nHell\nDunkel\nAkzentfarbe\nCoral\nDichte\nLocker\nStandard\nKompakt\nSchriftart\nSF Pro\nInter\nSystem\nEckenradius\n4\n8\n12\n16\nWeiche Animationen\nFlüssige Übergänge für Designelemente.\nStarke Fokus-Ringe\nDeutlichere Tastaturfokussierung.\nHUD-Raster anzeigen\nFeine Archiv-Rasterlinien in den angebundenen Bereichen.\nKompakte Navigation\nVerringert Abstände in Adm",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [
+        "#/settings",
+        "#/settings/profile",
+        "#/settings/notifications",
+        "#/settings/security",
+        "#/live-map",
+        "#/admin",
+        "#/admin",
+        "#/live-map",
+        "#/profile"
+      ],
+      "buttons": 12,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Einstellungsbereiche",
+          "tabs": [
+            "Darstellung",
+            "Profil",
+            "Benachrichtigungen",
+            "Sicherheit",
+            "Live-Karte",
+            "Admin Backend"
+          ]
+        }
+      ]
+    },
+    {
+      "width": 768,
+      "id": "admin",
+      "hash": "#/admin",
+      "title": "Once Human Archiv // Admin Backend",
+      "h1": [
+        "Archiv Control Center"
+      ],
+      "text": "A\nONCE HUMAN ARCHIV\nADMIN BACKEND\n⌂\nÜbersicht\n▤\nInhalte & Seiten\n✎\nInhaltseditor\n⌖\nKarte & Marker\n⚑\nModeration\n♙\nNutzer & Rollen\n≡\nAudit & Aktivität\n◇\nSystem & Sicherheit\nADMINISTRATION / OVERVIEW\nArchiv Control Center\nR\nANGEMELDET ALS\nReferenzprüfung\nOWNER\nOWNER / ADMIN WORKSPACE\nSteuere das Archiv.\nOhne die Website zu zerlegen.\n\nDas Panel arbeitet auf einer separaten Vorschau. Vorhandene Daten werden gelesen; sensible Backend-Aktionen bleiben gesperrt, bis dafür echte serverseitige Rechte vorh",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [
+        {
+          "tag": "BUTTON",
+          "text": "♙Nutzer & Rollen",
+          "id": "",
+          "left": 763,
+          "right": 908
+        },
+        {
+          "tag": "BUTTON",
+          "text": "≡Audit & Aktivität",
+          "id": "",
+          "left": 913,
+          "right": 1058
+        },
+        {
+          "tag": "BUTTON",
+          "text": "◇System & Sicherheit",
+          "id": "",
+          "left": 1064,
+          "right": 1209
+        }
+      ],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 20,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Adminbereiche",
+          "tabs": [
+            "⌂Übersicht",
+            "▤Inhalte & Seiten",
+            "✎Inhaltseditor",
+            "⌖Karte & Marker",
+            "⚑Moderation",
+            "♙Nutzer & Rollen",
+            "≡Audit & Aktivität",
+            "◇System & Sicherheit"
+          ]
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "id": "home",
+      "hash": "#/home",
+      "title": "Once Human Archiv // Start",
+      "h1": [
+        "ONCE HUMANARCHIV"
+      ],
+      "text": "ONCE HUMAN\nONCE HUMAN\nARCHIV\nDEINE ZENTRALE WISSENSPLATTFORM FÜR ONCE HUMAN\n\nGuides, Daten, Builds, Karten, Community und Werkzeuge an einem Ort. Übersichtlich verbunden mit den vorhandenen Archivfunktionen und deinem lokalen Fortschritt.\n\nJETZT ENTDECKEN\n→\n▶\nARCHIV ANSEHEN\n◷\nAktuell\n♙\nCommunity-getrieben\n◇\nWerbefrei\n⌁\nFür alle Spieler\n▱\nDATENBANK\n\nGegenstände, Waffen, Ausrüstung, Ressourcen und mehr.\n\n›\n⌖\nINTERAKTIVE KARTE\n\nMarker, Routen, Fundorte und Gebiete.\n\n›\n⚒\nBUILDS\n\nVorlagen, Loadouts u",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [
+        {
+          "tag": "H1",
+          "text": "ONCE HUMANARCHIV",
+          "id": "",
+          "left": 27,
+          "right": 395
+        },
+        {
+          "tag": "BUTTON",
+          "text": "▶ ARCHIV ANSEHEN",
+          "id": "videoInfo",
+          "left": 216,
+          "right": 395
+        }
+      ],
+      "brokenImages": [],
+      "links": [
+        "#/database",
+        "#/database",
+        "#/map",
+        "#/builds",
+        "#/tech-workbench",
+        "#/community",
+        "#/guides",
+        "#/news",
+        "#/news",
+        "#/news",
+        "#/news",
+        "#/database",
+        "#/database",
+        "#/community",
+        "#/database",
+        "#/database",
+        "#/builds",
+        "#/dashboard"
+      ],
+      "buttons": 1,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 390,
+      "id": "dashboard",
+      "hash": "#/dashboard",
+      "title": "Once Human Archiv // Kommandozentrale",
+      "h1": [
+        "DEIN ARCHIV"
+      ],
+      "text": "KOMMANDOZENTRALE\nDEIN ARCHIV\n\nWillkommen zurück, Referenzprüfung. Deine lokalen Werkzeuge laufen in einem gemeinsamen Arbeitsbereich.\n\n0\nFAVORITEN\n0\nJAGDZIEL(E)\n0\nGESPEICHERTE BUILDS\n0\nROUTEN\n0\nEINSATZPLÄNE\n◎\nNÄCHSTER SCHRITT\nErstes Jagdziel setzen\n\nÜbernimm aus der Datenbank einen Eintrag direkt in deine Jagdliste.\n\nDATENBANK ÖFFNEN\nWERKZEUGE\ndein Arbeitsraum\n⌖ INTERAKTIVE KARTE\n⚒ BUILD-WERKSTATT\n◷ EINSATZPLANER\n★ MEINE SAMMLUNG\nARCHIVSTATUS\n27 feste Routen\nStartseite\naktiv\nDatenbank\naktiv\nPers",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 5,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 390,
+      "id": "news",
+      "hash": "#/news",
+      "title": "Once Human Archiv // Neuigkeiten",
+      "h1": [
+        "NEUIGKEITEN"
+      ],
+      "text": "ARCHIV // SIGNAL\nNEUIGKEITEN\n\nProjektmeldungen und dokumentierte Archiv-Updates aus dem erhaltenen Projektstand.\n\nALLE\nUPDATE\nFUND\nCOMMUNITY\nUpdate · 25. Sept. 2026\nJazzeMeow Archive – neue Seitenarchitektur aktiv\n\nÖffentliche Landingpage, Login-getrennte Kommandozentrale, Untermenüs und persönliche Werkzeuge sind als Seitenarchitektur aktiv.\n\nMELDUNG LESEN →\n25. Sept. 2026 · Update\nJazzeMeow Archive – neue Seitenarchitektur aktiv\n\nÖffentliche Landingpage, Login-getrennte Kommandozentrale, Unter",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": true,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 8,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 390,
+      "id": "database",
+      "hash": "#/database",
+      "title": "Once Human Archiv // Datenbank",
+      "h1": [
+        "DATENBANKDER KATALOG DEINER NÄCHSTEN FUNDE."
+      ],
+      "text": "ARCHIV / WISSEN & FUNDORTE\nDATENBANK\nDER KATALOG DEINER NÄCHSTEN FUNDE.\n\nAusrüstung, Ressourcen und Anomalien. Durchsuche das Archiv, prüfe Fundwege und halte deine Sammlung auf Kurs.\n\nQUELLSTAND\n2026-09-26\n21\nEinträge im Katalog\n14\nArchivbereiche\n0\nVon dir gefunden\n◎ DEINE JAGDLISTE\n↗\nKATALOG EINGRENZEN\nFILTER & BEREICHE\n⌄\n⌕\nDEINE AUSWAHL\n21 / 21 Einträge\nName A–Z\nKategorie\nZuletzt geprüft\n▦\n☷\ncat-schmetterling\nΨ\nORIGINALBILD AUSSTEHEND\nABWEICHLER\nAbgesandte des Schmetterlings\n\nAbweichler / Kam",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [
+        "#/hunt"
+      ],
+      "buttons": 92,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Katalogseiten",
+          "tabs": [
+            "← ZURÜCK",
+            "WEITER →"
+          ]
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "id": "map",
+      "hash": "#/map",
+      "title": "Once Human Archiv // Karte",
+      "h1": [
+        "INTERAKTIVEKARTE"
+      ],
+      "text": "✦\nKARTENZENTRALE // INTERN\nINTERAKTIVE\nKARTE\n\nSzenarioebenen, vorhandene Marker und gespeicherte Routen in einer kompakten Kartenoberfläche. Ziehe die Karte mit Maus oder Touch, zoome und verbinde echte Fundorte zu deinen eigenen Farmrouten.\n\n▦\n6\nSZENARIEN\nvorhandener Projektstand\n⌖\n4\nMARKER\nvorhandene Einträge\n◉\n4\nSICHTBAR\naktuelle Auswahl\n⌁\n0\nROUTEN\nlokal gespeichert\n▦Marker & Filter\n▤Meine Karten\n⌕\nFILTER\nMARKER-KATEGORIEN\nLIVE FILTER\n⌖\nAlle Marker\n4\n⌖\nMod-Fundort\n4\n↻ FILTER ZURÜCKSETZEN\nSZEN",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [
+        {
+          "tag": "BUTTON",
+          "text": "",
+          "id": "",
+          "left": -20,
+          "right": 8
+        }
+      ],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 19,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 390,
+      "id": "hunt",
+      "hash": "#/hunt",
+      "title": "Once Human Archiv // Jagdliste",
+      "h1": [
+        "JAGDLISTE"
+      ],
+      "text": "PERSÖNLICH // ZIELE\nJAGDLISTE\n\nKatalogziele priorisieren, als erledigt markieren oder direkt zur Datenbank zurückspringen.\n\n0\nAKTIVE EINTRÄGE\n0\nERLEDIGT\nKeine Jagdziele\nHier gibt es im aktuellen lokalen Stand noch nichts anzuzeigen.\n＋ AUS DATENBANK HINZUFÜGEN",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 1,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 390,
+      "id": "routes",
+      "hash": "#/routes",
+      "title": "Once Human Archiv // Farmrouten",
+      "h1": [
+        "FARMROUTEN"
+      ],
+      "text": "KARTE // PLANUNG\nFARMROUTEN\n\nMarker zu eigenen Routen verbinden. Gespeicherte Routen bleiben lokal im Browser und öffnen ihre Stationen wieder auf der Karte.\n\nAKTUELLER ENTWURF\n0 Stationen\nEntwurf leer\nHier gibt es im aktuellen lokalen Stand noch nichts anzuzeigen.\nROUTE SPEICHERN\n⌖ MARKER AUF KARTE WÄHLEN\nGESPEICHERTE ROUTEN\n0\nNoch keine Route gespeichert\nHier gibt es im aktuellen lokalen Stand noch nichts anzuzeigen.",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 2,
+      "unlabelled": [
+        "name"
+      ],
+      "sections": []
+    },
+    {
+      "width": 390,
+      "id": "planner",
+      "hash": "#/planner",
+      "title": "Once Human Archiv // Einsatzplaner",
+      "h1": [
+        "EINSATZPLANER"
+      ],
+      "text": "SESSION // PLANUNG\nEINSATZPLANER\n\nEine Spielsitzung aus Jagdzielen, Build und Kartenroute zusammensetzen und lokal speichern.\n\nNEUER EINSATZ\nlokaler Plan\nTITEL\nDATUM\nFOKUS\nFarm\nBoss\nErkundung\nTech\nCommunity\nJAGDZIEL\nKeins\nBUILD\nKein Build\nROUTE\nKeine Route\nNOTIZ\nEINSATZ SPEICHERN\nGEPLANTE EINSÄTZE\n0\nNoch kein Einsatz geplant\nHier gibt es im aktuellen lokalen Stand noch nichts anzuzeigen.",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 1,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 390,
+      "id": "guides",
+      "hash": "#/guides",
+      "title": "Once Human Archiv // Guides",
+      "h1": [
+        "GUIDES"
+      ],
+      "text": "WISSEN // SCHRITT FÜR SCHRITT\nGUIDES\n\nOnboarding- und Funktionsguides aus dem vorhandenen Projektstand – mit Kapiteln statt reiner Linkliste.\n\n6\nGUIDES\n27\nKAPITEL\nAlle Kategorien\nEinsteiger\nDatenbank\nKarte\nPlanung\nCommunity\nQualität\nEinsteiger\nDie ersten 5 Minuten im JazzeMeow Archive\n\nVom ersten Login bis zur ersten gespeicherten Mission.\n\nKAPITEL ANZEIGEN\nDatenbank\nVollkatalog richtig benutzen\n\nKategorien, Suchstatus und Datenqualität verstehen.\n\nKAPITEL ANZEIGEN\nKarte\nLive-Karte ohne Pin-Wand",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 6,
+      "unlabelled": [
+        "guideSearch",
+        "guideCategory"
+      ],
+      "sections": []
+    },
+    {
+      "width": 390,
+      "id": "patchwatch",
+      "hash": "#/patchwatch",
+      "title": "Once Human Archiv // Patch-Wächter",
+      "h1": [
+        "PATCH-WÄCHTER"
+      ],
+      "text": "DATENQUALITÄT // MONITOR\nPATCH-WÄCHTER\n\nPrüfstatus und Alter der übernommenen Katalogdaten sichtbar machen, ohne ungeprüfte Änderungen als Fakten auszugeben.\n\n3\nDEUTSCH BELEGT\n11\nOFFIZIELLER DEUTSCHER BEGRIFF\n1\nBEGRIFF PRÜFEN\n3\nMODELLNAME SICHER\n1\nHISTORISCH OFFIZIELL / VERFÜGBARKEIT PRÜFEN\n2\nDATENBLATT VORHANDEN\nPRÜFQUEUE\nälteste zuerst\nDeutsch belegt\nZitteraal\nzuletzt geprüft: 2026-09-26\n2 Tage\nLOKAL NOTIEREN\nOffizieller deutscher Begriff\nNussknacker\nzuletzt geprüft: 2026-09-26\n2 Tage\nLOKAL NO",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 21,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 390,
+      "id": "secrets",
+      "hash": "#/secrets",
+      "title": "Once Human Archiv // Kaninchenbau",
+      "h1": [
+        "GEHEIMNISSE & UNTERSUCHUNGEN"
+      ],
+      "text": "KANINCHENBAU // ANALYSE\nGEHEIMNISSE & UNTERSUCHUNGEN\n\nMethodische Hinweise und Prüfstände aus dem bestehenden Projekt – bestätigt und in Prüfung klar getrennt.\n\nALLE\nBESTÄTIGT\nWIRD GEPRÜFT\nHoch\nMechanik · Bestätigt\nTrigger & Bedingungen\n\nBei seltenen Ereignissen Uhrzeit, Wetter, Serverphase, Queststatus und benötigte Gegenstände getrennt dokumentieren.\n\nMethodischer Hinweis – kein konkreter Spielfund.\n＋ NOTIZ\nMittel\nErkundung · Bestätigt\nKoordinaten-Archiv\n\nNicht nur Koordinaten speichern, sonde",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": true,
+      "clipped": [
+        {
+          "tag": "H1",
+          "text": "GEHEIMNISSE & UNTERSUCHUNGEN",
+          "id": "",
+          "left": 29,
+          "right": 459
+        },
+        {
+          "tag": "H2",
+          "text": "Koordinaten-Archiv",
+          "id": "",
+          "left": 247,
+          "right": 461
+        },
+        {
+          "tag": "BUTTON",
+          "text": "＋ NOTIZ",
+          "id": "",
+          "left": 422,
+          "right": 461
+        },
+        {
+          "tag": "H2",
+          "text": "Unsichtbare Voraussetzungen",
+          "id": "",
+          "left": 247,
+          "right": 461
+        },
+        {
+          "tag": "BUTTON",
+          "text": "＋ NOTIZ",
+          "id": "",
+          "left": 417,
+          "right": 461
+        }
+      ],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 7,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 390,
+      "id": "builds",
+      "hash": "#/builds",
+      "title": "Once Human Archiv // Builds",
+      "h1": [
+        "BUILD-PLANER"
+      ],
+      "text": "WERKSTATT // LOADOUT\nBUILD-PLANER\n\nWaffen, Rüstung, Abweichler, Cradle und Nahrung in einem speicherbaren Loadout zusammenstellen – basierend auf den vorhandenen Planner-Slots.\n\n12\nSLOTS\n0\nBELEGT\n0\nGESPEICHERT\nBUILD-PROFIL\nlokaler Entwurf\nNAME\nVORLAGE\nEigener Build\nBoss-Schaden · PvE\nGebiets-Farming · Farm\nÜberleben & Kontrolle · Solo\nEFFEKT-FOKUS\nKein Fokus\nBrand\nKraftverstärkung\nFrostvortex\nDas Bullenbild\nFestung\nUnstabiler Bomber\nSchneller Geschütze\nSprung\nSchrapnell\nNOTIZ\nBUILD SPEICHERN\nENT",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": true,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 3,
+      "unlabelled": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "sections": []
+    },
+    {
+      "width": 390,
+      "id": "community",
+      "hash": "#/community",
+      "title": "Once Human Archiv // Community",
+      "h1": [
+        "COMMUNITY"
+      ],
+      "text": "COMMUNITY // LOKALER PROTOTYP\nCOMMUNITY\n\nThemenräume und Beiträge sind funktional als lokaler Browserzustand umgesetzt; ein Server-Backend ist im aktuellen Projekt noch nicht angeschlossen.\n\nArchiv-Hilfe\nFragen zu Katalog, Karte und Werkzeugen\n0\nFunde & Korrekturen\nWissen gemeinsam prüfen\n0\nBuild-Labor\nLoadouts und Ideen diskutieren\n0\nArchiv-Hilfe\nlokal gespeichert\nNoch keine Beiträge in diesem Raum\nHier gibt es im aktuellen lokalen Stand noch nichts anzuzeigen.\nBEITRAG LOKAL SPEICHERN",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 4,
+      "unlabelled": [
+        "text"
+      ],
+      "sections": []
+    },
+    {
+      "width": 390,
+      "id": "submissions",
+      "hash": "#/submissions",
+      "title": "Once Human Archiv // Einreichungen",
+      "h1": [
+        "EINREICHUNGEN"
+      ],
+      "text": "COMMUNITY // PRÜFQUEUE\nEINREICHUNGEN\n\nFunde, Korrekturen und Tech-Formeln strukturiert erfassen. Im aktuellen statischen Projekt werden sie lokal gespeichert und klar nicht als veröffentlicht ausgegeben.\n\nNEUE EINREICHUNG\nlokaler Entwurf\nTYP\nFund / Ort\nKatalog-Korrektur\nTech-Formel\nGuide-Hinweis\nTITEL\nBEOBACHTUNG\nBELEG / QUELLE\nIN LOKALE PRÜFQUEUE\nMEINE EINREICHUNGEN\n0\nNoch keine lokalen Einreichungen\nHier gibt es im aktuellen lokalen Stand noch nichts anzuzeigen.",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [
+        {
+          "tag": "H1",
+          "text": "EINREICHUNGEN",
+          "id": "",
+          "left": 29,
+          "right": 394
+        }
+      ],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 1,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 390,
+      "id": "profile",
+      "hash": "#/profile",
+      "title": "Once Human Archiv // Profil & Sicherheit",
+      "h1": [
+        "Referenzprüfung"
+      ],
+      "text": "R\nONCE HUMAN ARCHIV // PROFIL\nReferenzprüfung\nACCOUNT VERBUNDEN\npreview@example.invalid\n\nSammeln. Planen. Bauen. Archivieren. Dein persönlicher Arbeitsbereich für die vorhandenen Werkzeuge und lokalen Archivdaten.\n\nSAMMLUNGSFORTSCHRITT\n0 / 21\n✎ PROFIL ANPASSEN\n▣\n0\nGEFUNDENE ITEMS\n⌖\n0\nGESPEICHERTE ROUTEN\n⚒\n0\nGESPEICHERTE BUILDS\n♥\n0\nFAVORITEN\n⌂\nÜBERSICHT\n◇\nSAMMLUNG\n⚒\nBUILDS\n⌖\nROUTEN\n▥\nSTATISTIKEN\n▧\nGALERIE\nHIGHLIGHTS\nPROFILMODUL\nNOCH KEIN HIGHLIGHT\nNOCH KEIN HIGHLIGHT\n\nSobald ein echter persönlich",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 135,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Profilbereiche",
+          "tabs": [
+            "⌂ÜBERSICHT",
+            "◇SAMMLUNG",
+            "⚒BUILDS",
+            "⌖ROUTEN",
+            "▥STATISTIKEN",
+            "▧GALERIE"
+          ]
+        },
+        {
+          "label": "Profil bearbeiten",
+          "tabs": [
+            "ALLGEMEIN",
+            "PROFILBILD",
+            "BANNER",
+            "FARBEN",
+            "ÜBER MICH",
+            "HIGHLIGHTS",
+            "WIDGETS",
+            "RAHMEN",
+            "RINGE & KRÄNZE",
+            "TROPHÄEN"
+          ]
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "id": "weapon-blueprints",
+      "hash": "#/weapon-blueprints",
+      "title": "Once Human Archiv // Waffen-Baupläne",
+      "h1": [
+        "WAFFEN-BLAUPAUSEN"
+      ],
+      "text": "DATENBANK // ARSENAL\nWAFFEN-BLAUPAUSEN\n\nBlaupausen nach Familie, Seltenheit und offensiven Referenzwerten durchsuchen.\n\n12\nBLAUPAUSEN\n6\nFAMILIEN\nAlle Familien\nJuggernaut\nWanderer\nBeyonder\nJäger\nOperator\nFremdling\n⇄ VERGLEICH ÖFFNEN\n⌁\nLegendär · Juggernaut\nACS12 – Pyroklasma-Starter\nKrit-Rate\n8%\nKrit-Schaden\n27%\nSchwachstelle\n15%\n⌁\nLegendär · Wanderer\nEBR-14 - Tintenfisch! Gegrillte Ringe!\nKrit-Rate\n5%\nKrit-Schaden\n40%\nSchwachstelle\n50%\n⌁\nLegendär · Wanderer\nM416 – Stille Anabasis\nKrit-Rate\n6%\nKr",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 1,
+      "unlabelled": [
+        "wbSearch",
+        "wbFamily"
+      ],
+      "sections": []
+    },
+    {
+      "width": 390,
+      "id": "armor-blueprints",
+      "hash": "#/armor-blueprints",
+      "title": "Once Human Archiv // Rüstungs-Baupläne",
+      "h1": [
+        "RÜSTUNGS-BLAUPAUSEN"
+      ],
+      "text": "DATENBANK // SCHUTZ\nRÜSTUNGS-BLAUPAUSEN\n\nRüstungsteile nach Slot, Familie, Tier und hinterlegten Basiswerten ansehen.\n\nALLE\nHANDSCHUHE\nMASKE\nSCHUHE\n⬡\nHandschuhe · Beyonder · Tier 1\n„Geist-Link“-Handschuhe\nLP\n90\nPSI\n12\nVERSCHMUTZUNG\n3\nHALTBARKEIT\n100\n⬡\nMaske · Beyonder · Tier 1\n„Geist-Link“-Maske\nLP\n30\nPSI\n20\nVERSCHMUTZUNG\n4\nHALTBARKEIT\n100\n⬡\nSchuhe · Beyonder · Tier 1\n„Ghost Link“-Schuhe\nLP\n120\nPSI\n8\nVERSCHMUTZUNG\n3\nHALTBARKEIT\n100\nRÜSTUNG VERGLEICHEN",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 5,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 390,
+      "id": "armor-materials",
+      "hash": "#/armor-materials",
+      "title": "Once Human Archiv // Rüstungsmaterialien",
+      "h1": [
+        "RÜSTUNGSMATERIALIEN"
+      ],
+      "text": "DATENBANK // MATERIALKUNDE\nRÜSTUNGSMATERIALIEN\n\n57 Materialien im Referenzbestand; hier die kuratierte Auswahl mit Herkunft und Kurzfunktion.\n\nQUALITÄT 4 · 0.1 KG · STAPEL 1000\nBastille-Genstoff\n\nErhöht die Ausrüstungshaltbarkeit und kann im Kohärenzstatus beschädigte Ausrüstung regenerieren.\n\nQUELLE\nFortschrittliche Nachschubwerkbank\nQUALITÄT 4 · 0.1 KG · STAPEL 1000\nBerg-Rindsleder\n\nDefensiv- und Ausdauerboni; unterstützt Kältewiderstand und maximale Last.\n\nQUELLE\nBüffel jagen\nQUALITÄT 4 · 0.1",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [
+        {
+          "tag": "H1",
+          "text": "RÜSTUNGSMATERIALIEN",
+          "id": "",
+          "left": 29,
+          "right": 568
+        }
+      ],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 0,
+      "unlabelled": [
+        "amSearch"
+      ],
+      "sections": []
+    },
+    {
+      "width": 390,
+      "id": "deviations",
+      "hash": "#/deviations",
+      "title": "Once Human Archiv // Abweichler",
+      "h1": [
+        "ABWEICHLER"
+      ],
+      "text": "DATENBANK // ANOMALIE\nABWEICHLER\n\nAbweichler und Varianten nach Typ, Aktion und Zielverhalten sortiert.\n\nALLE\nKAMPF\nΨ\nKampf\nAbgesandte des Schmetterlings\nAKTION\nAuto-Angriff\nZIEL\nAusgewähltes Ziel\nΨ\nKampf\nAbgesandte des Schmetterlings - Alte Schriftrolle\nAKTION\nAuto-Angriff\nZIEL\nAusgewähltes Ziel\nΨ\nKampf\nAbgesandte des Schmetterlings - Infraschall-Illusion\nAKTION\nAuto-Angriff\nZIEL\nAusgewähltes Ziel\nΨ\nKampf\nAbgesandte des Schmetterlings – Funkelndes Blau\nAKTION\nAuto-Angriff\nZIEL\nAusgewähltes Ziel",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 2,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 390,
+      "id": "mods",
+      "hash": "#/mods",
+      "title": "Once Human Archiv // Mods",
+      "h1": [
+        "MODS"
+      ],
+      "text": "DATENBANK // MODIFIKATION\nMODS\n\n698 Einträge im referenzierten Filterstand; die lokale Auswahl zeigt Slot und Tier.\n\nAlle Slots\nHose\nHelm\nTop\nAlle Waffen\nSchuhe\nHandschuhe\nMaske\n⚙\nTIER V · Hose\nAbnormale Erhöhung\n⚙\nTIER V · Helm\nAufschwung\n⚙\nTIER V · Top\nAusdauernder Schild\n⚙\nTIER V · Alle Waffen\nBumerang-Geschoss\n⚙\nTIER V · Hose\nDrei Treffer\n⚙\nTIER V · Schuhe\nEile mit Weile\n⚙\nTIER V · Helm\nElementare Verwüstung\n⚙\nTIER V · Handschuhe\nElementare Überlastung\n⚙\nTIER V · Hose\nElementarresonanz\n⚙\nTIE",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 0,
+      "unlabelled": [
+        "modSearch",
+        "modSlot"
+      ],
+      "sections": []
+    },
+    {
+      "width": 390,
+      "id": "compare-weapons",
+      "hash": "#/compare-weapons",
+      "title": "Once Human Archiv // Waffenvergleich",
+      "h1": [
+        "WAFFENVERGLEICH"
+      ],
+      "text": "LABOR // TRANSPARENTER INDEX\nWAFFENVERGLEICH\n\nBis zu drei Waffen nebeneinander mit offen sichtbaren Gewichtungen. Mechanik-/Build-Synergien werden nicht als pauschaler versteckter Bonus behauptet.\n\nFOKUS\nBasis-DPS\nKrit-Fokus\nSchwachstellen-Fokus\nHandling\nWAFFE 1\nM416 – Stille Anabasis\nACS12 – Pyroklasma-Starter\nKVD – Bumm! Bumm!\nSOCR – Letzte Heldentat\nAWS.338 – Bingo\nWAFFE 2\nM416 – Stille Anabasis\nACS12 – Pyroklasma-Starter\nKVD – Bumm! Bumm!\nSOCR – Letzte Heldentat\nAWS.338 – Bingo\nWAFFE 3\nM416 ",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [
+        {
+          "tag": "H1",
+          "text": "WAFFENVERGLEICH",
+          "id": "",
+          "left": 29,
+          "right": 464
+        }
+      ],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 0,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 390,
+      "id": "compare-armors",
+      "hash": "#/compare-armors",
+      "title": "Once Human Archiv // Rüstungsvergleich",
+      "h1": [
+        "RÜSTUNGSVERGLEICH"
+      ],
+      "text": "LABOR // SCHUTZWERTE\nRÜSTUNGSVERGLEICH\n\nZwei vorhandene Referenzstufen direkt gegenüberstellen; fehlende Werte bleiben sichtbar leer statt erfunden zu werden.\n\nRÜSTUNG 1\nAbtrünnigen-Handschuhe · Tier 1\nAbtrünnigen-Handschuhe · Tier 2\nRÜSTUNG 2\nAbtrünnigen-Handschuhe · Tier 1\nAbtrünnigen-Handschuhe · Tier 2\nTier 1\nAbtrünnigen-Handschuhe\nHP\n1110\n+690\n1800\nPOLLUTION\n12\n—\n—\nPSI\n69\n—\n—\nCAPTURE\n5\n-3\n2\nDURABILITY\n400\n—\n—\nMOVEMENT\n—\n—\n0.02\nGLIDE\n—\n—\n0.04\nTier 2\nAbtrünnigen-Handschuhe",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [
+        {
+          "tag": "H1",
+          "text": "RÜSTUNGSVERGLEICH",
+          "id": "",
+          "left": 29,
+          "right": 521
+        }
+      ],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 0,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 390,
+      "id": "memetics",
+      "hash": "#/memetics",
+      "title": "Once Human Archiv // Memetik",
+      "h1": [
+        "MEMETIK"
+      ],
+      "text": "DATENBANK // WISSENSKNOTEN\nMEMETIK\n\nReferenzliste der vorhandenen Memetik-Namen; Tech-Rework und Werkbank bleiben als eigener Bereich getrennt.\n\n⚙ TECH-WERKBANK\n01\nMEMETIK\nAdrenalininjektion: Phönix\n02\nMEMETIK\nAktivkohlefilterung\n03\nMEMETIK\nAufwind-Kanone: Gravitation leicht gemacht\n04\nMEMETIK\nAusrüstungswerkbank: Anpassung\n05\nMEMETIK\nBaumeister\n06\nMEMETIK\nBett: Eine kuschelige Heimat\n07\nMEMETIK\nBett: Wärmeerhaltung\n08\nMEMETIK\nBiomassegenerator: Hitzegenerator\n09\nMEMETIK\nBiomassegenerator: Konti",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 1,
+      "unlabelled": [
+        "memSearch"
+      ],
+      "sections": []
+    },
+    {
+      "width": 390,
+      "id": "vehicles",
+      "hash": "#/vehicles",
+      "title": "Once Human Archiv // Fahrzeuge",
+      "h1": [
+        "FAHRZEUGE"
+      ],
+      "text": "DATENBANK // MOBILITÄT\nFAHRZEUGE\n\nFahrzeugtypen aus dem Referenzstand inklusive hinterlegter Skin-Zähler.\n\n▱\nFAHRZEUGTYP\nAnhängerkopf - LKW\n1 Skin im Referenzstand\n▱\nFAHRZEUGTYP\nDoppel-Jetski\n1 Skin im Referenzstand\n▱\nFAHRZEUGTYP\nFüße\n2 Skins im Referenzstand\n▱\nFAHRZEUGTYP\nGeländefahrzeug\n3 Skins im Referenzstand\n▱\nFAHRZEUGTYP\nNuke-Panzer\n1 Skin im Referenzstand\n▱\nFAHRZEUGTYP\nRetro-Coupé\n6 Skins im Referenzstand\n▱\nFAHRZEUGTYP\nSchwebe-Motorrad\n1 Skin im Referenzstand\n▱\nFAHRZEUGTYP\nStraßenmotorrad",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 0,
+      "unlabelled": [
+        "vehSearch"
+      ],
+      "sections": []
+    },
+    {
+      "width": 390,
+      "id": "creatures",
+      "hash": "#/creatures",
+      "title": "Once Human Archiv // Kreaturen",
+      "h1": [
+        "KREATUREN"
+      ],
+      "text": "DATENBANK // FAUNA\nKREATUREN\n\nNutztiere und weitere beobachtete Wildtiere bewusst getrennt; unbestätigte Verfügbarkeit bleibt als solche markiert.\n\nNUTZTIERE / BESTAND\n34\n◌\nBock\n◌\nKitz\n◌\nBär\n◌\nKleiner Bär\n◌\nEisbär\n◌\nKleiner Eisbär\n◌\nFlamingo\n◌\nKleiner Flamingo\n◌\nFuchs\n◌\nKleiner Fuchs\n◌\nHase\n◌\nKleiner Hase\n◌\nKrokodile\n◌\nKleines Krokodil\n◌\nLamm\n◌\nLeopard\n◌\nKleiner Leopard\n◌\nMeeresschildkröte\n◌\nKleine Meeresschildkröte\n◌\nReh\n◌\nSchaf\n◌\nSchnappschildkröte\n◌\nKleine Schnappschildkröte\n◌\nSchneefuchs\n◌\nK",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 1,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 0,
+      "unlabelled": [
+        "creatureSearch"
+      ],
+      "sections": []
+    },
+    {
+      "width": 390,
+      "id": "tech-workbench",
+      "hash": "#/tech-workbench",
+      "title": "Once Human Archiv // Techwerkbank",
+      "h1": [
+        "TECH-WERKBANK"
+      ],
+      "text": "✦\nSYSTEME / HERSTELLUNG\nTECH-WERKBANK\n\nReverse Engineering, Erfindung und Fertigungsformeln in einem kompakten Werkstatt-Terminal. Bestehende R12-Daten bilden die Basis dieser visuellen Arbeitsoberfläche.\n\n⌁\n7\nREVERSE-EINTRÄGE\nGesammelte Daten\n◇\n14\nERFINDUNGS-POOL\nMaterialkombinationen\n▦\n13\nFERTIGUNGSFORMELN\nGeprüfte Rezepte\n⚙\nREVERSE ENGINEERING\nItems zerlegen & analysieren\n→\n◇\nERFINDUNG\nMaterial-Mix & Pool\n→\n▦\nFERTIGUNGSRECHNER\nFormeln & Materialbedarf\n→\nKATEGORIEN\nARCHIVFILTER\n◉\nAlle\n7\n⚒\nWerk",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 21,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Techwerkbank-Modus",
+          "tabs": [
+            "⚙REVERSE ENGINEERINGItems zerlegen & analysieren→",
+            "◇ERFINDUNGMaterial-Mix & Pool→",
+            "▦FERTIGUNGSRECHNERFormeln & Materialbedarf→"
+          ]
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "id": "exchange",
+      "hash": "#/exchange",
+      "title": "Once Human Archiv // Community-Werkstatt",
+      "h1": [
+        "COMMUNITY-WERKSTATT"
+      ],
+      "text": "COMMUNITY // WERKSTATT\nCOMMUNITY-WERKSTATT\n\nLokales Teilen gespeicherter Builds sowie Suche/Biete-Posts. Echtgeld-Handel ist gemäß vorhandener Projektregel nicht vorgesehen.\n\nBEITRAG ERSTELLEN\nlokal\nTYP\nBuild teilen\nSuche\nBiete\nBUILD\nKein Build\nTITEL\nTEXT\nVERÖFFENTLICHUNG LOKAL SIMULIEREN\n\nKein Server-Backend: Beitrag bleibt in diesem Browser.\n\nNoch keine Werkstatt-Beiträge\nHier gibt es im aktuellen lokalen Stand noch nichts anzuzeigen.",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 1,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 390,
+      "id": "live-map",
+      "hash": "#/live-map",
+      "title": "Once Human Archiv // Live Karte",
+      "h1": [
+        "LIVE KARTE"
+      ],
+      "text": "LIVE MAP // ISOLIERTE VORSCHAU\nLIVE KARTE\n\nInteraktive Kartenoberfläche mit vorhandenem Markerbestand, lokalen Markern und deinen gespeicherten Routen. Die bestehende Karte bleibt davon unberührt.\n\nSZENARIEN\n6\nvorhanden\nSICHTBAR\n0\naktuelle Filterung\nROUTE\n0\nStationen im Entwurf\nEIGENE\n0\nMarker im Szenario\nKARTENSTEUERUNG\nNAVIGATION\n01\nSZENARIO\nNalcott\nManibus\nThe Way of Winter\nEndloser Traum\nRaidZone\nCustom Server\n⌕\n⌖\nAlle Marker\n0\n↻ FILTER ZURÜCKSETZEN\nROUTENENTWURF\n0 STATIONEN\n02\n\nNoch keine S",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [
+        "./assets/live-map/shattered-maiden.webp"
+      ],
+      "links": [],
+      "buttons": 8,
+      "unlabelled": [],
+      "sections": []
+    },
+    {
+      "width": 390,
+      "id": "settings",
+      "hash": "#/settings",
+      "title": "Once Human Archiv // Einstellungen",
+      "h1": [
+        "Archiv-Interface"
+      ],
+      "text": "Darstellung\nProfil\nBenachrichtigungen\nSicherheit\nLive-Karte\nAdmin Backend\nArchiv-Interface\n\nDarstellung für Admin Backend, Live-Karte und Profil.\n\nAuto\nHell\nDunkel\nAkzentfarbe\nCoral\nDichte\nLocker\nStandard\nKompakt\nSchriftart\nSF Pro\nInter\nSystem\nEckenradius\n4\n8\n12\n16\nWeiche Animationen\nFlüssige Übergänge für Designelemente.\nStarke Fokus-Ringe\nDeutlichere Tastaturfokussierung.\nHUD-Raster anzeigen\nFeine Archiv-Rasterlinien in den angebundenen Bereichen.\nKompakte Navigation\nVerringert Abstände in Adm",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [
+        "#/settings",
+        "#/settings/profile",
+        "#/settings/notifications",
+        "#/settings/security",
+        "#/live-map",
+        "#/admin",
+        "#/admin",
+        "#/live-map",
+        "#/profile"
+      ],
+      "buttons": 12,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Einstellungsbereiche",
+          "tabs": [
+            "Darstellung",
+            "Profil",
+            "Benachrichtigungen",
+            "Sicherheit",
+            "Live-Karte",
+            "Admin Backend"
+          ]
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "id": "admin",
+      "hash": "#/admin",
+      "title": "Once Human Archiv // Admin Backend",
+      "h1": [
+        "Archiv Control Center"
+      ],
+      "text": "A\nONCE HUMAN ARCHIV\nADMIN BACKEND\n⌂\nÜbersicht\n▤\nInhalte & Seiten\n✎\nInhaltseditor\n⌖\nKarte & Marker\n⚑\nModeration\n♙\nNutzer & Rollen\n≡\nAudit & Aktivität\n◇\nSystem & Sicherheit\nADMINISTRATION / OVERVIEW\nArchiv Control Center\nR\nANGEMELDET ALS\nReferenzprüfung\nOWNER\nOWNER / ADMIN WORKSPACE\nSteuere das Archiv.\nOhne die Website zu zerlegen.\n\nDas Panel arbeitet auf einer separaten Vorschau. Vorhandene Daten werden gelesen; sensible Backend-Aktionen bleiben gesperrt, bis dafür echte serverseitige Rechte vorh",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [
+        {
+          "tag": "BUTTON",
+          "text": "✎Inhaltseditor",
+          "id": "",
+          "left": 311,
+          "right": 456
+        },
+        {
+          "tag": "BUTTON",
+          "text": "⌖Karte & Marker",
+          "id": "",
+          "left": 462,
+          "right": 607
+        },
+        {
+          "tag": "BUTTON",
+          "text": "⚑Moderation",
+          "id": "",
+          "left": 612,
+          "right": 757
+        },
+        {
+          "tag": "BUTTON",
+          "text": "♙Nutzer & Rollen",
+          "id": "",
+          "left": 763,
+          "right": 908
+        },
+        {
+          "tag": "BUTTON",
+          "text": "≡Audit & Aktivität",
+          "id": "",
+          "left": 913,
+          "right": 1058
+        },
+        {
+          "tag": "BUTTON",
+          "text": "◇System & Sicherheit",
+          "id": "",
+          "left": 1064,
+          "right": 1209
+        }
+      ],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 20,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Adminbereiche",
+          "tabs": [
+            "⌂Übersicht",
+            "▤Inhalte & Seiten",
+            "✎Inhaltseditor",
+            "⌖Karte & Marker",
+            "⚑Moderation",
+            "♙Nutzer & Rollen",
+            "≡Audit & Aktivität",
+            "◇System & Sicherheit"
+          ]
+        }
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "name": "guest protected map redirects",
+      "ok": true,
+      "value": true
+    },
+    {
+      "name": "login fixture",
+      "ok": true,
+      "value": true
+    },
+    {
+      "name": "profile draft preview avatar/frame/banner/name",
+      "ok": true,
+      "value": true
+    },
+    {
+      "name": "general profile save actually persists",
+      "ok": false,
+      "value": false
+    },
+    {
+      "name": "other profile tab save persists",
+      "ok": true,
+      "value": true
+    },
+    {
+      "name": "profile overview collection switch",
+      "ok": true,
+      "value": true
+    },
+    {
+      "name": "legacy collection redirect",
+      "ok": true,
+      "value": true
+    },
+    {
+      "name": "session restore fixture",
+      "ok": true,
+      "value": true
+    },
+    {
+      "name": "map zoom/pan/reset",
+      "ok": true,
+      "value": {
+        "zoom": 1.15,
+        "panChanged": true,
+        "reset": {
+          "zoom": 1,
+          "x": 0,
+          "y": 0
+        }
+      }
+    },
+    {
+      "name": "map search continues typing after rerender",
+      "ok": true,
+      "value": {
+        "focus": true,
+        "value": "S"
+      }
+    },
+    {
+      "name": "map selection/route detail",
+      "ok": true,
+      "value": {
+        "selected": "loc-silo08",
+        "draft": [
+          "loc-silo08"
+        ]
+      }
+    },
+    {
+      "name": "map custom marker",
+      "ok": true,
+      "value": 1
+    },
+    {
+      "name": "live-map zoom/pan/reset",
+      "ok": true,
+      "value": {
+        "zoom": 1.15,
+        "panChanged": true,
+        "reset": {
+          "zoom": 1,
+          "x": 0,
+          "y": 0
+        }
+      }
+    },
+    {
+      "name": "live-map search continues typing after rerender",
+      "ok": true,
+      "value": {
+        "focus": false,
+        "value": "S"
+      }
+    },
+    {
+      "name": "live-map selection/route detail",
+      "ok": false,
+      "error": "locator.click: Timeout 3000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-lm-marker]').first()\u001b[22m\n"
+    },
+    {
+      "name": "live-map custom marker",
+      "ok": true,
+      "value": 2
+    },
+    {
+      "name": "live-map navigator visibility",
+      "ok": true,
+      "value": {
+        "display": "block",
+        "image": 0,
+        "rect": {
+          "x": 435,
+          "y": 474.55999755859375,
+          "w": 74,
+          "h": 98
+        },
+        "board": {
+          "x": 311.71875,
+          "y": 390,
+          "w": 1246.546875,
+          "h": 734.390625
+        },
+        "inBoard": true
+      }
+    },
+    {
+      "name": "patch age reference date",
+      "ok": true,
+      "value": "2 Tage"
+    },
+    {
+      "name": "password mismatch detected",
+      "ok": true,
+      "value": true
+    }
+  ],
+  "errors": [],
+  "requests": [
+    {
+      "url": "http://127.0.0.1:4189/assets/r7/catalog-deviations.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/ohdex/catalog/icon_sage_new.png",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r7/catalog-animals.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r7/catalog-weapons.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r7/catalog-items.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/ohdex/catalog/icon_acid.png",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r7/catalog-resources.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r7/catalog-currencies.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r7/catalog-furniture.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r13/item-permit.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r13/creature.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r7/catalog-deviations.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/ohdex/catalog/icon_sage_new.png",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r7/catalog-animals.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r7/catalog-weapons.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r7/catalog-items.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/ohdex/catalog/icon_acid.png",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r7/catalog-resources.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r7/catalog-currencies.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r7/catalog-furniture.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r13/item-permit.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r13/creature.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r7/catalog-deviations.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/ohdex/catalog/icon_sage_new.png",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r7/catalog-animals.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r7/catalog-weapons.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r7/catalog-items.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/ohdex/catalog/icon_acid.png",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r7/catalog-resources.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r7/catalog-currencies.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r7/catalog-furniture.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r13/item-permit.svg",
+      "status": 404
+    },
+    {
+      "url": "http://127.0.0.1:4189/assets/r13/creature.svg",
+      "status": 404
+    }
+  ],
+  "roles": [
+    {
+      "role": "user",
+      "access": false,
+      "views": [
+        {
+          "view": "overview",
+          "count": 0,
+          "disabled": null
+        },
+        {
+          "view": "content",
+          "count": 0,
+          "disabled": null
+        },
+        {
+          "view": "editor",
+          "count": 0,
+          "disabled": null
+        },
+        {
+          "view": "map",
+          "count": 0,
+          "disabled": null
+        },
+        {
+          "view": "moderation",
+          "count": 0,
+          "disabled": null
+        },
+        {
+          "view": "users",
+          "count": 0,
+          "disabled": null
+        },
+        {
+          "view": "audit",
+          "count": 0,
+          "disabled": null
+        },
+        {
+          "view": "system",
+          "count": 0,
+          "disabled": null
+        }
+      ]
+    },
+    {
+      "role": "moderator",
+      "access": true,
+      "views": [
+        {
+          "view": "overview",
+          "count": 1,
+          "disabled": false
+        },
+        {
+          "view": "content",
+          "count": 1,
+          "disabled": false
+        },
+        {
+          "view": "editor",
+          "count": 1,
+          "disabled": false
+        },
+        {
+          "view": "map",
+          "count": 1,
+          "disabled": false
+        },
+        {
+          "view": "moderation",
+          "count": 1,
+          "disabled": false
+        },
+        {
+          "view": "users",
+          "count": 1,
+          "disabled": true
+        },
+        {
+          "view": "audit",
+          "count": 1,
+          "disabled": true
+        },
+        {
+          "view": "system",
+          "count": 1,
+          "disabled": true
+        }
+      ]
+    },
+    {
+      "role": "admin",
+      "access": true,
+      "views": [
+        {
+          "view": "overview",
+          "count": 1,
+          "disabled": false
+        },
+        {
+          "view": "content",
+          "count": 1,
+          "disabled": false
+        },
+        {
+          "view": "editor",
+          "count": 1,
+          "disabled": false
+        },
+        {
+          "view": "map",
+          "count": 1,
+          "disabled": false
+        },
+        {
+          "view": "moderation",
+          "count": 1,
+          "disabled": false
+        },
+        {
+          "view": "users",
+          "count": 1,
+          "disabled": false
+        },
+        {
+          "view": "audit",
+          "count": 1,
+          "disabled": false
+        },
+        {
+          "view": "system",
+          "count": 1,
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "role": "owner",
+      "access": true,
+      "views": [
+        {
+          "view": "overview",
+          "count": 1,
+          "disabled": false
+        },
+        {
+          "view": "content",
+          "count": 1,
+          "disabled": false
+        },
+        {
+          "view": "editor",
+          "count": 1,
+          "disabled": false
+        },
+        {
+          "view": "map",
+          "count": 1,
+          "disabled": false
+        },
+        {
+          "view": "moderation",
+          "count": 1,
+          "disabled": false
+        },
+        {
+          "view": "users",
+          "count": 1,
+          "disabled": false
+        },
+        {
+          "view": "audit",
+          "count": 1,
+          "disabled": false
+        },
+        {
+          "view": "system",
+          "count": 1,
+          "disabled": false
+        }
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "id": "settings/profile",
+      "hash": "#/settings/profile",
+      "title": "Once Human Archiv // Einstellungen",
+      "h1": [
+        "PROFIL ANPASSEN"
+      ],
+      "text": "R\nReferenzprüfung\nArchiv-Einstellungen\nDarstellung\nProfil\nBenachrichtigungen\nSicherheit\nLive-Karte\nAdmin Backend\nPROFIL ANPASSEN\n\nIdentität, Darstellung und Profilmodule an einem zentralen Ort.\n\n← DARSTELLUNG\nALLGEMEIN\nPROFILBILD\nBANNER\nFARBEN\nÜBER MICH\nHIGHLIGHTS\nWIDGETS\nRAHMEN\nRINGE & KRÄNZE\nTROPHÄEN\nR\nALLGEMEIN // LIVE-VORSCHAU\nReferenzprüfung\n\nDein persönliches Archivprofil.\n\nONLINE · VORSCHAU\nPROFILIDENTITÄT\nALLGEMEIN\nPROFILIDENTITÄT\nR\n\npreview@example.invalid\n\nANZEIGENAME\nÄNDERUNGEN SPEICH",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [
+        "#/settings",
+        "#/settings/profile",
+        "#/settings/notifications",
+        "#/settings/security",
+        "#/live-map",
+        "#/admin"
+      ],
+      "buttons": 116,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Einstellungsbereiche",
+          "tabs": [
+            "Darstellung",
+            "Profil",
+            "Benachrichtigungen",
+            "Sicherheit",
+            "Live-Karte",
+            "Admin Backend"
+          ]
+        },
+        {
+          "label": "Profilbereiche",
+          "tabs": [
+            "ALLGEMEIN",
+            "PROFILBILD",
+            "BANNER",
+            "FARBEN",
+            "ÜBER MICH",
+            "HIGHLIGHTS",
+            "WIDGETS",
+            "RAHMEN",
+            "RINGE & KRÄNZE",
+            "TROPHÄEN"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "settings/notifications",
+      "hash": "#/settings/notifications",
+      "title": "Once Human Archiv // Einstellungen",
+      "h1": [
+        "Benachrichtigungen"
+      ],
+      "text": "R\nReferenzprüfung\nArchiv-Einstellungen\nDarstellung\nProfil\nBenachrichtigungen\nSicherheit\nLive-Karte\nAdmin Backend\nBenachrichtigungen\n\nSteuere reale Hinweise des Archivs.\n\nLogin-Begrüßung\nZeigt nach einer echten Anmeldung kurz deine Archiv-Begrüßung.\nAKTUELL ANGEBUNDEN\nLogin-Begrüßung\n\nWeitere Benachrichtigungsarten werden erst ergänzt, wenn dafür echte Ereignisse vorhanden sind.\n\n✓\nTheme aktualisiert\nDeine Einstellungen wurden gespeichert.",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [
+        "#/settings",
+        "#/settings/profile",
+        "#/settings/notifications",
+        "#/settings/security",
+        "#/live-map",
+        "#/admin"
+      ],
+      "buttons": 0,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Einstellungsbereiche",
+          "tabs": [
+            "Darstellung",
+            "Profil",
+            "Benachrichtigungen",
+            "Sicherheit",
+            "Live-Karte",
+            "Admin Backend"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "settings/security",
+      "hash": "#/settings/security",
+      "title": "Once Human Archiv // Einstellungen",
+      "h1": [
+        "Sicherheit"
+      ],
+      "text": "R\nReferenzprüfung\nArchiv-Einstellungen\nDarstellung\nProfil\nBenachrichtigungen\nSicherheit\nLive-Karte\nAdmin Backend\nSicherheit\n\nKontosicherheit über deine bestehende Supabase-Sitzung.\n\nANGEMELDETES KONTO\npreview@example.invalid\nPasswortänderungen werden direkt über Supabase Auth gespeichert.\nNEUES PASSWORT\nPASSWORT WIEDERHOLEN\nPASSWORT AKTUALISIEREN\n\nSICHERHEITSSTATUS\nSupabase Auth aktiv\n\nKeine erfundene 2FA- oder Geräteverwaltung: Hier werden nur tatsächlich vorhandene Sicherheitsfunktionen angebo",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [
+        "#/settings",
+        "#/settings/profile",
+        "#/settings/notifications",
+        "#/settings/security",
+        "#/live-map",
+        "#/admin"
+      ],
+      "buttons": 1,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Einstellungsbereiche",
+          "tabs": [
+            "Darstellung",
+            "Profil",
+            "Benachrichtigungen",
+            "Sicherheit",
+            "Live-Karte",
+            "Admin Backend"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "profile-tab/general",
+      "bounds": {
+        "x": 517,
+        "y": 287.4375,
+        "w": 1156,
+        "h": 167
+      },
+      "hash": "#/settings/profile",
+      "title": "Once Human Archiv // Einstellungen",
+      "h1": [
+        "PROFIL ANPASSEN"
+      ],
+      "text": "R\nReferenzprüfung\nArchiv-Einstellungen\nDarstellung\nProfil\nBenachrichtigungen\nSicherheit\nLive-Karte\nAdmin Backend\nPROFIL ANPASSEN\n\nIdentität, Darstellung und Profilmodule an einem zentralen Ort.\n\n← DARSTELLUNG\nALLGEMEIN\nPROFILBILD\nBANNER\nFARBEN\nÜBER MICH\nHIGHLIGHTS\nWIDGETS\nRAHMEN\nRINGE & KRÄNZE\nTROPHÄEN\nR\nALLGEMEIN // LIVE-VORSCHAU\nReferenzprüfung\n\nDein persönliches Archivprofil.\n\nONLINE · VORSCHAU\nPROFILIDENTITÄT\nALLGEMEIN\nPROFILIDENTITÄT\nR\n\npreview@example.invalid\n\nANZEIGENAME\nÄNDERUNGEN SPEICH",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [
+        "#/settings",
+        "#/settings/profile",
+        "#/settings/notifications",
+        "#/settings/security",
+        "#/live-map",
+        "#/admin"
+      ],
+      "buttons": 116,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Einstellungsbereiche",
+          "tabs": [
+            "Darstellung",
+            "Profil",
+            "Benachrichtigungen",
+            "Sicherheit",
+            "Live-Karte",
+            "Admin Backend"
+          ]
+        },
+        {
+          "label": "Profilbereiche",
+          "tabs": [
+            "ALLGEMEIN",
+            "PROFILBILD",
+            "BANNER",
+            "FARBEN",
+            "ÜBER MICH",
+            "HIGHLIGHTS",
+            "WIDGETS",
+            "RAHMEN",
+            "RINGE & KRÄNZE",
+            "TROPHÄEN"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "profile-tab/avatar",
+      "bounds": {
+        "x": 517,
+        "y": 287.4375,
+        "w": 1156,
+        "h": 167
+      },
+      "hash": "#/settings/profile",
+      "title": "Once Human Archiv // Einstellungen",
+      "h1": [
+        "PROFIL ANPASSEN"
+      ],
+      "text": "R\nReferenzprüfung\nArchiv-Einstellungen\nDarstellung\nProfil\nBenachrichtigungen\nSicherheit\nLive-Karte\nAdmin Backend\nPROFIL ANPASSEN\n\nIdentität, Darstellung und Profilmodule an einem zentralen Ort.\n\n← DARSTELLUNG\nALLGEMEIN\nPROFILBILD\nBANNER\nFARBEN\nÜBER MICH\nHIGHLIGHTS\nWIDGETS\nRAHMEN\nRINGE & KRÄNZE\nTROPHÄEN\nR\nPROFILBILD // LIVE-VORSCHAU\nReferenzprüfung\n\nDein persönliches Archivprofil.\n\nONLINE · VORSCHAU\nAVATAR + RAHMEN\nAVATAR\n\nVorschau mit deinem aktuell gewählten Rahmen.\n\nEIGENEN AVATAR HOCHLADEN\nR\n",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [
+        "#/settings",
+        "#/settings/profile",
+        "#/settings/notifications",
+        "#/settings/security",
+        "#/live-map",
+        "#/admin"
+      ],
+      "buttons": 116,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Einstellungsbereiche",
+          "tabs": [
+            "Darstellung",
+            "Profil",
+            "Benachrichtigungen",
+            "Sicherheit",
+            "Live-Karte",
+            "Admin Backend"
+          ]
+        },
+        {
+          "label": "Profilbereiche",
+          "tabs": [
+            "ALLGEMEIN",
+            "PROFILBILD",
+            "BANNER",
+            "FARBEN",
+            "ÜBER MICH",
+            "HIGHLIGHTS",
+            "WIDGETS",
+            "RAHMEN",
+            "RINGE & KRÄNZE",
+            "TROPHÄEN"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "profile-tab/banner",
+      "bounds": {
+        "x": 517,
+        "y": 287.4375,
+        "w": 1156,
+        "h": 187
+      },
+      "hash": "#/settings/profile",
+      "title": "Once Human Archiv // Einstellungen",
+      "h1": [
+        "PROFIL ANPASSEN"
+      ],
+      "text": "R\nReferenzprüfung\nArchiv-Einstellungen\nDarstellung\nProfil\nBenachrichtigungen\nSicherheit\nLive-Karte\nAdmin Backend\nPROFIL ANPASSEN\n\nIdentität, Darstellung und Profilmodule an einem zentralen Ort.\n\n← DARSTELLUNG\nALLGEMEIN\nPROFILBILD\nBANNER\nFARBEN\nÜBER MICH\nHIGHLIGHTS\nWIDGETS\nRAHMEN\nRINGE & KRÄNZE\nTROPHÄEN\nR\nBANNER // LIVE-VORSCHAU\nReferenzprüfung\n\nDein persönliches Archivprofil.\n\nONLINE · VORSCHAU\nBANNER + AVATAR\nPROFILBANNER\nStandard\nManibus\nEisfront\nAnomalie\nTechnik\nKartenwelt\nCommunity\nÄNDERUNGE",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [
+        "#/settings",
+        "#/settings/profile",
+        "#/settings/notifications",
+        "#/settings/security",
+        "#/live-map",
+        "#/admin"
+      ],
+      "buttons": 116,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Einstellungsbereiche",
+          "tabs": [
+            "Darstellung",
+            "Profil",
+            "Benachrichtigungen",
+            "Sicherheit",
+            "Live-Karte",
+            "Admin Backend"
+          ]
+        },
+        {
+          "label": "Profilbereiche",
+          "tabs": [
+            "ALLGEMEIN",
+            "PROFILBILD",
+            "BANNER",
+            "FARBEN",
+            "ÜBER MICH",
+            "HIGHLIGHTS",
+            "WIDGETS",
+            "RAHMEN",
+            "RINGE & KRÄNZE",
+            "TROPHÄEN"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "profile-tab/colors",
+      "bounds": {
+        "x": 517,
+        "y": 287.4375,
+        "w": 1156,
+        "h": 167
+      },
+      "hash": "#/settings/profile",
+      "title": "Once Human Archiv // Einstellungen",
+      "h1": [
+        "PROFIL ANPASSEN"
+      ],
+      "text": "R\nReferenzprüfung\nArchiv-Einstellungen\nDarstellung\nProfil\nBenachrichtigungen\nSicherheit\nLive-Karte\nAdmin Backend\nPROFIL ANPASSEN\n\nIdentität, Darstellung und Profilmodule an einem zentralen Ort.\n\n← DARSTELLUNG\nALLGEMEIN\nPROFILBILD\nBANNER\nFARBEN\nÜBER MICH\nHIGHLIGHTS\nWIDGETS\nRAHMEN\nRINGE & KRÄNZE\nTROPHÄEN\nR\nFARBEN // LIVE-VORSCHAU\nReferenzprüfung\n\nDein persönliches Archivprofil.\n\nONLINE · VORSCHAU\nAKZENTWIRKUNG\nPROFILFARBEN\ncyan\nred\ngold\nviolet\nÄNDERUNGEN SPEICHERN\n\n✓\nTheme aktualisiert\nDeine Einst",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [
+        "#/settings",
+        "#/settings/profile",
+        "#/settings/notifications",
+        "#/settings/security",
+        "#/live-map",
+        "#/admin"
+      ],
+      "buttons": 116,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Einstellungsbereiche",
+          "tabs": [
+            "Darstellung",
+            "Profil",
+            "Benachrichtigungen",
+            "Sicherheit",
+            "Live-Karte",
+            "Admin Backend"
+          ]
+        },
+        {
+          "label": "Profilbereiche",
+          "tabs": [
+            "ALLGEMEIN",
+            "PROFILBILD",
+            "BANNER",
+            "FARBEN",
+            "ÜBER MICH",
+            "HIGHLIGHTS",
+            "WIDGETS",
+            "RAHMEN",
+            "RINGE & KRÄNZE",
+            "TROPHÄEN"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "profile-tab/about",
+      "bounds": {
+        "x": 517,
+        "y": 287.4375,
+        "w": 1156,
+        "h": 167
+      },
+      "hash": "#/settings/profile",
+      "title": "Once Human Archiv // Einstellungen",
+      "h1": [
+        "PROFIL ANPASSEN"
+      ],
+      "text": "R\nReferenzprüfung\nArchiv-Einstellungen\nDarstellung\nProfil\nBenachrichtigungen\nSicherheit\nLive-Karte\nAdmin Backend\nPROFIL ANPASSEN\n\nIdentität, Darstellung und Profilmodule an einem zentralen Ort.\n\n← DARSTELLUNG\nALLGEMEIN\nPROFILBILD\nBANNER\nFARBEN\nÜBER MICH\nHIGHLIGHTS\nWIDGETS\nRAHMEN\nRINGE & KRÄNZE\nTROPHÄEN\nR\nÜBER MICH // LIVE-VORSCHAU\nReferenzprüfung\n\nDein persönliches Archivprofil.\n\nONLINE · VORSCHAU\nPROFILTEXT\nÜBER MICH\nPROFILTEXTÄNDERUNGEN SPEICHERN\n\n✓\nTheme aktualisiert\nDeine Einstellungen wurde",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [
+        "#/settings",
+        "#/settings/profile",
+        "#/settings/notifications",
+        "#/settings/security",
+        "#/live-map",
+        "#/admin"
+      ],
+      "buttons": 116,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Einstellungsbereiche",
+          "tabs": [
+            "Darstellung",
+            "Profil",
+            "Benachrichtigungen",
+            "Sicherheit",
+            "Live-Karte",
+            "Admin Backend"
+          ]
+        },
+        {
+          "label": "Profilbereiche",
+          "tabs": [
+            "ALLGEMEIN",
+            "PROFILBILD",
+            "BANNER",
+            "FARBEN",
+            "ÜBER MICH",
+            "HIGHLIGHTS",
+            "WIDGETS",
+            "RAHMEN",
+            "RINGE & KRÄNZE",
+            "TROPHÄEN"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "profile-tab/highlights",
+      "bounds": {
+        "x": 517,
+        "y": 287.4375,
+        "w": 1156,
+        "h": 167
+      },
+      "hash": "#/settings/profile",
+      "title": "Once Human Archiv // Einstellungen",
+      "h1": [
+        "PROFIL ANPASSEN"
+      ],
+      "text": "R\nReferenzprüfung\nArchiv-Einstellungen\nDarstellung\nProfil\nBenachrichtigungen\nSicherheit\nLive-Karte\nAdmin Backend\nPROFIL ANPASSEN\n\nIdentität, Darstellung und Profilmodule an einem zentralen Ort.\n\n← DARSTELLUNG\nALLGEMEIN\nPROFILBILD\nBANNER\nFARBEN\nÜBER MICH\nHIGHLIGHTS\nWIDGETS\nRAHMEN\nRINGE & KRÄNZE\nTROPHÄEN\nR\nHIGHLIGHTS // LIVE-VORSCHAU\nReferenzprüfung\n\nDein persönliches Archivprofil.\n\nONLINE · VORSCHAU\nBUILD-HIGHLIGHT\nBUILD-HIGHLIGHT\nNeuester Build\nÄNDERUNGEN SPEICHERN\n\n✓\nTheme aktualisiert\nDeine Ei",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [
+        "#/settings",
+        "#/settings/profile",
+        "#/settings/notifications",
+        "#/settings/security",
+        "#/live-map",
+        "#/admin"
+      ],
+      "buttons": 116,
+      "unlabelled": [
+        "profileHighlight"
+      ],
+      "sections": [
+        {
+          "label": "Einstellungsbereiche",
+          "tabs": [
+            "Darstellung",
+            "Profil",
+            "Benachrichtigungen",
+            "Sicherheit",
+            "Live-Karte",
+            "Admin Backend"
+          ]
+        },
+        {
+          "label": "Profilbereiche",
+          "tabs": [
+            "ALLGEMEIN",
+            "PROFILBILD",
+            "BANNER",
+            "FARBEN",
+            "ÜBER MICH",
+            "HIGHLIGHTS",
+            "WIDGETS",
+            "RAHMEN",
+            "RINGE & KRÄNZE",
+            "TROPHÄEN"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "profile-tab/widgets",
+      "bounds": {
+        "x": 517,
+        "y": 287.4375,
+        "w": 1156,
+        "h": 167
+      },
+      "hash": "#/settings/profile",
+      "title": "Once Human Archiv // Einstellungen",
+      "h1": [
+        "PROFIL ANPASSEN"
+      ],
+      "text": "R\nReferenzprüfung\nArchiv-Einstellungen\nDarstellung\nProfil\nBenachrichtigungen\nSicherheit\nLive-Karte\nAdmin Backend\nPROFIL ANPASSEN\n\nIdentität, Darstellung und Profilmodule an einem zentralen Ort.\n\n← DARSTELLUNG\nALLGEMEIN\nPROFILBILD\nBANNER\nFARBEN\nÜBER MICH\nHIGHLIGHTS\nWIDGETS\nRAHMEN\nRINGE & KRÄNZE\nTROPHÄEN\nR\nWIDGETS // LIVE-VORSCHAU\nReferenzprüfung\n\nDein persönliches Archivprofil.\n\nONLINE · VORSCHAU\nPROFILMODULE\nPROFILMODULE\n gallery builds routes activities showcaseÄNDERUNGEN SPEICHERN\n\n✓\nTheme akt",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [
+        "#/settings",
+        "#/settings/profile",
+        "#/settings/notifications",
+        "#/settings/security",
+        "#/live-map",
+        "#/admin"
+      ],
+      "buttons": 116,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Einstellungsbereiche",
+          "tabs": [
+            "Darstellung",
+            "Profil",
+            "Benachrichtigungen",
+            "Sicherheit",
+            "Live-Karte",
+            "Admin Backend"
+          ]
+        },
+        {
+          "label": "Profilbereiche",
+          "tabs": [
+            "ALLGEMEIN",
+            "PROFILBILD",
+            "BANNER",
+            "FARBEN",
+            "ÜBER MICH",
+            "HIGHLIGHTS",
+            "WIDGETS",
+            "RAHMEN",
+            "RINGE & KRÄNZE",
+            "TROPHÄEN"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "profile-tab/frames",
+      "bounds": {
+        "x": 517,
+        "y": 287.4375,
+        "w": 1156,
+        "h": 167
+      },
+      "hash": "#/settings/profile",
+      "title": "Once Human Archiv // Einstellungen",
+      "h1": [
+        "PROFIL ANPASSEN"
+      ],
+      "text": "R\nReferenzprüfung\nArchiv-Einstellungen\nDarstellung\nProfil\nBenachrichtigungen\nSicherheit\nLive-Karte\nAdmin Backend\nPROFIL ANPASSEN\n\nIdentität, Darstellung und Profilmodule an einem zentralen Ort.\n\n← DARSTELLUNG\nALLGEMEIN\nPROFILBILD\nBANNER\nFARBEN\nÜBER MICH\nHIGHLIGHTS\nWIDGETS\nRAHMEN\nRINGE & KRÄNZE\nTROPHÄEN\nR\nRAHMEN // LIVE-VORSCHAU\nReferenzprüfung\n\nDein persönliches Archivprofil.\n\nONLINE · VORSCHAU\nAVATAR + RAHMEN\nAVATARRAHMEN\nStandard\nBlackfell Night\nCharming Beard\nDivergence\nDoomsday Tour\nEclipse ",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [
+        "#/settings",
+        "#/settings/profile",
+        "#/settings/notifications",
+        "#/settings/security",
+        "#/live-map",
+        "#/admin"
+      ],
+      "buttons": 116,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Einstellungsbereiche",
+          "tabs": [
+            "Darstellung",
+            "Profil",
+            "Benachrichtigungen",
+            "Sicherheit",
+            "Live-Karte",
+            "Admin Backend"
+          ]
+        },
+        {
+          "label": "Profilbereiche",
+          "tabs": [
+            "ALLGEMEIN",
+            "PROFILBILD",
+            "BANNER",
+            "FARBEN",
+            "ÜBER MICH",
+            "HIGHLIGHTS",
+            "WIDGETS",
+            "RAHMEN",
+            "RINGE & KRÄNZE",
+            "TROPHÄEN"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "profile-tab/decorations",
+      "bounds": {
+        "x": 517,
+        "y": 287.4375,
+        "w": 1156,
+        "h": 167
+      },
+      "hash": "#/settings/profile",
+      "title": "Once Human Archiv // Einstellungen",
+      "h1": [
+        "PROFIL ANPASSEN"
+      ],
+      "text": "R\nReferenzprüfung\nArchiv-Einstellungen\nDarstellung\nProfil\nBenachrichtigungen\nSicherheit\nLive-Karte\nAdmin Backend\nPROFIL ANPASSEN\n\nIdentität, Darstellung und Profilmodule an einem zentralen Ort.\n\n← DARSTELLUNG\nALLGEMEIN\nPROFILBILD\nBANNER\nFARBEN\nÜBER MICH\nHIGHLIGHTS\nWIDGETS\nRAHMEN\nRINGE & KRÄNZE\nTROPHÄEN\nR\nRINGE & KRÄNZE // LIVE-VORSCHAU\nReferenzprüfung\n\nDein persönliches Archivprofil.\n\nONLINE · VORSCHAU\nPROFILDEKORATION\nRINGE\nnone\ncyan\nred\ngold\nKRÄNZE\nnone\norbit\nlaurel\nÄNDERUNGEN SPEICHERN\n\n✓\nThe",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [
+        "#/settings",
+        "#/settings/profile",
+        "#/settings/notifications",
+        "#/settings/security",
+        "#/live-map",
+        "#/admin"
+      ],
+      "buttons": 116,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Einstellungsbereiche",
+          "tabs": [
+            "Darstellung",
+            "Profil",
+            "Benachrichtigungen",
+            "Sicherheit",
+            "Live-Karte",
+            "Admin Backend"
+          ]
+        },
+        {
+          "label": "Profilbereiche",
+          "tabs": [
+            "ALLGEMEIN",
+            "PROFILBILD",
+            "BANNER",
+            "FARBEN",
+            "ÜBER MICH",
+            "HIGHLIGHTS",
+            "WIDGETS",
+            "RAHMEN",
+            "RINGE & KRÄNZE",
+            "TROPHÄEN"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "profile-tab/trophies",
+      "bounds": {
+        "x": 517,
+        "y": 287.4375,
+        "w": 1156,
+        "h": 167
+      },
+      "hash": "#/settings/profile",
+      "title": "Once Human Archiv // Einstellungen",
+      "h1": [
+        "PROFIL ANPASSEN"
+      ],
+      "text": "R\nReferenzprüfung\nArchiv-Einstellungen\nDarstellung\nProfil\nBenachrichtigungen\nSicherheit\nLive-Karte\nAdmin Backend\nPROFIL ANPASSEN\n\nIdentität, Darstellung und Profilmodule an einem zentralen Ort.\n\n← DARSTELLUNG\nALLGEMEIN\nPROFILBILD\nBANNER\nFARBEN\nÜBER MICH\nHIGHLIGHTS\nWIDGETS\nRAHMEN\nRINGE & KRÄNZE\nTROPHÄEN\nR\nTROPHÄEN // LIVE-VORSCHAU\nReferenzprüfung\n\nDein persönliches Archivprofil.\n\nONLINE · VORSCHAU\nARCHIV-TROPHÄE\nARCHIV-TROPHÄEN\nOhne\n◇ Erster Fund · gesperrt\n▦ Sammler · gesperrt\n⚒ Erster Build · g",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [
+        "#/settings",
+        "#/settings/profile",
+        "#/settings/notifications",
+        "#/settings/security",
+        "#/live-map",
+        "#/admin"
+      ],
+      "buttons": 116,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Einstellungsbereiche",
+          "tabs": [
+            "Darstellung",
+            "Profil",
+            "Benachrichtigungen",
+            "Sicherheit",
+            "Live-Karte",
+            "Admin Backend"
+          ]
+        },
+        {
+          "label": "Profilbereiche",
+          "tabs": [
+            "ALLGEMEIN",
+            "PROFILBILD",
+            "BANNER",
+            "FARBEN",
+            "ÜBER MICH",
+            "HIGHLIGHTS",
+            "WIDGETS",
+            "RAHMEN",
+            "RINGE & KRÄNZE",
+            "TROPHÄEN"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "admin/moderator/overview",
+      "hash": "#/admin",
+      "title": "Once Human Archiv // Admin Backend",
+      "h1": [
+        "Archiv Control Center"
+      ],
+      "text": "A\nONCE HUMAN ARCHIV\nADMIN BACKEND\n⌂\nÜbersicht\n▤\nInhalte & Seiten\n✎\nInhaltseditor\n⌖\nKarte & Marker\n⚑\nModeration\n♙\nNutzer & Rollen\nLOCK\n≡\nAudit & Aktivität\nLOCK\n◇\nSystem & Sicherheit\nLOCK\nPreview-Safe-Mode\nKeine unsicheren Admin-Mutationen\n⚙ Website-Einstellungen\n← Website öffnen\nADMINISTRATION / OVERVIEW\nArchiv Control Center\n\nWebsite-Inhalte, Community, Karte und Zugriffsbereiche in einer zentralen Arbeitsoberfläche.\n\nR\nANGEMELDET ALS\nReferenzprüfung\nMODERATOR\nOWNER / ADMIN WORKSPACE\nSteuere das",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 20,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Adminbereiche",
+          "tabs": [
+            "⌂Übersicht",
+            "▤Inhalte & Seiten",
+            "✎Inhaltseditor",
+            "⌖Karte & Marker",
+            "⚑Moderation",
+            "♙Nutzer & RollenLOCK",
+            "≡Audit & AktivitätLOCK",
+            "◇System & SicherheitLOCK"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "admin/moderator/content",
+      "hash": "#/admin",
+      "title": "Once Human Archiv // Admin Backend",
+      "h1": [
+        "Archiv Control Center"
+      ],
+      "text": "A\nONCE HUMAN ARCHIV\nADMIN BACKEND\n⌂\nÜbersicht\n▤\nInhalte & Seiten\n✎\nInhaltseditor\n⌖\nKarte & Marker\n⚑\nModeration\n♙\nNutzer & Rollen\nLOCK\n≡\nAudit & Aktivität\nLOCK\n◇\nSystem & Sicherheit\nLOCK\nPreview-Safe-Mode\nKeine unsicheren Admin-Mutationen\n⚙ Website-Einstellungen\n← Website öffnen\nADMINISTRATION / CONTENT\nArchiv Control Center\n\nWebsite-Inhalte, Community, Karte und Zugriffsbereiche in einer zentralen Arbeitsoberfläche.\n\nR\nANGEMELDET ALS\nReferenzprüfung\nMODERATOR\nCONTENT MANAGEMENT\nInhalte & Seiten\n",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 19,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Adminbereiche",
+          "tabs": [
+            "⌂Übersicht",
+            "▤Inhalte & Seiten",
+            "✎Inhaltseditor",
+            "⌖Karte & Marker",
+            "⚑Moderation",
+            "♙Nutzer & RollenLOCK",
+            "≡Audit & AktivitätLOCK",
+            "◇System & SicherheitLOCK"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "admin/moderator/editor",
+      "hash": "#/admin",
+      "title": "Once Human Archiv // Admin Backend",
+      "h1": [
+        "Archiv Control Center"
+      ],
+      "text": "A\nONCE HUMAN ARCHIV\nADMIN BACKEND\n⌂\nÜbersicht\n▤\nInhalte & Seiten\n✎\nInhaltseditor\n⌖\nKarte & Marker\n⚑\nModeration\n♙\nNutzer & Rollen\nLOCK\n≡\nAudit & Aktivität\nLOCK\n◇\nSystem & Sicherheit\nLOCK\nPreview-Safe-Mode\nKeine unsicheren Admin-Mutationen\n⚙ Website-Einstellungen\n← Website öffnen\nVISUAL CONTENT EDITOR\nInhalte bearbeiten\nPREVIEW ONLY\nDatenbank ansehen ↗\n⌕\nAlle\nGegenstände\nWaffen\nAusrüstung\nMods & Zubehör\nAbweichler\nTiere & Fisch\nPflanzen & Nahrung\n＋ Neues Item\nLIVE-BESTAND\nArchivkarten\n\nElement ank",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 3,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [
+        "assets/r7/catalog-deviations.svg",
+        "assets/r7/catalog-deviations.svg",
+        "assets/r7/catalog-deviations.svg",
+        "assets/ohdex/catalog/icon_sage_new.png",
+        "assets/r7/catalog-animals.svg",
+        "assets/r7/catalog-weapons.svg",
+        "assets/r7/catalog-weapons.svg",
+        "assets/r7/catalog-weapons.svg",
+        "assets/r7/catalog-items.svg",
+        "assets/ohdex/catalog/icon_acid.png",
+        "assets/r7/catalog-resources.svg",
+        "assets/r7/catalog-currencies.svg",
+        "assets/r7/catalog-furniture.svg",
+        "assets/r7/catalog-animals.svg",
+        "assets/r7/catalog-animals.svg",
+        "assets/r7/catalog-animals.svg",
+        "assets/r7/catalog-animals.svg",
+        "assets/r7/catalog-animals.svg",
+        "assets/r7/catalog-animals.svg",
+        "assets/r13/item-permit.svg",
+        "assets/r13/creature.svg",
+        "assets/r7/catalog-deviations.svg"
+      ],
+      "links": [],
+      "buttons": 43,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Adminbereiche",
+          "tabs": [
+            "⌂Übersicht",
+            "▤Inhalte & Seiten",
+            "✎Inhaltseditor",
+            "⌖Karte & Marker",
+            "⚑Moderation",
+            "♙Nutzer & RollenLOCK",
+            "≡Audit & AktivitätLOCK",
+            "◇System & SicherheitLOCK"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "admin/moderator/map",
+      "hash": "#/admin",
+      "title": "Once Human Archiv // Admin Backend",
+      "h1": [
+        "Archiv Control Center"
+      ],
+      "text": "A\nONCE HUMAN ARCHIV\nADMIN BACKEND\n⌂\nÜbersicht\n▤\nInhalte & Seiten\n✎\nInhaltseditor\n⌖\nKarte & Marker\n⚑\nModeration\n♙\nNutzer & Rollen\nLOCK\n≡\nAudit & Aktivität\nLOCK\n◇\nSystem & Sicherheit\nLOCK\nPreview-Safe-Mode\nKeine unsicheren Admin-Mutationen\n⚙ Website-Einstellungen\n← Website öffnen\nADMINISTRATION / MAP\nArchiv Control Center\n\nWebsite-Inhalte, Community, Karte und Zugriffsbereiche in einer zentralen Arbeitsoberfläche.\n\nR\nANGEMELDET ALS\nReferenzprüfung\nMODERATOR\nMAP CONTROL\nKarte & Marker\nInteraktive K",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 11,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Adminbereiche",
+          "tabs": [
+            "⌂Übersicht",
+            "▤Inhalte & Seiten",
+            "✎Inhaltseditor",
+            "⌖Karte & Marker",
+            "⚑Moderation",
+            "♙Nutzer & RollenLOCK",
+            "≡Audit & AktivitätLOCK",
+            "◇System & SicherheitLOCK"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "admin/moderator/moderation",
+      "hash": "#/admin",
+      "title": "Once Human Archiv // Admin Backend",
+      "h1": [
+        "Archiv Control Center"
+      ],
+      "text": "A\nONCE HUMAN ARCHIV\nADMIN BACKEND\n⌂\nÜbersicht\n▤\nInhalte & Seiten\n✎\nInhaltseditor\n⌖\nKarte & Marker\n⚑\nModeration\n♙\nNutzer & Rollen\nLOCK\n≡\nAudit & Aktivität\nLOCK\n◇\nSystem & Sicherheit\nLOCK\nPreview-Safe-Mode\nKeine unsicheren Admin-Mutationen\n⚙ Website-Einstellungen\n← Website öffnen\nADMINISTRATION / MODERATION\nArchiv Control Center\n\nWebsite-Inhalte, Community, Karte und Zugriffsbereiche in einer zentralen Arbeitsoberfläche.\n\nR\nANGEMELDET ALS\nReferenzprüfung\nMODERATOR\nMODERATION\nPrüfqueue\nEinreichungs",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 11,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Adminbereiche",
+          "tabs": [
+            "⌂Übersicht",
+            "▤Inhalte & Seiten",
+            "✎Inhaltseditor",
+            "⌖Karte & Marker",
+            "⚑Moderation",
+            "♙Nutzer & RollenLOCK",
+            "≡Audit & AktivitätLOCK",
+            "◇System & SicherheitLOCK"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "admin/admin/overview",
+      "hash": "#/admin",
+      "title": "Once Human Archiv // Admin Backend",
+      "h1": [
+        "Archiv Control Center"
+      ],
+      "text": "A\nONCE HUMAN ARCHIV\nADMIN BACKEND\n⌂\nÜbersicht\n▤\nInhalte & Seiten\n✎\nInhaltseditor\n⌖\nKarte & Marker\n⚑\nModeration\n♙\nNutzer & Rollen\n≡\nAudit & Aktivität\n◇\nSystem & Sicherheit\nPreview-Safe-Mode\nKeine unsicheren Admin-Mutationen\n⚙ Website-Einstellungen\n← Website öffnen\nADMINISTRATION / OVERVIEW\nArchiv Control Center\n\nWebsite-Inhalte, Community, Karte und Zugriffsbereiche in einer zentralen Arbeitsoberfläche.\n\nR\nANGEMELDET ALS\nReferenzprüfung\nADMIN\nOWNER / ADMIN WORKSPACE\nSteuere das Archiv.\nOhne die W",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 20,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Adminbereiche",
+          "tabs": [
+            "⌂Übersicht",
+            "▤Inhalte & Seiten",
+            "✎Inhaltseditor",
+            "⌖Karte & Marker",
+            "⚑Moderation",
+            "♙Nutzer & Rollen",
+            "≡Audit & Aktivität",
+            "◇System & Sicherheit"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "admin/admin/content",
+      "hash": "#/admin",
+      "title": "Once Human Archiv // Admin Backend",
+      "h1": [
+        "Archiv Control Center"
+      ],
+      "text": "A\nONCE HUMAN ARCHIV\nADMIN BACKEND\n⌂\nÜbersicht\n▤\nInhalte & Seiten\n✎\nInhaltseditor\n⌖\nKarte & Marker\n⚑\nModeration\n♙\nNutzer & Rollen\n≡\nAudit & Aktivität\n◇\nSystem & Sicherheit\nPreview-Safe-Mode\nKeine unsicheren Admin-Mutationen\n⚙ Website-Einstellungen\n← Website öffnen\nADMINISTRATION / CONTENT\nArchiv Control Center\n\nWebsite-Inhalte, Community, Karte und Zugriffsbereiche in einer zentralen Arbeitsoberfläche.\n\nR\nANGEMELDET ALS\nReferenzprüfung\nADMIN\nCONTENT MANAGEMENT\nInhalte & Seiten\nWebsite-Vorschau ↗\n",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 19,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Adminbereiche",
+          "tabs": [
+            "⌂Übersicht",
+            "▤Inhalte & Seiten",
+            "✎Inhaltseditor",
+            "⌖Karte & Marker",
+            "⚑Moderation",
+            "♙Nutzer & Rollen",
+            "≡Audit & Aktivität",
+            "◇System & Sicherheit"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "admin/admin/editor",
+      "hash": "#/admin",
+      "title": "Once Human Archiv // Admin Backend",
+      "h1": [
+        "Archiv Control Center"
+      ],
+      "text": "A\nONCE HUMAN ARCHIV\nADMIN BACKEND\n⌂\nÜbersicht\n▤\nInhalte & Seiten\n✎\nInhaltseditor\n⌖\nKarte & Marker\n⚑\nModeration\n♙\nNutzer & Rollen\n≡\nAudit & Aktivität\n◇\nSystem & Sicherheit\nPreview-Safe-Mode\nKeine unsicheren Admin-Mutationen\n⚙ Website-Einstellungen\n← Website öffnen\nVISUAL CONTENT EDITOR\nInhalte bearbeiten\nPREVIEW ONLY\nDatenbank ansehen ↗\n⌕\nAlle\nGegenstände\nWaffen\nAusrüstung\nMods & Zubehör\nAbweichler\nTiere & Fisch\nPflanzen & Nahrung\n＋ Neues Item\nLIVE-BESTAND\nArchivkarten\n\nElement anklicken → rechts",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 3,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [
+        "assets/r7/catalog-deviations.svg",
+        "assets/r7/catalog-deviations.svg",
+        "assets/r7/catalog-deviations.svg",
+        "assets/ohdex/catalog/icon_sage_new.png",
+        "assets/r7/catalog-animals.svg",
+        "assets/r7/catalog-weapons.svg",
+        "assets/r7/catalog-weapons.svg",
+        "assets/r7/catalog-weapons.svg",
+        "assets/r7/catalog-items.svg",
+        "assets/ohdex/catalog/icon_acid.png",
+        "assets/r7/catalog-resources.svg",
+        "assets/r7/catalog-currencies.svg",
+        "assets/r7/catalog-furniture.svg",
+        "assets/r7/catalog-animals.svg",
+        "assets/r7/catalog-animals.svg",
+        "assets/r7/catalog-animals.svg",
+        "assets/r7/catalog-animals.svg",
+        "assets/r7/catalog-animals.svg",
+        "assets/r7/catalog-animals.svg",
+        "assets/r13/item-permit.svg",
+        "assets/r13/creature.svg",
+        "assets/r7/catalog-deviations.svg"
+      ],
+      "links": [],
+      "buttons": 43,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Adminbereiche",
+          "tabs": [
+            "⌂Übersicht",
+            "▤Inhalte & Seiten",
+            "✎Inhaltseditor",
+            "⌖Karte & Marker",
+            "⚑Moderation",
+            "♙Nutzer & Rollen",
+            "≡Audit & Aktivität",
+            "◇System & Sicherheit"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "admin/admin/map",
+      "hash": "#/admin",
+      "title": "Once Human Archiv // Admin Backend",
+      "h1": [
+        "Archiv Control Center"
+      ],
+      "text": "A\nONCE HUMAN ARCHIV\nADMIN BACKEND\n⌂\nÜbersicht\n▤\nInhalte & Seiten\n✎\nInhaltseditor\n⌖\nKarte & Marker\n⚑\nModeration\n♙\nNutzer & Rollen\n≡\nAudit & Aktivität\n◇\nSystem & Sicherheit\nPreview-Safe-Mode\nKeine unsicheren Admin-Mutationen\n⚙ Website-Einstellungen\n← Website öffnen\nADMINISTRATION / MAP\nArchiv Control Center\n\nWebsite-Inhalte, Community, Karte und Zugriffsbereiche in einer zentralen Arbeitsoberfläche.\n\nR\nANGEMELDET ALS\nReferenzprüfung\nADMIN\nMAP CONTROL\nKarte & Marker\nInteraktive Karte öffnen →\n6\nSze",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 11,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Adminbereiche",
+          "tabs": [
+            "⌂Übersicht",
+            "▤Inhalte & Seiten",
+            "✎Inhaltseditor",
+            "⌖Karte & Marker",
+            "⚑Moderation",
+            "♙Nutzer & Rollen",
+            "≡Audit & Aktivität",
+            "◇System & Sicherheit"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "admin/admin/moderation",
+      "hash": "#/admin",
+      "title": "Once Human Archiv // Admin Backend",
+      "h1": [
+        "Archiv Control Center"
+      ],
+      "text": "A\nONCE HUMAN ARCHIV\nADMIN BACKEND\n⌂\nÜbersicht\n▤\nInhalte & Seiten\n✎\nInhaltseditor\n⌖\nKarte & Marker\n⚑\nModeration\n♙\nNutzer & Rollen\n≡\nAudit & Aktivität\n◇\nSystem & Sicherheit\nPreview-Safe-Mode\nKeine unsicheren Admin-Mutationen\n⚙ Website-Einstellungen\n← Website öffnen\nADMINISTRATION / MODERATION\nArchiv Control Center\n\nWebsite-Inhalte, Community, Karte und Zugriffsbereiche in einer zentralen Arbeitsoberfläche.\n\nR\nANGEMELDET ALS\nReferenzprüfung\nADMIN\nMODERATION\nPrüfqueue\nEinreichungsseite ↗\nID\nTyp\nTite",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 11,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Adminbereiche",
+          "tabs": [
+            "⌂Übersicht",
+            "▤Inhalte & Seiten",
+            "✎Inhaltseditor",
+            "⌖Karte & Marker",
+            "⚑Moderation",
+            "♙Nutzer & Rollen",
+            "≡Audit & Aktivität",
+            "◇System & Sicherheit"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "admin/admin/users",
+      "hash": "#/admin",
+      "title": "Once Human Archiv // Admin Backend",
+      "h1": [
+        "Archiv Control Center"
+      ],
+      "text": "A\nONCE HUMAN ARCHIV\nADMIN BACKEND\n⌂\nÜbersicht\n▤\nInhalte & Seiten\n✎\nInhaltseditor\n⌖\nKarte & Marker\n⚑\nModeration\n♙\nNutzer & Rollen\n≡\nAudit & Aktivität\n◇\nSystem & Sicherheit\nPreview-Safe-Mode\nKeine unsicheren Admin-Mutationen\n⚙ Website-Einstellungen\n← Website öffnen\nADMINISTRATION / USERS\nArchiv Control Center\n\nWebsite-Inhalte, Community, Karte und Zugriffsbereiche in einer zentralen Arbeitsoberfläche.\n\nR\nANGEMELDET ALS\nReferenzprüfung\nADMIN\nIDENTITY & ACCESS\nNutzer & Rollen\nAKTUELLE IDENTITÄT\nAnge",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 11,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Adminbereiche",
+          "tabs": [
+            "⌂Übersicht",
+            "▤Inhalte & Seiten",
+            "✎Inhaltseditor",
+            "⌖Karte & Marker",
+            "⚑Moderation",
+            "♙Nutzer & Rollen",
+            "≡Audit & Aktivität",
+            "◇System & Sicherheit"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "admin/admin/audit",
+      "hash": "#/admin",
+      "title": "Once Human Archiv // Admin Backend",
+      "h1": [
+        "Archiv Control Center"
+      ],
+      "text": "A\nONCE HUMAN ARCHIV\nADMIN BACKEND\n⌂\nÜbersicht\n▤\nInhalte & Seiten\n✎\nInhaltseditor\n⌖\nKarte & Marker\n⚑\nModeration\n♙\nNutzer & Rollen\n≡\nAudit & Aktivität\n◇\nSystem & Sicherheit\nPreview-Safe-Mode\nKeine unsicheren Admin-Mutationen\n⚙ Website-Einstellungen\n← Website öffnen\nADMINISTRATION / AUDIT\nArchiv Control Center\n\nWebsite-Inhalte, Community, Karte und Zugriffsbereiche in einer zentralen Arbeitsoberfläche.\n\nR\nANGEMELDET ALS\nReferenzprüfung\nADMIN\nTRACE\nAudit & Aktivität\ni\nLokale Aktivität, kein Server-A",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 10,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Adminbereiche",
+          "tabs": [
+            "⌂Übersicht",
+            "▤Inhalte & Seiten",
+            "✎Inhaltseditor",
+            "⌖Karte & Marker",
+            "⚑Moderation",
+            "♙Nutzer & Rollen",
+            "≡Audit & Aktivität",
+            "◇System & Sicherheit"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "admin/admin/system",
+      "hash": "#/admin",
+      "title": "Once Human Archiv // Admin Backend",
+      "h1": [
+        "Archiv Control Center"
+      ],
+      "text": "A\nONCE HUMAN ARCHIV\nADMIN BACKEND\n⌂\nÜbersicht\n▤\nInhalte & Seiten\n✎\nInhaltseditor\n⌖\nKarte & Marker\n⚑\nModeration\n♙\nNutzer & Rollen\n≡\nAudit & Aktivität\n◇\nSystem & Sicherheit\nPreview-Safe-Mode\nKeine unsicheren Admin-Mutationen\n⚙ Website-Einstellungen\n← Website öffnen\nADMINISTRATION / SYSTEM\nArchiv Control Center\n\nWebsite-Inhalte, Community, Karte und Zugriffsbereiche in einer zentralen Arbeitsoberfläche.\n\nR\nANGEMELDET ALS\nReferenzprüfung\nADMIN\nSYSTEM\nSystem & Sicherheit\nVERBINDUNGEN\nAktueller Integr",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 11,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Adminbereiche",
+          "tabs": [
+            "⌂Übersicht",
+            "▤Inhalte & Seiten",
+            "✎Inhaltseditor",
+            "⌖Karte & Marker",
+            "⚑Moderation",
+            "♙Nutzer & Rollen",
+            "≡Audit & Aktivität",
+            "◇System & Sicherheit"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "admin/owner/overview",
+      "hash": "#/admin",
+      "title": "Once Human Archiv // Admin Backend",
+      "h1": [
+        "Archiv Control Center"
+      ],
+      "text": "A\nONCE HUMAN ARCHIV\nADMIN BACKEND\n⌂\nÜbersicht\n▤\nInhalte & Seiten\n✎\nInhaltseditor\n⌖\nKarte & Marker\n⚑\nModeration\n♙\nNutzer & Rollen\n≡\nAudit & Aktivität\n◇\nSystem & Sicherheit\nPreview-Safe-Mode\nKeine unsicheren Admin-Mutationen\n⚙ Website-Einstellungen\n← Website öffnen\nADMINISTRATION / OVERVIEW\nArchiv Control Center\n\nWebsite-Inhalte, Community, Karte und Zugriffsbereiche in einer zentralen Arbeitsoberfläche.\n\nR\nANGEMELDET ALS\nReferenzprüfung\nOWNER\nOWNER / ADMIN WORKSPACE\nSteuere das Archiv.\nOhne die W",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 20,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Adminbereiche",
+          "tabs": [
+            "⌂Übersicht",
+            "▤Inhalte & Seiten",
+            "✎Inhaltseditor",
+            "⌖Karte & Marker",
+            "⚑Moderation",
+            "♙Nutzer & Rollen",
+            "≡Audit & Aktivität",
+            "◇System & Sicherheit"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "admin/owner/content",
+      "hash": "#/admin",
+      "title": "Once Human Archiv // Admin Backend",
+      "h1": [
+        "Archiv Control Center"
+      ],
+      "text": "A\nONCE HUMAN ARCHIV\nADMIN BACKEND\n⌂\nÜbersicht\n▤\nInhalte & Seiten\n✎\nInhaltseditor\n⌖\nKarte & Marker\n⚑\nModeration\n♙\nNutzer & Rollen\n≡\nAudit & Aktivität\n◇\nSystem & Sicherheit\nPreview-Safe-Mode\nKeine unsicheren Admin-Mutationen\n⚙ Website-Einstellungen\n← Website öffnen\nADMINISTRATION / CONTENT\nArchiv Control Center\n\nWebsite-Inhalte, Community, Karte und Zugriffsbereiche in einer zentralen Arbeitsoberfläche.\n\nR\nANGEMELDET ALS\nReferenzprüfung\nOWNER\nCONTENT MANAGEMENT\nInhalte & Seiten\nWebsite-Vorschau ↗\n",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 19,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Adminbereiche",
+          "tabs": [
+            "⌂Übersicht",
+            "▤Inhalte & Seiten",
+            "✎Inhaltseditor",
+            "⌖Karte & Marker",
+            "⚑Moderation",
+            "♙Nutzer & Rollen",
+            "≡Audit & Aktivität",
+            "◇System & Sicherheit"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "admin/owner/editor",
+      "hash": "#/admin",
+      "title": "Once Human Archiv // Admin Backend",
+      "h1": [
+        "Archiv Control Center"
+      ],
+      "text": "A\nONCE HUMAN ARCHIV\nADMIN BACKEND\n⌂\nÜbersicht\n▤\nInhalte & Seiten\n✎\nInhaltseditor\n⌖\nKarte & Marker\n⚑\nModeration\n♙\nNutzer & Rollen\n≡\nAudit & Aktivität\n◇\nSystem & Sicherheit\nPreview-Safe-Mode\nKeine unsicheren Admin-Mutationen\n⚙ Website-Einstellungen\n← Website öffnen\nVISUAL CONTENT EDITOR\nInhalte bearbeiten\nPREVIEW ONLY\nDatenbank ansehen ↗\n⌕\nAlle\nGegenstände\nWaffen\nAusrüstung\nMods & Zubehör\nAbweichler\nTiere & Fisch\nPflanzen & Nahrung\n＋ Neues Item\nLIVE-BESTAND\nArchivkarten\n\nElement anklicken → rechts",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 3,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [
+        "assets/r7/catalog-deviations.svg",
+        "assets/r7/catalog-deviations.svg",
+        "assets/r7/catalog-deviations.svg",
+        "assets/ohdex/catalog/icon_sage_new.png",
+        "assets/r7/catalog-animals.svg",
+        "assets/r7/catalog-weapons.svg",
+        "assets/r7/catalog-weapons.svg",
+        "assets/r7/catalog-weapons.svg",
+        "assets/r7/catalog-items.svg",
+        "assets/ohdex/catalog/icon_acid.png",
+        "assets/r7/catalog-resources.svg",
+        "assets/r7/catalog-currencies.svg",
+        "assets/r7/catalog-furniture.svg",
+        "assets/r7/catalog-animals.svg",
+        "assets/r7/catalog-animals.svg",
+        "assets/r7/catalog-animals.svg",
+        "assets/r7/catalog-animals.svg",
+        "assets/r7/catalog-animals.svg",
+        "assets/r7/catalog-animals.svg",
+        "assets/r13/item-permit.svg",
+        "assets/r13/creature.svg",
+        "assets/r7/catalog-deviations.svg"
+      ],
+      "links": [],
+      "buttons": 43,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Adminbereiche",
+          "tabs": [
+            "⌂Übersicht",
+            "▤Inhalte & Seiten",
+            "✎Inhaltseditor",
+            "⌖Karte & Marker",
+            "⚑Moderation",
+            "♙Nutzer & Rollen",
+            "≡Audit & Aktivität",
+            "◇System & Sicherheit"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "admin/owner/map",
+      "hash": "#/admin",
+      "title": "Once Human Archiv // Admin Backend",
+      "h1": [
+        "Archiv Control Center"
+      ],
+      "text": "A\nONCE HUMAN ARCHIV\nADMIN BACKEND\n⌂\nÜbersicht\n▤\nInhalte & Seiten\n✎\nInhaltseditor\n⌖\nKarte & Marker\n⚑\nModeration\n♙\nNutzer & Rollen\n≡\nAudit & Aktivität\n◇\nSystem & Sicherheit\nPreview-Safe-Mode\nKeine unsicheren Admin-Mutationen\n⚙ Website-Einstellungen\n← Website öffnen\nADMINISTRATION / MAP\nArchiv Control Center\n\nWebsite-Inhalte, Community, Karte und Zugriffsbereiche in einer zentralen Arbeitsoberfläche.\n\nR\nANGEMELDET ALS\nReferenzprüfung\nOWNER\nMAP CONTROL\nKarte & Marker\nInteraktive Karte öffnen →\n6\nSze",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 11,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Adminbereiche",
+          "tabs": [
+            "⌂Übersicht",
+            "▤Inhalte & Seiten",
+            "✎Inhaltseditor",
+            "⌖Karte & Marker",
+            "⚑Moderation",
+            "♙Nutzer & Rollen",
+            "≡Audit & Aktivität",
+            "◇System & Sicherheit"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "admin/owner/moderation",
+      "hash": "#/admin",
+      "title": "Once Human Archiv // Admin Backend",
+      "h1": [
+        "Archiv Control Center"
+      ],
+      "text": "A\nONCE HUMAN ARCHIV\nADMIN BACKEND\n⌂\nÜbersicht\n▤\nInhalte & Seiten\n✎\nInhaltseditor\n⌖\nKarte & Marker\n⚑\nModeration\n♙\nNutzer & Rollen\n≡\nAudit & Aktivität\n◇\nSystem & Sicherheit\nPreview-Safe-Mode\nKeine unsicheren Admin-Mutationen\n⚙ Website-Einstellungen\n← Website öffnen\nADMINISTRATION / MODERATION\nArchiv Control Center\n\nWebsite-Inhalte, Community, Karte und Zugriffsbereiche in einer zentralen Arbeitsoberfläche.\n\nR\nANGEMELDET ALS\nReferenzprüfung\nOWNER\nMODERATION\nPrüfqueue\nEinreichungsseite ↗\nID\nTyp\nTite",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 11,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Adminbereiche",
+          "tabs": [
+            "⌂Übersicht",
+            "▤Inhalte & Seiten",
+            "✎Inhaltseditor",
+            "⌖Karte & Marker",
+            "⚑Moderation",
+            "♙Nutzer & Rollen",
+            "≡Audit & Aktivität",
+            "◇System & Sicherheit"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "admin/owner/users",
+      "hash": "#/admin",
+      "title": "Once Human Archiv // Admin Backend",
+      "h1": [
+        "Archiv Control Center"
+      ],
+      "text": "A\nONCE HUMAN ARCHIV\nADMIN BACKEND\n⌂\nÜbersicht\n▤\nInhalte & Seiten\n✎\nInhaltseditor\n⌖\nKarte & Marker\n⚑\nModeration\n♙\nNutzer & Rollen\n≡\nAudit & Aktivität\n◇\nSystem & Sicherheit\nPreview-Safe-Mode\nKeine unsicheren Admin-Mutationen\n⚙ Website-Einstellungen\n← Website öffnen\nADMINISTRATION / USERS\nArchiv Control Center\n\nWebsite-Inhalte, Community, Karte und Zugriffsbereiche in einer zentralen Arbeitsoberfläche.\n\nR\nANGEMELDET ALS\nReferenzprüfung\nOWNER\nIDENTITY & ACCESS\nNutzer & Rollen\nAKTUELLE IDENTITÄT\nAnge",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 11,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Adminbereiche",
+          "tabs": [
+            "⌂Übersicht",
+            "▤Inhalte & Seiten",
+            "✎Inhaltseditor",
+            "⌖Karte & Marker",
+            "⚑Moderation",
+            "♙Nutzer & Rollen",
+            "≡Audit & Aktivität",
+            "◇System & Sicherheit"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "admin/owner/audit",
+      "hash": "#/admin",
+      "title": "Once Human Archiv // Admin Backend",
+      "h1": [
+        "Archiv Control Center"
+      ],
+      "text": "A\nONCE HUMAN ARCHIV\nADMIN BACKEND\n⌂\nÜbersicht\n▤\nInhalte & Seiten\n✎\nInhaltseditor\n⌖\nKarte & Marker\n⚑\nModeration\n♙\nNutzer & Rollen\n≡\nAudit & Aktivität\n◇\nSystem & Sicherheit\nPreview-Safe-Mode\nKeine unsicheren Admin-Mutationen\n⚙ Website-Einstellungen\n← Website öffnen\nADMINISTRATION / AUDIT\nArchiv Control Center\n\nWebsite-Inhalte, Community, Karte und Zugriffsbereiche in einer zentralen Arbeitsoberfläche.\n\nR\nANGEMELDET ALS\nReferenzprüfung\nOWNER\nTRACE\nAudit & Aktivität\ni\nLokale Aktivität, kein Server-A",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 10,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Adminbereiche",
+          "tabs": [
+            "⌂Übersicht",
+            "▤Inhalte & Seiten",
+            "✎Inhaltseditor",
+            "⌖Karte & Marker",
+            "⚑Moderation",
+            "♙Nutzer & Rollen",
+            "≡Audit & Aktivität",
+            "◇System & Sicherheit"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "admin/owner/system",
+      "hash": "#/admin",
+      "title": "Once Human Archiv // Admin Backend",
+      "h1": [
+        "Archiv Control Center"
+      ],
+      "text": "A\nONCE HUMAN ARCHIV\nADMIN BACKEND\n⌂\nÜbersicht\n▤\nInhalte & Seiten\n✎\nInhaltseditor\n⌖\nKarte & Marker\n⚑\nModeration\n♙\nNutzer & Rollen\n≡\nAudit & Aktivität\n◇\nSystem & Sicherheit\nPreview-Safe-Mode\nKeine unsicheren Admin-Mutationen\n⚙ Website-Einstellungen\n← Website öffnen\nADMINISTRATION / SYSTEM\nArchiv Control Center\n\nWebsite-Inhalte, Community, Karte und Zugriffsbereiche in einer zentralen Arbeitsoberfläche.\n\nR\nANGEMELDET ALS\nReferenzprüfung\nOWNER\nSYSTEM\nSystem & Sicherheit\nVERBINDUNGEN\nAktueller Integr",
+      "placeholder": false,
+      "headers": 1,
+      "dupes": [],
+      "main": 2,
+      "overflow": false,
+      "clipped": [],
+      "brokenImages": [],
+      "links": [],
+      "buttons": 11,
+      "unlabelled": [],
+      "sections": [
+        {
+          "label": "Adminbereiche",
+          "tabs": [
+            "⌂Übersicht",
+            "▤Inhalte & Seiten",
+            "✎Inhaltseditor",
+            "⌖Karte & Marker",
+            "⚑Moderation",
+            "♙Nutzer & Rollen",
+            "≡Audit & Aktivität",
+            "◇System & Sicherheit"
+          ]
+        }
+      ]
+    }
+  ],
+  "fatal": "page.uncheck: Timeout 3000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#settingsSmooth')\u001b[22m\n\u001b[2m    - locator resolved to <input checked type=\"checkbox\" id=\"settingsSmooth\"/>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <i></i> intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <i></i> intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    4 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <i></i> intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 500ms\u001b[22m\n\n    at /workspace/scratch/ffa1c2862d52/audit-b/runner.cjs:31:83"
+}

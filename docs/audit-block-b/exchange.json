@@ -1,0 +1,24 @@
+{
+  "routes": [],
+  "checks": [
+    {
+      "name": "guest protected map redirects",
+      "ok": true,
+      "value": true
+    },
+    {
+      "name": "login fixture",
+      "ok": true,
+      "value": true
+    },
+    {
+      "name": "exchange create/copy/delete/reload",
+      "ok": true,
+      "value": true
+    }
+  ],
+  "errors": [],
+  "requests": [],
+  "roles": [],
+  "sections": []
+}

@@ -1,0 +1,500 @@
+{
+  "routes": [
+    {
+      "id": "home",
+      "width": 1920,
+      "footer": {
+        "w": 27,
+        "h": 33.8125
+      }
+    },
+    {
+      "id": "dashboard",
+      "width": 1920,
+      "footer": {
+        "w": 198,
+        "h": 248
+      }
+    },
+    {
+      "id": "news",
+      "width": 1920,
+      "footer": {
+        "w": 198,
+        "h": 248
+      }
+    },
+    {
+      "id": "database",
+      "width": 1920,
+      "footer": {
+        "w": 198,
+        "h": 248
+      }
+    },
+    {
+      "id": "map",
+      "width": 1920,
+      "footer": {
+        "w": 27,
+        "h": 33.8125
+      }
+    },
+    {
+      "id": "hunt",
+      "width": 1920,
+      "footer": {
+        "w": 198,
+        "h": 248
+      }
+    },
+    {
+      "id": "routes",
+      "width": 1920,
+      "footer": {
+        "w": 198,
+        "h": 248
+      }
+    },
+    {
+      "id": "planner",
+      "width": 1920,
+      "footer": {
+        "w": 198,
+        "h": 248
+      }
+    },
+    {
+      "id": "guides",
+      "width": 1920,
+      "footer": {
+        "w": 198,
+        "h": 248
+      }
+    },
+    {
+      "id": "patchwatch",
+      "width": 1920,
+      "footer": {
+        "w": 198,
+        "h": 248
+      }
+    },
+    {
+      "id": "secrets",
+      "width": 1920,
+      "footer": {
+        "w": 198,
+        "h": 248
+      }
+    },
+    {
+      "id": "builds",
+      "width": 1920,
+      "footer": {
+        "w": 198,
+        "h": 248
+      }
+    },
+    {
+      "id": "community",
+      "width": 1920,
+      "footer": {
+        "w": 198,
+        "h": 248
+      }
+    },
+    {
+      "id": "submissions",
+      "width": 1920,
+      "footer": {
+        "w": 198,
+        "h": 248
+      }
+    },
+    {
+      "id": "profile",
+      "width": 1920,
+      "footer": {
+        "w": 27,
+        "h": 33.8125
+      }
+    },
+    {
+      "id": "weapon-blueprints",
+      "width": 1920,
+      "footer": {
+        "w": 198,
+        "h": 248
+      }
+    },
+    {
+      "id": "armor-blueprints",
+      "width": 1920,
+      "footer": {
+        "w": 198,
+        "h": 248
+      }
+    },
+    {
+      "id": "armor-materials",
+      "width": 1920,
+      "footer": {
+        "w": 198,
+        "h": 248
+      }
+    },
+    {
+      "id": "deviations",
+      "width": 1920,
+      "footer": {
+        "w": 198,
+        "h": 248
+      }
+    },
+    {
+      "id": "mods",
+      "width": 1920,
+      "footer": {
+        "w": 198,
+        "h": 248
+      }
+    },
+    {
+      "id": "compare-weapons",
+      "width": 1920,
+      "footer": {
+        "w": 198,
+        "h": 248
+      }
+    },
+    {
+      "id": "compare-armors",
+      "width": 1920,
+      "footer": {
+        "w": 198,
+        "h": 248
+      }
+    },
+    {
+      "id": "memetics",
+      "width": 1920,
+      "footer": {
+        "w": 198,
+        "h": 248
+      }
+    },
+    {
+      "id": "vehicles",
+      "width": 1920,
+      "footer": {
+        "w": 198,
+        "h": 248
+      }
+    },
+    {
+      "id": "creatures",
+      "width": 1920,
+      "footer": {
+        "w": 198,
+        "h": 248
+      }
+    },
+    {
+      "id": "tech-workbench",
+      "width": 1920,
+      "footer": {
+        "w": 27,
+        "h": 33.8125
+      }
+    },
+    {
+      "id": "exchange",
+      "width": 1920,
+      "footer": {
+        "w": 198,
+        "h": 248
+      }
+    },
+    {
+      "id": "live-map",
+      "width": 1920,
+      "footer": {
+        "w": 0,
+        "h": 0
+      }
+    },
+    {
+      "id": "settings",
+      "width": 1920,
+      "footer": {
+        "w": 0,
+        "h": 0
+      }
+    },
+    {
+      "id": "admin",
+      "width": 1920,
+      "footer": {
+        "w": 0,
+        "h": 0
+      }
+    },
+    {
+      "id": "home",
+      "width": 390,
+      "footer": {
+        "w": 27,
+        "h": 33.8125
+      }
+    },
+    {
+      "id": "dashboard",
+      "width": 390,
+      "footer": {
+        "w": 198,
+        "h": 248
+      }
+    },
+    {
+      "id": "news",
+      "width": 390,
+      "footer": {
+        "w": 198,
+        "h": 248
+      }
+    },
+    {
+      "id": "database",
+      "width": 390,
+      "footer": {
+        "w": 198,
+        "h": 248
+      }
+    },
+    {
+      "id": "map",
+      "width": 390,
+      "footer": {
+        "w": 27,
+        "h": 33.8125
+      }
+    },
+    {
+      "id": "hunt",
+      "width": 390,
+      "footer": {
+        "w": 198,
+        "h": 248
+      }
+    },
+    {
+      "id": "routes",
+      "width": 390,
+      "footer": {
+        "w": 198,
+        "h": 248
+      }
+    },
+    {
+      "id": "planner",
+      "width": 390,
+      "footer": {
+        "w": 198,
+        "h": 248
+      }
+    },
+    {
+      "id": "guides",
+      "width": 390,
+      "footer": {
+        "w": 198,
+        "h": 248
+      }
+    },
+    {
+      "id": "patchwatch",
+      "width": 390,
+      "footer": {
+        "w": 198,
+        "h": 248
+      }
+    },
+    {
+      "id": "secrets",
+      "width": 390,
+      "footer": {
+        "w": 198,
+        "h": 248
+      }
+    },
+    {
+      "id": "builds",
+      "width": 390,
+      "footer": {
+        "w": 198,
+        "h": 248
+      }
+    },
+    {
+      "id": "community",
+      "width": 390,
+      "footer": {
+        "w": 198,
+        "h": 248
+      }
+    },
+    {
+      "id": "submissions",
+      "width": 390,
+      "footer": {
+        "w": 198,
+        "h": 248
+      }
+    },
+    {
+      "id": "profile",
+      "width": 390,
+      "footer": {
+        "w": 27,
+        "h": 33.8125
+      }
+    },
+    {
+      "id": "weapon-blueprints",
+      "width": 390,
+      "footer": {
+        "w": 198,
+        "h": 248
+      }
+    },
+    {
+      "id": "armor-blueprints",
+      "width": 390,
+      "footer": {
+        "w": 198,
+        "h": 248
+      }
+    },
+    {
+      "id": "armor-materials",
+      "width": 390,
+      "footer": {
+        "w": 198,
+        "h": 248
+      }
+    },
+    {
+      "id": "deviations",
+      "width": 390,
+      "footer": {
+        "w": 198,
+        "h": 248
+      }
+    },
+    {
+      "id": "mods",
+      "width": 390,
+      "footer": {
+        "w": 198,
+        "h": 248
+      }
+    },
+    {
+      "id": "compare-weapons",
+      "width": 390,
+      "footer": {
+        "w": 198,
+        "h": 248
+      }
+    },
+    {
+      "id": "compare-armors",
+      "width": 390,
+      "footer": {
+        "w": 198,
+        "h": 248
+      }
+    },
+    {
+      "id": "memetics",
+      "width": 390,
+      "footer": {
+        "w": 198,
+        "h": 248
+      }
+    },
+    {
+      "id": "vehicles",
+      "width": 390,
+      "footer": {
+        "w": 198,
+        "h": 248
+      }
+    },
+    {
+      "id": "creatures",
+      "width": 390,
+      "footer": {
+        "w": 198,
+        "h": 248
+      }
+    },
+    {
+      "id": "tech-workbench",
+      "width": 390,
+      "footer": {
+        "w": 27,
+        "h": 33.8125
+      }
+    },
+    {
+      "id": "exchange",
+      "width": 390,
+      "footer": {
+        "w": 198,
+        "h": 248
+      }
+    },
+    {
+      "id": "live-map",
+      "width": 390,
+      "footer": {
+        "w": 0,
+        "h": 0
+      }
+    },
+    {
+      "id": "settings",
+      "width": 390,
+      "footer": {
+        "w": 0,
+        "h": 0
+      }
+    },
+    {
+      "id": "admin",
+      "width": 390,
+      "footer": {
+        "w": 0,
+        "h": 0
+      }
+    }
+  ],
+  "checks": [
+    {
+      "name": "guest protected map redirects",
+      "ok": true,
+      "value": true
+    },
+    {
+      "name": "login fixture",
+      "ok": true,
+      "value": true
+    }
+  ],
+  "errors": [],
+  "requests": [],
+  "roles": [],
+  "sections": []
+}
