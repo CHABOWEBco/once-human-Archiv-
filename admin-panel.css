@@ -300,20 +300,20 @@
   pointer-events:none;
   background:
     radial-gradient(circle at var(--px) var(--py),
-      rgba(113,235,255,.28) 0%,
-      rgba(72,217,239,.13) 15%,
-      rgba(72,217,239,.05) 28%,
+      color-mix(in srgb,var(--liquid-accent,var(--ui-accent,#48d9ef)) 16%,transparent) 0%,
+      rgba(72,217,239,.07) 15%,
+      rgba(72,217,239,.025) 28%,
       transparent 48%),
     conic-gradient(from 90deg at var(--px) var(--py),
       transparent 0deg,
       rgba(255,255,255,.08) 42deg,
       transparent 92deg,
-      rgba(255,104,117,.08) 168deg,
+      color-mix(in srgb,var(--liquid-accent,var(--ui-accent,#ff626d)) 6%,transparent) 168deg,
       transparent 232deg,
-      rgba(72,217,239,.08) 304deg,
+      rgba(72,217,239,.04) 304deg,
       transparent 360deg);
   opacity:var(--glow);
-  filter:blur(18px);
+  filter:blur(10px);
   transform:translateZ(1px) scale(1.03);
   transition:opacity .18s ease,filter .18s ease;
 }
@@ -326,20 +326,20 @@
 
 :is(.admin-system-list>span,.admin-cap-list>span,[data-liquid]):hover{
   --glow:.95;
-  border-color:rgba(126,229,255,.28);
+  border-color:color-mix(in srgb,var(--liquid-accent,var(--ui-accent,#48d9ef)) 30%,rgba(72,217,239,.14));
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,.08),
     inset 0 -1px 0 rgba(255,255,255,.02),
     0 20px 40px rgba(0,0,0,.26),
-    0 0 28px rgba(72,217,239,.10),
-    0 0 48px rgba(255,94,108,.06);
+    0 0 18px rgba(72,217,239,.035),
+    0 0 24px color-mix(in srgb,var(--liquid-accent,var(--ui-accent,#ff626d)) 3%,transparent);
   transform:
     perspective(920px)
     rotateX(var(--rx))
     rotateY(var(--ry))
-    translateZ(8px)
-    translateY(-3px)
-    scale(1.012);
+    translateZ(3px)
+    translateY(-2px)
+    scale(1.004);
 }
 
 :is(.admin-system-list>span,.admin-cap-list>span,[data-liquid]):hover::before{
@@ -347,7 +347,7 @@
 }
 
 :is(.admin-system-list>span,.admin-cap-list>span,[data-liquid]):hover::after{
-  filter:blur(14px);
+  filter:blur(8px);
 }
 
 :is(.admin-system-list>span,.admin-cap-list>span,[data-liquid]) i.ok{

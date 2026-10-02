@@ -389,13 +389,13 @@ body.ui-compact-settings .settings-sidebar nav{gap:2px}
 .settings-scope-header>div{display:grid;gap:3px}.settings-scope-header small{color:var(--ui-accent);font-size:8px;letter-spacing:.14em;font-weight:800}.settings-scope-header b{font-size:13px}.settings-scope-header>span{color:var(--settings-muted);font-size:9px}
 .settings-preview-grid.scoped{grid-template-columns:repeat(3,minmax(0,1fr))}
 .settings-preview-grid.scoped .settings-preview-card{min-height:132px}
-.settings-scope-matrix{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:12px;border-top:1px solid var(--settings-line)}
+.settings-scope-matrix{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;padding:12px;border-top:1px solid var(--settings-line)}
 .settings-scope-matrix article{min-width:0;padding:12px;border:1px solid var(--settings-line);border-radius:var(--ui-radius);background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.012));display:grid;gap:5px}
 .settings-scope-matrix small{color:var(--ui-accent);font-size:7px;letter-spacing:.12em;font-weight:800}.settings-scope-matrix b{font-size:11px}.settings-scope-matrix span{color:var(--settings-muted);font-size:8px;line-height:1.45}.settings-scope-matrix a{justify-self:start;margin-top:4px;color:color-mix(in srgb,var(--ui-accent) 74%,#fff);font-size:8px;font-weight:800;text-decoration:none}
 @media(max-width:900px){.settings-scope-matrix{grid-template-columns:1fr}.settings-preview-grid.scoped{grid-template-columns:1fr}}
 
 body.ui-preferences-active #app{font-family:var(--ui-font)}
-body.ui-preferences-active .topbar{border-bottom-color:color-mix(in srgb,var(--ui-accent) 38%,rgba(87,174,187,.38))}
+body.ui-preferences-active .topbar{--nav-accent:var(--ui-accent);--nav-accent-soft:var(--ui-accent-soft);--nav-active-bg:linear-gradient(180deg,color-mix(in srgb,var(--ui-accent) 3%,transparent),color-mix(in srgb,var(--ui-accent) 12%,#08141c));border-bottom-color:color-mix(in srgb,var(--ui-accent) 38%,rgba(87,174,187,.38))}
 body.ui-preferences-active:not(.ui-smooth) #app *:where(:not(.signal-orbit)){animation-duration:0s!important;animation-delay:0s!important;transition-duration:0s!important}
 body.ui-preferences-active.ui-show-grid #app{
   background-image:
@@ -434,6 +434,12 @@ body.route-map.ui-preferences-active.ui-compact-settings .lm-category-list butto
 body.route-map.ui-preferences-active.ui-compact-settings .lm-rail,
 body.route-map.ui-preferences-active.ui-compact-settings .lm-detail{padding:11px}
 
+/* Four additional archive HUD modules; existing apply() owns all preference state. */
+body:is(.route-database,.route-builds,.route-tech-workbench,.route-guides).ui-preferences-active .hud-page{font-family:var(--ui-font)}
+body:is(.route-database,.route-builds,.route-tech-workbench,.route-guides).ui-preferences-active :is(.database-shell,.catalog-grid,.rf-build-layout,.rf-build-slots,.rf-guide-grid,.tw-workspace,.tw-card-grid){gap:var(--ui-density-gap)}
+body:is(.route-database,.route-builds,.route-tech-workbench,.route-guides).ui-preferences-active .hud-panel{padding-block:var(--ui-density-pad)}
+body:is(.route-database,.route-builds,.route-tech-workbench,.route-guides).ui-preferences-active.ui-compact-settings :is(.rf-guide-grid>article,.rf-build-slots>article,.catalog-main){padding:12px}
+
 /* Profile */
 body.route-profile.ui-preferences-active{
   --profile-red:var(--ui-accent);
@@ -452,10 +458,14 @@ html[data-ui-theme="light"] body.route-map.ui-preferences-active :is(.lm-glass,.
 html[data-ui-theme="light"] body.route-profile.ui-preferences-active{background:radial-gradient(circle at 82% 8%,color-mix(in srgb,var(--ui-accent) 16%,transparent),transparent 30%),linear-gradient(180deg,#182733 0%,#101a23 100%)}
 html[data-ui-theme="light"] body.route-profile.ui-preferences-active :is(.profile-ref-panel,.profile-ref-stats article,.profile-ref-tabs){background:linear-gradient(180deg,rgba(28,42,54,.94),rgba(17,28,38,.92))}
 
+html[data-ui-theme="light"] body:is(.route-database,.route-builds,.route-tech-workbench,.route-guides).ui-preferences-active{background:radial-gradient(circle at 84% 9%,color-mix(in srgb,var(--ui-accent) 16%,transparent),transparent 29%),linear-gradient(180deg,#182733,#101a23)}
+html[data-ui-theme="light"] .hud-page :is(.hud-panel,.catalog-filters,.catalog-main){--hud-panel:linear-gradient(180deg,rgba(28,42,54,.94),rgba(17,28,38,.92))}
+
 @media(prefers-color-scheme:light){
   html[data-ui-theme="auto"] body.route-admin.ui-preferences-active .admin-panel-page,
   html[data-ui-theme="auto"] body.route-map.ui-preferences-active,
-  html[data-ui-theme="auto"] body.route-profile.ui-preferences-active{filter:brightness(1.12)}
+  html[data-ui-theme="auto"] body.route-profile.ui-preferences-active,
+  html[data-ui-theme="auto"] body:is(.route-database,.route-builds,.route-tech-workbench,.route-guides).ui-preferences-active{filter:brightness(1.12)}
 }
 
 

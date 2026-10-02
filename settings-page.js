@@ -1,7 +1,7 @@
 (()=>{'use strict';
 const KEY='jma_ui_preferences';
 const DEFAULTS={theme:'dark',accent:'coral',density:58,font:'SF Pro',radius:12,smooth:true,focus:false,grid:true,compact:false,welcome:true};
-const SCOPED_ROUTES=new Set(['admin','map','profile']);
+const SCOPED_ROUTES=new Set(['admin','map','profile','database','builds','tech-workbench','guides']);
 const ACCENTS={
   blue:'#238cff',green:'#1fcf97',yellow:'#ffd02e',orange:'#ff7a18',red:'#ff3349',
   magenta:'#cf48df',violet:'#8454e8',cyan:'#22d0e8',coral:'#ff7d73'
@@ -119,7 +119,7 @@ function renderSettings(){
             '</div>'
             :'<div class="settings-content">'+
         '<section class="settings-controls">'+
-          '<header class="settings-titlebar"><div class="settings-title-icon">'+sidebarIcon('themes')+'</div><div><h1 id="settingsTitle">Archiv-Interface</h1><p>Darstellung für Admin Backend, Live-Karte und Profil.</p></div></header>'+
+          '<header class="settings-titlebar"><div class="settings-title-icon">'+sidebarIcon('themes')+'</div><div><h1 id="settingsTitle">Archiv-Interface</h1><p>Darstellung für sieben Archivbereiche: Admin, Karte, Profil, Datenbank, Builds, Techwerkbank und Guides.</p></div></header>'+
           '<div class="settings-segment" role="group" aria-label="Farbschema">'+
             ['auto','light','dark'].map(v=>'<button type="button" data-settings-theme="'+v+'" class="'+(p.theme===v?'active':'')+'">'+({auto:'Auto',light:'Hell',dark:'Dunkel'}[v])+'</button>').join('')+
           '</div>'+
@@ -131,11 +131,11 @@ function renderSettings(){
             toggle('settingsSmooth','Weiche Animationen','Flüssige Übergänge für Designelemente.',p.smooth)+
             toggle('settingsFocus','Starke Fokus-Ringe','Deutlichere Tastaturfokussierung.',p.focus)+
             toggle('settingsGrid','HUD-Raster anzeigen','Feine Archiv-Rasterlinien in den angebundenen Bereichen.',p.grid)+
-            toggle('settingsCompact','Kompakte Navigation','Verringert Abstände in Admin, Karte und Profil.',p.compact)+
+            toggle('settingsCompact','Kompakte Navigation','Verringert Abstände in den sieben angebundenen Archivbereichen.',p.compact)+
           '</div>'+
         '</section>'+
         '<section class="settings-live-preview" aria-label="Live-Vorschau">'+
-          '<header class="settings-scope-header"><div><small>AKTIVER GELTUNGSBEREICH</small><b>3 Archivbereiche</b></div><span>Änderungen werden lokal gespeichert</span></header>'+
+          '<header class="settings-scope-header"><div><small>AKTIVER GELTUNGSBEREICH</small><b>7 Archivbereiche</b></div><span>Änderungen werden lokal gespeichert</span></header>'+
           '<div class="settings-preview-head"><b>Live-Vorschau</b><span>Nur angebundene Bereiche</span></div>'+
           '<div class="settings-preview-grid scoped">'+
             routePreview('./assets/reference/news-hero.webp','Admin Backend')+
@@ -145,7 +145,11 @@ function renderSettings(){
           '<div class="settings-scope-matrix">'+
             '<article><small>01 / ADMIN</small><b>Control Center</b><span>Akzent · Radius · Dichte · Schrift · Bewegung</span><a href="#/admin">Öffnen ↗</a></article>'+
             '<article><small>02 / KARTE</small><b>Live-Karte</b><span>Panels · Filter · HUD · Fokus · Bewegung</span><a href="#/map">Öffnen ↗</a></article>'+
-            '<article><small>03 / PROFIL</small><b>Profil</b><span>Panels · Tabs · Akzent · Radius · Schrift</span><a href="#/profile">Öffnen ↗</a></article>'+
+            '<article><small>03 / PROFIL</small><b>Profil</b><span>Systemakzent · persönliche Profilfarbe bleibt unabhängig</span><a href="#/profile">Öffnen ↗</a></article>'+
+            '<article><small>04 / ARCHIV</small><b>Datenbank</b><span>HUD · Akzent · Radius · Dichte · Bewegung</span><a href="#/database">Öffnen ↗</a></article>'+
+            '<article><small>05 / LOADOUT</small><b>Builds</b><span>HUD · Akzent · Radius · Dichte · Bewegung</span><a href="#/builds">Öffnen ↗</a></article>'+
+            '<article><small>06 / WERKSTATT</small><b>Techwerkbank</b><span>HUD · Akzent · Radius · Dichte · Bewegung</span><a href="#/tech-workbench">Öffnen ↗</a></article>'+
+            '<article><small>07 / WISSEN</small><b>Guides</b><span>HUD · Akzent · Radius · Dichte · Bewegung</span><a href="#/guides">Öffnen ↗</a></article>'+
           '</div>'+
         '</section>'+
       '</div>')+

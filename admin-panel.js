@@ -335,8 +335,9 @@ function bindLiquidCards(root=document,selector='.admin-system-list>span,.admin-
       const y=Math.max(0,Math.min(rect.height,event.clientY-rect.top));
       const px=(x/rect.width)*100;
       const py=(y/rect.height)*100;
-      const ry=((x/rect.width)-.5)*9;
-      const rx=((y/rect.height)-.5)*-7;
+      const strength=card.closest('.hud-page')?.55:1;
+      const ry=((x/rect.width)-.5)*9*strength;
+      const rx=((y/rect.height)-.5)*-7*strength;
       cancelAnimationFrame(frame);
       frame=requestAnimationFrame(()=>{
         card.style.setProperty('--px',px.toFixed(2)+'%');

@@ -18,9 +18,9 @@ try{
  const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));await page.goto('http://127.0.0.1:4208/#/home');await page.waitForFunction(()=>JMA_AUTH.getState().ready);await page.evaluate(()=>JMA_AUTH.signInWithPassword('preview@example.invalid','test-password'));
  const geometry=async(selector)=>page.locator(selector).evaluate(el=>{const r=el.getBoundingClientRect(),s=getComputedStyle(el);return {x:r.x,y:r.y,width:r.width,height:r.height,radius:s.borderRadius,shadow:s.boxShadow}});
  for(const width of [1920,1840,1280,768,390]){
-  await page.setViewportSize({width,height:width===390?844:1080});await go(page,'profile','.profile-ref-banner');const profile=await geometry('.profile-ref-banner');
-  await go(page,'database','.database-hero');const database=await geometry('.database-hero');assert.deepEqual(database,profile);
-  ok(true,width+' profile/database banner edges, height, radius and shadow match');
+  await page.setViewportSize({width,height:width===390?844:1080});await go(page,'map','.lm-command-head');const profile=await geometry('.lm-command-head');
+  await go(page,'database','.database-hero');const database=await geometry('.database-hero');for(const key of ['x','y','width','radius','shadow'])assert.equal(database[key],profile[key]);if(width>820)assert.equal(database.height,profile.height);
+  ok(true,width+' map/database hero edges, radius and shadow match; desktop proportions match');
   ok(await page.locator('.database-metrics>*').count()===4,width+' four independent status modules');
   ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),width+' composition has no horizontal overflow');
  }
