@@ -81,6 +81,35 @@ module.exports=async({db,pageFor,metrics,out})=>{
  const purpose=await engine(['purpose.zip']);ok(find(purpose,'Images/image1.png').review&&find(purpose,'Frames/Images/plain.png').asset_type==='frame'&&find(purpose,'Unknown/Avatar_Frame2.png').asset_type==='frame'&&find(purpose,'Website/Images/site.png').asset_type==='image','Generic image containers do not invent a purpose; explicit frames/website and numbered phrases classify reliably');
  fixtures['review-flags.zip']=make({'Frames/hold.png':png[0],'Frames/accepted.png':png[1],'Frames/partial.png':png[2],'OnceHuman_CMS_v2_Manifest.csv':Buffer.from('source_path,asset_type,category,needs_review,review_status\nFrames/hold.png,frame,profile,true,\nFrames/accepted.png,frame,profile,false,reviewed\nFrames/partial.png,,profile,false,\n')});
  const flagResult=await engine(['review-flags.zip']);ok(find(flagResult,'Frames/hold.png').review&&!find(flagResult,'Frames/accepted.png').review&&find(flagResult,'Frames/partial.png').asset_type==='frame'&&!find(flagResult,'Frames/partial.png').review,'Boolean Review flags are honored, reviewed records retained, partial metadata completed without overriding fields');
+ // Representative selection uses actual hashes, classifications and existing model metadata limits.
+ fixtures['representatives.zip']=make({'Avatars/a-folder.png':png[0],'Avatars/z-manifest.png':png[0],'Banners/known-a.png':png[3],'Frames/known-z.png':png[3],'Opaque/review-a.png':png[2],'Opaque/review-z.png':png[2],'Opaque/mixed-review.png':png[4],'Frames/mixed-clear.png':png[4],'OnceHuman_CMS_v2_Manifest.csv':Buffer.from('source_path,asset_type,category,review,original_category_v2\nAvatars/z-manifest.png,avatar,profile,0,Profile/Avatars\nOpaque/review-a.png,,,1,Shop/Passes\nOpaque/review-z.png,,,1,Shop/Passes\nOpaque/mixed-review.png,,,1,Shop/Packs_Gifts\nFrames/mixed-clear.png,frame,profile,0,Profile/Frames\n')});
+ let representatives=await engine(['representatives.zip']);
+ ok(representatives.items.filter(i=>i.include).length===2,'Only one new representative for each clear SHA group; known and all-review groups excluded');
+ ok(find(representatives,'Avatars/z-manifest.png').include&&!find(representatives,'Avatars/a-folder.png').include,'Manifest representative wins over an earlier folder-classified path');
+ ok(representatives.items.filter(i=>i.sha256===sha[3]).every(i=>!i.include&&i.duplicate_state==='existing'),'Known SHA covers the entire group regardless of differing proposed uses');
+ ok(representatives.items.filter(i=>i.sha256===sha[2]).every(i=>i.review&&!i.include&&i.duplicate_state==='review'),'All-review group has no automatic representative');
+ ok(find(representatives,'Frames/mixed-clear.png').include&&find(representatives,'Opaque/mixed-review.png').review&&find(representatives,'Opaque/mixed-review.png').duplicate_state==='covered','A clear representative covers bytes without falsely finalizing a Review member');
+ ok(await page.evaluate(()=>{const i=batchEngine.items.find(i=>i.source_path==='Frames/mixed-clear.png');const c=ASSET_LIBRARY_IMPORT.candidate(i);return c.metadata.duplicate_sources.length===2&&c.metadata.duplicate_sources.some(s=>s.source_path==='Opaque/mixed-review.png'&&s.original_name==='mixed-review.png'&&s.original_category==='Shop/Packs_Gifts')&&c.status==='draft'&&c.storage_path===null}), 'Representative metadata preserves all source paths, original names and prepared categories with no storage pointer');
+ ok(representatives.report.exact_duplicate_groups===4&&representatives.report.duplicate_groups_with_new_representative===2&&representatives.report.duplicate_groups_already_present===1&&representatives.report.duplicate_groups_review===1&&representatives.report.duplicate_groups_without_representative.length===0,'Report partitions all SHA groups into new, existing, review or documented exclusion');
+ ok(representatives.report.skipped_redundant_copies===4&&representatives.report.selected_unique_image_contents===2,'Report distinguishes redundant skipped copies from selected unique image bytes');
+ const groupPaths=representatives.items.filter(i=>i.include).map(i=>i.source_path).sort();
+ const reversed=await engine(['representatives.zip']);ok(JSON.stringify(reversed.items.filter(i=>i.include).map(i=>i.source_path).sort())===JSON.stringify(groupPaths),'Fresh random IDs do not affect representative paths');
+ fixtures['tie-a.zip']=make({'Avatars/z.png':png[0]});fixtures['tie-b.zip']=make({'Avatars/a.png':png[0]});
+ let tie=await engine(['tie-a.zip']);const zId=tie.items[0].id;tie=await engine(['tie-b.zip'],{previous:true});
+ ok(find(tie,'Avatars/a.png').include&&!find(tie,'Avatars/z.png').include&&find(tie,'Avatars/z.png').id===zId,'Adding a lexically earlier part chooses deterministic path without changing existing IDs');
+ const reverseTie=await engine(['tie-b.zip','tie-a.zip']);ok(reverseTie.items.find(i=>i.include).source_path==='Avatars/a.png','Reversed part order selects the same path');
+ // Include/skip decisions are stored locally and applied by the same grouping policy on reanalysis.
+ await page.evaluate(()=>{const i=batchEngine.items.find(i=>i.source_path==='Avatars/z.png');i.includeOverride=true});
+ tie=await engine(['tie-a.zip'],{previous:true});ok(find(tie,'Avatars/z.png').include&&!find(tie,'Avatars/a.png').include&&tie.report.duplicate_groups_multiple_selected===0,'An explicit nondefault representative suppresses automatic inclusion of another copy');
+ await page.evaluate(()=>{batchEngine.items.find(i=>i.source_path==='Avatars/z.png').includeOverride=false});
+ tie=await engine(['tie-b.zip'],{previous:true});ok(find(tie,'Avatars/a.png').include,'Skipping a representative falls back to the next eligible unskipped source');
+ await page.evaluate(()=>{for(const i of batchEngine.items)i.includeOverride=false});
+ tie=await engine(['tie-a.zip'],{previous:true});ok(tie.report.selected_candidates===0&&tie.report.duplicate_groups_without_representative.length===1&&tie.report.duplicate_groups_without_representative[0].reason.includes('manuell'),'Skipping the entire clear group remains excluded with an auditable reason');
+ await page.evaluate(()=>{for(const i of batchEngine.items)i.includeOverride=true});
+ tie=await engine(['tie-a.zip'],{previous:true});ok(tie.report.selected_candidates===2&&tie.report.selected_unique_image_contents===1&&tie.report.duplicate_groups_multiple_selected===1,'Explicit multiple inclusion is preserved but unique content and manual duplication are counted separately');
+ // Model limits remain authoritative; provenance is never silently truncated.
+ fixtures['oversize-sources.zip']=make(Object.fromEntries(Array.from({length:500},(_,i)=>['Avatars/'+String(i).padStart(3,'0')+'-'+('x'.repeat(90))+'.png',png[0]])));
+ const oversized=await engine(['oversize-sources.zip']);ok(oversized.report.selected_candidates===0&&oversized.report.duplicate_groups_without_representative.length===1&&oversized.items.some(i=>i.candidate_error.includes('32 KB'))&&oversized.items[0].duplicate_sources.length===500,'Oversized provenance retains every source and documents the existing metadata limit instead of losing sources or crashing');
  // UI workflow uses the existing library and preview.
  await page.locator('[data-asset-import-open]').click();ok(await page.locator('[data-asset-import]').count()===1&&await page.locator('[data-asset-save]').count()===0,'Importer is the local mode of existing library, without save control');
  async function add(p,name){await p.locator('[data-batch-files]').setInputFiles(payload(name));await p.waitForFunction(()=>document.querySelector('[data-batch-progress]')?.textContent.includes('Analyse abgeschlossen'))}
@@ -90,6 +119,19 @@ module.exports=async({db,pageFor,metrics,out})=>{
  ok((await page.locator('.asset-batch-summary').innerText()).includes('Erneut gelesen / nicht doppelt gezählt'),'Repeated part explicitly documented');
  await page.locator('[data-batch-search]').fill('Prepared');ok(await page.locator('.asset-batch-row').count()===1,'Search by prepared display name');
  await page.locator('[data-batch-search]').fill('');await page.locator('[data-batch-filter="type"]').selectOption('frame');ok(await page.locator('.asset-batch-row').count()>=2,'Type filter');
+ await page.locator('[data-batch-filter="type"]').selectOption('');await page.locator('[data-batch-filter="duplicate"]').selectOption('representative');
+ ok(await page.locator('.asset-batch-row').count()===3&&(await page.locator('.asset-batch-list').innerText()).includes('REPRÄSENTANT'),'UI exposes only the three new group representatives');
+ await page.locator('[data-batch-search]').fill('Prepared');await page.locator('[data-batch-check]').check();await page.locator('[data-batch-action="skip"]').click();
+ ok(await page.locator('.asset-batch-row').count()===0,'Skipping a representative recalculates group role immediately in the UI');
+ await page.locator('[data-batch-search]').fill('');ok(await page.locator('.asset-batch-row').count()===3&&(await page.locator('.asset-batch-list').innerText()).includes('item_rule.png'),'The next clear source takes over without losing the SHA group');
+ await page.locator('[data-batch-select="none"]').click();await page.locator('[data-batch-filter="duplicate"]').selectOption('covered');
+ ok((await page.locator('.asset-batch-list').innerText()).includes('DUPLIKAT – DURCH REPRÄSENTANT ABGEDECKT'),'Covered duplicate status is separately filterable and names its representative');
+ await page.locator('[data-batch-search]').fill('Prepared');await page.locator('[data-batch-check]').check();await page.locator('[data-batch-action="include"]').click();
+ await page.locator('[data-batch-filter="duplicate"]').selectOption('representative');ok((await page.locator('.asset-batch-list').innerText()).includes('MANUELL VORGEMERKT'),'Explicit manual representative takeover preserves the local override');
+ await page.locator('[data-batch-select="none"]').click();await page.locator('[data-batch-search]').fill('');await page.locator('[data-batch-filter="duplicate"]').selectOption('existing');
+ ok(await page.locator('.asset-batch-row').count()===0,'Existing-image filter does not falsely treat unhashed legacy inventory or name collisions as proof');
+ await page.locator('[data-batch-filter="duplicate"]').selectOption('review');ok((await page.locator('.asset-batch-list').innerText()).includes('DUPLIKATGRUPPE IN REVIEW'),'All-unresolved group state is visible in the duplicate filter');
+ await page.locator('[data-batch-filter="duplicate"]').selectOption('');
  await page.locator('[data-batch-filter="type"]').selectOption('');await page.locator('[data-batch-view="review"]').click();
  ok(await page.locator('.asset-batch-row').count()>0&&!(await page.locator('.asset-batch-list').innerText()).includes('AUSGESCHLOSSEN'),'Review Queue excludes unsupported/invalid files');
  await page.locator('[data-batch-select="review"]').click();await page.locator('[data-batch-bulk-type]').selectOption('avatar');await page.locator('[data-batch-bulk-category]').fill('profile');await page.locator('[data-batch-action="classify"]').click();
@@ -135,5 +177,5 @@ module.exports=async({db,pageFor,metrics,out})=>{
  await page.evaluate(()=>location.hash='#/database');await page.waitForFunction(()=>!document.querySelector('[data-asset-import]'));await page.evaluate(()=>location.hash='#/admin');await page.waitForSelector('[data-asset-import-open]');await page.locator('[data-asset-import-open]').click();ok(await page.locator('.asset-batch-row').count()===0,'Route exit releases and resets the local session');
  ok(await snapshots()===before&&metrics().uploads===0&&clientWrites===0,'All batch interactions leave actual isolated DB byte-equivalent and perform zero API writes/uploads');
  ok(errors.length===0,'No browser exceptions: '+errors.join('; '));
- console.log(JSON.stringify({checks,fixture_only:true,pilot_dry_run:'blocked: uploaded original ZIP exceeds 32 MiB executor transfer limit',production_writes:0}));
+ console.log(JSON.stringify({checks,fixture_only:true,pilot_dry_run:'separate actual three-part Cosmetic run; these are synthetic regression fixtures',production_writes:0}));
 };

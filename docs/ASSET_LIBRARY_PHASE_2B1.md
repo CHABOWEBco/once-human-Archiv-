@@ -1,5 +1,7 @@
 # Phase 2B.1 — lokaler ZIP-/Batch-Dry-Run
 
+Historischer Implementierungsbericht. Die ursprüngliche pauschale Duplikatauswahl und die damalige Pilot-Transfergrenze sind durch [Phase 2B.1A und den echten Cosmetic-Dry-Run](ASSET_LIBRARY_PHASE_2B1A.md) überholt. Dort stehen die aktuelle Repräsentantenregel und die bestätigten Pilotzahlen.
+
 Stand: 02.10.2026. Ausschließlich `admin-editor-preview`. Lokaler und tatsächlicher GitHub-HEAD vor Änderungen: `82bdbf49ab9752dd7ad250d8fd41090d76d6c324`, Worktree sauber. Remote vor dem Checkpoint erneut unverändert geprüft. `main`: `94ab9f8fa408fc1ed3bd1721961321c0cec2eb45`.
 
 ## Freigegebener Umfang und Pilotgrenze
