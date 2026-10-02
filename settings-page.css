@@ -1203,7 +1203,7 @@ html[data-ui-theme="light"] body.route-profile.ui-preferences-active :is(.profil
 }
 .settings-profile-live-copy h2{
   margin:6px 0 5px;
-  color:#d6e0e4;
+  color:var(--profile-live-accent);
   font:900 25px/1 var(--display);
   letter-spacing:-.025em
 }

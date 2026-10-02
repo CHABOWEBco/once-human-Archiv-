@@ -165,16 +165,7 @@
 .admin-cap-list,.admin-system-list{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px}
 .admin-system-list>span,.admin-cap-list>span{border:1px solid rgba(133,210,238,.12);background:radial-gradient(circle at var(--px) var(--py),rgba(91,227,246,.12),transparent 34%),
     radial-gradient(circle at 82% 18%,rgba(255,91,106,.08),transparent 28%),
-    linear-gradient(180deg,rgba(15,25,37,.76),rgba(7,14,21,.88));border-radius:14px;padding:9px;display:grid;grid-template-columns:12px 1fr;column-gap:6px;--rx:0deg;--ry:0deg;--px:50%;--py:50%;--glow:.18;position:relative;overflow:hidden;isolation:isolate;transform-style:preserve-3d;will-change:transform;backdrop-filter:blur(22px) saturate(145%);-webkit-backdrop-filter:blur(22px) saturate(145%);box-shadow:inset 0 1px 0 rgba(255,255,255,.055),
-    inset 0 -1px 0 rgba(255,255,255,.018),
-    0 10px 26px rgba(0,0,0,.18);transform:perspective(920px)
-    rotateX(var(--rx))
-    rotateY(var(--ry))
-    translateZ(0)
-    translateY(0);transition:transform .16s ease-out,
-    box-shadow .18s ease,
-    border-color .18s ease,
-    background .18s ease;}
+    linear-gradient(180deg,rgba(15,25,37,.76),rgba(7,14,21,.88));border-radius:14px;padding:9px;display:grid;grid-template-columns:12px 1fr;column-gap:6px;}
 .admin-cap-list i,.admin-system-list i{width:7px;height:7px;border-radius:50%;margin-top:2px}.admin-cap-list i.ok,.admin-system-list i.ok{background:#34dca2;box-shadow:0 0 10px rgba(52,220,162,.5)}.admin-cap-list i.off,.admin-system-list i.off{background:#ff6570;box-shadow:0 0 10px rgba(255,101,112,.35)}
 .admin-cap-list b,.admin-cap-list em,.admin-system-list b,.admin-system-list em{grid-column:2;display:block;font-style:normal}.admin-cap-list b,.admin-system-list b{font-size:12px;font-weight:700;}.admin-cap-list em,.admin-system-list em{font-size:10px;color:#98aab5;margin-top:3px;}
 .admin-view>.admin-panel-head{margin:0;padding:4px 2px 13px}
@@ -266,11 +257,21 @@
 @media(prefers-reduced-motion:reduce){.signal-orbit{animation:none}}
 
 
-/* === Admin liquid glass 3D hover === */
+/* Shared liquid glass: existing admin mechanics, also used by catalog surfaces. */
+:is(.admin-system-list>span,.admin-cap-list>span,[data-liquid]){--rx:0deg;--ry:0deg;--px:50%;--py:50%;--glow:.18;position:relative;overflow:hidden;isolation:isolate;transform-style:preserve-3d;will-change:transform;backdrop-filter:blur(22px) saturate(145%);-webkit-backdrop-filter:blur(22px) saturate(145%);box-shadow:inset 0 1px 0 rgba(255,255,255,.055),
+    inset 0 -1px 0 rgba(255,255,255,.018),
+    0 10px 26px rgba(0,0,0,.18);transform:perspective(920px)
+    rotateX(var(--rx))
+    rotateY(var(--ry))
+    translateZ(0)
+    translateY(0);transition:transform .16s ease-out,
+    box-shadow .18s ease,
+    border-color .18s ease,
+    background .18s ease;}
 
 
-.admin-system-list>span::before,
-.admin-cap-list>span::before{
+
+:is(.admin-system-list>span,.admin-cap-list>span,[data-liquid])::before{
   content:"";
   position:absolute;
   inset:-1px;
@@ -291,8 +292,7 @@
   mix-blend-mode:screen;
 }
 
-.admin-system-list>span::after,
-.admin-cap-list>span::after{
+:is(.admin-system-list>span,.admin-cap-list>span,[data-liquid])::after{
   content:"";
   position:absolute;
   inset:-35%;
@@ -318,15 +318,13 @@
   transition:opacity .18s ease,filter .18s ease;
 }
 
-.admin-system-list>span>*,
-.admin-cap-list>span>*{
+:is(.admin-system-list>span,.admin-cap-list>span,[data-liquid])>*{
   position:relative;
   z-index:2;
   transform:translateZ(18px);
 }
 
-.admin-system-list>span:hover,
-.admin-cap-list>span:hover{
+:is(.admin-system-list>span,.admin-cap-list>span,[data-liquid]):hover{
   --glow:.95;
   border-color:rgba(126,229,255,.28);
   box-shadow:
@@ -344,55 +342,46 @@
     scale(1.012);
 }
 
-.admin-system-list>span:hover::before,
-.admin-cap-list>span:hover::before{
+:is(.admin-system-list>span,.admin-cap-list>span,[data-liquid]):hover::before{
   opacity:1;
 }
 
-.admin-system-list>span:hover::after,
-.admin-cap-list>span:hover::after{
+:is(.admin-system-list>span,.admin-cap-list>span,[data-liquid]):hover::after{
   filter:blur(14px);
 }
 
-.admin-system-list>span i.ok,
-.admin-cap-list>span i.ok{
+:is(.admin-system-list>span,.admin-cap-list>span,[data-liquid]) i.ok{
   box-shadow:
     0 0 7px rgba(52,220,162,.8),
     0 0 18px rgba(52,220,162,.38),
     0 0 30px rgba(52,220,162,.12);
 }
 
-.admin-system-list>span i.off,
-.admin-cap-list>span i.off{
+:is(.admin-system-list>span,.admin-cap-list>span,[data-liquid]) i.off{
   box-shadow:
     0 0 7px rgba(255,101,112,.75),
     0 0 18px rgba(255,101,112,.30),
     0 0 30px rgba(255,101,112,.10);
 }
 
-.admin-system-list>span:hover i.ok,
-.admin-cap-list>span:hover i.ok{
+:is(.admin-system-list>span,.admin-cap-list>span,[data-liquid]):hover i.ok{
   transform:scale(1.18);
 }
 
-.admin-system-list>span:hover i.off,
-.admin-cap-list>span:hover i.off{
+:is(.admin-system-list>span,.admin-cap-list>span,[data-liquid]):hover i.off{
   transform:scale(1.18);
 }
 
-.admin-system-list>span i,
-.admin-cap-list>span i{
+:is(.admin-system-list>span,.admin-cap-list>span,[data-liquid]) i{
   transition:transform .16s ease,box-shadow .16s ease;
 }
 
-@media (prefers-reduced-motion:reduce){
-  .admin-system-list>span,
-  .admin-cap-list>span{
-    transform:none!important;
-    transition:none!important;
-  }
+@media (prefers-reduced-motion:reduce),(hover:none),(pointer:coarse){
+  :is(.admin-system-list>span,.admin-cap-list>span,[data-liquid]),:is(.admin-system-list>span,.admin-cap-list>span,[data-liquid]):hover{transform:none;transition:none;will-change:auto}
+  :is(.admin-system-list>span,.admin-cap-list>span,[data-liquid])::after{opacity:.18}
 }
 
+[data-liquid].catalog-card::before,[data-liquid].catalog-card::after{z-index:3}
 
 /* === Admin liquid sidebar navigation === */
 
@@ -682,7 +671,7 @@ box-shadow:0 18px 60px rgba(0,0,0,.24),inset 0 1px rgba(255,255,255,.035);paddin
 .admin-editor-drawer-actions{display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px}
 .admin-editor-drawer-actions button:disabled{opacity:.46;cursor:not-allowed}
 
-.catalog-editor-dialog{--admin-line:var(--line);width:min(760px,calc(100vw - 24px));max-width:none;max-height:calc(100dvh - 32px);padding:0;border:1px solid var(--line-strong);border-radius:16px;background:#08131c;color:var(--text);box-shadow:var(--shadow);overflow:auto}
+.catalog-editor-dialog{margin:auto;--admin-line:var(--line);width:min(760px,calc(100vw - 24px));max-width:none;max-height:calc(100dvh - 32px);padding:0;border:1px solid var(--line-strong);border-radius:16px;background:#08131c;color:var(--text);box-shadow:var(--shadow);overflow:auto}
 .catalog-editor-dialog::backdrop{background:#02070dde;backdrop-filter:blur(7px)}
 .catalog-editor-dialog .admin-editor-drawer{position:static;animation:none;border:0;border-radius:0;padding:24px}
 .catalog-editor-dialog .admin-editor-drawer-head button{width:44px;height:44px;flex:none}

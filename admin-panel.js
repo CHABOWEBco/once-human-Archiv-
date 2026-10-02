@@ -313,9 +313,11 @@ function bindLiquidNav(){
   });
 }
 
-function bindLiquidCards(){
-  const cards=document.querySelectorAll('.admin-system-list>span,.admin-cap-list>span');
+const liquidBound=new WeakSet();
+function bindLiquidCards(root=document,selector='.admin-system-list>span,.admin-cap-list>span,[data-liquid]'){
+  const cards=root.querySelectorAll(selector);
   cards.forEach(card=>{
+    if(liquidBound.has(card))return;liquidBound.add(card);
     let frame=0;
     const reset=()=>{
       cancelAnimationFrame(frame);
@@ -323,10 +325,12 @@ function bindLiquidCards(){
       card.style.setProperty('--py','50%');
       card.style.setProperty('--rx','0deg');
       card.style.setProperty('--ry','0deg');
+      card.style.setProperty('--glow','.18');
     };
     card.addEventListener('pointermove',event=>{
-      if(event.pointerType==='touch') return;
+      if(event.pointerType==='touch'||matchMedia('(prefers-reduced-motion:reduce)').matches||!matchMedia('(hover:hover) and (pointer:fine)').matches){reset();return}
       const rect=card.getBoundingClientRect();
+      if(!rect.width||!rect.height)return;
       const x=Math.max(0,Math.min(rect.width,event.clientX-rect.left));
       const y=Math.max(0,Math.min(rect.height,event.clientY-rect.top));
       const px=(x/rect.width)*100;
@@ -339,6 +343,7 @@ function bindLiquidCards(){
         card.style.setProperty('--py',py.toFixed(2)+'%');
         card.style.setProperty('--rx',rx.toFixed(2)+'deg');
         card.style.setProperty('--ry',ry.toFixed(2)+'deg');
+        card.style.setProperty('--glow','.95');
       });
     });
     card.addEventListener('pointerleave',reset);
@@ -590,9 +595,11 @@ function openCatalogEditor(id=null){
   const refresh=()=>{
     // Keep the same modal and draft through ordinary website renders.
     editorDialog.innerHTML=editorDrawer(editorWorking,true);
+    editorDialog.querySelectorAll('.admin-editor-drawer-actions>button').forEach(button=>button.setAttribute('data-liquid',''));bindLiquidCards(editorDialog);
     modalBinding=bindCatalogEditor(editorDialog,{direct:true,refresh});
     globalThis.JMA_DATABASE_SAVED?.(editorWorking.id);
   };
+  editorDialog.querySelectorAll('.admin-editor-drawer-actions>button').forEach(button=>button.setAttribute('data-liquid',''));bindLiquidCards(editorDialog);
   modalBinding=bindCatalogEditor(editorDialog,{direct:true,refresh});
   editorDialog.addEventListener('cancel',event=>{event.preventDefault();if(modalBinding?.discardDraft())closeCatalogEditor()});
   editorDialog.showModal();
@@ -608,7 +615,7 @@ async function manageCatalogAsset(id){
 }
 window.addEventListener('hashchange',()=>{if(location.hash.split('?')[0]!=='#/database')closeCatalogEditor()});
 
-globalThis.ADMIN_PANEL={render:renderAdmin,bind:bindAdmin,allowed:()=>ADMIN_ROLES.has(role()),openCatalogEditor,manageCatalogAsset,closeCatalogEditor};
+globalThis.ADMIN_PANEL={render:renderAdmin,bind:bindAdmin,allowed:()=>ADMIN_ROLES.has(role()),bindLiquidCards,openCatalogEditor,manageCatalogAsset,closeCatalogEditor};
 globalThis.FULL_ROUTE_RENDERERS=globalThis.FULL_ROUTE_RENDERERS||{};
 globalThis.FULL_ROUTE_BINDERS=globalThis.FULL_ROUTE_BINDERS||{};
 globalThis.FULL_ROUTE_RENDERERS.admin=renderAdmin;

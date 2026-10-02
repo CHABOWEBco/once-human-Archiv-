@@ -38,11 +38,12 @@ module.exports=async({db,pageFor,field,save,open,objectBytes,metrics,out})=>{
  await user.locator('[data-entry="cat-fuchs"] [data-db-found]').click();await central(user);
  ok(await card(user).locator('code').innerText()==='cat-fuchs'&&await card(user).locator('.catalog-found-mark').count()===1,'Replacing art preserves index, collection badge and actions');
  await user.locator('[data-entry="cat-fuchs"] .catalog-actions [data-db-detail]').click();
- const detailBefore=await user.locator('#catalogDossier .catalog-detail-art').boundingBox();
- await user.waitForFunction(()=>document.querySelector('#catalogDossier img[data-catalog-central]')?.src.includes('/test-signed/'));
- ok(await user.locator('#catalogDetailTitle').innerText()==='Fuchs'&&await user.locator('#catalogDossier img[data-catalog-central]').getAttribute('data-catalog-central')==='catalog:cat-fuchs','Same resolver supplies Fuchs detail without resetting the permanent dossier');
- ok(await user.locator('#catalogDossier .catalog-detail-art').boundingBox().then(b=>b.height===detailBefore.height&&b.width===detailBefore.width),'Detail image-box remains stable during async delivery');
+ const detailBefore=await user.locator('#catalogDialog .catalog-detail-art').boundingBox();
+ await user.waitForFunction(()=>document.querySelector('#catalogDialog img[data-catalog-central]')?.src.includes('/test-signed/'));
+ ok(await user.locator('#catalogDialogTitle').textContent()==='Fuchs'&&await user.locator('#catalogDialog img[data-catalog-central]').getAttribute('data-catalog-central')==='catalog:cat-fuchs','Same resolver supplies Fuchs detail without resetting the same detail modal');
+ ok(await user.locator('#catalogDialog .catalog-detail-art').boundingBox().then(b=>b.height===detailBefore.height&&b.width===detailBefore.width),'Detail image-box remains stable during async delivery');
 
+ await user.keyboard.press('Escape');
  const signingBefore=metrics().signings;await user.evaluate(()=>JMA_RENDER());await central(user);
  ok(metrics().signings===signingBefore,'Ordinary catalog renders reuse the existing Signed URL cache');
  const ownerDatabase=await pageFor('owner');ownerDatabase.on('pageerror',e=>errors.push(e.message));await database(ownerDatabase);
@@ -77,9 +78,10 @@ module.exports=async({db,pageFor,field,save,open,objectBytes,metrics,out})=>{
  ok((await db.query("select entry,revision from catalog_entries where id='cat-fuchs'")).rows[0].entry.image===sample.image,'Storage resolution never persists Signed URL into legacy catalog entry.image');
  await user.setViewportSize({width:390,height:844});await user.evaluate(()=>JMA_RENDER());await central(user);
  ok(await user.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'390px normal card has no horizontal overflow');
- await user.locator('[data-entry="cat-fuchs"] .catalog-actions [data-db-detail]').click();await user.waitForFunction(()=>document.querySelector('#catalogDossier img[data-catalog-central]')?.complete);
- ok(await user.locator('#catalogDossier').boundingBox().then(b=>b.x>=0&&b.x+b.width<=390)&&await user.locator('#catalogDossier .catalog-detail-art').boundingBox().then(b=>b.height===180),'390px signed detail fits responsive dossier image box');
+ await user.locator('[data-entry="cat-fuchs"] .catalog-actions [data-db-detail]').click();await user.waitForFunction(()=>document.querySelector('#catalogDialog img[data-catalog-central]')?.complete);
+ ok(await user.locator('#catalogDialog').boundingBox().then(b=>b.x>=0&&b.x+b.width<=390)&&await user.locator('#catalogDialog .catalog-detail-art').boundingBox().then(b=>b.height===220),'390px signed detail fits responsive modal image box');
  await user.screenshot({path:path.join(out,'catalog-storage-mobile-detail.png'),fullPage:true});
+ await user.keyboard.press('Escape');
  await user.screenshot({path:path.join(out,'catalog-storage-mobile.png'),fullPage:true});
  // Delayed response must never put the previous card's image into the next search result.
  await user.route('**/test-storage/sign',async route=>{await new Promise(resolve=>setTimeout(resolve,150));await route.continue()});

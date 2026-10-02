@@ -257,13 +257,13 @@ function renderProfile(){
     ...exchangePosts.map(x=>({kind:'WERKSTATT',title:x.title||x.type||'Community-Beitrag',meta:x.type||'',created:x.created||''}))
   ].sort((x,y)=>(Date.parse(y.created)||0)-(Date.parse(x.created)||0)).slice(0,4);
   const gallery=arr('jma_gallery'),archivePreview=[['./assets/reference/feature-map.webp','Kartenarchiv'],['./assets/reference/feature-community.webp','Archivwelt'],['./assets/reference/news-hero.webp','Gefahrenzone'],['./assets/reference/showcase-items.webp','Anomalien'],['./assets/reference/news-mini-1.webp','Einsatzgebiet']];
-  return `<section class="rf-page profile-page profile-ref-page">
-    <section class="profile-ref-banner" style="${p.banner!=='kartenwelt'?`background-image:url('${globalThis.PROFILE_ASSETS.banners.find(x=>x.id===p.banner).src}')`:p.color!=='cyan'?`border-color:${profileColors[p.color]}`:''}">
+  return `<section class="rf-page profile-page profile-ref-page" style="--accent:${profileColors[p.color]}">
+    <section class="profile-ref-banner" style="${p.banner!=='kartenwelt'?`background-image:url('${globalThis.PROFILE_ASSETS.banners.find(x=>x.id===p.banner).src}')`:''}">
       <div class="profile-ref-banner-shade"></div>
       <div class="profile-ref-avatar" aria-label="Profilinitiale">${p.avatar==='none'&&p.frame==='none'&&p.ring==='none'&&p.wreath==='none'?`<span>${esc(initial)}</span>`:avatar(p)}<i></i></div>
       <div class="profile-ref-identity">
         <div class="profile-ref-kicker">ONCE HUMAN ARCHIV // PROFIL</div>
-        <h1 style="${p.color==='cyan'?'':'color:'+profileColors[p.color]}">${esc(displayName)}</h1>
+        <h1>${esc(displayName)}</h1>
         <div class="profile-ref-account-line"><span class="profile-ref-online-dot"></span><b>${a?'ACCOUNT VERBUNDEN':'KEINE SITZUNG'}</b><span>${esc(email)}</span></div>
         <p>${esc(p.bio||'Sammeln. Planen. Bauen. Archivieren. Dein persönlicher Arbeitsbereich für die vorhandenen Werkzeuge und lokalen Archivdaten.')}</p>
         <div class="profile-ref-progress">
@@ -373,38 +373,6 @@ function renderProfile(){
 
   </section>`;
 }
-function bindProfileHoloTabs(){
-  const cards=qsa('.profile-ref-tabs button');
-  cards.forEach(card=>{
-    let frame=0;
-    const reset=()=>{
-      cancelAnimationFrame(frame);
-      card.style.setProperty('--px','50%');
-      card.style.setProperty('--py','50%');
-      card.style.setProperty('--rx','0deg');
-      card.style.setProperty('--ry','0deg');
-    };
-    card.addEventListener('pointermove',event=>{
-      if(event.pointerType==='touch')return;
-      const rect=card.getBoundingClientRect();
-      const x=Math.max(0,Math.min(rect.width,event.clientX-rect.left));
-      const y=Math.max(0,Math.min(rect.height,event.clientY-rect.top));
-      const px=(x/rect.width)*100;
-      const py=(y/rect.height)*100;
-      const ry=((x/rect.width)-.5)*9;
-      const rx=((y/rect.height)-.5)*-7;
-      cancelAnimationFrame(frame);
-      frame=requestAnimationFrame(()=>{
-        card.style.setProperty('--px',px.toFixed(2)+'%');
-        card.style.setProperty('--py',py.toFixed(2)+'%');
-        card.style.setProperty('--rx',rx.toFixed(2)+'deg');
-        card.style.setProperty('--ry',ry.toFixed(2)+'deg');
-      });
-    });
-    card.addEventListener('pointerleave',reset);
-    card.addEventListener('pointercancel',reset);
-  });
-}
 function updateProfileSettingsLivePreview(tab){
   const live=qs('[data-profile-live]');
   if(!live||!profileDraft)return;
@@ -450,7 +418,7 @@ function bindProfileEditorTabs(){
   updateProfileSettingsLivePreview(editTabs.find(x=>x.classList.contains('active'))?.dataset.profileEditTab||'general');
 }
 function bindProfile(){
-  navBinds();globalThis.JMA_MEDIA.hydrate();bindProfileHoloTabs();
+  navBinds();globalThis.JMA_MEDIA.hydrate();globalThis.ADMIN_PANEL?.bindLiquidCards(document,'.profile-ref-tabs button');
   const p=appearance();
   const trophy=achievements().find(t=>t.id===p.trophy&&t.earned);if(trophy){const identity=qs('.profile-ref-identity');if(identity){const badge=document.createElement('span');badge.textContent=trophy.icon+' '+trophy.name;identity.append(badge)}}
   const showcase=qs('.profile-ref-slot-row');if(showcase){showcase.innerHTML=[...set('jma_favorites')].map(id=>catalog().find(x=>x.id===id)).filter(Boolean).slice(0,4).map(x=>`<span title="${esc(x.name_de)}">★ ${esc(x.name_de)}</span>`).join('')||'<span>+</span><span>+</span><span>+</span><span>+</span>';showcase.closest('section').hidden=!p.widgets.includes('showcase')}

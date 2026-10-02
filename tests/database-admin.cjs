@@ -16,12 +16,13 @@ module.exports=async({db,pageFor,out,field,save:saveAsset,open})=>{
  await owner.waitForFunction(()=>document.querySelector('[data-asset-upload-message]')?.textContent.includes('noch nicht gespeichert'));
  await field(owner,'status').selectOption('active');await saveAsset(owner);
  const assetBefore=(await db.query("select * from asset_library where id='catalog:cat-tier-fuchs'")).rows[0];
- const user=await pageFor('user');user.on('pageerror',e=>errors.push(e.message));await database(user);await search(user,foxId);
- await user.waitForFunction(()=>document.querySelector('#catalogDossier img[data-catalog-central]')?.complete);
+ const user=await pageFor('user');user.on('pageerror',e=>errors.push(e.message));await database(user);await search(user,foxId);await user.locator('.catalog-card [data-db-detail]').first().click();
+ await user.waitForFunction(()=>document.querySelector('#catalogDialog img[data-catalog-central]')?.complete);
  ok(await user.locator('[data-db-mode],[data-db-edit],[data-db-add],[data-db-archive],[data-db-asset]').count()===0,'Normal user has no database editing controls');
- ok(await user.locator('#catalogDossier img').getAttribute('data-catalog-central')==='catalog:cat-tier-fuchs','Actual Fuchs ID and private Storage image feed the permanent dossier');
+ ok(await user.locator('#catalogDialog img').getAttribute('data-catalog-central')==='catalog:cat-tier-fuchs','Actual Fuchs ID and private Storage image feed the detail modal');
  await user.evaluate(()=>ADMIN_PANEL.openCatalogEditor('cat-tier-fuchs'));
  ok(await user.locator('#catalogEditorDialog').count()===0,'Programmatic direct editor refuses the normal user');
+ await user.keyboard.press('Escape');
  const denied=await user.evaluate(async()=>{const e=CATALOG_DATA.entries.find(e=>e.id==='cat-tier-fuchs');try{await JMA_CATALOG.update({...e,archived:true},JMA_CATALOG.revision(e.id));return false}catch(error){return error.message.includes('Rolle erforderlich')}});
  ok(denied,'Normal user cannot invoke the existing archive write');
  const raw=await user.evaluate(async()=>await supabase.createClient().from('catalog_entries').update({entry:{...CATALOG_DATA.entries.find(e=>e.id==='cat-tier-fuchs'),archived:true},revision:2}).eq('id','cat-tier-fuchs').select().maybeSingle());
@@ -30,7 +31,7 @@ module.exports=async({db,pageFor,out,field,save:saveAsset,open})=>{
   const p=role==='owner'?owner:await pageFor(role);p.on('pageerror',e=>errors.push(e.message));await database(p);await p.evaluate(async()=>{await JMA_CATALOG.load();JMA_RENDER()});
   ok(await p.locator('[data-db-mode]').count()===1,role+' sees the role-gated edit mode');
   await p.locator('[data-db-mode]').click();await search(p,foxId);
-  ok(await p.locator('.catalog-card [data-db-edit]').count()===1&&await p.locator('#catalogDossier [data-db-asset]').count()===1,role+' receives card and dossier actions in the same database');
+  ok(await p.locator('.catalog-card [data-db-edit]').count()===1&&await p.locator('.catalog-card [data-db-archive]').count()===1,role+' receives card and dossier actions in the same database');
   await p.locator('.catalog-card [data-db-edit]').click();
   ok(await input(p,'name').inputValue()==='Fuchs'&&await p.locator('#catalogEditorDialog input[type="file"]').count()===0,role+' opens the shared correct editor with no second upload');
   await input(p,'description').fill('Isolated direct edit · '+role);
@@ -40,18 +41,18 @@ module.exports=async({db,pageFor,out,field,save:saveAsset,open})=>{
   await p.locator('[data-db-mode]').click();
   ok(await p.locator('[data-db-edit],[data-db-archive],[data-db-add]').count()===0,role+' edit mode turns off cleanly');
  }
- await owner.locator('[data-db-mode]').click();await search(owner,foxId);await owner.locator('#catalogDossier [data-db-edit]').click();
+ await owner.locator('[data-db-mode]').click();await search(owner,foxId);await owner.locator('.catalog-card [data-db-detail]').first().click();await owner.locator('#catalogDialog [data-db-edit]').click();
  await input(owner,'description').fill('Stable unsaved modal draft');
  await owner.evaluate(()=>{window.testCatalogModal=document.querySelector('#catalogEditorDialog');JMA_RENDER()});
  ok(await owner.evaluate(()=>document.querySelector('#catalogEditorDialog')===window.testCatalogModal)&&await input(owner,'description').inputValue()==='Stable unsaved modal draft','Ordinary website rerender keeps the same modal and unsaved editor draft');
  await owner.keyboard.press('Escape');await owner.waitForSelector('#catalogEditorDialog',{state:'detached'});
- ok(await owner.locator('#catalogDossier').isVisible(),'Escape closes shared editor and leaves permanent dossier');
+ ok(!await owner.locator('#catalogDialog').isVisible()&&await owner.locator('#catalogSearch').isVisible(),'Editor Escape leaves the same catalog without a parallel detail dialog');
  await owner.locator('[data-db-add]').click();
  await input(owner,'name').fill('Direct Database Fixture');await owner.locator('#catalogEditorDialog [data-editor-category]').selectOption('items');
  await input(owner,'last_checked').fill('2026-10-02');await save(owner);
  const id=await owner.evaluate(()=>CATALOG_DATA.entries.find(e=>e.name_de==='Direct Database Fixture').id);
  ok((await row(id)).revision===1&&(await row(id)).entry.last_checked==='2026-10-02','Add uses existing stable ID/create logic and saves the existing checked date field');
- ok(await owner.locator('[data-entry="'+id+'"]').count()===1&&await owner.locator('#catalogDetailTitle').innerText()==='Direct Database Fixture','New entry immediately appears selected in card and dossier');
+ ok(await owner.locator('[data-entry="'+id+'"]').count()===1&&await owner.locator('[data-entry="'+id+'"] h3').textContent()==='Direct Database Fixture','New entry immediately appears selected in the catalog');
  await close(owner);await owner.locator('[data-db-add]').click();await input(owner,'name').fill('Direct Database Fixture');await owner.locator('#catalogEditorDialog [data-editor-category]').selectOption('items');await owner.locator('#catalogEditorDialog [data-editor-save]').click();
  ok((await owner.locator('#catalogEditorDialog [data-editor-status]').innerText()).includes('gleichnamiger Eintrag'),'Direct create retains the shared duplicate check');await close(owner);
  await search(owner,foxId);await owner.locator('.catalog-card [data-db-edit]').click();
@@ -72,7 +73,7 @@ module.exports=async({db,pageFor,out,field,save:saveAsset,open})=>{
  await owner.locator('.catalog-card [data-db-archive]').click();await owner.waitForSelector('[data-archive-confirm]:not([disabled])');await owner.locator('[data-archive-confirm]').click();await owner.waitForSelector('#catalogArchiveDialog',{state:'detached'});await owner.locator('#catalogArchived').uncheck();
  ok((await row(foxId)).entry.archived===false,'Restore reverses the archive through the same revision-protected update');
  ok(JSON.stringify((await db.query("select * from asset_library where id='catalog:cat-tier-fuchs'")).rows[0])===JSON.stringify(assetBefore),'Archive/restore leaves original linked asset, Storage pointer and asset revision intact');
- await search(owner,foxId);await owner.locator('#catalogDossier [data-db-asset]').click();
+ await search(owner,foxId);await owner.locator('.catalog-card [data-db-detail]').first().click();await owner.locator('#catalogDialog [data-db-asset]').click();
  await owner.waitForFunction(()=>document.querySelector('[data-asset-field="id"]')?.value==='catalog:cat-tier-fuchs'&&!document.querySelector('[data-asset-save]')?.disabled);
  ok(await field(owner,'catalog_id').inputValue()===foxId,'Dossier asset action selects the existing exact Fuchs asset in the existing library');
  await database(owner);await owner.locator('[data-db-mode]').click();await search(owner,id);await owner.locator('.catalog-card [data-db-edit]').click();await owner.waitForSelector('#catalogEditorDialog [data-editor-image]:not([disabled])');await owner.locator('#catalogEditorDialog [data-editor-image]').click();
