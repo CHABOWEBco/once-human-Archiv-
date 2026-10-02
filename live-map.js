@@ -18,7 +18,7 @@ const go=id=>{location.hash=`#/${id}`};
 
 // The intro belongs to a route visit, not to a render or the zoomable map plane.
 const flybyMotion=matchMedia('(prefers-reduced-motion: reduce)');
-let mapVisit=null;
+let mapVisit=null,disposeMapView=null;
 function stopMapFlyby(){
   if(!mapVisit)return;
   cancelAnimationFrame(mapVisit.frame);
@@ -57,6 +57,7 @@ function enterMapFlyby(){
   }).catch(()=>{/* An unavailable decorative image must never break the map. */});
 }
 window.addEventListener('hashchange',()=>{
+  disposeMapView?.();
   const route=location.hash.split('/')[1];
   if(route!=='map'&&route!=='live-map'){stopMapFlyby();mapVisit=null}
 });
@@ -113,6 +114,7 @@ function detailMarkup(s){
 }
 
 function renderLiveMap(){
+  disposeMapView?.();
   const s=state();
   const routeMarkers=s.draft.map(id=>allMarkers().find(m=>m.id===id&&m.scenario===s.scenario)).filter(Boolean);
   const line=routeMarkers.map(m=>`${markerCoord(m,'mapX')},${markerCoord(m,'mapY')}`).join(' ');
@@ -199,6 +201,7 @@ function openMarkerDialog(mapX,mapY,scenario){
 }
 
 function bindLiveMap(){
+  disposeMapView?.();
   enterMapFlyby();
   const current=state();
   qsa('[data-lm-go]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.lmGo)));
@@ -228,23 +231,157 @@ function bindLiveMap(){
 
   const board=qs('#lmBoard'),plane=qs('#lmPlane'),image=qs('#lmMapImage'),zoomLabel=qs('#lmZoomLabel'),instruction=qs('#lmInstruction');
   if(!board||!plane||!image)return;
-  let saved=read('jma_map_view',{zoom:1,x:0,y:0});
-  let view={zoom:Math.max(1,Math.min(2.6,Number(saved?.zoom)||1)),x:Number(saved?.x)||0,y:Number(saved?.y)||0};
-  let placing=false,drag=null,pinch=null;
-  const pointers=new Map();
-  const fit=()=>{const bw=board.clientWidth,bh=board.clientHeight,ratio=(image.naturalWidth&&image.naturalHeight)?image.naturalWidth/image.naturalHeight:1.5;let w=bw,h=bw/ratio;if(h<bh){h=bh;w=bh*ratio}return {w,h}};
-  const apply=()=>{if(!board.isConnected)return;const base=fit();view.zoom=Math.max(1,Math.min(2.6,view.zoom));const maxX=Math.max(0,(base.w*view.zoom-board.clientWidth)/2),maxY=Math.max(0,(base.h*view.zoom-board.clientHeight)/2);view.x=Math.max(-maxX,Math.min(maxX,view.x));view.y=Math.max(-maxY,Math.min(maxY,view.y));plane.style.width=`${base.w}px`;plane.style.height=`${base.h}px`;plane.style.left=`calc(50% + ${view.x}px)`;plane.style.top=`calc(50% + ${view.y}px)`;plane.style.transform=`translate(-50%,-50%) scale(${view.zoom})`;plane.style.setProperty('--inverse-zoom',String(1/view.zoom));if(zoomLabel)zoomLabel.textContent=`${Math.round(view.zoom*100)}%`;write('jma_map_view',view)};
-  const zoom=delta=>{view.zoom=Math.max(1,Math.min(2.6,view.zoom+delta));apply()};
-  qs('#lmZoomIn')?.addEventListener('click',()=>zoom(.15));qs('#lmZoomOut')?.addEventListener('click',()=>zoom(-.15));qs('#lmResetView')?.addEventListener('click',()=>{view={zoom:1,x:0,y:0};apply()});
-  qs('#lmPlace')?.addEventListener('click',e=>{placing=!placing;e.currentTarget.classList.toggle('active',placing);e.currentTarget.textContent=placing?'× ABBRECHEN':'＋ MARKER';board.classList.toggle('placing',placing);if(instruction)instruction.textContent=placing?'AUF DIE GEWÜNSCHTE POSITION KLICKEN':'ZIEHEN = VERSCHIEBEN · MAUSRAD / ± = ZOOMEN'});
-  board.addEventListener('wheel',e=>{e.preventDefault();zoom(e.deltaY<0?.1:-.1)},{passive:false});
-  const resetGesture=()=>{const pts=[...pointers.values()];if(pts.length>=2){const [a,b]=pts;pinch={distance:Math.hypot(b.x-a.x,b.y-a.y),zoom:view.zoom,cx:(a.x+b.x)/2,cy:(a.y+b.y)/2,bx:view.x,by:view.y};drag=null}else{pinch=null;const a=pts[0];drag=a?{x:a.x,y:a.y,bx:view.x,by:view.y}:null}};
-  board.addEventListener('pointerdown',e=>{if(placing||e.target.closest('[data-lm-marker]')||e.button>0)return;pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});board.setPointerCapture(e.pointerId);resetGesture()});
-  board.addEventListener('pointermove',e=>{if(!pointers.has(e.pointerId))return;pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(pinch&&pointers.size>=2){const [a,b]=[...pointers.values()],rect=board.getBoundingClientRect(),cx=(a.x+b.x)/2,cy=(a.y+b.y)/2,next=Math.max(1,Math.min(2.6,pinch.zoom*Math.hypot(b.x-a.x,b.y-a.y)/(pinch.distance||1))),ratio=next/pinch.zoom;view.x=cx-rect.left-rect.width/2-(pinch.cx-rect.left-rect.width/2-pinch.bx)*ratio;view.y=cy-rect.top-rect.height/2-(pinch.cy-rect.top-rect.height/2-pinch.by)*ratio;view.zoom=next;apply()}else if(drag){view.x=drag.bx+e.clientX-drag.x;view.y=drag.by+e.clientY-drag.y;apply()}});
-  for(const ev of ['pointerup','pointercancel','lostpointercapture'])board.addEventListener(ev,e=>{pointers.delete(e.pointerId);resetGesture()});
-  board.addEventListener('click',e=>{if(!placing||e.target.closest('[data-lm-marker]'))return;const rect=plane.getBoundingClientRect(),mapX=(e.clientX-rect.left)/rect.width*100,mapY=(e.clientY-rect.top)/rect.height*100;if(mapX<0||mapX>100||mapY<0||mapY>100)return;placing=false;board.classList.remove('placing');openMarkerDialog(mapX,mapY,current.scenario)});
-  if(!image.complete)image.addEventListener('load',apply,{once:true});
-  const observer=new ResizeObserver(()=>{if(board.isConnected)apply();else observer.disconnect()});observer.observe(board);apply();
+  // One controller owns gestures, visual updates and persistence for this board.
+  const events=new AbortController(),listen=(el,type,fn,options={})=>el?.addEventListener(type,fn,{...options,signal:events.signal});
+  const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
+  const saved=read('jma_map_view',{zoom:1,x:0,y:0});
+  let view={zoom:clamp(Number(saved?.zoom)||1,1,2.6),x:Number(saved?.x)||0,y:Number(saved?.y)||0};
+  let placing=false,drag=null,pinch=null,disposed=false,persistTimer=0;
+  let lastStored=JSON.stringify(view),dirty=false;
+  const pointers=new Map(),desktop=matchMedia('(hover: hover) and (pointer: fine)');
+  let geometry={w:0,h:0,bw:0,bh:0},inside=false,hoverPoint=null,interactive=false;
+  let panFrame=0,lastFrame=0,velocity={x:0,y:0};
+  const measure=()=>{
+    const bw=board.clientWidth,bh=board.clientHeight,ratio=(image.naturalWidth&&image.naturalHeight)?image.naturalWidth/image.naturalHeight:1.5;
+    const w=Math.max(bw,bh*ratio);geometry={w,h:w/ratio,bw,bh};
+    plane.style.width=`${geometry.w}px`;plane.style.height=`${geometry.h}px`;
+  };
+  const bounds=()=>({x:Math.max(0,(geometry.w*view.zoom-geometry.bw)/2),y:Math.max(0,(geometry.h*view.zoom-geometry.bh)/2)});
+  const apply=()=>{
+    if(disposed||!board.isConnected)return;
+    view.zoom=clamp(view.zoom,1,2.6);const limit=bounds();
+    view.x=clamp(view.x,-limit.x,limit.x);view.y=clamp(view.y,-limit.y,limit.y);
+    plane.style.transform=`translate3d(calc(-50% + ${view.x}px),calc(-50% + ${view.y}px),0) scale(${view.zoom})`;
+    plane.style.setProperty('--inverse-zoom',String(1/view.zoom));
+    const label=`${Math.round(view.zoom*100)}%`;if(zoomLabel&&zoomLabel.textContent!==label)zoomLabel.textContent=label;
+    dirty=JSON.stringify(view)!==lastStored;
+  };
+  const persist=()=>{
+    clearTimeout(persistTimer);persistTimer=0;
+    if(!dirty)return;
+    write('jma_map_view',{...view});lastStored=JSON.stringify(view);dirty=false;
+  };
+  const queuePersist=()=>{clearTimeout(persistTimer);persistTimer=setTimeout(persist,250)};
+  const stopPan=(flush=true)=>{
+    if(!pointers.size)plane.style.willChange='';
+    cancelAnimationFrame(panFrame);panFrame=0;lastFrame=0;velocity={x:0,y:0};if(flush)persist();
+  };
+  // The middle 44% of each axis is quiet; a quadratic curve reaches 360px/s.
+  const axisSpeed=n=>{const speed=360*Math.pow(clamp((Math.abs(n)-.44)/.5,0,1),2);return speed<.6?0:-Math.sign(n)*speed};
+  const canMove=(speed,position,limit)=>limit>.01&&((speed>0&&position<limit-.01)||(speed<0&&position>-limit+.01));
+  const desired=()=>{
+    if(!desktop.matches||!inside||!hoverPoint||interactive||placing||pointers.size||document.hidden||qs('dialog[open]'))return {x:0,y:0};
+    const limit=bounds(),x=axisSpeed(hoverPoint.x),y=axisSpeed(hoverPoint.y);
+    return {x:canMove(x,view.x,limit.x)?x:0,y:canMove(y,view.y,limit.y)?y:0};
+  };
+  const tick=time=>{
+    panFrame=0;
+    if(disposed||!board.isConnected){dispose();return}
+    // Also pause when a moving marker arrives beneath a stationary pointer.
+    const hit=hoverPoint&&document.elementFromPoint(hoverPoint.clientX,hoverPoint.clientY);
+    if(hit?.closest('[data-lm-marker],button,input,select,textarea,a')||placing||pointers.size||qs('dialog[open]')){stopPan();return}
+    const target=desired(),dt=lastFrame?Math.min((time-lastFrame)/1000,.04):1/60;lastFrame=time;
+    const blend=flybyMotion.matches?1:1-Math.exp(-dt/((target.x||target.y)? .09 : .06));
+    velocity.x+=(target.x-velocity.x)*blend;velocity.y+=(target.y-velocity.y)*blend;
+    const limit=bounds();
+    if(!canMove(velocity.x,view.x,limit.x)||(!target.x&&Math.abs(velocity.x)<.6))velocity.x=0;
+    if(!canMove(velocity.y,view.y,limit.y)||(!target.y&&Math.abs(velocity.y)<.6))velocity.y=0;
+    if(!velocity.x&&!velocity.y&&!target.x&&!target.y){stopPan();return}
+    view.x+=velocity.x*dt;view.y+=velocity.y*dt;apply();
+    panFrame=requestAnimationFrame(tick);
+  };
+  const requestPan=()=>{
+    const target=desired();
+    if(!panFrame&&(target.x||target.y)){lastFrame=0;plane.style.willChange='transform';panFrame=requestAnimationFrame(tick)}
+  };
+  const updateHover=e=>{
+    if(e.pointerType!=='mouse'||!desktop.matches)return;
+    const rect=board.getBoundingClientRect();
+    inside=e.clientX>=rect.left&&e.clientX<=rect.right&&e.clientY>=rect.top&&e.clientY<=rect.bottom;
+    hoverPoint={x:(e.clientX-rect.left-rect.width/2)/(geometry.bw/2),y:(e.clientY-rect.top-rect.height/2)/(geometry.bh/2),clientX:e.clientX,clientY:e.clientY};
+    interactive=!!e.target.closest('[data-lm-marker],button,input,select,textarea,a');
+    if(interactive||!inside)stopPan();else requestPan();
+  };
+  const zoom=(next,anchor=null)=>{
+    stopPan(false);next=clamp(next,1,2.6);
+    if(anchor){const ratio=next/view.zoom;view.x=anchor.x-(anchor.x-view.x)*ratio;view.y=anchor.y-(anchor.y-view.y)*ratio}
+    view.zoom=next;apply();
+  };
+  listen(qs('#lmZoomIn'),'click',()=>{zoom(view.zoom+.15);persist()});
+  listen(qs('#lmZoomOut'),'click',()=>{zoom(view.zoom-.15);persist()});
+  listen(qs('#lmResetView'),'click',()=>{stopPan();view={zoom:1,x:0,y:0};apply();persist()});
+  listen(qs('#lmPlace'),'click',e=>{
+    stopPan();placing=!placing;e.currentTarget.classList.toggle('active',placing);
+    e.currentTarget.textContent=placing?'× ABBRECHEN':'＋ MARKER';board.classList.toggle('placing',placing);
+    if(instruction)instruction.textContent=placing?'AUF DIE GEWÜNSCHTE POSITION KLICKEN':'ZIEHEN = VERSCHIEBEN · MAUSRAD / ± = ZOOMEN';
+  });
+  listen(qs('.lm-toolbar'),'pointerenter',()=>{inside=false;stopPan()});
+  listen(board,'wheel',e=>{
+    e.preventDefault();
+    if(placing||pointers.size||qs('dialog[open]'))return;
+    const rect=board.getBoundingClientRect(),pixels=e.deltaY*(e.deltaMode===1?16:e.deltaMode===2?geometry.bh:1);
+    if(!pixels)return;
+    zoom(view.zoom*Math.exp(-clamp(pixels,-160,160)*.001),{x:e.clientX-rect.left-rect.width/2,y:e.clientY-rect.top-rect.height/2});
+    queuePersist();
+  },{passive:false});
+  const resetGesture=()=>{
+    const pts=[...pointers.values()];
+    if(pts.length>=2){const [a,b]=pts;pinch={distance:Math.hypot(b.x-a.x,b.y-a.y),zoom:view.zoom,cx:(a.x+b.x)/2,cy:(a.y+b.y)/2,bx:view.x,by:view.y};drag=null}
+    else{pinch=null;const a=pts[0];drag=a?{x:a.x,y:a.y,bx:view.x,by:view.y}:null}
+    board.classList.toggle('dragging',pointers.size>0);plane.style.willChange=pointers.size?'transform':'';
+  };
+  listen(board,'dragstart',e=>e.preventDefault());
+  listen(board,'pointerenter',updateHover);
+  listen(board,'pointerleave',()=>{inside=false;hoverPoint=null;interactive=false;stopPan()});
+  listen(board,'pointerdown',e=>{
+    stopPan();
+    if(placing||e.target.closest('[data-lm-marker]')||e.button>0||qs('dialog[open]'))return;
+    e.preventDefault();pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});board.setPointerCapture(e.pointerId);resetGesture();
+  });
+  listen(board,'pointermove',e=>{
+    updateHover(e);
+    if(!pointers.has(e.pointerId))return;
+    pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    if(pinch&&pointers.size>=2){
+      const [a,b]=[...pointers.values()],rect=board.getBoundingClientRect(),cx=(a.x+b.x)/2,cy=(a.y+b.y)/2,next=clamp(pinch.zoom*Math.hypot(b.x-a.x,b.y-a.y)/(pinch.distance||1),1,2.6),ratio=next/pinch.zoom;
+      const ox=rect.left+rect.width/2,oy=rect.top+rect.height/2;
+      view.x=cx-ox-(pinch.cx-ox-pinch.bx)*ratio;view.y=cy-oy-(pinch.cy-oy-pinch.by)*ratio;view.zoom=next;apply();
+    }else if(drag){view.x=drag.bx+e.clientX-drag.x;view.y=drag.by+e.clientY-drag.y;apply()}
+    queuePersist();
+  });
+  for(const ev of ['pointerup','pointercancel','lostpointercapture'])listen(board,ev,e=>{
+    if(!pointers.delete(e.pointerId))return;
+    resetGesture();persist();
+    if(ev==='pointerup'&&!pointers.size){updateHover(e);requestPan()}
+    else if(ev!=='pointerup'){inside=false;stopPan()}
+  });
+  listen(board,'click',e=>{
+    if(!placing||e.target.closest('[data-lm-marker]'))return;
+    stopPan();const rect=plane.getBoundingClientRect(),mapX=(e.clientX-rect.left)/rect.width*100,mapY=(e.clientY-rect.top)/rect.height*100;
+    if(mapX<0||mapX>100||mapY<0||mapY>100)return;
+    placing=false;board.classList.remove('placing');qs('#lmPlace')?.classList.remove('active');
+    if(qs('#lmPlace'))qs('#lmPlace').textContent='＋ MARKER';
+    if(instruction)instruction.textContent='ZIEHEN = VERSCHIEBEN · MAUSRAD / ± = ZOOMEN';
+    openMarkerDialog(mapX,mapY,current.scenario);
+  });
+  const resize=()=>{measure();apply();queuePersist();stopPan()};
+  listen(image,'load',resize,{once:true});
+  const observer=new ResizeObserver(resize);observer.observe(board);
+  // A render disposes synchronously; this also catches DOM removal by other code.
+  const removal=new MutationObserver(()=>{if(!board.isConnected)dispose()});removal.observe(qs('#app'),{childList:true,subtree:true});
+  const dispose=()=>{
+    if(disposed)return;
+    stopPan();disposed=true;events.abort();observer.disconnect();removal.disconnect();clearTimeout(searchTimer);
+    pointers.clear();board.classList.remove('dragging');plane.style.willChange='';
+    if(disposeMapView===dispose)disposeMapView=null;
+  };
+  disposeMapView=dispose;
+  listen(window,'pagehide',dispose);
+  listen(window,'blur',()=>{inside=false;stopPan();pointers.clear();resetGesture()});
+  listen(document,'visibilitychange',()=>{if(document.hidden){inside=false;stopPan();persist()}});
+  listen(window,'scroll',()=>{inside=false;stopPan()},{passive:true});
+  listen(desktop,'change',()=>{inside=false;stopPan()});
+  measure();apply();queuePersist();
 }
 
 globalThis.FULL_ROUTE_RENDERERS={...(globalThis.FULL_ROUTE_RENDERERS||{}),map:renderLiveMap,'live-map':renderLiveMap};
