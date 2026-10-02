@@ -2,15 +2,27 @@
 
 Stand: 02.10.2026. Ausschließlich `admin-editor-preview`, Ausgangs- und überprüfter GitHub-HEAD `0a8c510d0907e6064cb22e9c1937c8b2cdafa544`; Worktree vor Änderungen sauber. `main` bleibt bei `94ab9f8fa408fc1ed3bd1721961321c0cec2eb45`.
 
-## Live-Bestand und Fuchs-ID
+## Erfolgreicher Live-Nachweis – Benutzerbestätigung
 
-Der Benutzer bestätigt die erfolgreiche manuelle Anwendung von `20261002020000_asset_library_storage.sql`. Die öffentliche REST-Abfrage bestätigt die vorhandenen Storage-Spalten. Kein administrativer SQL-Zugang und keine authentifizierte Live-Owner-Sitzung stehen dieser Cloud zur Verfügung. Es wurden keine produktiven Daten oder Dateien geschrieben.
+Am 02.10.2026 bestätigt der Benutzer den erfolgreichen echten End-to-End-Test auf dem Implementierungsstand `4f5acc34f647c26256550b8a020b3acb1b360197`:
+
+- Der bestehende Datensatz `catalog:cat-tier-fuchs` wurde über die vorhandene Asset-Bibliothek mit `Fox.png` in den privaten Supabase-Storage hochgeladen.
+- Das Asset ist auf `active` gesetzt; die bestehende Zuordnung `catalog_id = cat-tier-fuchs` wurde beibehalten.
+- Nach Reload von `#/database` erscheint das Storage-Bild korrekt beim bestehenden Fuchs-Eintrag in der normalen Website-Datenbank.
+
+Damit ist der produktive Weg **Asset-Bibliothek → Supabase Storage → asset_library → catalog_id → normale Datenbank** durch den Benutzer bestätigt. Dies ist ein vom Benutzer ausgeführter Live-Nachweis; der Cloud-Agent hat dafür keine authentifizierte Live-Prüfung wiederholt und keine produktiven Schreiboperationen ausgeführt. Weitere Details wie Storage-Pfad, Revision oder aktuelle Asset-Gesamtzahl wurden nicht gemeldet und werden hier nicht angenommen.
+
+Dieser Checkpoint ergänzt ausschließlich die Dokumentation auf `admin-editor-preview`. Keine Funktionsänderungen, kein ZIP-Import und kein Beginn von Phase 2B. `main` bleibt unverändert.
+
+## Live-Bestand und Fuchs-ID vor dem bestätigten Upload
+
+Der Benutzer bestätigt die erfolgreiche manuelle Anwendung von `20261002020000_asset_library_storage.sql`. Die öffentliche REST-Abfrage im Implementierungsblock bestätigte die vorhandenen Storage-Spalten. Kein administrativer SQL-Zugang und keine authentifizierte Live-Owner-Sitzung stehen dieser Cloud zur Verfügung. Der Cloud-Agent hat im Implementierungsblock keine produktiven Daten oder Dateien geschrieben.
 
 Der bestehende Live-Katalog hat weiterhin 21 Einträge. **Fuchs heißt tatsächlich `cat-tier-fuchs`**, nicht `cat-fuchs`; auch der Repository-Grundbestand verwendet diese ID. Die Abfrage auf `catalog_entries.id = 'cat-fuchs'` liefert keine Zeile. Deshalb keine Umbenennung, kein Alias und kein neuer Produktionsdatensatz: Die bestehende Verbindung lautet `catalog_id = 'cat-tier-fuchs'`, kanonisches Asset `catalog:cat-tier-fuchs`, Kategorie Tiere & Fisch / Asset-Typ `catalog`.
 
-Die anon-Abfrage liefert derzeit 127 aktive Assets und 20 aktive Katalogverbindungen. Das kanonische Fuchs-Asset bzw. eine aktive Fuchs-Verbindung ist für anon derzeit nicht sichtbar. Der aktuelle private Status und die Referenz des Fuchs-Assets sind mit diesen Rechten nicht auslesbar; daraus folgt kein behaupteter Live-Storage-Bilderfolg. Die anderen sichtbaren Katalog-Assets entsprechen dem bekannten Modell: kanonische `catalog:<ID>`-Zeilen, zugehörige `catalog_id`, Typ item/weapon/resource/deviation/catalog; bestehende statische `file_ref`, aktuell ohne Storage-Pointer. Die alten Kategorien-Bilddateien fehlen teilweise im Repository und behalten den bisherigen Website-Fallback.
+Die anon-Abfrage vor dem bestätigten Upload lieferte 127 aktive Assets und 20 aktive Katalogverbindungen. Das kanonische Fuchs-Asset bzw. eine aktive Fuchs-Verbindung war zu diesem Zeitpunkt für anon nicht sichtbar. Der private Status und die Referenz des Fuchs-Assets waren mit diesen Rechten nicht auslesbar; dieser frühere Lesestand belegte noch keinen Live-Storage-Bilderfolg. Die anderen damals sichtbaren Katalog-Assets entsprachen dem bekannten Modell: kanonische `catalog:<ID>`-Zeilen, zugehörige `catalog_id`, Typ item/weapon/resource/deviation/catalog; bestehende statische `file_ref`, ohne Storage-Pointer. Die alten Kategorien-Bilddateien fehlen teilweise im Repository und behalten den bisherigen Website-Fallback.
 
-**Für das echte Fuchs-Bild im bestehenden Editor:** `catalog:cat-tier-fuchs` auswählen, `catalog_id = cat-tier-fuchs` und Typ `catalog` beibehalten, Originalbild über den vorhandenen Einzelupload speichern und auf `active` setzen. Nach Neuaufruf/Reload zeigt `#/database` dieses Bild in Fuchs-Karte und Detail. Es wurde in diesem Block kein Fuchs-Bild erzeugt oder automatisch hochgeladen.
+Der Benutzer hat den vorgesehenen Einzelupload inzwischen mit `Fox.png` am bestehenden `catalog:cat-tier-fuchs` ausgeführt und die Darstellung nach Reload bestätigt, siehe Live-Nachweis oben. Der Cloud-Agent hat kein Fuchs-Bild erzeugt oder automatisch hochgeladen.
 
 ## Eine vorhandene Architektur
 
@@ -59,11 +71,11 @@ Der fokussierte Test prüft beide IDs bewusst getrennt: die tatsächliche urspr�
 
 Geprüft: statischer Legacy- und zentraler Originalpfad, aktiver Upload → catalog_id → signed Karte/Detail, unveränderte Bytes, stabile Bildflächen, Badge-/Dialogerhalt, Signed-URL-Wiederverwendung und Reload, Draft/Inactive/Archived auch als Owner ausgeschlossen, echte RLS-Abweisung der Benutzer-Signierung, falsche catalog_id, Profil-/falscher Fachtyp ausgeschlossen, mehrere Kandidaten deterministisch, nicht lesbare Datei übersprungen, 390 px, verspätete Antwort nach Filterwechsel, zentrale Editor-Kennzeichnung, keine zweite Uploadkontrolle, Weiterleitung und aktuelle Assetrevision, bestehende Asset-/Katalog-Saves und unveränderte ursprüngliche 21 Katalogzeilen. Keine Browserexception. Screenshots unter dem ignorierten `test-results/asset-library/` wurden visuell geprüft.
 
-Live nur lesend: Die 21 `id`/`entry`/`revision`-Werte entsprechen dem erhaltenen Phase-2A-Lese-Snapshot. Storage-Spalten live vorhanden; aktuell für anon keine aktive Fuchs-Verbindung. Der echte Fuchs-Upload bzw. seine Freigabe wird nicht automatisch vorgenommen und ist kein behauptetes Live-Testergebnis.
+Frühere Live-Prüfung im Implementierungsblock, ausschließlich lesend: Die 21 `id`/`entry`/`revision`-Werte entsprachen dem erhaltenen Phase-2A-Lese-Snapshot. Storage-Spalten waren live vorhanden; vor dem Benutzer-Upload war für anon keine aktive Fuchs-Verbindung sichtbar. Der anschließend vom Benutzer ausgeführte erfolgreiche Upload mit Freigabe und Reload ist im Live-Nachweis oben separat dokumentiert. Für den reinen Dokumentations-Checkpoint wurden die Implementierungstests nicht erneut ausgeführt.
 
 ## Umfang / Abschluss
 
-Geändert: `supabase-client.js`, `app.js`, `admin-panel.js`, `admin-panel.css`, `asset-library.js`, `styles.css`, `index.html`, `tests/asset-library.cjs`, `tests/catalog-assets.cjs` und dieser Bericht. Keine Änderung an Migrationen, Originalassets, Katalog-Grunddaten, Rollen/RLS, persönlicher Mediengalerie, Profil, Karten, Mutanten oder Tutorial.
+Im abgeschlossenen Implementierungsblock geändert: `supabase-client.js`, `app.js`, `admin-panel.js`, `admin-panel.css`, `asset-library.js`, `styles.css`, `index.html`, `tests/asset-library.cjs`, `tests/catalog-assets.cjs` und dieser Bericht. Keine Änderung an Migrationen, Originalassets, Katalog-Grunddaten, Rollen/RLS, persönlicher Mediengalerie, Profil, Karten, Mutanten oder Tutorial. Der anschließende Dokumentations-Checkpoint ändert ausschließlich diesen Bericht.
 
 **Keine weitere SQL-Migration nötig.** Keine Phase 2B, kein ZIP-/Massenimport und keine produktiven Massenänderungen.
 
