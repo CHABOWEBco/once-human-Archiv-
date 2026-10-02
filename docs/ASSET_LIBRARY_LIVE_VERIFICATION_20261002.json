@@ -1,0 +1,62 @@
+{
+  "date": "2026-10-02",
+  "timezone": "Europe/Berlin",
+  "project": "pmoazkdpkxveloespevd",
+  "source_head": "ce069eec63b489cf22a177506ec081e153904ed5",
+  "user_reported_sql": {
+    "execution_successful": true,
+    "test_id": "Asset-Live-Verify-d6757193-9b7e-4b9b-b870-b5f6a6b449cb",
+    "status": "archived",
+    "revision": 4,
+    "users_available": false,
+    "total_assets": 129,
+    "active_assets": 128,
+    "full_result_json_received": false,
+    "policy_definitions_received": false
+  },
+  "independent_public_rest": {
+    "public_asset_read": {
+      "http": 200,
+      "count": 128,
+      "content_range": "0-127/128",
+      "all_active": true
+    },
+    "non_active_visibility": {
+      "http": 200,
+      "count": 0,
+      "content_range": "*/0"
+    },
+    "archived_test_visibility": {
+      "http": 200,
+      "count": 0,
+      "content_range": "*/0"
+    },
+    "catalog": {
+      "http": 200,
+      "count": 21,
+      "content_range": "0-20/21"
+    },
+    "active_seed_unchanged": true,
+    "catalog_unchanged": true
+  },
+  "anonymous_write_probe": {
+    "anonymous_insert_denied": true,
+    "http": 401,
+    "error_code": "42501",
+    "message": "permission denied for table asset_library",
+    "test_asset_created": false
+  },
+  "catalog_editor_regression": {
+    "checks_passed": 13,
+    "method": "isolated browser test data, not authenticated live browser"
+  },
+  "not_independently_confirmed": [
+    "live SQL policy definitions",
+    "individual moderator/admin live writes",
+    "authenticated user-role read test",
+    "authenticated live browser reload"
+  ],
+  "database_mutations_in_closing_block": false,
+  "application_changes": false,
+  "phase_2_started": false
+}

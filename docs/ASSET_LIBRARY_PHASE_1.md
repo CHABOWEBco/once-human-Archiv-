@@ -47,13 +47,13 @@ Vor einer späteren Anbindung muss festgelegt werden, wie bereits zugewiesene de
 
 Phase 2/3: Ordner-/ZIP-Import, Supabase Storage und Uploadpipeline, weitere Verbraucher-Anbindung, kontrollierte Entfernung/Referenzprüfung. Nichts davon wurde begonnen; bestehende Profilkategorien und Website-Design bleiben erhalten.
 
-## Live-Aktivierung – noch offen
+## Live-Aktivierung – abgeschlossen, Nachweisgrenzen dokumentiert
 
 Migration: [`20261002010000_asset_library.sql`](../supabase/migrations/20261002010000_asset_library.sql).
 
 Voraussetzung sind die bereits bestehenden Rollen-/Katalogtabellen und der private Rollenhelfer. **Nur diese neue Migration** im SQL-Editor der vorhandenen Supabase-Instanz ausführen; kein Reset, keine erneute Ausführung alter CREATE-TABLE-Migrationen. Die Migration läuft in einer Transaktion, seeded Bestandsmetadaten und fordert einen PostgREST-Schema-Reload an.
 
-Read-only live geprüft: Katalog erreichbar, 21 Datensätze; `asset_library` fehlt mit HTTP 404 / `PGRST205`. In dieser Cloud-Aufgabe stehen öffentlicher Browser-Key und GitHub-Zugang bereit, aber kein administrativer SQL-/Dashboard-Zugang. Die Migration wurde deshalb **nicht live ausgeführt**, und echte Live-Schreibabläufe der Bibliothek wurden nicht behauptet. Nach Anwendung die Bibliothek neu laden; danach denselben Create/Edit/Status/Reload-Konfliktschutz über die reale Admin-Sitzung prüfen. Keine geheimen Schlüssel im Frontend oder im Chat nötig.
+Beim ursprünglichen Implementierungsabschluss fehlte `asset_library` noch mit HTTP 404 / `PGRST205`. Anschließend hat der Nutzer die Migration in der produktiven Instanz angewendet und die erfolgreiche SQL-Live-Verifikation bestätigt: **129 Assets insgesamt, 128 aktiv; Testeintrag archiviert, Revision 4, Benutzerfreigabe false**. Die Cloud-Nachprüfung bestätigt unabhängig den vollständigen unveränderten aktiven Seed, die öffentliche Ausblendung nicht aktiver Assets und den unveränderten 21-Einträge-Katalog. Anonymer INSERT wurde live abgewiesen. Der administrative SQL-/Dashboard-Zugang ist weiterhin nicht an die Cloud-Aufgabe gebunden; Rollen-Einzeltests und authentifizierter Browser-Reload werden nur soweit tatsächlich belegt dokumentiert. Vollständiger Abschluss mit Quellen und Nachweisgrenzen: [`ASSET_LIBRARY_LIVE_VERIFICATION_20261002.md`](ASSET_LIBRARY_LIVE_VERIFICATION_20261002.md).
 
 ## Gezielte Prüfung
 
