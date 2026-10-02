@@ -426,7 +426,6 @@ body.route-admin.ui-preferences-active.ui-compact-settings .admin-rail{gap:12px}
 /* Live Map */
 body.route-map.ui-preferences-active{
   --lm-red:var(--ui-accent);
-  font-family:var(--ui-font)
 }
 body.route-map.ui-preferences-active :is(.lm-command-head,.lm-glass,.lm-command-metrics article,.lm-board,.lm-field select,.lm-search input,.lm-reset,.lm-open-routes,.lm-detail-selected section,.lm-detail-actions button){border-radius:var(--ui-radius)}
 body.route-map.ui-preferences-active .lm-workspace{gap:var(--ui-density-gap)}

@@ -13,12 +13,12 @@ const customMarkers=()=>arr('jma_custom_markers');
 const allMarkers=()=>[...(AD().map?.markers||[]),...customMarkers().map(x=>({...x,custom:true}))];
 const markerCoord=(m,key)=>Number.isFinite(Number(m?.[key]))?Number(m[key]):50;
 const toast=msg=>{const t=qs('#toast');if(!t)return;t.textContent=msg;t.classList.add('show');clearTimeout(globalThis.__lmToast);globalThis.__lmToast=setTimeout(()=>t.classList.remove('show'),2400)};
-const refresh=()=>globalThis.JMA_RENDER?.();
+const refresh=()=>{if(!refreshExpandedMap?.())globalThis.JMA_RENDER?.()};
 const go=id=>{location.hash=`#/${id}`};
 
 // The intro belongs to a route visit, not to a render or the zoomable map plane.
 const flybyMotion=matchMedia('(prefers-reduced-motion: reduce)');
-let mapVisit=null,disposeMapView=null;
+let mapVisit=null,disposeMapView=null,refreshExpandedMap=null;
 function stopMapFlyby(){
   if(!mapVisit)return;
   cancelAnimationFrame(mapVisit.frame);
@@ -53,14 +53,14 @@ function enterMapFlyby(){
       visit.frame=requestAnimationFrame(followBoard);
     };
     image.addEventListener('animationend',stopMapFlyby,{once:true});
-    followBoard();document.body.append(layer);
+    followBoard();(qs('.lm-workspace.is-expanded')||document.body).append(layer);
   }).catch(()=>{/* An unavailable decorative image must never break the map. */});
 }
 window.addEventListener('hashchange',()=>{
   disposeMapView?.();
   const route=location.hash.split('/')[1];
   if(route!=='map'&&route!=='live-map'){stopMapFlyby();mapVisit=null}
-});
+},{capture:true});
 flybyMotion.addEventListener('change',e=>{if(e.matches)stopMapFlyby()});
 
 function state(){
@@ -113,6 +113,26 @@ function detailMarkup(s){
   </div>`;
 }
 
+function navigationMarkup(s){
+  return `        <div class="lm-panel-title"><div><small>KARTENSTEUERUNG</small><b>NAVIGATION</b></div><span>01</span><button type="button" class="lm-drawer-close lm-expanded-only" data-lm-close-panel="filter" aria-label="Filter schließen">×</button></div>
+        <label class="lm-field"><span>SZENARIO</span><select id="lmScenario">${s.scenarios.map(x=>`<option value="${esc(x.id)}" ${x.id===s.scenario?'selected':''}>${esc(x.name)}</option>`).join('')}</select></label>
+        <label class="lm-search"><span aria-hidden="true">⌕</span><input id="lmSearch" value="${esc(s.q)}" placeholder="Marker suchen …" aria-label="Marker suchen"></label>
+        <div class="lm-category-list" aria-label="Marker-Kategorien">
+          <button class="${s.category==='all'?'active':''}" type="button" data-lm-cat="all"><i>⌖</i><span>Alle Marker</span><em>${s.candidates.length}</em></button>
+          ${s.categories.map(c=>`<button class="${s.category===c?'active':''}" type="button" data-lm-cat="${esc(c)}"><i>◇</i><span>${esc(c)}</span><em>${s.candidates.filter(m=>m.category===c).length}</em></button>`).join('')}
+        </div>
+        <button class="lm-reset" id="lmResetFilters" type="button">↻ FILTER ZURÜCKSETZEN</button>
+
+        <div class="lm-panel-title lm-route-title"><div><small>ROUTENENTWURF</small><b>${s.draft.length} STATIONEN</b></div><span>02</span></div>
+        <div class="lm-route-draft">${s.draft.length?s.draft.map((id,i)=>{const m=allMarkers().find(x=>x.id===id);return m?`<div><b>${String(i+1).padStart(2,'0')}</b><span>${esc(m.name||'Marker')}</span><button type="button" data-lm-route-remove="${esc(id)}" aria-label="Aus Route entfernen">×</button></div>`:''}).join(''):'<p>Noch keine Station ausgewählt.</p>'}</div>
+        <form class="lm-route-save" id="lmRouteSave"><input name="name" required maxlength="80" placeholder="Routenname" aria-label="Routenname" ${s.draft.length?'':'disabled'}><button type="submit" ${s.draft.length?'':'disabled'}>SPEICHERN</button></form>
+        <button class="lm-open-routes" type="button" data-lm-go="routes">GESPEICHERTE ROUTEN →</button>`;
+}
+
+function markerMarkup(m,s){
+  return `<button class="lm-marker ${m.id===s.selectedId?'active':''} ${m.custom?'custom':''}" type="button" data-lm-marker="${esc(m.id)}" title="${esc(m.name||'Marker')}" style="left:${markerCoord(m,'mapX')}%;top:${markerCoord(m,'mapY')}%"><span>⌖</span></button>`;
+}
+
 function renderLiveMap(){
   disposeMapView?.();
   const s=state();
@@ -137,29 +157,21 @@ function renderLiveMap(){
       </div>
     </header>
 
-    <div class="lm-workspace">
-      <aside class="lm-rail lm-glass">
-        <div class="lm-panel-title"><div><small>KARTENSTEUERUNG</small><b>NAVIGATION</b></div><span>01</span></div>
-        <label class="lm-field"><span>SZENARIO</span><select id="lmScenario">${s.scenarios.map(x=>`<option value="${esc(x.id)}" ${x.id===s.scenario?'selected':''}>${esc(x.name)}</option>`).join('')}</select></label>
-        <label class="lm-search"><span aria-hidden="true">⌕</span><input id="lmSearch" value="${esc(s.q)}" placeholder="Marker suchen …" aria-label="Marker suchen"></label>
-        <div class="lm-category-list" aria-label="Marker-Kategorien">
-          <button class="${s.category==='all'?'active':''}" type="button" data-lm-cat="all"><i>⌖</i><span>Alle Marker</span><em>${s.candidates.length}</em></button>
-          ${s.categories.map(c=>`<button class="${s.category===c?'active':''}" type="button" data-lm-cat="${esc(c)}"><i>◇</i><span>${esc(c)}</span><em>${s.candidates.filter(m=>m.category===c).length}</em></button>`).join('')}
-        </div>
-        <button class="lm-reset" id="lmResetFilters" type="button">↻ FILTER ZURÜCKSETZEN</button>
-
-        <div class="lm-panel-title lm-route-title"><div><small>ROUTENENTWURF</small><b>${s.draft.length} STATIONEN</b></div><span>02</span></div>
-        <div class="lm-route-draft">${s.draft.length?s.draft.map((id,i)=>{const m=allMarkers().find(x=>x.id===id);return m?`<div><b>${String(i+1).padStart(2,'0')}</b><span>${esc(m.name||'Marker')}</span><button type="button" data-lm-route-remove="${esc(id)}" aria-label="Aus Route entfernen">×</button></div>`:''}).join(''):'<p>Noch keine Station ausgewählt.</p>'}</div>
-        <form class="lm-route-save" id="lmRouteSave"><input name="name" required maxlength="80" placeholder="Routenname" aria-label="Routenname" ${s.draft.length?'':'disabled'}><button type="submit" ${s.draft.length?'':'disabled'}>SPEICHERN</button></form>
-        <button class="lm-open-routes" type="button" data-lm-go="routes">GESPEICHERTE ROUTEN →</button>
+    <div class="lm-workspace" id="lmWorkspace" tabindex="-1">
+      <aside class="lm-rail lm-glass" id="lmFilters">
+        ${navigationMarkup(s)}
       </aside>
 
       <div class="lm-map-column">
         <div class="lm-toolbar lm-glass">
           <div><small>AKTIVES SZENARIO</small><b>${esc(scenarioName(s,s.scenario))}</b></div>
           <div class="lm-toolbar-actions">
+            <button id="lmExpand" class="lm-expand" type="button" aria-controls="lmWorkspace" aria-expanded="false">⛶ KARTE MAXIMIEREN</button>
+            <button class="lm-expanded-only" type="button" data-lm-panel="filter" aria-controls="lmFilters" aria-expanded="false">FILTER</button>
+            <button class="lm-expanded-only" type="button" data-lm-panel="detail" aria-controls="lmDetail" aria-expanded="false">DETAILS</button>
             <button id="lmPlace" type="button" title="Eigenen Marker setzen">＋ MARKER</button>
             <span class="lm-zoom"><button id="lmZoomOut" type="button" aria-label="Verkleinern">−</button><b id="lmZoomLabel">100%</b><button id="lmZoomIn" type="button" aria-label="Vergrößern">+</button><button id="lmResetView" type="button">RESET</button></span>
+            <button id="lmCollapse" class="lm-expanded-only" type="button">× SCHLIESSEN</button>
           </div>
         </div>
 
@@ -167,7 +179,7 @@ function renderLiveMap(){
           <div class="lm-plane" id="lmPlane">
             <img class="lm-map-image" id="lmMapImage" src="./assets/map/once-human-world-map.webp" alt="Once Human Weltkarte" draggable="false">
             <svg class="lm-route-layer" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${line?`<polyline points="${line}" fill="none" vector-effect="non-scaling-stroke"/>`:''}</svg>
-            ${s.visible.map(m=>`<button class="lm-marker ${m.id===s.selectedId?'active':''} ${m.custom?'custom':''}" type="button" data-lm-marker="${esc(m.id)}" title="${esc(m.name||'Marker')}" style="left:${markerCoord(m,'mapX')}%;top:${markerCoord(m,'mapY')}%"><span>⌖</span></button>`).join('')}
+            ${s.visible.map(m=>markerMarkup(m,s)).join('')}
             <div class="lm-navigator" style="--nav-x:${navX}%;--nav-y:${navY}%" aria-hidden="true">
               <div class="lm-nav-ring"></div><img src="./assets/live-map/shattered-maiden.png" alt=""><span>${selectedOnScenario?esc(selectedOnScenario.name||'Marker'):'NAVIGATOR'}</span>
             </div>
@@ -180,7 +192,7 @@ function renderLiveMap(){
       </div>
 
       <aside class="lm-detail lm-glass" id="lmDetail">
-        <div class="lm-panel-title"><div><small>MARKERDOSSIER</small><b>DETAILS</b></div><span>03</span></div>
+        <div class="lm-panel-title"><div><small>MARKERDOSSIER</small><b>DETAILS</b></div><span>03</span><button type="button" class="lm-drawer-close lm-expanded-only" data-lm-close-panel="detail" aria-label="Details schließen">×</button></div>
         ${detailMarkup(s)}
       </aside>
     </div>
@@ -203,31 +215,8 @@ function openMarkerDialog(mapX,mapY,scenario){
 function bindLiveMap(){
   disposeMapView?.();
   enterMapFlyby();
-  const current=state();
-  qsa('[data-lm-go]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.lmGo)));
-  qsa('[data-lm-focus-search]').forEach(b=>b.addEventListener('click',()=>qs('#lmSearch')?.focus()));
-  qsa('[data-lm-filter-label]').forEach(b=>b.addEventListener('click',()=>{write('jma_map_q',b.dataset.lmFilterLabel);refresh()}));
-  qsa('[data-lm-catalog]').forEach(b=>b.addEventListener('click',()=>{sessionStorage.setItem('jma_open_catalog',b.dataset.lmCatalog);go('database')}));
-  qs('#lmScenario')?.addEventListener('change',e=>{write('jma_map_scenario',e.target.value);write('jma_map_selected','');write('jma_map_cat','all');write('jma_map_q','');refresh()});
-  let searchTimer;
-  qs('#lmSearch')?.addEventListener('input',e=>{
-    const input=e.target;
-    write('jma_map_q',input.value);clearTimeout(searchTimer);
-    searchTimer=setTimeout(()=>{
-      if(!input.isConnected)return;
-      const focused=document.activeElement===input,start=input.selectionStart,end=input.selectionEnd,direction=input.selectionDirection;
-      refresh();
-      const next=qs('#lmSearch');
-      if(focused&&next){next.focus({preventScroll:true});next.setSelectionRange(start,end,direction)}
-    },180);
-  });
-  qsa('[data-lm-cat]').forEach(b=>b.addEventListener('click',()=>{write('jma_map_cat',b.dataset.lmCat);refresh()}));
-  qs('#lmResetFilters')?.addEventListener('click',()=>{write('jma_map_cat','all');write('jma_map_q','');refresh()});
-  qsa('[data-lm-marker]').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();write('jma_map_selected',b.dataset.lmMarker);refresh()}));
-  qsa('[data-lm-route-toggle]').forEach(b=>b.addEventListener('click',()=>{const id=b.dataset.lmRouteToggle,rows=arr('jma_route_draft');const next=rows.includes(id)?rows.filter(x=>x!==id):[...rows,id];write('jma_route_draft',next);refresh()}));
-  qsa('[data-lm-route-remove]').forEach(b=>b.addEventListener('click',()=>{write('jma_route_draft',arr('jma_route_draft').filter(x=>x!==b.dataset.lmRouteRemove));refresh()}));
-  qsa('[data-lm-delete]').forEach(b=>b.addEventListener('click',()=>{if(!confirm('Eigenen Marker löschen?'))return;const id=b.dataset.lmDelete;write('jma_custom_markers',customMarkers().filter(x=>x.id!==id));write('jma_map_selected','');write('jma_route_draft',arr('jma_route_draft').filter(x=>x!==id));write('jma_routes',arr('jma_routes').map(r=>({...r,markers:Array.isArray(r.markers)?r.markers.filter(x=>x!==id):[]})));refresh()}));
-  qs('#lmRouteSave')?.addEventListener('submit',e=>{e.preventDefault();const draft=arr('jma_route_draft'),name=String(new FormData(e.currentTarget).get('name')||'').trim();if(!draft.length||!name)return;const rows=arr('jma_routes');rows.unshift({id:uid('route'),name,markers:[...draft],created:new Date().toISOString()});write('jma_routes',rows);write('jma_route_draft',[]);refresh();toast('Route gespeichert.');});
+  let current=state(),searchTimer;
+  const workspace=qs('#lmWorkspace'),page=qs('.lm-page'),rail=qs('#lmFilters'),detail=qs('#lmDetail');
 
   const board=qs('#lmBoard'),plane=qs('#lmPlane'),image=qs('#lmMapImage'),zoomLabel=qs('#lmZoomLabel'),instruction=qs('#lmInstruction');
   if(!board||!plane||!image)return;
@@ -239,16 +228,22 @@ function bindLiveMap(){
   let placing=false,drag=null,pinch=null,disposed=false,persistTimer=0;
   let lastStored=JSON.stringify(view),dirty=false;
   const pointers=new Map(),desktop=matchMedia('(hover: hover) and (pointer: fine)');
+  let expanded=false,openPanel=null,background=[],returnScroll=null,normalMinHeight='',normalGeometry=null;
   const navigationHint=()=>desktop.matches&&innerWidth>1180?'MAUS ZUM RAND = GLEITEN · ZIEHEN · MAUSRAD / ± = ZOOMEN':'ZIEHEN = VERSCHIEBEN · MAUSRAD / ± = ZOOMEN';
   if(instruction)instruction.textContent=navigationHint();
   let geometry={w:0,h:0,bw:0,bh:0},inside=false,hoverPoint=null,interactive=false;
   let panFrame=0,lastFrame=0,velocity={x:0,y:0};
   const measure=()=>{
     const bw=board.clientWidth,bh=board.clientHeight,ratio=(image.naturalWidth&&image.naturalHeight)?image.naturalWidth/image.naturalHeight:1.5;
-    const w=Math.max(bw,bh*ratio);geometry={w,h:w/ratio,bw,bh};
+    const w=Math.max(bw,bh*ratio),h=w/ratio;
+    // Keep the same world point at the center when the existing board changes size.
+    if(geometry.w&&geometry.h){view.x*=w/geometry.w;view.y*=h/geometry.h}
+    geometry={w,h,bw,bh};
     plane.style.width=`${geometry.w}px`;plane.style.height=`${geometry.h}px`;
   };
   const bounds=()=>({x:Math.max(0,(geometry.w*view.zoom-geometry.bw)/2),y:Math.max(0,(geometry.h*view.zoom-geometry.bh)/2)});
+  // Same stored view/schema: expanded offsets are expressed in the normal fit.
+  const storageView=()=>expanded&&normalGeometry?{zoom:view.zoom,x:view.x*normalGeometry.w/geometry.w,y:view.y*normalGeometry.h/geometry.h}:{...view};
   const apply=()=>{
     if(disposed||!board.isConnected)return;
     view.zoom=clamp(view.zoom,1,2.6);const limit=bounds();
@@ -256,12 +251,12 @@ function bindLiveMap(){
     plane.style.transform=`translate3d(calc(-50% + ${view.x}px),calc(-50% + ${view.y}px),0) scale(${view.zoom})`;
     plane.style.setProperty('--inverse-zoom',String(1/view.zoom));
     const label=`${Math.round(view.zoom*100)}%`;if(zoomLabel&&zoomLabel.textContent!==label)zoomLabel.textContent=label;
-    dirty=JSON.stringify(view)!==lastStored;
+    dirty=JSON.stringify(storageView())!==lastStored;
   };
   const persist=()=>{
     clearTimeout(persistTimer);persistTimer=0;
     if(!dirty)return;
-    write('jma_map_view',{...view});lastStored=JSON.stringify(view);dirty=false;
+    const stored=storageView();write('jma_map_view',stored);lastStored=JSON.stringify(stored);dirty=false;
   };
   const queuePersist=()=>{clearTimeout(persistTimer);persistTimer=setTimeout(persist,250)};
   const stopPan=(flush=true)=>{
@@ -309,6 +304,114 @@ function bindLiveMap(){
     if(anchor){const ratio=next/view.zoom;view.x=anchor.x-(anchor.x-view.x)*ratio;view.y=anchor.y-(anchor.y-view.y)*ratio}
     view.zoom=next;apply();
   };
+  const setPanel=(name,focus=true)=>{
+    inside=false;stopPan();openPanel=expanded?name:null;
+    rail.hidden=expanded&&openPanel!=='filter';detail.hidden=expanded&&openPanel!=='detail';
+    for(const b of qsa('[data-lm-panel]',workspace))b.setAttribute('aria-expanded',String(openPanel===b.dataset.lmPanel));
+    if(focus&&expanded){const target=name?qs('[data-lm-close-panel]',name==='filter'?rail:detail):qs(`[data-lm-panel="${name||workspace.dataset.lastPanel}"]`,workspace);target?.focus({preventScroll:true})}
+    if(name)workspace.dataset.lastPanel=name;
+  };
+  const setExpanded=(next,focus=true)=>{
+    if(next===expanded||next&&innerWidth<=1180)return;
+    inside=false;stopPan();
+    for(const id of pointers.keys())if(board.hasPointerCapture(id))board.releasePointerCapture(id);
+    pointers.clear();resetGesture();
+    if(next){
+      normalGeometry={w:geometry.w,h:geometry.h};
+      returnScroll={x:scrollX,y:scrollY};normalMinHeight=page.style.minHeight;
+      page.style.minHeight=`${page.getBoundingClientRect().height}px`;
+      // Make only the surrounding page inert, never the ancestor of this shell.
+      for(let node=workspace;node.parentElement&&node!==document.body;node=node.parentElement){
+        for(const sibling of node.parentElement.children)if(sibling!==node&&sibling.tagName!=='DIALOG'){background.push([sibling,sibling.inert]);sibling.inert=true}
+      }
+      workspace.setAttribute('role','dialog');workspace.setAttribute('aria-modal','true');workspace.setAttribute('aria-label','Maximierte Live-Karte');
+    }else{
+      for(const [node,inert] of background)node.inert=inert;background=[];
+      page.style.minHeight=normalMinHeight;
+      for(const attr of ['role','aria-modal','aria-label'])workspace.removeAttribute(attr);
+    }
+    expanded=next;workspace.classList.toggle('is-expanded',next);
+    document.body.classList.toggle('map-expanded',next);document.documentElement.classList.toggle('map-expanded',next);
+    qs('#lmExpand',workspace)?.setAttribute('aria-expanded',String(next));setPanel(null,false);
+    if(mapVisit?.layer)(next?workspace:document.body).append(mapVisit.layer);
+    if(board.isConnected){measure();apply();persist()}
+    if(!next&&returnScroll)scrollTo({left:returnScroll.x,top:returnScroll.y,behavior:'instant'});
+    if(focus)(next?qs('#lmCollapse',workspace):qs('#lmExpand',workspace))?.focus({preventScroll:true});
+  };
+  // Update existing UI/data nodes while maximized; never render or bind another map.
+  const updateExpanded=()=>{
+    if(!expanded||disposed||!board.isConnected)return false;
+    inside=false;stopPan();current=state();
+    const route=current.draft.map(id=>allMarkers().find(m=>m.id===id&&m.scenario===current.scenario)).filter(Boolean);
+    const line=route.map(m=>`${markerCoord(m,'mapX')},${markerCoord(m,'mapY')}`).join(' ');
+    qs('.lm-route-layer',plane).innerHTML=line?`<polyline points="${line}" fill="none" vector-effect="non-scaling-stroke"/>`:'';
+    const existing=new Map(qsa('[data-lm-marker]',plane).map(el=>[el.dataset.lmMarker,el]));
+    for(const m of current.visible){
+      let el=existing.get(m.id);existing.delete(m.id);
+      if(!el){const template=document.createElement('template');template.innerHTML=markerMarkup(m,current);el=template.content.firstElementChild;plane.append(el)}
+      el.classList.toggle('active',m.id===current.selectedId);el.title=m.name||'Marker';
+      el.style.left=`${markerCoord(m,'mapX')}%`;el.style.top=`${markerCoord(m,'mapY')}%`;
+    }
+    for(const el of existing.values())el.remove();
+    const m=current.selected?.scenario===current.scenario?current.selected:null,nav=qs('.lm-navigator',plane);
+    nav.style.setProperty('--nav-x',`${m?markerCoord(m,'mapX'):48}%`);nav.style.setProperty('--nav-y',`${m?markerCoord(m,'mapY'):52}%`);
+    qs('span',nav).textContent=m?.name||'NAVIGATOR';
+    const routeName=qs('[name="name"]',rail)?.value||'';
+    rail.innerHTML=navigationMarkup(current);qs('[name="name"]',rail).value=routeName;
+    detail.innerHTML=qs('.lm-panel-title',detail).outerHTML+detailMarkup(current);
+    qs('.lm-toolbar>div:first-child b',workspace).textContent=scenarioName(current,current.scenario);
+    const counts=[current.scenarios.length,current.visible.length,current.draft.length,customMarkers().filter(m=>m.scenario===current.scenario).length];
+    qsa('.lm-command-metrics b',page).forEach((el,i)=>el.textContent=counts[i]);
+    return true;
+  };
+  refreshExpandedMap=updateExpanded;
+  listen(workspace,'click',e=>{
+    const b=e.target.closest('button');if(!b)return;
+    if(b.id==='lmExpand'){setExpanded(true);return}
+    if(b.id==='lmCollapse'){setExpanded(false);return}
+    if(b.dataset.lmPanel){setPanel(openPanel===b.dataset.lmPanel?null:b.dataset.lmPanel);return}
+    if(b.dataset.lmClosePanel){setPanel(null);return}
+    if(b.dataset.lmGo){go(b.dataset.lmGo);return}
+    if(b.hasAttribute('data-lm-focus-search')){if(expanded)setPanel('filter',false);qs('#lmSearch')?.focus();return}
+    if(b.dataset.lmCatalog){sessionStorage.setItem('jma_open_catalog',b.dataset.lmCatalog);go('database');return}
+    if(b.dataset.lmFilterLabel){write('jma_map_q',b.dataset.lmFilterLabel);refresh();return}
+    if(b.hasAttribute('data-lm-cat')){write('jma_map_cat',b.dataset.lmCat);refresh();return}
+    if(b.id==='lmResetFilters'){write('jma_map_cat','all');write('jma_map_q','');refresh();return}
+    if(b.dataset.lmMarker){e.stopPropagation();write('jma_map_selected',b.dataset.lmMarker);refresh();if(expanded)setPanel('detail',false);return}
+    if(b.dataset.lmRouteToggle){const id=b.dataset.lmRouteToggle,rows=arr('jma_route_draft');write('jma_route_draft',rows.includes(id)?rows.filter(x=>x!==id):[...rows,id]);refresh();return}
+    if(b.dataset.lmRouteRemove){write('jma_route_draft',arr('jma_route_draft').filter(x=>x!==b.dataset.lmRouteRemove));refresh();return}
+    if(b.dataset.lmDelete){
+      if(!confirm('Eigenen Marker löschen?'))return;const id=b.dataset.lmDelete;
+      write('jma_custom_markers',customMarkers().filter(x=>x.id!==id));write('jma_map_selected','');write('jma_route_draft',arr('jma_route_draft').filter(x=>x!==id));
+      write('jma_routes',arr('jma_routes').map(r=>({...r,markers:Array.isArray(r.markers)?r.markers.filter(x=>x!==id):[]})));refresh();
+    }
+  });
+  listen(workspace,'change',e=>{if(e.target.id==='lmScenario'){write('jma_map_scenario',e.target.value);write('jma_map_selected','');write('jma_map_cat','all');write('jma_map_q','');refresh()}});
+  listen(workspace,'input',e=>{
+    if(e.target.id!=='lmSearch')return;
+    const input=e.target;write('jma_map_q',input.value);clearTimeout(searchTimer);
+    searchTimer=setTimeout(()=>{
+      if(!input.isConnected)return;
+      const focused=document.activeElement===input,start=input.selectionStart,end=input.selectionEnd,direction=input.selectionDirection;
+      refresh();const next=qs('#lmSearch');if(focused&&next){next.focus({preventScroll:true});next.setSelectionRange(start,end,direction)}
+    },180);
+  });
+  listen(workspace,'submit',e=>{
+    if(e.target.id!=='lmRouteSave')return;
+    e.preventDefault();const draft=arr('jma_route_draft'),name=String(new FormData(e.target).get('name')||'').trim();if(!draft.length||!name)return;
+    const rows=arr('jma_routes');rows.unshift({id:uid('route'),name,markers:[...draft],created:new Date().toISOString()});
+    write('jma_routes',rows);write('jma_route_draft',[]);refresh();toast('Route gespeichert.');
+  });
+  listen(document,'keydown',e=>{
+    if(!expanded||qs('dialog[open]'))return;
+    if(e.key==='Escape'){e.preventDefault();e.stopPropagation();setExpanded(false);return}
+    if(e.key!=='Tab')return;
+    const targets=qsa('button:not(:disabled),input:not(:disabled),select:not(:disabled),a[href]',workspace).filter(el=>{const r=el.getBoundingClientRect();return r.width&&r.height&&r.right>0&&r.left<innerWidth&&r.bottom>0&&r.top<innerHeight&&!el.closest('[hidden]')});
+    const first=targets[0],last=targets.at(-1),active=document.activeElement;
+    if(e.shiftKey&&(active===first||!workspace.contains(active))){e.preventDefault();last?.focus()}
+    else if(!e.shiftKey&&(active===last||!workspace.contains(active))){e.preventDefault();first?.focus()}
+  },{capture:true});
+  listen(rail,'pointerenter',()=>{inside=false;stopPan()});listen(detail,'pointerenter',()=>{inside=false;stopPan()});
   listen(qs('#lmZoomIn'),'click',()=>{zoom(view.zoom+.15);persist()});
   listen(qs('#lmZoomOut'),'click',()=>{zoom(view.zoom-.15);persist()});
   listen(qs('#lmResetView'),'click',()=>{stopPan();view={zoom:1,x:0,y:0};apply();persist()});
@@ -366,16 +469,18 @@ function bindLiveMap(){
     if(instruction)instruction.textContent=navigationHint();
     openMarkerDialog(mapX,mapY,current.scenario);
   });
-  const resize=()=>{measure();apply();queuePersist();stopPan();if(instruction&&!placing)instruction.textContent=navigationHint()};
+  const resize=()=>{if(expanded&&innerWidth<=1180)setExpanded(false);measure();apply();queuePersist();stopPan();if(instruction&&!placing)instruction.textContent=navigationHint()};
   listen(image,'load',resize,{once:true});
   const observer=new ResizeObserver(resize);observer.observe(board);
   // A render disposes synchronously; this also catches DOM removal by other code.
   const removal=new MutationObserver(()=>{if(!board.isConnected)dispose()});removal.observe(qs('#app'),{childList:true,subtree:true});
   const dispose=()=>{
     if(disposed)return;
+    if(expanded)setExpanded(false,false);
     stopPan();disposed=true;events.abort();observer.disconnect();removal.disconnect();clearTimeout(searchTimer);
     pointers.clear();board.classList.remove('dragging');plane.style.willChange='';
     if(disposeMapView===dispose)disposeMapView=null;
+    if(refreshExpandedMap===updateExpanded)refreshExpandedMap=null;
   };
   disposeMapView=dispose;
   listen(window,'pagehide',dispose);
