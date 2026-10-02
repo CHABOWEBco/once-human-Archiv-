@@ -5,6 +5,7 @@ const ADMIN_VIEWS=[
   ['overview','Übersicht','⌂'],
   ['content','Inhalte & Seiten','▤'],
   ['editor','Inhaltseditor','✎'],
+  ['assets','Asset-Bibliothek','▧'],
   ['map','Karte & Marker','⌖'],
   ['moderation','Moderation','⚑'],
   ['users','Nutzer & Rollen','♙'],
@@ -257,6 +258,7 @@ function renderView(){
   const active=getView();
   if(active==='content') return contentView();
   if(active==='editor') return editorView();
+  if(active==='assets') return globalThis.ASSET_LIBRARY.render();
   if(active==='map') return mapView();
   if(active==='moderation') return moderationView();
   if(active==='users') return usersView();
@@ -495,6 +497,7 @@ function bindAdmin(){
   });
   bindLiquidCards();
   bindLiquidNav();
+  if(getView()==='assets')globalThis.ASSET_LIBRARY.bind();
 }
 
 globalThis.ADMIN_PANEL={render:renderAdmin,bind:bindAdmin,allowed:()=>ADMIN_ROLES.has(role())};

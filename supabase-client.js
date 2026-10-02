@@ -376,6 +376,40 @@ function destroy(){
   state.ready = false;
 }
 
+// Shares the existing authenticated client; no second auth or local write store.
+function requireAssetEditor(){
+  if(!state.user||!state.session||!CATALOG_WRITE_ROLES.has(state.role))throw Error('Asset-Verwaltung benötigt eine Moderator-, Admin- oder Owner-Rolle.');
+}
+async function loadAssets(){
+  const rows=[];
+  for(let start=0;;start+=500){
+    const {data,error}=await getClient().from('asset_library').select('*').order('id',{ascending:true}).range(start,start+499);
+    if(error)throw error;
+    rows.push(...data);if(data.length<500)break;
+  }
+  return rows;
+}
+async function saveAsset(input,expectedRevision=null){
+  requireAssetEditor();
+  const row=globalThis.ASSET_LIBRARY_MODEL.validate(input);
+  let query=getClient().from('asset_library');
+  if(expectedRevision===null)query=query.insert({...row,revision:1});
+  else{
+    if(!Number.isInteger(expectedRevision)||expectedRevision<1)throw Error('Geladene Revision fehlt. Bitte Bibliothek neu laden.');
+    const {id,...changes}=row;
+    query=query.update({...changes,revision:expectedRevision+1}).eq('id',id).eq('revision',expectedRevision);
+  }
+  const {data,error}=await query.select('*').maybeSingle();
+  if(error){
+    if(error.code==='23505')throw Error('Asset-ID existiert bereits. Bitte neu laden.');
+    if(error.code==='23503')throw Error('Die zugehörige Katalog-ID existiert nicht.');
+    throw error;
+  }
+  if(!data)throw Error('Versionskonflikt: Das Asset wurde zwischenzeitlich geändert. Bitte neu laden; dein Entwurf bleibt erhalten.');
+  return data;
+}
+globalThis.JMA_ASSET_STORE=Object.freeze({load:loadAssets,save:saveAsset});
+
 globalThis.JMA_CATALOG = {
   load: loadCatalog,
   create: createCatalogEntry,

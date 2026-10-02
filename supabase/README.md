@@ -1,5 +1,7 @@
 # Supabase setup – Kernschema
 
+Phase-1-Asset-Bibliothek: neue Metadatenmigration `migrations/20261002010000_asset_library.sql`, vorhandene Rollen/RLS wiederverwendet. Live-Anwendung ist noch offen; vollständiger Inventar-, Rechte-, Aktivierungs- und Teststand in [`../docs/ASSET_LIBRARY_PHASE_1.md`](../docs/ASSET_LIBRARY_PHASE_1.md). Keine alte Migration oder Bestandsdaten zurücksetzen.
+
 Dieser Ordner enthält die Datenbankbasis im Repository. Die Website besitzt inzwischen eine konfigurierte Supabase-Verbindung in `supabase-client.js`, einschließlich öffentlichem Publishable-Key. Login, Registrierung, Session-Restore, Recovery und Profil-/Rollenbezug sind frontendseitig angebunden. Tabellen, Grants, RLS, Trigger und Auth-Konfiguration wurden am 01.10.2026 read-only live geprüft; Nachweis: `../docs/B12_LIVE_20261001.json`. Die Auth-URL-Konfiguration wurde am 01.10.2026 anschließend auf die aktuelle Preview ergänzt und nach Reload geprüft; Nachweis: `../docs/AUTH_REDIRECT_LIVE_20261001.md`. Ein geheimer `service_role`-Key ist kein Bestandteil der Frontend-Verbindung.
 
 ## Migration

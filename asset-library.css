@@ -1,0 +1,20 @@
+.asset-library-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,350px);gap:20px;align-items:start}
+.asset-library .admin-section-heading,.asset-actions{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.asset-library-center,.asset-preview{min-width:0;padding:20px}
+.asset-filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.asset-filters label{display:grid;gap:6px;font-size:12px;color:#b9cbd1}
+.asset-filters input,.asset-filters select{width:100%;min-width:0;padding:10px;background:#09151b;border:1px solid #263f47;color:#e5f4f6;border-radius:4px}
+.asset-list{display:grid;gap:8px;max-height:500px;overflow:auto;padding:2px}
+.asset-row{display:grid;grid-template-columns:52px minmax(0,1fr) auto;align-items:center;gap:12px;text-align:left;background:#0d1b22;border:1px solid #263f47;border-radius:6px;color:#e5f4f6;padding:10px;min-width:0;cursor:pointer}
+.asset-row.selected{border-color:#45e3f1;box-shadow:inset 3px 0 #45e3f1}.asset-row[hidden]{display:none}
+.asset-row strong,.asset-row small{display:block;overflow-wrap:anywhere}.asset-row small{font-size:11px;color:#96b3be;margin-top:4px}
+.asset-thumb{height:52px;display:grid;place-items:center;background:#061017;border-radius:4px}.asset-thumb img{width:100%;height:100%;max-height:52px;object-fit:contain}.asset-thumb b{font-size:25px;color:#45e3f1}
+.asset-status{font-size:11px;text-align:right;color:#a5b7c2}.asset-status.status-active{color:#6fe0bc}.asset-status.status-archived{color:#c4a9d7}.asset-status.status-inactive{color:#e7bb8b}
+.asset-edit{margin-top:24px;border-top:1px solid #263f47;padding-top:8px}.asset-form input,.asset-form textarea,.asset-form select{min-width:0;max-width:100%}.asset-form .asset-release{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.asset-form .asset-release input{width:20px;height:20px;margin:0}
+.asset-form .wide{grid-column:1/-1}.asset-library button,.asset-filters input,.asset-filters select,.asset-form input:not([type="checkbox"]),.asset-form select{min-height:44px}
+.asset-note,.asset-connection{font-size:12px;line-height:1.6;color:#a2bbc5;overflow-wrap:anywhere}.asset-connection.error{color:#efbd9c}.asset-preview{position:sticky;top:90px}.asset-preview h3,.asset-preview p{overflow-wrap:anywhere}.asset-preview pre{white-space:pre-wrap;overflow-wrap:anywhere;max-height:300px;overflow:auto;font-size:11px;color:#96b3be;background:#08141a;padding:12px;border-radius:4px}
+.asset-image-preview{display:grid;place-items:center;margin:18px 0;background:#08141a;min-height:180px;max-height:320px}.asset-image-preview img{width:100%;max-height:300px;object-fit:contain}
+.asset-profile-scene{position:relative;min-height:220px;margin:18px 0;background:#07171f;border-radius:6px;overflow:hidden}.asset-profile-banner{position:absolute;inset:0}.asset-profile-banner img{width:100%;height:100%;object-fit:cover;opacity:.6}.asset-profile-identity{position:relative;display:flex;flex-direction:column;align-items:center;gap:18px;padding:28px 20px;text-align:center;overflow-wrap:anywhere}.asset-profile-avatar{width:96px;height:96px}.asset-profile-avatar .profile-avatar{border-radius:50%;background:#0c1d25}.asset-profile-avatar .avatar-image{border-radius:50%}.asset-trophy{font-size:30px;color:#edc775}
+.asset-preview [data-image-error]:after{content:attr(data-image-error);color:#efbd9c;font-size:12px}.asset-library button:focus-visible,.asset-library input:focus-visible,.asset-library select:focus-visible,.asset-library textarea:focus-visible{outline:2px solid #45e3f1;outline-offset:2px}
+@media(max-width:1100px){.asset-library-layout{grid-template-columns:minmax(0,1fr)}.asset-preview{position:static}}
+@media(max-width:560px){.asset-library-center,.asset-preview{padding:12px}.asset-filters{grid-template-columns:minmax(0,1fr)}.asset-row{grid-template-columns:42px minmax(0,1fr);gap:8px}.asset-thumb{height:42px}.asset-status{grid-column:2;text-align:left}.asset-actions{width:100%}.asset-actions button{flex:1;min-height:44px}.asset-form{grid-template-columns:minmax(0,1fr)}.asset-list{max-height:380px}.asset-library-layout{gap:14px}}
