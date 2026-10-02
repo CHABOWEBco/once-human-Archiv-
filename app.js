@@ -50,7 +50,7 @@ function homeBrandText(value=''){
 function asset(name){ return `./assets/reference/${name}`; }
 function quick(route,title,desc,img,icon,gated=false){return `<a class="landing-quick" href="#/${route}"${gated?' data-showcase-gated':''} style="--quick-image:url('${asset(img)}')"><span class="landing-quick-visual"></span>${gated?'<em class="showcase-access">⌁ ARCHIVZUGANG</em>':''}<span class="landing-quick-body"><i>${icon}</i><span><h3>${title}</h3><p>${desc}</p></span><b aria-hidden="true">›</b></span></a>`}
 
-const DB_STATE={q:'',category:'all',status:'all',sort:'name',view:'grid',onlyFav:false,page:1};
+const DB_STATE={q:'',category:'all',status:'all',sort:'name',view:'grid',onlyFav:false,page:1,selected:'',editing:false,archived:false};
 function catalogEntries(){return Array.isArray(globalThis.CATALOG_DATA?.entries)?globalThis.CATALOG_DATA.entries:[]}
 function catalogCategories(){return Array.isArray(globalThis.CATALOG_DATA?.categories)?globalThis.CATALOG_DATA.categories:[]}
 function categoryFor(id){return catalogCategories().find(c=>c.id===id)||{id,label:id||'Unbekannt',icon:'◇',subcategories:[]}}
@@ -58,7 +58,9 @@ function storedSet(key){const value=globalThis.JMA_STORE.read(key,[]);return new
 
 function writeSet(key,set){globalThis.JMA_STORE.write(key,[...set])}
 
-function filteredCatalog(){const q=DB_STATE.q.trim().toLowerCase(),fav=storedSet('jma_favorites');return catalogEntries().filter(e=>(!q||[e.id,e.name_de,e.kind,e.description,e.acquisition,...(e.tags||[])].join(' ').toLowerCase().includes(q))&&(DB_STATE.category==='all'||e.category===DB_STATE.category)&&(DB_STATE.status==='all'||e.status===DB_STATE.status)&&(!DB_STATE.onlyFav||fav.has(e.id))).sort((a,b)=>DB_STATE.sort==='category'?categoryFor(a.category).label.localeCompare(categoryFor(b.category).label,'de')||a.name_de.localeCompare(b.name_de,'de'):DB_STATE.sort==='checked'?String(b.last_checked||'').localeCompare(a.last_checked||''):a.name_de.localeCompare(b.name_de,'de'))}
+function databaseEditing(){return DB_STATE.editing&&!!globalThis.ADMIN_PANEL?.allowed()}
+function databaseEntries(){return catalogEntries().filter(e=>Boolean(e.archived)===(databaseEditing()&&DB_STATE.archived))}
+function filteredCatalog(){const q=DB_STATE.q.trim().toLowerCase(),fav=storedSet('jma_favorites');return databaseEntries().filter(e=>(!q||[e.id,e.name_de,e.kind,e.description,e.acquisition,...(e.tags||[])].join(' ').toLowerCase().includes(q))&&(DB_STATE.category==='all'||e.category===DB_STATE.category)&&(DB_STATE.status==='all'||e.status===DB_STATE.status)&&(!DB_STATE.onlyFav||fav.has(e.id))).sort((a,b)=>DB_STATE.sort==='category'?categoryFor(a.category).label.localeCompare(categoryFor(b.category).label,'de')||a.name_de.localeCompare(b.name_de,'de'):DB_STATE.sort==='checked'?String(b.last_checked||'').localeCompare(a.last_checked||''):a.name_de.localeCompare(b.name_de,'de'))}
 
 function catalogArt(e,fallback){const valid=typeof e.image==='string'&&/^assets\/items\/.+\.(png|webp|jpg|jpeg)$/i.test(e.image)&&!e.image.includes('..')&&!e.image.includes('\\');return valid?`<img src="./${e.image.split('/').map(encodeURIComponent).join('/')}" alt="${escapeHtml(e.name_de)}" loading="lazy">`:fallback}
 function hydrateCatalogArt(root){
@@ -78,10 +80,11 @@ function hydrateCatalogArt(root){
 }
 function catalogCard(e){
   const category=categoryFor(e.category),esc=escapeHtml,found=storedSet('jma_found').has(e.id);
-  return `<article class="catalog-card" data-entry="${esc(e.id)}">
-    <button class="catalog-card-art" type="button" data-catalog-art="${esc(e.id)}" data-db-detail="${esc(e.id)}" aria-label="Details zu ${esc(e.name_de)}"><code>${esc(e.id)}</code>${catalogArt(e,`<span class="catalog-glyph" aria-hidden="true">${esc(category.icon||'◇')}</span><small>ORIGINALBILD AUSSTEHEND</small>`)}${found?'<span class="catalog-found-mark">✓ GEFUNDEN</span>':''}</button>
+  return `<article class="catalog-card ${DB_STATE.selected===e.id?'selected':''}" data-entry="${esc(e.id)}" aria-current="${DB_STATE.selected===e.id}">
+    <button class="catalog-card-art" type="button" data-catalog-art="${esc(e.id)}" data-db-detail="${esc(e.id)}" aria-label="Details zu ${esc(e.name_de)}"><code>${esc(e.id)}</code>${catalogArt(e,`<span class="catalog-glyph" aria-hidden="true">${esc(category.icon||'◇')}</span><small>ARCHIV / BILD AUSSTEHEND</small>`)}${found?'<span class="catalog-found-mark">✓ GEFUNDEN</span>':''}</button>
     <div class="catalog-card-copy"><small class="catalog-category">${esc(category.label)}</small><h3><button type="button" data-db-detail="${esc(e.id)}">${esc(e.name_de)}</button></h3><p class="catalog-kind">${esc(e.kind||'Archiv-Eintrag')}</p><p class="catalog-excerpt">${esc(e.description||e.acquisition||'Beschreibung noch nicht abschließend dokumentiert.')}</p><div class="catalog-tags">${(e.tags||[]).slice(0,3).map(t=>`<span>${esc(t)}</span>`).join('')}</div></div>
-    <footer class="catalog-card-footer"><span class="catalog-status"><i aria-hidden="true"></i>${esc(e.status||'Prüfstatus offen')}</span><div class="catalog-actions"><button type="button" data-db-detail="${esc(e.id)}">EINTRAG ÖFFNEN <span aria-hidden="true">↗</span></button>${[['fav','jma_favorites','★','Favorit'],['hunt','jma_hunt','◎','Jagdliste'],['found','jma_found','✓','Gefunden']].map(([action,key,icon,label])=>`<button class="icon-action ${storedSet(key).has(e.id)?'active':''}" type="button" data-db-${action}="${esc(e.id)}" aria-label="${label}: ${esc(e.name_de)}" title="${label}" aria-pressed="${storedSet(key).has(e.id)}">${icon}</button>`).join('')}</div></footer>
+    <footer class="catalog-card-footer"><span class="catalog-status"><i aria-hidden="true"></i>${esc(e.status||'Prüfstatus offen')}</span><div class="catalog-actions"><button type="button" data-db-detail="${esc(e.id)}">DOSSIER ANSEHEN <span aria-hidden="true">↗</span></button>${[['fav','jma_favorites','★','Favorit'],['hunt','jma_hunt','◎','Jagdliste'],['found','jma_found','✓','Gefunden']].map(([action,key,icon,label])=>`<button class="icon-action ${storedSet(key).has(e.id)?'active':''}" type="button" data-db-${action}="${esc(e.id)}" aria-label="${label}: ${esc(e.name_de)}" title="${label}" aria-pressed="${storedSet(key).has(e.id)}">${icon}</button>`).join('')}</div></footer>
+    ${databaseEditing()?`<div class="catalog-card-admin"><button type="button" data-db-edit="${esc(e.id)}">✎ Bearbeiten</button><button type="button" data-db-archive="${esc(e.id)}">${e.archived?'↶ Wiederherstellen':'× Archivieren'}</button></div>`:''}
   </article>`;
 }
 function renderCatalogGrid(){
@@ -89,8 +92,9 @@ function renderCatalogGrid(){
   const rows=filteredCatalog(),pages=Math.max(1,Math.ceil(rows.length/12));DB_STATE.page=Math.max(1,Math.min(pages,DB_STATE.page));
   grid.classList.toggle('list',DB_STATE.view==='list');
   const start=(DB_STATE.page-1)*12;
+  if(!rows.slice(start,start+12).some(e=>e.id===DB_STATE.selected))DB_STATE.selected=rows[start]?.id||'';
   grid.innerHTML=rows.slice(start,start+12).map(catalogCard).join('')||'<div class="catalog-empty"><span aria-hidden="true">⌕</span><b>KEINE EINTRÄGE GEFUNDEN</b><p>Ändere den Suchbegriff oder setze deine Filter zurück.</p></div>';
-  $('#catalogResultCount').textContent=`${rows.length} / ${catalogEntries().length} Einträge`;
+  $('#catalogResultCount').textContent=`${rows.length} / ${databaseEntries().length} Einträge`;
   $('#catalogRange').textContent=rows.length?`${String(start+1).padStart(2,'0')}—${String(Math.min(start+12,rows.length)).padStart(2,'0')}`:'00—00';
   const knownIds=new Set(catalogEntries().map(e=>e.id));
   $('#catalogFoundCount').textContent=[...storedSet('jma_found')].filter(id=>knownIds.has(id)).length;
@@ -99,27 +103,50 @@ function renderCatalogGrid(){
   $('#catalogPagination').innerHTML=`<button type="button" data-db-page="${DB_STATE.page-1}" ${DB_STATE.page===1?'disabled':''}>← ZURÜCK</button><span>SEITE <b>${String(DB_STATE.page).padStart(2,'0')}</b> / ${String(pages).padStart(2,'0')}</span><button type="button" data-db-page="${DB_STATE.page+1}" ${DB_STATE.page===pages?'disabled':''}>WEITER →</button>`;
   document.querySelectorAll('[data-db-category]').forEach(b=>{const active=b.dataset.dbCategory===DB_STATE.category;b.classList.toggle('active',active);b.setAttribute('aria-pressed',active)});
   document.querySelectorAll('[data-db-view]').forEach(b=>{const active=b.dataset.dbView===DB_STATE.view;b.classList.toggle('active',active);b.setAttribute('aria-pressed',active)});
-  hydrateCatalogArt(grid);
+  hydrateCatalogArt(grid);renderCatalogDossier();
 }
 function renderDatabase(){
-  const esc=escapeHtml,statuses=[...new Set(catalogEntries().map(e=>e.status).filter(Boolean))];
-  return `<section class="database-page">
-    <header class="database-hero"><div class="database-hero-copy"><div class="database-kicker"><span></span> ARCHIV / WISSEN & FUNDORTE</div><h1>DATENBANK<span>DER KATALOG DEINER NÄCHSTEN FUNDE.</span></h1><p>Ausrüstung, Ressourcen und Anomalien. Durchsuche das Archiv, prüfe Fundwege und halte deine Sammlung auf Kurs.</p></div><div class="database-hero-index"><small>QUELLSTAND</small><b>${esc(globalThis.CATALOG_DATA?.snapshot||'—')}</b><span>KURATIERTER ARCHIVBESTAND</span></div><div class="database-metrics"><span><b>${catalogEntries().length}</b><small>Einträge im Katalog</small></span><span><b>${catalogCategories().length}</b><small>Archivbereiche</small></span><span><b id="catalogFoundCount">0</b><small>Von dir gefunden</small></span><a href="#/hunt">◎ DEINE JAGDLISTE <span>↗</span></a></div></header>
-    <div class="database-shell"><aside class="catalog-rail"><details class="catalog-filters" id="catalogFilters" ${matchMedia('(min-width:900px)').matches?'open':''}><summary><span><small id="catalogFilterSummary">KATALOG EINGRENZEN</small><b>FILTER & BEREICHE</b></span><i aria-hidden="true">⌄</i></summary><div class="catalog-filter-body"><div class="catalog-category-list"><button type="button" data-db-category="all"><span>⌘</span><b>Alle Einträge</b><small>${catalogEntries().length}</small></button>${catalogCategories().map(c=>`<button type="button" data-db-category="${esc(c.id)}"><span>${esc(c.icon||'◇')}</span><b>${esc(c.label)}</b><small>${catalogEntries().filter(e=>e.category===c.id).length}</small></button>`).join('')}</div><div class="catalog-personal-filters"><label class="catalog-field" for="catalogStatus">PRÜFSTATUS<select id="catalogStatus"><option value="all">Alle Prüfstatus</option>${statuses.map(x=>`<option ${DB_STATE.status===x?'selected':''}>${esc(x)}</option>`).join('')}</select></label><label class="catalog-favorite-filter"><input id="catalogOnlyFav" type="checkbox" ${DB_STATE.onlyFav?'checked':''}><span>★ Nur meine Favoriten</span></label><button id="catalogReset" type="button">↻ FILTER ZURÜCKSETZEN</button></div></div></details><div class="catalog-import-note"><span>◇</span><p>Originalbilder werden ergänzt. Die Einträge zeigen bereits die vorhandenen Archivdaten.</p></div></aside>
+  const esc=escapeHtml,statuses=[...new Set(databaseEntries().map(e=>e.status).filter(Boolean))];
+  return `<section class="database-page ${databaseEditing()?'editing':''}">
+    <header class="database-hero"><div class="database-hero-copy"><div class="database-kicker"><span></span> ARCHIV / WISSEN & FUNDORTE</div><h1>DATENBANK<span>DER KATALOG DEINER NÄCHSTEN FUNDE.</span></h1><p>Ausrüstung, Ressourcen und Anomalien. Durchsuche das Archiv, prüfe Fundwege und halte deine Sammlung auf Kurs.</p></div><div class="database-hero-index"><small>QUELLSTAND</small><b>${esc(globalThis.CATALOG_DATA?.snapshot||'—')}</b><span>KURATIERTER ARCHIVBESTAND</span></div><div class="database-metrics"><span><b>${databaseEntries().length}</b><small>Einträge im Katalog</small></span><span><b>${catalogCategories().length}</b><small>Archivbereiche</small></span><span><b id="catalogFoundCount">0</b><small>Von dir gefunden</small></span><a href="#/hunt">◎ DEINE JAGDLISTE <span>↗</span></a></div></header>
+    ${globalThis.ADMIN_PANEL?.allowed()?`<div class="catalog-admin-bar"><button type="button" data-db-mode aria-pressed="${databaseEditing()}">${databaseEditing()?'✓ BEARBEITUNG BEENDEN':'✎ DATENBANK BEARBEITEN'}</button>${databaseEditing()?`<span>ADMIN-BEARBEITUNG AKTIV</span><label><input type="checkbox" id="catalogArchived" ${DB_STATE.archived?'checked':''}> Archivierte Einträge</label><button type="button" data-db-add>＋ HINZUFÜGEN</button>`:''}</div>`:''}
+    <div class="database-shell"><aside class="catalog-rail"><details class="catalog-filters" id="catalogFilters" ${matchMedia('(min-width:900px)').matches?'open':''}><summary><span><small id="catalogFilterSummary">KATALOG EINGRENZEN</small><b>FILTER & BEREICHE</b></span><i aria-hidden="true">⌄</i></summary><div class="catalog-filter-body"><div class="catalog-category-list"><button type="button" data-db-category="all"><span>⌘</span><b>Alle Einträge</b><small>${databaseEntries().length}</small></button>${catalogCategories().map(c=>`<button type="button" data-db-category="${esc(c.id)}"><span>${esc(c.icon||'◇')}</span><b>${esc(c.label)}</b><small>${databaseEntries().filter(e=>e.category===c.id).length}</small></button>`).join('')}</div><div class="catalog-personal-filters"><label class="catalog-field" for="catalogStatus">PRÜFSTATUS<select id="catalogStatus"><option value="all">Alle Prüfstatus</option>${statuses.map(x=>`<option ${DB_STATE.status===x?'selected':''}>${esc(x)}</option>`).join('')}</select></label><label class="catalog-favorite-filter"><input id="catalogOnlyFav" type="checkbox" ${DB_STATE.onlyFav?'checked':''}><span>★ Nur meine Favoriten</span></label><button id="catalogReset" type="button">↻ FILTER ZURÜCKSETZEN</button></div></div></details><div class="catalog-import-note"><span>◇</span><p>Originalbilder werden ergänzt. Die Einträge zeigen bereits die vorhandenen Archivdaten.</p></div></aside>
       <div class="catalog-main" role="region" aria-label="Katalogergebnisse"><div class="catalog-toolbar"><label class="catalog-search" for="catalogSearch"><span aria-hidden="true">⌕</span><input id="catalogSearch" value="${esc(DB_STATE.q)}" placeholder="Name, Typ, Tag oder Fundweg suchen …" aria-label="Katalog durchsuchen"><small>ARCHIVSUCHE</small></label></div><div class="catalog-list-head"><div class="catalog-result-label" aria-live="polite"><small>DEINE AUSWAHL</small><b id="catalogResultCount"></b></div><div class="catalog-display-controls"><label for="catalogSort"><span>SORTIERUNG</span><select id="catalogSort"><option value="name">Name A–Z</option><option value="category">Kategorie</option><option value="checked">Zuletzt geprüft</option></select></label><div class="catalog-view-control" role="group" aria-label="Darstellung"><button type="button" data-db-view="grid" aria-label="Rasteransicht">▦</button><button type="button" data-db-view="list" aria-label="Listenansicht">☷</button></div></div></div><div class="catalog-grid" id="catalogGrid"></div><div class="catalog-page-footer"><small>ANGEZEIGT <b id="catalogRange"></b> / MAX. 12 PRO SEITE</small><nav id="catalogPagination" class="catalog-pagination" aria-label="Katalogseiten"></nav></div></div>
+      <aside class="catalog-dossier catalog-detail-container" id="catalogDossier" aria-label="Eintragsdossier"></aside>
     </div>
   </section>`;
 }
 
 function ensureCatalogDialog(){
   let d=$('#catalogDialog'); if(d)return d;
-  d=document.createElement('dialog');d.id='catalogDialog';d.className='catalog-dialog';document.body.appendChild(d);return d;
+  d=document.createElement('dialog');d.id='catalogDialog';d.className='catalog-dialog catalog-detail-container';document.body.appendChild(d);return d;
+}
+function catalogDetailMarkup(e,modal=false){
+  const c=categoryFor(e.category),esc=escapeHtml;
+  return `${modal?'<button class="dialog-close" data-db-close type="button" aria-label="Eintragsdetails schließen">×</button>':''}<aside class="catalog-detail-visual"><div class="catalog-detail-index"><small>ARCHIV / EINTRAG</small><code>${esc(e.id)}</code></div><div class="catalog-detail-art" data-catalog-art="${esc(e.id)}">${catalogArt(e,`<span class="catalog-glyph" aria-hidden="true">${esc(c.icon||'◇')}</span><small>ARCHIV / BILD AUSSTEHEND</small>`)}</div><div class="catalog-detail-category"><small>ARCHIVBEREICH</small><b>${esc(c.label)}</b></div></aside><div class="catalog-detail-body"><header><div class="database-kicker"><span></span> KATALOG / DETAILANSICHT</div><h2 id="${modal?'catalogDialogTitle':'catalogDetailTitle'}" tabindex="-1">${esc(e.name_de)}</h2><p class="catalog-kind">${esc(e.kind||'Archiv-Eintrag')}</p><div class="catalog-detail-tags">${(e.tags||[]).map(t=>`<span>${esc(t)}</span>`).join('')}</div></header><section><small>01 / BESCHREIBUNG</small><p>${esc(e.description||'Für diesen Eintrag ist noch keine Beschreibung dokumentiert.')}</p></section><section class="catalog-acquisition"><small>02 / FUNDWEG & ERHALT</small><p>${esc(e.acquisition||'Der Fundweg ist noch nicht abschließend dokumentiert.')}</p></section><div class="catalog-detail-meta"><span><small>PRÜFSTATUS</small><b>${esc(e.status||'offen')}</b></span><span><small>ZULETZT GEPRÜFT</small><b>${esc(e.last_checked||'—')}</b></span></div><footer class="actions catalog-detail-actions">${[['fav','jma_favorites','★','FAVORIT'],['hunt','jma_hunt','◎','JAGDLISTE'],['found','jma_found','✓','GEFUNDEN']].map(([action,key,icon,label])=>`<button class="${storedSet(key).has(e.id)?'selected':''}" data-db-${action}="${esc(e.id)}" type="button" aria-pressed="${storedSet(key).has(e.id)}">${icon} ${label} ${storedSet(key).has(e.id)?'✓':'＋'}</button>`).join('')}</footer>${!modal&&databaseEditing()?`<div class="catalog-dossier-admin"><button type="button" data-db-edit="${esc(e.id)}">✎ Datensatz bearbeiten</button><button type="button" data-db-asset="${esc(e.id)}">▧ Bild / Asset verwalten</button></div>`:''}</div>`;
+}
+function renderCatalogDossier(){
+  const panel=$('#catalogDossier');if(!panel)return;
+  const entry=databaseEntries().find(e=>e.id===DB_STATE.selected);
+  const scrollTop=panel.dataset.dossierEntry===entry?.id?panel.scrollTop:0;
+  panel.innerHTML=entry?catalogDetailMarkup(entry):'<div class="catalog-empty"><span>◇</span><b>ARCHIV / DOSSIER</b><p>Wähle einen Eintrag aus dem Katalog.</p></div>';
+  panel.dataset.dossierEntry=entry?.id||'';panel.scrollTop=scrollTop;
+  if(entry)hydrateCatalogArt(panel);
 }
 function openCatalogDetail(id){
-  const e=catalogEntries().find(x=>x.id===id);if(!e)return;
-  const c=categoryFor(e.category),d=ensureCatalogDialog(),esc=escapeHtml;
-  d.setAttribute('aria-labelledby','catalogDetailTitle');
-  d.innerHTML=`<button class="dialog-close" data-db-close type="button" aria-label="Eintragsdetails schließen">×</button><aside class="catalog-detail-visual"><div class="catalog-detail-index"><small>ARCHIV / EINTRAG</small><code>${esc(e.id)}</code></div><div class="catalog-detail-art" data-catalog-art="${esc(e.id)}">${catalogArt(e,`<span class="catalog-glyph" aria-hidden="true">${esc(c.icon||'◇')}</span><small>ORIGINALBILD AUSSTEHEND</small>`)}</div><div class="catalog-detail-category"><small>ARCHIVBEREICH</small><b>${esc(c.label)}</b></div></aside><div class="catalog-detail-body"><header><div class="database-kicker"><span></span> KATALOG / DETAILANSICHT</div><h2 id="catalogDetailTitle">${esc(e.name_de)}</h2><p class="catalog-kind">${esc(e.kind||'Archiv-Eintrag')}</p><div class="catalog-detail-tags">${(e.tags||[]).map(t=>`<span>${esc(t)}</span>`).join('')}</div></header><section><small>01 / BESCHREIBUNG</small><p>${esc(e.description||'Für diesen Eintrag ist noch keine Beschreibung dokumentiert.')}</p></section><section class="catalog-acquisition"><small>02 / FUNDWEG & ERHALT</small><p>${esc(e.acquisition||'Der Fundweg ist noch nicht abschließend dokumentiert.')}</p></section><div class="catalog-detail-meta"><span><small>PRÜFSTATUS</small><b>${esc(e.status||'offen')}</b></span><span><small>ZULETZT GEPRÜFT</small><b>${esc(e.last_checked||'—')}</b></span></div><footer class="actions catalog-detail-actions">${[['fav','jma_favorites','★','FAVORIT'],['hunt','jma_hunt','◎','JAGDLISTE'],['found','jma_found','✓','GEFUNDEN']].map(([action,key,icon,label])=>`<button class="${storedSet(key).has(id)?'selected':''}" data-db-${action}="${esc(id)}" type="button" aria-pressed="${storedSet(key).has(id)}">${icon} ${label} ${storedSet(key).has(id)?'✓':'＋'}</button>`).join('')}</footer></div>`;
+  const e=catalogEntries().find(x=>x.id===id);if(!e||e.archived&&!databaseEditing())return;
+  if($('#catalogDossier')){
+    DB_STATE.selected=id;
+    const rows=filteredCatalog(),index=rows.findIndex(e=>e.id===id);
+    if(index>=0){DB_STATE.page=Math.floor(index/12)+1;renderCatalogGrid()}
+    else globalThis.JMA_DATABASE_SAVED(id);
+    $('#catalogDetailTitle')?.focus({preventScroll:true});
+    if(matchMedia('(max-width:1199px)').matches)$('#catalogDossier').scrollIntoView({block:'start'});
+    return;
+  }
+  const d=ensureCatalogDialog();
+  d.setAttribute('aria-labelledby','catalogDialogTitle');
+  d.innerHTML=catalogDetailMarkup(e,true);
   d.querySelector('[data-db-close]').onclick=()=>d.close();
   for(const [action,key,label] of [['fav','jma_favorites','Favorit'],['hunt','jma_hunt','Jagdliste'],['found','jma_found','Gefunden']])d.querySelector(`[data-db-${action}]`).onclick=()=>{toggleCatalogSet(key,id,label);d.close();renderCatalogGrid();openCatalogDetail(id);d.querySelector(`[data-db-${action}]`).focus()};
   d.showModal();
@@ -132,16 +159,73 @@ function bindDatabase(){
   $('#catalogStatus')?.addEventListener('change',e=>{DB_STATE.status=e.target.value;DB_STATE.page=1;renderCatalogGrid()});
   $('#catalogReset')?.addEventListener('click',()=>{DB_STATE.q='';DB_STATE.category='all';DB_STATE.status='all';DB_STATE.onlyFav=false;DB_STATE.page=1;render()});
   document.querySelectorAll('[data-db-category]').forEach(b=>b.addEventListener('click',()=>{DB_STATE.category=b.dataset.dbCategory;DB_STATE.page=1;renderCatalogGrid()}));
-  $('#catalogGrid')?.addEventListener('click',e=>{const detail=e.target.closest('[data-db-detail]'),fav=e.target.closest('[data-db-fav]'),hunt=e.target.closest('[data-db-hunt]');if(detail)return openCatalogDetail(detail.dataset.dbDetail);if(fav){toggleCatalogSet('jma_favorites',fav.dataset.dbFav,'Favorit');return renderCatalogGrid()}if(hunt){toggleCatalogSet('jma_hunt',hunt.dataset.dbHunt,'Jagdliste');return renderCatalogGrid()}});
+  $('.database-shell')?.addEventListener('click',async event=>{
+    const target=event.target.closest('button');if(!target)return;
+    if(target.dataset.dbDetail)return openCatalogDetail(target.dataset.dbDetail);
+    for(const [action,key,label] of [['fav','jma_favorites','Favorit'],['hunt','jma_hunt','Jagdliste'],['found','jma_found','Gefunden']]){
+      if(target.dataset['db'+action[0].toUpperCase()+action.slice(1)]){
+        const id=target.dataset['db'+action[0].toUpperCase()+action.slice(1)];
+        const dossier=!!target.closest('#catalogDossier');toggleCatalogSet(key,id,label);renderCatalogGrid();
+        if(dossier)$('#catalogDossier').querySelector('[data-db-'+action+']')?.focus({preventScroll:true});
+        else $('#catalogGrid').querySelector('[data-db-'+action+'="'+CSS.escape(id)+'"]')?.focus({preventScroll:true});
+        return;
+      }
+    }
+    if(!databaseEditing())return;
+    if(target.dataset.dbEdit)return globalThis.ADMIN_PANEL.openCatalogEditor(target.dataset.dbEdit);
+    if(target.dataset.dbArchive)return confirmCatalogArchive(target.dataset.dbArchive);
+    if(target.dataset.dbAsset){try{await globalThis.ADMIN_PANEL.manageCatalogAsset(target.dataset.dbAsset)}catch(error){toast(error.message)}}
+  });
+  $('[data-db-mode]')?.addEventListener('click',()=>{DB_STATE.editing=!databaseEditing();DB_STATE.archived=false;DB_STATE.page=1;render()});
+  $('[data-db-add]')?.addEventListener('click',()=>{if(databaseEditing())globalThis.ADMIN_PANEL.openCatalogEditor()});
+  $('#catalogArchived')?.addEventListener('change',event=>{DB_STATE.archived=event.target.checked;DB_STATE.page=1;render()});
   $('#catalogSort').value=DB_STATE.sort;
   $('#catalogSort').onchange=e=>{DB_STATE.sort=e.target.value;DB_STATE.page=1;renderCatalogGrid()};
   $('#catalogOnlyFav').onchange=e=>{DB_STATE.onlyFav=e.target.checked;DB_STATE.page=1;renderCatalogGrid()};
   document.querySelectorAll('[data-db-view]').forEach(b=>b.onclick=()=>{DB_STATE.view=b.dataset.dbView;renderCatalogGrid()});
   $('#catalogPagination').onclick=e=>{const b=e.target.closest('[data-db-page]');if(b){DB_STATE.page=+b.dataset.dbPage;renderCatalogGrid()}};
-  $('#catalogGrid').addEventListener('click',e=>{const b=e.target.closest('[data-db-found]');if(b){toggleCatalogSet('jma_found',b.dataset.dbFound,'Gefunden');renderCatalogGrid()}});
   renderCatalogGrid();
   const pending=sessionStorage.getItem('jma_open_catalog');if(pending){sessionStorage.removeItem('jma_open_catalog');setTimeout(()=>openCatalogDetail(pending),20)}
 }
+
+async function confirmCatalogArchive(id){
+  if(!databaseEditing()||$('#catalogArchiveDialog'))return;
+  const entry=structuredClone(catalogEntries().find(e=>e.id===id));if(!entry)return;
+  const revision=globalThis.JMA_CATALOG.revision(id),restoring=entry.archived===true;
+  const dialog=document.createElement('dialog');dialog.id='catalogArchiveDialog';dialog.className='catalog-archive-dialog';
+  dialog.setAttribute('aria-labelledby','catalogArchiveTitle');
+  dialog.innerHTML=`<h2 id="catalogArchiveTitle">${restoring?'Eintrag wiederherstellen?':'Eintrag aus der Datenbank entfernen?'}</h2><p><b>${escapeHtml(entry.name_de)}</b></p><p>${restoring?'Der Eintrag wird wieder in der normalen Datenbank angezeigt.':'Der Eintrag wird archiviert und kann im Bearbeitungsmodus wiederhergestellt werden.'} Datensatz, Revision und Bildverknüpfungen bleiben erhalten.</p><div class="catalog-archive-art" data-catalog-art="${escapeHtml(id)}">${catalogArt(entry,'<span class="catalog-glyph">◇</span>')}</div><p>Legacy-Bild: <code>${escapeHtml(entry.image||'Kategorie-Fallback')}</code></p><div data-archive-links>Verknüpfte Assets werden geprüft …</div><p data-archive-error role="alert"></p><footer><button type="button" data-archive-cancel>Abbrechen</button><button type="button" data-archive-confirm disabled>${restoring?'Wiederherstellen':'Sicher archivieren'}</button></footer>`;
+  document.body.append(dialog);dialog.addEventListener('close',()=>dialog.remove(),{once:true});dialog.showModal();hydrateCatalogArt(dialog);
+  let saving=false;
+  dialog.querySelector('[data-archive-cancel]').onclick=()=>{if(!saving)dialog.close()};
+  dialog.addEventListener('cancel',event=>{if(saving)event.preventDefault()});
+  try{
+    const assets=(await globalThis.JMA_ASSET_STORE.load()).filter(asset=>asset.catalog_id===id);
+    if(!dialog.isConnected)return;
+    dialog.querySelector('[data-archive-links]').innerHTML=assets.length?'<b>Verknüpfte Assets · '+assets.length+'</b><ul>'+assets.map(asset=>'<li><code>'+escapeHtml(asset.id)+'</code> · '+escapeHtml(globalThis.ASSET_LIBRARY_MODEL.statuses[asset.status]||asset.status)+'</li>').join('')+'</ul>':'Keine zentralen Assets verknüpft.';
+    dialog.querySelector('[data-archive-confirm]').disabled=!databaseEditing();
+  }catch(error){dialog.querySelector('[data-archive-error]').textContent='Verknüpfungen konnten nicht geprüft werden: '+error.message;return}
+  dialog.querySelector('[data-archive-confirm]').onclick=async event=>{
+    if(saving||!databaseEditing())return;
+    saving=true;event.currentTarget.disabled=true;dialog.querySelector('[data-archive-cancel]').disabled=true;
+    try{
+      await globalThis.JMA_CATALOG.update({...entry,archived:!restoring},revision);
+      dialog.close();render();toast(restoring?'Eintrag wiederhergestellt.':'Eintrag sicher archiviert.');
+    }catch(error){dialog.querySelector('[data-archive-error]').textContent=error.message}
+    finally{saving=false;if(dialog.isConnected){dialog.querySelector('[data-archive-confirm]').disabled=false;dialog.querySelector('[data-archive-cancel]').disabled=false}}
+  };
+}
+globalThis.JMA_DATABASE_SAVED=id=>{
+  if(!$('#catalogGrid'))return;
+  DB_STATE.archived=Boolean(catalogEntries().find(e=>e.id===id)?.archived);
+  if(!filteredCatalog().some(e=>e.id===id)){
+    DB_STATE.q='';DB_STATE.category='all';DB_STATE.status='all';DB_STATE.onlyFav=false;
+    $('#catalogSearch').value='';$('#catalogStatus').value='all';$('#catalogOnlyFav').checked=false;
+  }
+  const index=filteredCatalog().findIndex(e=>e.id===id);DB_STATE.selected=id;DB_STATE.page=Math.max(1,Math.floor(index/12)+1);
+  if($('#catalogArchived'))$('#catalogArchived').checked=DB_STATE.archived;
+  renderCatalogGrid();
+};
 
 function readStoredArray(key){const value=globalThis.JMA_STORE.read(key,[]);return Array.isArray(value)?value:[]}
 
@@ -239,6 +323,9 @@ function render(){
   globalThis.SETTINGS_PAGE?.apply?.();
   document.querySelectorAll('[data-nav]').forEach(a=>{const active=a.dataset.nav===route.id;a.classList.toggle('active',active);if(active)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});
   closeNavigation();
+  if(route.id!=='database'||!globalThis.ADMIN_PANEL?.allowed()){
+    DB_STATE.editing=false;DB_STATE.archived=false;globalThis.ADMIN_PANEL?.closeCatalogEditor(true);$('#catalogArchiveDialog')?.close();
+  }
   const fullRenderer=globalThis.FULL_ROUTE_RENDERERS?.[route.id];
   app.innerHTML=route.id==='home'?renderHome():route.id==='database'?renderDatabase():fullRenderer?fullRenderer(route):renderDevelopment(route);
   syncHeaderAccount();

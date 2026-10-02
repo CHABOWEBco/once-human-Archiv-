@@ -145,6 +145,29 @@ function contentView(){
     '<aside class="admin-inspector"><small>EDITOR-PRINZIP</small><h3>Bearbeiten ohne Code</h3><p>Der vorhandene Katalogeditor ist im Bereich Editor verfügbar: Datensätze auswählen, Felder bearbeiten, Vorschau prüfen und in Supabase speichern. Diese Liste öffnet die bestehenden Website-Bereiche.</p><div class="admin-inspector-preview"><span>01</span><b>Auswählen</b><em>Seite oder Datensatz</em><span>02</span><b>Bearbeiten</b><em>Texte, Bilder, Status</em><span>03</span><b>Prüfen</b><em>Live-Vorschau</em><span>04</span><b>Speichern</b><em>über sichere Backend-Aktion</em></div><div class="admin-safe-note"><b>SAFE MODE</b><p>Der Katalogeditor speichert in Supabase. Andere Bereiche behalten ihre bestehenden lokalen oder dateibasierten Datenwege.</p></div></aside></div>'+
   '</section>';
 }
+function editorDrawer(selected,direct=false){
+  const categories=globalThis.CATALOG_DATA?.categories||[];
+  const categoryName=id=>categories.find(c=>c.id===id)?.label||id;
+  const imageOf=item=>item?.image||'assets/branding/once-human-logo.png';
+  const editable=allowed('editor');
+  return '<aside class="admin-editor-drawer" aria-label="'+(editorIsNew?'Neuen Katalogeintrag anlegen':'Item bearbeiten')+'">'+
+        '<header class="admin-editor-drawer-head"><div><small>'+(editorIsNew?'NEUER KATALOGEINTRAG':'ITEM BEARBEITEN')+'</small><h3 data-editor-drawer-title>'+esc(selected.name_de||'Neues Item')+'</h3></div>'+(direct?'<button type="button" data-editor-close aria-label="Bearbeitung schließen">×</button>':'')+'</header>'+
+        '<div class="admin-editor-item-preview"><div class="admin-editor-preview-media"><img src="'+esc(imageOf(selected))+'" alt="" data-editor-preview-image data-editor-catalog-image="'+esc(selected.id)+'"></div><div><small data-editor-preview-category>'+esc(categoryName(selected.category))+'</small><strong data-editor-preview-title>'+esc(selected.name_de||'Ohne Namen')+'</strong><p data-editor-preview-desc>'+esc(selected.description||'Keine Beschreibung')+'</p></div></div>'+
+        '<form class="admin-editor-form" data-editor-form onsubmit="return false">'+
+          '<label><span>Name *</span><input type="text" value="'+esc(selected.name_de||'')+'" data-editor-input="name" required maxlength="200"></label>'+
+          '<label><span>Typ</span><input type="text" value="'+esc(selected.kind||'')+'" data-editor-input="kind" maxlength="500"></label>'+
+          '<label class="wide"><span>Beschreibung</span><textarea rows="5" data-editor-input="description" maxlength="5000">'+esc(selected.description||'')+'</textarea></label>'+
+          '<label class="wide"><span>Fundort / Freischaltung</span><textarea rows="3" data-editor-input="acquisition" maxlength="5000">'+esc(selected.acquisition||'')+'</textarea></label>'+
+          '<label><span>Status</span><input type="text" value="'+esc(selected.status||'')+'" data-editor-input="status" maxlength="500"></label>'+
+          '<label><span>Kategorie *</span><select data-editor-category required>'+categories.map(c=>'<option value="'+esc(c.id)+'" '+(selected.category===c.id?'selected':'')+'>'+esc(c.label)+'</option>').join('')+'</select></label>'+
+          '<label><span>Zuletzt geprüft</span><input type="date" value="'+esc(selected.last_checked||'')+'" data-editor-input="last_checked"></label>'+
+          '<label class="wide"><span>Tags</span><input type="text" value="'+esc((selected.tags||[]).join(', '))+'" data-editor-input="tags" maxlength="4096"></label>'+
+        '</form>'+
+        '<section class="admin-editor-media-control"><div><small data-editor-media-kind>BILD</small><b data-editor-media-path>'+esc(selected.image||'Kein Bildpfad · Kategorie-Fallback')+'</b></div><button type="button" data-editor-image '+(!editable?'disabled':'')+'>Bildpfad ändern</button></section>'+
+        '<div class="admin-safe-note" role="status" data-editor-status><b>SUPABASE · GESICHERT</b><p>Änderungen werden mit deiner Moderator-, Admin- oder Owner-Rolle in den gemeinsamen Katalog geschrieben. Ohne Originalbild bleibt der vorhandene Fallback erhalten.</p></div>'+
+        '<div class="admin-editor-drawer-actions">'+(direct?'<button type="button" class="admin-secondary" data-editor-close>Abbrechen</button>':'')+'<button type="button" class="admin-primary" data-editor-save '+(!editable?'disabled title="Moderator-, Admin- oder Owner-Rolle erforderlich"':'')+'>'+(editorIsNew?'Eintrag anlegen':'Änderungen speichern')+'</button></div>'+
+      '</aside>';
+}
 function editorView(){
   const entries=catalog();
   const categories=Array.isArray(globalThis.CATALOG_DATA?.categories)?globalThis.CATALOG_DATA.categories:[];
@@ -182,22 +205,7 @@ function editorView(){
         }).join('')+'</div>'+
         '<div class="admin-editor-empty-filter" id="adminEditorEmpty" hidden><span>⌕</span><b>Keine Treffer</b><p>Suchbegriff oder Filter ändern.</p></div>'+
       '</div>'+
-      (selected?'<aside class="admin-editor-drawer" aria-label="'+(editorIsNew?'Neuen Katalogeintrag anlegen':'Item bearbeiten')+'">'+
-        '<header class="admin-editor-drawer-head"><div><small>'+(editorIsNew?'NEUER KATALOGEINTRAG':'ITEM BEARBEITEN')+'</small><h3 data-editor-drawer-title>'+esc(selected.name_de||'Neues Item')+'</h3></div></header>'+
-        '<div class="admin-editor-item-preview"><div class="admin-editor-preview-media"><img src="'+esc(imageOf(selected))+'" alt="" data-editor-preview-image data-editor-catalog-image="'+esc(selected.id)+'"></div><div><small data-editor-preview-category>'+esc(categoryName(selected.category))+'</small><strong data-editor-preview-title>'+esc(selected.name_de||'Ohne Namen')+'</strong><p data-editor-preview-desc>'+esc(selected.description||'Keine Beschreibung')+'</p></div></div>'+
-        '<form class="admin-editor-form" data-editor-form onsubmit="return false">'+
-          '<label><span>Name *</span><input type="text" value="'+esc(selected.name_de||'')+'" data-editor-input="name" required maxlength="200"></label>'+
-          '<label><span>Typ</span><input type="text" value="'+esc(selected.kind||'')+'" data-editor-input="kind" maxlength="500"></label>'+
-          '<label class="wide"><span>Beschreibung</span><textarea rows="5" data-editor-input="description" maxlength="5000">'+esc(selected.description||'')+'</textarea></label>'+
-          '<label class="wide"><span>Fundort / Freischaltung</span><textarea rows="3" data-editor-input="acquisition" maxlength="5000">'+esc(selected.acquisition||'')+'</textarea></label>'+
-          '<label><span>Status</span><input type="text" value="'+esc(selected.status||'')+'" data-editor-input="status" maxlength="500"></label>'+
-          '<label><span>Kategorie *</span><select data-editor-category required>'+categories.map(c=>'<option value="'+esc(c.id)+'" '+(selected.category===c.id?'selected':'')+'>'+esc(c.label)+'</option>').join('')+'</select></label>'+
-          '<label class="wide"><span>Tags</span><input type="text" value="'+esc((selected.tags||[]).join(', '))+'" data-editor-input="tags" maxlength="4096"></label>'+
-        '</form>'+
-        '<section class="admin-editor-media-control"><div><small data-editor-media-kind>BILD</small><b data-editor-media-path>'+esc(selected.image||'Kein Bildpfad · Kategorie-Fallback')+'</b></div><button type="button" data-editor-image '+(!editable?'disabled':'')+'>Bildpfad ändern</button></section>'+
-        '<div class="admin-safe-note" role="status" data-editor-status><b>SUPABASE · GESICHERT</b><p>Änderungen werden mit deiner Moderator-, Admin- oder Owner-Rolle in den gemeinsamen Katalog geschrieben. Ohne Originalbild bleibt der vorhandene Fallback erhalten.</p></div>'+
-        '<div class="admin-editor-drawer-actions"><button type="button" class="admin-primary" data-editor-save '+(!editable?'disabled title="Moderator-, Admin- oder Owner-Rolle erforderlich"':'')+'>'+(editorIsNew?'Eintrag anlegen':'Änderungen speichern')+'</button></div>'+
-      '</aside>':'')+
+      (selected?editorDrawer(selected):'')+
     '</div>';
 }
 function mapView(){
@@ -338,31 +346,16 @@ function bindLiquidCards(){
   });
 }
 
-function bindAdmin(){
-  document.querySelectorAll('.admin-editor-card-media img,[data-editor-preview-image]').forEach(image=>{
-    const fallback='assets/branding/once-human-logo.png';
-    const useFallback=()=>{if(image.getAttribute('src')!==fallback) image.src=fallback};
-    image.addEventListener('error',useFallback);
-    if(image.complete&&image.naturalWidth===0) useFallback();
-  });
-  document.querySelectorAll('[data-admin-view]').forEach(button=>button.addEventListener('click',()=>{
-    const view=button.dataset.adminView;
-    if(!allowed(view)) return;
-    setView(view);
-    if(view!=='editor'){editorWorking=null;editorBase=null;editorIsNew=false}
-    globalThis.JMA_RENDER?.();
-  }));
-  document.querySelectorAll('[data-admin-go]').forEach(button=>button.addEventListener('click',()=>{
-    location.hash='#/'+button.dataset.adminGo;
-  }));
+function bindCatalogEditor(root,{direct=false,refresh=()=>globalThis.JMA_RENDER?.()}={}){
+  root.querySelectorAll('[data-editor-catalog-image]').forEach(image=>image.addEventListener('error',()=>{if(!image.src.endsWith('/assets/branding/once-human-logo.png'))image.src='assets/branding/once-human-logo.png'}));
   const status=(message,error=false)=>{
-    const target=document.querySelector('[data-editor-status]');
+    const target=root.querySelector('[data-editor-status]');
     if(!target)return;
     target.querySelector('b').textContent=error?'NICHT GESPEICHERT':'SUPABASE · GESICHERT';
     target.querySelector('p').textContent=message;
   };
   const readForm=()=>{
-    const form=document.querySelector('[data-editor-form]');
+    const form=root.querySelector('[data-editor-form]');
     if(!form||!editorWorking)return null;
     const value=structuredClone(editorWorking);
     value.name_de=form.querySelector('[data-editor-input="name"]').value.trim();
@@ -371,6 +364,8 @@ function bindAdmin(){
     value.acquisition=form.querySelector('[data-editor-input="acquisition"]').value.trim();
     value.status=form.querySelector('[data-editor-input="status"]').value.trim();
     value.category=form.querySelector('[data-editor-category]').value;
+    const checked=form.querySelector('[data-editor-input="last_checked"]').value;
+    if(checked)value.last_checked=checked;else delete value.last_checked;
     value.tags=form.querySelector('[data-editor-input="tags"]').value.split(',').map(tag=>tag.trim()).filter(Boolean);
     return value;
   };
@@ -378,7 +373,7 @@ function bindAdmin(){
     const value=readForm();if(!value)return;
     editorWorking=value;
     const name=value.name_de||'Ohne Namen';
-    const set=(selector,text)=>{const el=document.querySelector(selector);if(el)el.textContent=text};
+    const set=(selector,text)=>{const el=root.querySelector(selector);if(el)el.textContent=text};
     set('[data-editor-drawer-title]',name);
     set('[data-editor-preview-title]',name);
     set('[data-editor-preview-desc]',value.description||'Keine Beschreibung');
@@ -386,18 +381,18 @@ function bindAdmin(){
     set('[data-editor-preview-category]',categories.find(x=>x.id===value.category)?.label||value.category);
     if(mediaEntryId!==value.id||mediaCategory!==value.category)refreshEditorMedia();
     else if(!mediaAsset)set('[data-editor-media-path]',value.image||'Kein Bildpfad · Kategorie-Fallback');
-    const card=editorIsNew?null:document.querySelector('[data-admin-edit-item="'+CSS.escape(value.id)+'"]');
+    const card=editorIsNew?null:root.querySelector('[data-admin-edit-item="'+CSS.escape(value.id)+'"]');
     const strong=card?.querySelector('.admin-editor-card-copy strong');
     if(strong)strong.textContent=name;
     const desc=card?.querySelector('.admin-editor-card-copy em');
     if(desc)desc.textContent=(value.description||'Keine Beschreibung').slice(0,92);
     if(card)card.dataset.search=[value.id,value.name_de,value.kind,value.description,value.acquisition,value.status,...value.tags].join(' ').toLowerCase();
   };
-  document.querySelectorAll('[data-editor-input],[data-editor-category]').forEach(input=>input.addEventListener('input',updatePreview));
-  document.querySelectorAll('[data-editor-category]').forEach(input=>input.addEventListener('change',updatePreview));
-  const imageButton=document.querySelector('[data-editor-image]');
+  root.querySelectorAll('[data-editor-input],[data-editor-category]').forEach(input=>input.addEventListener('input',updatePreview));
+  root.querySelectorAll('[data-editor-category]').forEach(input=>input.addEventListener('change',updatePreview));
+  const imageButton=root.querySelector('[data-editor-image]');
   let mediaAsset=null,mediaEntryId='',mediaCategory='',mediaTicket=0;
-  async function hydrateEditorImages(images=document.querySelectorAll('[data-editor-catalog-image]')){
+  async function hydrateEditorImages(images=root.querySelectorAll('[data-editor-catalog-image]')){
     for(const image of images){
       const id=image.dataset.editorCatalogImage,entry=editorWorking?.id===id?structuredClone(editorWorking):catalog().find(row=>row.id===id);
       const ticket=image.catalogImageTicket=(image.catalogImageTicket||0)+1;
@@ -416,12 +411,13 @@ function bindAdmin(){
       const asset=await globalThis.JMA_ASSET_STORE.catalogAsset(entry);
       if(!imageButton.isConnected||ticket!==mediaTicket||editorWorking?.id!==entry.id)return;
       mediaAsset=asset;
-      const label=document.querySelector('[data-editor-media-path]'),kind=document.querySelector('[data-editor-media-kind]');
+      const label=root.querySelector('[data-editor-media-path]'),kind=root.querySelector('[data-editor-media-kind]');
       kind.textContent=asset?'BILD · ZENTRALE ASSET-BIBLIOTHEK':'BILD · LEGACY-FALLBACK';
       label.textContent=asset?asset.id+' · '+(globalThis.ASSET_LIBRARY_MODEL.statuses[asset.status]||asset.status):entry.image||'Kein Bildpfad · Kategorie-Fallback';
       label.title='Legacy-Fallback bleibt erhalten: '+(entry.image||'Kategorie-Fallback');
-      imageButton.textContent=asset?'Asset-Bibliothek öffnen':'Bildpfad ändern';
-      imageButton.disabled=!allowed(asset?'assets':'editor');
+      imageButton.textContent=direct?'Bild / Asset verwalten':asset?'Asset-Bibliothek öffnen':'Bildpfad ändern';
+      imageButton.disabled=!allowed(asset?'assets':'editor')||(direct&&editorIsNew);
+      if(direct&&editorIsNew){imageButton.textContent='Zuerst Eintrag speichern';label.textContent='Die Asset-Verbindung folgt auf die stabile Katalog-ID.'}
     }catch{
       if(imageButton.isConnected&&ticket===mediaTicket){imageButton.textContent='Bildzuordnung nicht erreichbar';imageButton.disabled=true}
     }
@@ -433,16 +429,20 @@ function bindAdmin(){
       // Recheck the central relationship before offering a legacy-only path edit.
       const asset=await globalThis.JMA_ASSET_STORE.catalogAsset(entry);
       if(!imageButton.isConnected||editorWorking?.id!==entry.id)return;
+      if(direct){
+        if(!discardDraft())return;
+        await manageCatalogAsset(entry.id);return;
+      }
       if(asset){
         if(!discardDraft()||!globalThis.ASSET_LIBRARY.select(asset.id))return;
-        setView('assets');editorWorking=editorBase=null;editorIsNew=false;globalThis.JMA_RENDER?.();return;
+        setView('assets');editorWorking=editorBase=null;editorIsNew=false;refresh();return;
       }
       const answer=window.prompt('Relativer Bildpfad unter assets/ (neue Originale unter assets/items/; leer = Kategorie-Fallback):',entry.image||'');
       if(answer===null)return;
       editorWorking.image=answer.trim()||null;
-      const preview=document.querySelector('[data-editor-preview-image]');
+      const preview=root.querySelector('[data-editor-preview-image]');
       if(preview)preview.src=editorWorking.image?'./'+editorWorking.image:'./assets/branding/once-human-logo.png';
-      document.querySelectorAll('[data-admin-edit-item="'+CSS.escape(editorWorking.id||'')+'"] .admin-editor-card-media img').forEach(image=>image.src=editorWorking.image?'./'+editorWorking.image:'./assets/branding/once-human-logo.png');
+      root.querySelectorAll('[data-admin-edit-item="'+CSS.escape(editorWorking.id||'')+'"] .admin-editor-card-media img').forEach(image=>image.src=editorWorking.image?'./'+editorWorking.image:'./assets/branding/once-human-logo.png');
       updatePreview();
     }catch(error){status(error?.message||'Asset-Zuordnung konnte nicht geladen werden.',true)}
     finally{if(imageButton.isConnected)refreshEditorMedia()}
@@ -453,19 +453,18 @@ function bindAdmin(){
       Boolean(current&&editorBase&&JSON.stringify(current)!==JSON.stringify(editorBase));
     return !dirty||window.confirm('Ungespeicherte Änderungen verwerfen?');
   };
-  document.querySelectorAll('[data-admin-edit-item]').forEach(button=>button.addEventListener('click',()=>{
+  root.querySelectorAll('[data-admin-edit-item]').forEach(button=>button.addEventListener('click',()=>{
     const itemId=button.dataset.adminEditItem||'';
     if(!discardDraft())return;
     const item=catalog().find(entry=>entry.id===itemId);
     if(!item)return;
-    editorWorking=structuredClone(item);editorBase=structuredClone(item);editorIsNew=false;
-    editorRevision=globalThis.JMA_CATALOG?.revision?.(item.id)||1;
+    selectEditorEntry(itemId);
     try{sessionStorage.setItem('oha:admin-editor:selected',itemId)}catch{}
-    document.querySelectorAll('[data-admin-edit-item]').forEach(card=>card.classList.toggle('selected',card===button));
+    root.querySelectorAll('[data-admin-edit-item]').forEach(card=>card.classList.toggle('selected',card===button));
     const categories=globalThis.CATALOG_DATA?.categories||[];
     const categoryName=categories.find(x=>x.id===item.category)?.label||item.category;
-    const setText=(selector,value)=>{const el=document.querySelector(selector);if(el)el.textContent=value};
-    const setValue=(selector,value)=>{const el=document.querySelector(selector);if(el)el.value=value};
+    const setText=(selector,value)=>{const el=root.querySelector(selector);if(el)el.textContent=value};
+    const setValue=(selector,value)=>{const el=root.querySelector(selector);if(el)el.value=value};
     setText('[data-editor-drawer-title]',item.name_de||item.id);
     setText('[data-editor-preview-category]',categoryName);
     setText('[data-editor-preview-title]',item.name_de||item.id);
@@ -476,15 +475,16 @@ function bindAdmin(){
     setValue('[data-editor-input="description"]',item.description||'');
     setValue('[data-editor-input="acquisition"]',item.acquisition||'');
     setValue('[data-editor-input="status"]',item.status||'');
+    setValue('[data-editor-input="last_checked"]',item.last_checked||'');
     setValue('[data-editor-input="tags"]',(item.tags||[]).join(', '));
     setValue('[data-editor-category]',item.category||'');
-    const image=document.querySelector('[data-editor-preview-image]');if(image){image.src=item.image?'./'+item.image:'./assets/branding/once-human-logo.png';image.dataset.editorCatalogImage=item.id;delete image.dataset.catalogCentral;hydrateEditorImages([image])}
+    const image=root.querySelector('[data-editor-preview-image]');if(image){image.src=item.image?'./'+item.image:'./assets/branding/once-human-logo.png';image.dataset.editorCatalogImage=item.id;delete image.dataset.catalogCentral;hydrateEditorImages([image])}
     refreshEditorMedia();
   }));
-  const search=document.querySelector('#adminEditorSearch');
-  const filterButtons=[...document.querySelectorAll('[data-editor-filter]')];
-  const cards=[...document.querySelectorAll('[data-editor-card]')];
-  const empty=document.querySelector('#adminEditorEmpty');
+  const search=root.querySelector('#adminEditorSearch');
+  const filterButtons=[...root.querySelectorAll('[data-editor-filter]')];
+  const cards=[...root.querySelectorAll('[data-editor-card]')];
+  const empty=root.querySelector('#adminEditorEmpty');
   let activeFilter='all';
   const applyEditorFilter=()=>{
     const query=String(search?.value||'').trim().toLowerCase();let visible=0;
@@ -498,17 +498,16 @@ function bindAdmin(){
   filterButtons.forEach(button=>button.addEventListener('click',()=>{
     activeFilter=button.dataset.editorFilter||'all';filterButtons.forEach(item=>item.classList.toggle('active',item===button));applyEditorFilter();
   }));
-  document.querySelector('[data-editor-add]')?.addEventListener('click',()=>{
+  root.querySelector('[data-editor-add]')?.addEventListener('click',()=>{
     if(!discardDraft())return;
     const categories=globalThis.CATALOG_DATA?.categories||[];
     if(!categories.length){status('Es sind keine Katalogkategorien geladen.',true);return}
-    editorWorking={id:'',category:categories[0].id,name_de:'',kind:'',description:'',acquisition:'',status:'Wird geprüft',tags:[],image:null,sources:[]};
-    editorBase=null;editorRevision=0;editorIsNew=true;
-    globalThis.JMA_RENDER?.();
+    selectEditorEntry(null);
+    refresh();
   });
-  document.querySelector('[data-editor-save]')?.addEventListener('click',async event=>{
+  root.querySelector('[data-editor-save]')?.addEventListener('click',async event=>{
     const button=event.currentTarget;
-    const form=document.querySelector('[data-editor-form]');
+    const form=root.querySelector('[data-editor-form]');
     if(!form?.reportValidity())return;
     const entry=readForm();
     if(!entry)return;
@@ -532,19 +531,84 @@ function bindAdmin(){
       const saved=editorIsNew?await globalThis.JMA_CATALOG.create(entry):await globalThis.JMA_CATALOG.update(entry,editorRevision);
       editorWorking=structuredClone(saved.entry);editorBase=structuredClone(saved.entry);editorRevision=saved.revision;editorIsNew=false;
       try{sessionStorage.setItem('oha:admin-editor:selected',saved.id)}catch{}
-      globalThis.JMA_RENDER?.();
+      refresh(saved.id);
       status('Eintrag '+saved.id+' wurde in Supabase gespeichert.');
     }catch(error){
       status(error?.message||'Katalogänderung konnte nicht gespeichert werden.',true);
     }finally{button.disabled=false}
   });
+  root.querySelectorAll('[data-editor-close]').forEach(button=>button.onclick=()=>{if(discardDraft())closeCatalogEditor()});
   refreshEditorMedia();hydrateEditorImages();
+  return {discardDraft};
+
+}
+
+function bindAdmin(){
+  document.querySelectorAll('.admin-editor-card-media img,[data-editor-preview-image]').forEach(image=>{
+    const fallback='assets/branding/once-human-logo.png';
+    const useFallback=()=>{if(image.getAttribute('src')!==fallback) image.src=fallback};
+    image.addEventListener('error',useFallback);
+    if(image.complete&&image.naturalWidth===0) useFallback();
+  });
+  document.querySelectorAll('[data-admin-view]').forEach(button=>button.addEventListener('click',()=>{
+    const view=button.dataset.adminView;
+    if(!allowed(view)) return;
+    setView(view);
+    if(view!=='editor'){editorWorking=null;editorBase=null;editorIsNew=false}
+    globalThis.JMA_RENDER?.();
+  }));
+  document.querySelectorAll('[data-admin-go]').forEach(button=>button.addEventListener('click',()=>{
+    location.hash='#/'+button.dataset.adminGo;
+  }));
+  bindCatalogEditor(document);
   bindLiquidCards();
   bindLiquidNav();
   if(getView()==='assets')globalThis.ASSET_LIBRARY.bind();
 }
 
-globalThis.ADMIN_PANEL={render:renderAdmin,bind:bindAdmin,allowed:()=>ADMIN_ROLES.has(role())};
+
+let editorDialog=null,modalBinding=null;
+function selectEditorEntry(id){
+  const item=id?catalog().find(e=>e.id===id):null;
+  if(id&&!item)throw Error('Katalogeintrag nicht gefunden.');
+  editorIsNew=!item;editorWorking=item?structuredClone(item):{id:'',category:globalThis.CATALOG_DATA.categories[0].id,name_de:'',kind:'',description:'',acquisition:'',status:'Wird geprüft',tags:[],image:null,sources:[]};
+  editorBase=item?structuredClone(item):null;editorRevision=item?globalThis.JMA_CATALOG.revision(item.id):0;
+}
+function closeCatalogEditor(force=false){
+  if(!editorDialog)return true;
+  if(!force&&editorDialog.open&&editorDialog.querySelector('[data-editor-save]')?.disabled)return false;
+  editorDialog?.close();editorDialog?.remove();editorDialog=null;modalBinding=null;
+  editorWorking=editorBase=null;editorIsNew=false;return true;
+}
+function openCatalogEditor(id=null){
+  if(!allowed('editor'))return;
+  if(editorDialog?.open){if(!modalBinding?.discardDraft()||!closeCatalogEditor())return}
+  selectEditorEntry(id);
+  editorDialog=document.createElement('dialog');editorDialog.className='catalog-editor-dialog';editorDialog.id='catalogEditorDialog';
+  editorDialog.setAttribute('aria-label',id?'Katalogeintrag bearbeiten':'Katalogeintrag hinzufügen');
+  editorDialog.innerHTML=editorDrawer(editorWorking,true);document.body.append(editorDialog);
+  const refresh=()=>{
+    // Keep the same modal and draft through ordinary website renders.
+    editorDialog.innerHTML=editorDrawer(editorWorking,true);
+    modalBinding=bindCatalogEditor(editorDialog,{direct:true,refresh});
+    globalThis.JMA_DATABASE_SAVED?.(editorWorking.id);
+  };
+  modalBinding=bindCatalogEditor(editorDialog,{direct:true,refresh});
+  editorDialog.addEventListener('cancel',event=>{event.preventDefault();if(modalBinding?.discardDraft())closeCatalogEditor()});
+  editorDialog.showModal();
+}
+async function manageCatalogAsset(id){
+  if(!allowed('assets'))throw Error('Moderator-, Admin- oder Owner-Rolle erforderlich.');
+  const entry=catalog().find(e=>e.id===id);if(!entry)throw Error('Eintrag zuerst speichern.');
+  const asset=await globalThis.JMA_ASSET_STORE.catalogAsset(entry);
+  if(!allowed('assets'))return;
+  const opened=asset?globalThis.ASSET_LIBRARY.select(asset.id):globalThis.ASSET_LIBRARY.newCatalog(entry);
+  if(!opened)return;
+  closeCatalogEditor();setView('assets');location.hash='#/admin';globalThis.JMA_RENDER?.();
+}
+window.addEventListener('hashchange',()=>{if(location.hash.split('?')[0]!=='#/database')closeCatalogEditor()});
+
+globalThis.ADMIN_PANEL={render:renderAdmin,bind:bindAdmin,allowed:()=>ADMIN_ROLES.has(role()),openCatalogEditor,manageCatalogAsset,closeCatalogEditor};
 globalThis.FULL_ROUTE_RENDERERS=globalThis.FULL_ROUTE_RENDERERS||{};
 globalThis.FULL_ROUTE_BINDERS=globalThis.FULL_ROUTE_BINDERS||{};
 globalThis.FULL_ROUTE_RENDERERS.admin=renderAdmin;

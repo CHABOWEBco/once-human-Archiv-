@@ -673,14 +673,25 @@ box-shadow:0 18px 60px rgba(0,0,0,.24),inset 0 1px rgba(255,255,255,.035);paddin
 .admin-editor-form input,.admin-editor-form textarea,.admin-editor-form select{width:100%;border:1px solid rgba(143,192,210,.14);border-radius:9px;background:rgba(2,9,14,.58);color:#dfeaf0;padding:9px 10px;font:600 10px/1.45 inherit;outline:0;resize:vertical}
 .admin-editor-form input:focus,.admin-editor-form textarea:focus,.admin-editor-form select:focus{border-color:rgba(72,217,239,.4);box-shadow:0 0 0 2px rgba(72,217,239,.055)}
 .admin-editor-form input:disabled,.admin-editor-form select:disabled{color:#607681;background:rgba(255,255,255,.015)}
-.admin-editor-media-control{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:10px 0;padding:10px;border:1px solid var(--admin-line);border-radius:10px;background:rgba(255,255,255,.018)}
+.admin-editor-media-control{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin:10px 0;padding:10px;border:1px solid var(--admin-line);border-radius:10px;background:rgba(255,255,255,.018)}
+.admin-editor-media-control>div{min-width:0;flex:1 1 160px}
 .admin-editor-media-control small,.admin-editor-media-control b{display:block}
 .admin-editor-media-control small{font-size:8px;color:#ff747f;letter-spacing:.12em}
 .admin-editor-media-control b{max-width:220px;margin-top:3px;font-size:9px;color:#8095a0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.admin-editor-media-control button{border:1px solid var(--admin-line);border-radius:8px;background:rgba(255,255,255,.02);color:#5f747f;padding:7px 9px;font-size:9px}
+.admin-editor-media-control button{min-height:44px;max-width:100%;white-space:normal;border:1px solid var(--admin-line);border-radius:8px;background:rgba(255,255,255,.02);color:#5f747f;padding:7px 9px;font-size:9px}
 .admin-editor-drawer-actions{display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px}
 .admin-editor-drawer-actions button:disabled{opacity:.46;cursor:not-allowed}
 
+.catalog-editor-dialog{--admin-line:var(--line);width:min(760px,calc(100vw - 24px));max-width:none;max-height:calc(100dvh - 32px);padding:0;border:1px solid var(--line-strong);border-radius:16px;background:#08131c;color:var(--text);box-shadow:var(--shadow);overflow:auto}
+.catalog-editor-dialog::backdrop{background:#02070dde;backdrop-filter:blur(7px)}
+.catalog-editor-dialog .admin-editor-drawer{position:static;animation:none;border:0;border-radius:0;padding:24px}
+.catalog-editor-dialog .admin-editor-drawer-head button{width:44px;height:44px;flex:none}
+.catalog-editor-dialog .admin-editor-form :is(input,select){min-height:44px;font-size:13px}
+.catalog-editor-dialog .admin-editor-form textarea{font-size:13px}
+.catalog-editor-dialog .admin-editor-form label>span{font-size:10px}
+.catalog-editor-dialog .admin-editor-drawer-actions{grid-template-columns:repeat(2,minmax(0,1fr))}
+.catalog-editor-dialog .admin-editor-drawer-actions>button{min-height:44px}
+.catalog-editor-dialog :is(button,input,textarea,select):focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
 @media(max-width:1500px){
   .admin-editor-card-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   .admin-visual-editor-shell.drawer-open{grid-template-columns:minmax(0,1fr) 350px}
@@ -703,8 +714,3 @@ box-shadow:0 18px 60px rgba(0,0,0,.24),inset 0 1px rgba(255,255,255,.035);paddin
   .admin-editor-head-actions{align-items:flex-end;flex-direction:column}
 }
 @media(prefers-reduced-motion:reduce){.admin-editor-drawer{animation:none}.admin-visual-editor-shell{transition:none}}
-
-
-
-/* One central asset action; retain the existing media-control styling. */
-.admin-editor-media-control{flex-wrap:wrap}.admin-editor-media-control>div{min-width:0;flex:1 1 160px}.admin-editor-media-control button{min-height:44px;max-width:100%;white-space:normal}

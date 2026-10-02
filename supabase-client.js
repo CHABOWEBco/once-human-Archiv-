@@ -248,6 +248,7 @@ function validateCatalogEntry(entry){
     if(entry[field]!==undefined && (typeof entry[field]!=='string' || entry[field].length>5000)) throw new Error('Ungültiger Text im Feld „'+field+'“.');
   }
   if(entry.tags!==undefined && (!Array.isArray(entry.tags) || entry.tags.length>50 || entry.tags.some(tag=>typeof tag!=='string' || tag.length>80))) throw new Error('Tags müssen aus höchstens 50 Textwerten mit maximal 80 Zeichen bestehen.');
+  if(entry.archived!==undefined && typeof entry.archived!=='boolean') throw new Error('Ungültiger Archivstatus.');
   if(entry.last_checked!==undefined && (typeof entry.last_checked!=='string' || !/^\d{4}-\d{2}-\d{2}$/.test(entry.last_checked) || !Number.isFinite(Date.parse(entry.last_checked)))) throw new Error('Ungültiges Prüfdatum.');
   if(entry.image!==undefined && entry.image!==null && (typeof entry.image!=='string' || !/^assets\/.+\.(png|webp|jpg|jpeg|svg)$/i.test(entry.image) || entry.image.includes('..') || entry.image.includes('\\') || /[?#\u0000]/.test(entry.image))) throw new Error('Ungültiger lokaler Bildpfad. Ohne Bild den Pfad leeren.');
   return entry;

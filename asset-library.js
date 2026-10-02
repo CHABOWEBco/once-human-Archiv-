@@ -131,7 +131,7 @@ function bind(){
   document.querySelector('[data-asset-search]').addEventListener('input',event=>{filters.search=event.target.value;applyFilters()});
   document.querySelectorAll('[data-asset-filter]').forEach(el=>el.addEventListener('change',()=>{filters[el.dataset.assetFilter]=el.value;applyFilters()}));
   document.querySelectorAll('[data-asset-open]').forEach(el=>el.addEventListener('click',()=>{readForm();if(saving||!discard())return;clearUpload();working=structuredClone(merged().find(r=>r.id===el.dataset.assetOpen));base=structuredClone(working);metadataDraft=null;creating=false;globalThis.JMA_RENDER?.()}));
-  document.querySelector('[data-asset-new]').addEventListener('click',()=>{readForm();if(saving||!discard())return;clearUpload();working={id:'asset-'+crypto.randomUUID(),name:'',asset_type:'image',category:'',file_ref:null,catalog_id:null,status:'draft',sort_order:0,metadata:{},persisted:false};base=structuredClone(working);metadataDraft=null;creating=true;globalThis.JMA_RENDER?.();document.querySelector('[data-asset-field="name"]')?.focus()});
+  document.querySelector('[data-asset-new]').addEventListener('click',()=>{if(beginNew()){globalThis.JMA_RENDER?.();document.querySelector('[data-asset-field="name"]')?.focus()}});
   document.querySelector('[data-asset-reload]').addEventListener('click',()=>{readForm();if(saving||!discard())return;clearUpload();working=base=null;metadataDraft=null;creating=false;load();globalThis.JMA_RENDER?.()});
   const form=document.querySelector('[data-asset-form]');
   // Restore the native filename after an ordinary render; the original File stays in memory.
@@ -178,6 +178,19 @@ function bind(){
   hydrateImages(document.querySelector('.asset-list'));
   if(phase==='idle')load();
 }
+function beginNew(values={}){
+  ensureScope();readForm();if(!canEdit()||saving||!discard())return false;
+  clearUpload();requestedAsset='';
+  working={id:'asset-'+crypto.randomUUID(),name:'',asset_type:'image',category:'',file_ref:null,catalog_id:null,status:'draft',sort_order:0,metadata:{},persisted:false,...values};
+  base=structuredClone(working);metadataDraft=null;creating=true;return true;
+}
+function newCatalog(entry){
+  if(!entry?.id)return false;
+  const asset_type=({items:'item',weapons:'weapon',resources:'resource',deviations:'deviation'})[entry.category]||'catalog';
+  if(!beginNew({id:'catalog:'+entry.id,name:entry.name_de,asset_type,category:entry.category,catalog_id:entry.id}))return false;
+  filters.search='catalog:'+entry.id;filters.type=filters.category=filters.status='';
+  return true;
+}
 function select(id){
   ensureScope();if(!canEdit()||saving||typeof id!=='string')return false;
   readForm();if(!discard())return false;
@@ -185,5 +198,5 @@ function select(id){
   filters.search=id;filters.type=filters.category=filters.status='';
   return true;
 }
-globalThis.ASSET_LIBRARY=Object.freeze({render,bind,select});
+globalThis.ASSET_LIBRARY=Object.freeze({render,bind,select,newCatalog});
 })();
