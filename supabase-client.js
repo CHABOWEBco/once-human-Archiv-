@@ -390,14 +390,21 @@ function ensureAssetScope(){
 function requireAssetEditor(){
   if(!state.user||!state.session||!CATALOG_WRITE_ROLES.has(state.role))throw Error('Asset-Verwaltung benötigt eine Moderator-, Admin- oder Owner-Rolle.');
 }
-async function loadAssets(){
+async function loadAssets({strict=false}={}){
   const scope=ensureAssetScope(),version=++assetRowsVersion;
-  const rows=[];
-  for(let start=0;;start+=500){
-    const {data,error}=await getClient().from('asset_library').select('*').order('id',{ascending:true}).range(start,start+499);
+  const rows=[],seen=new Set();let total=null;
+  if(strict)assetStorageReady=false;
+  for(let start=0;;){
+    const {data,error,count}=await getClient().from('asset_library').select('*',strict?{count:'exact'}:undefined).order('id',{ascending:true}).range(start,start+499);
     if(error)throw error;
-    rows.push(...data);if(data.length<500)break;
+    if(!Array.isArray(data))throw Error('Ungültiges Live-Inventar.');
+    if(strict){if(!Number.isInteger(count)||count<0||total!==null&&total!==count)throw Error('STOPP: Live-Inventar unvollständig oder während des Ladens verändert.');total=count}
+    if(strict)for(const row of data){if(typeof row.id!=='string'||seen.has(row.id))throw Error('STOPP: Live-Inventar enthält ungültige oder wiederholte IDs.');seen.add(row.id)}
+    rows.push(...data);
+    if(strict){if(rows.length===total)break;if(!data.length||rows.length>total)throw Error('STOPP: Live-Inventar unvollständig.');start+=data.length}
+    else{if(data.length<500)break;start+=500}
   }
+  if(strict&&rows.length!==total)throw Error('STOPP: Live-Inventar nicht vollständig geladen.');
   assetStorageReady=rows.length>0&&Object.hasOwn(rows[0],'storage_bucket')&&Object.hasOwn(rows[0],'storage_path');
   if(scope===assetScope()&&version===assetRowsVersion){assetRows=rows;assetRowsAt=Date.now()}
   return rows;
@@ -457,8 +464,9 @@ async function commitAsset(input,expectedRevision=null){
     const {id,...changes}=row;
     query=query.update({...changes,revision:expectedRevision+1}).eq('id',id).eq('revision',expectedRevision);
   }
-  const {data,error}=await query.select('*').maybeSingle();
+  const {data,error,status}=await query.select('*').maybeSingle();
   if(error){
+    if(status&&!error.status)error.status=status;
     if(error.code==='23505')throw Error('Asset-ID existiert bereits. Bitte neu laden.');
     if(error.code==='23503')throw Error('Die zugehörige Katalog-ID existiert nicht.');
     throw error;
@@ -467,29 +475,107 @@ async function commitAsset(input,expectedRevision=null){
   if(scope===assetScope()){assetRowsVersion++;if(assetRows)assetRows=[...assetRows.filter(row=>row.id!==data.id),data]}
   return data;
 }
-async function saveAsset(input,expectedRevision=null,file=null){
+async function saveAsset(input,expectedRevision=null,file=null,batch=null){
   requireAssetEditor();
   if(!file)return commitAsset(input,expectedRevision);
   const model=globalThis.ASSET_LIBRARY_MODEL;
   if(!assetStorageReady)throw Error('Bitte zuerst 20261002020000_asset_library_storage.sql anwenden und die Bibliothek neu laden.');
-  const row=model.validate(input,true),info=await model.inspectUpload(file);
-  const digest=await crypto.subtle.digest('SHA-256',await file.arrayBuffer());
-  const sha256=Array.from(new Uint8Array(digest),b=>b.toString(16).padStart(2,'0')).join('');
-  let reserved=null;
+  const pauseBeforeUpload=()=>{if(batch?.shouldPause?.()){const error=new Error('Pause vor neuem Upload.');error.batchPaused=true;throw error}};
+  const assertScope=()=>{if(batch?.scope&&batch.scope!==assetScope())throw Error('STOPP: Asset-Sitzung während des Uploads gewechselt.')};assertScope();
+  const row=model.validate(input,true);batch?.onStage?.('VALIDIERUNG');
+  const {info,sha256}=await inspectAssetBytes(file);assertScope();
+  if(batch){
+    if(row.status!=='draft'||!row.metadata.source_package||!row.metadata.source_path||sha256!==batch.sha256||row.metadata.sha256!==sha256)throw Error('Original-SHA oder Draft-/Source-Metadaten stimmen nicht; nichts gespeichert.');
+    if(expectedRevision!==null){const current=await readAsset(row.id);if(!current||current.status!=='draft'||current.file_ref||current.storage_path||!sameAssetSource(current,row))throw Error('Konflikt: Reservierter Draft ist nicht mehr unverändert fortsetzbar.')}
+  }
+  let reserved=null,uploaded=false;
   try{
-    // Reserve ONLY new IDs as a non-released, image-less draft. Existing images stay current.
-    if(expectedRevision===null)reserved=await commitAsset({...row,status:'draft',file_ref:null,storage_bucket:null,storage_path:null},null);
-    const path='library/'+row.id+'/'+crypto.randomUUID()+'.'+info.extension;
-    const {error}=await getClient().storage.from(model.storageBucket).upload(path,file,{contentType:info.mime,cacheControl:'0',upsert:false});
-    if(error)throw error;
-    return await commitAsset({...row,file_ref:null,storage_bucket:model.storageBucket,storage_path:path,
-      metadata:{...row.metadata,upload:{...info,sha256}}},reserved?.revision??expectedRevision);
+    assertScope();pauseBeforeUpload();
+    // Reuse the reservation/commit core; existing single-upload images stay current.
+    if(!batch){
+      if(expectedRevision===null)reserved=await commitAsset({...row,status:'draft',file_ref:null,storage_bucket:null,storage_path:null},null);
+    }
+    const pending=batch?row.metadata.import_pending:null;
+    const path=pending?.storage_path||'library/'+row.id+'/'+crypto.randomUUID()+'.'+info.extension;
+    if(batch){
+      if(!model.storagePathAllowed(row.id,path)||pending&&pending.sha256!==sha256)throw Error('Konflikt: Reservierte Storage-Absicht passt nicht.');
+      const draft={...row,status:'draft',file_ref:null,storage_bucket:null,storage_path:null,metadata:{...row.metadata,import_pending:{storage_path:path,sha256}}};
+      reserved=pending?{...draft,revision:expectedRevision}:await commitAsset(draft,expectedRevision);
+    }
+    let existing=false;
+    if(batch&&pending){const stored=await downloadStaged(path);if(stored){const hash=await hashAssetBytes(stored);if(hash!==sha256)throw Error('Konflikt: Reservierte Storage-Bytes haben einen anderen SHA.');existing=true;uploaded=true}}
+    if(!existing){
+      assertScope();pauseBeforeUpload();batch?.onStage?.('UPLOAD');
+      const {error}=await getClient().storage.from(model.storageBucket).upload(path,file,{contentType:info.mime,cacheControl:'0',upsert:false});
+      if(error)throw error;
+      uploaded=true;batch?.onUploaded?.(file.size);
+    }
+    const metadata={...row.metadata,upload:{...info,sha256}};if(batch)delete metadata.import_pending;
+    const attached={...row,file_ref:null,storage_bucket:model.storageBucket,storage_path:path,metadata};
+    assertScope();batch?.onStage?.('DB-VERKNÜPFUNG');
+    if(batch)return await attachBatchAsset(attached,reserved.revision,batch.scope);
+    return await commitAsset(attached,reserved?.revision??expectedRevision);
   }catch(error){
     const failure=new Error((reserved?'Metadaten-Entwurf gesichert; Bild nicht freigegeben. ':'Bisheriger Datensatz bleibt erhalten. ')+(error?.message||'Upload konnte nicht abgeschlossen werden.'));
     // The editor adopts a reserved draft, so retry updates this ID instead of inserting twice.
     // An uncommitted staged object stays private. No files are automatically removed.
-    failure.assetDraft=reserved;throw failure;
+    failure.assetDraft=reserved;failure.batchPaused=Boolean(error?.batchPaused);failure.code=error?.code;failure.status=error?.status||error?.statusCode;
+    if(batch&&reserved?.metadata?.import_pending){failure.storagePending={asset_id:row.id,storage_bucket:model.storageBucket,storage_path:reserved.metadata.import_pending.storage_path,upload_confirmed:uploaded};failure.pauseBatch=true}
+    throw failure;
   }
+}
+const hashAssetBytes=async blob=>Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',await blob.arrayBuffer())),b=>b.toString(16).padStart(2,'0')).join('');
+async function inspectAssetBytes(file){return {info:await globalThis.ASSET_LIBRARY_MODEL.inspectUpload(file),sha256:await hashAssetBytes(file)}}
+const sameAssetSource=(a,b)=>['source_package','source_path'].every(k=>a.metadata?.[k]===b.metadata?.[k])&&String(a.metadata?.sha256||a.metadata?.upload?.sha256||'').toLowerCase()===String(b.metadata?.sha256||b.metadata?.upload?.sha256||'').toLowerCase();
+const transientAssetError=e=>['40001','40P01','PGRST000','NETWORK_ERROR'].includes(e?.code)||[408,429].includes(Number(e?.status||e?.statusCode))||Number(e?.status||e?.statusCode)>=500||e instanceof TypeError||/failed to fetch|network error|timeout|ECONN/i.test(e?.message||'');
+async function readAsset(id){
+  requireAssetEditor();const {data,error}=await getClient().from('asset_library').select('*').eq('id',id).maybeSingle();if(error)throw error;return data;
+}
+async function downloadStaged(path){
+  const {data,error}=await getClient().storage.from(globalThis.ASSET_LIBRARY_MODEL.storageBucket).download(path);
+  if(error){if([400,404].includes(Number(error.status||error.statusCode))&&/not found|not exist/i.test(error.message||''))return null;throw error}
+  return data;
+}
+async function attachBatchAsset(row,revision,scope){
+  let failure;
+  for(let attempt=0;attempt<3;attempt++){
+    if(scope&&scope!==assetScope())throw Error('STOPP: Sitzung vor der DB-Verknüpfung gewechselt.');
+    try{return await commitAsset(row,revision)}catch(error){
+      failure=error;
+      try{const live=await readAsset(row.id);if(live?.status==='draft'&&sameAssetSource(live,row)&&live.storage_bucket===row.storage_bucket&&live.storage_path===row.storage_path)return live}catch{}
+      if(!transientAssetError(error)||attempt===2)break;
+      await new Promise(r=>setTimeout(r,250*2**attempt));
+    }
+  }
+  throw failure;
+}
+async function assetBatchPreflight(){
+  requireAssetEditor();const scope=assetScope(),sb=getClient(),model=globalThis.ASSET_LIBRARY_MODEL;
+  const {data:auth,error:authError}=await sb.auth.getUser();if(authError||auth?.user?.id!==state.user.id)throw Error('STOPP: Keine gültige authentifizierte Live-Sitzung.');
+  const {data:role,error:roleError}=await sb.from('user_roles').select('role').eq('user_id',state.user.id).single();
+  if(roleError||!CATALOG_WRITE_ROLES.has(role?.role)||role.role!==state.role)throw Error('STOPP: Live-Rolle fehlt oder wurde geändert.');
+  const rows=await loadAssets({strict:true});
+  if(!assetStorageReady||rows.some(r=>!Object.hasOwn(r,'storage_path')||!Object.hasOwn(r,'storage_bucket')))throw Error('STOPP: Storage-Migration nicht bestätigt.');
+  if(!rows.some(r=>r.status!=='active'))throw Error('STOPP: Privater Draft-/Inactive-/Archivbestand konnte nicht positiv gelesen werden.');
+  const {error}=await sb.storage.from(model.storageBucket).list('library',{limit:1});if(error)throw Error('STOPP: archive-assets ist nicht lesbar: '+error.message);
+  // Hash legacy live image references locally; never write these read proofs back into metadata.
+  const copies=rows.map(r=>({...r})),unverified=[],refs=new Map();let cursor=0;
+  const targets=copies.filter(r=>![r.metadata?.upload?.sha256,r.metadata?.sha256].some(v=>/^[a-f0-9]{64}$/i.test(String(v||'')))&&(r.storage_path||r.file_ref&&/\.(png|jpe?g|webp)$/i.test(r.file_ref)));
+  async function bytes(row){
+    if(row.storage_path){if(row.storage_bucket!==model.storageBucket||!model.storagePathAllowed(row.id,row.storage_path))throw Error('Unsichere Storage-Referenz.');const {data,error}=await sb.storage.from(row.storage_bucket).download(row.storage_path);if(error)throw error;return data}
+    if(!model.fileAllowed(row.file_ref))throw Error('Unsichere Legacy-Referenz.');
+    const response=await fetch('./'+row.file_ref);if(!response.ok)throw Error('Legacy-Bild nicht lesbar.');return response.blob();
+  }
+  async function worker(){while(cursor<targets.length){const row=targets[cursor++],key=row.storage_path||row.file_ref;
+    try{if(!refs.has(key))refs.set(key,bytes(row).then(async blob=>{if(blob.size>model.maxUploadBytes)throw Error('Legacy-Bild überschreitet Größenlimit.');return hashAssetBytes(blob)}));row.verified_sha256=await refs.get(key)}catch{unverified.push(row.id)}
+  }}
+  await Promise.all([worker(),worker()]);
+  if(scope!==assetScope())throw Error('STOPP: Auth-Sitzung während des Preflights gewechselt.');
+  return {rows:copies,scope,at:Date.now(),unverified_hashes:unverified,private_rows:rows.filter(r=>r.status!=='active').length};
+}
+function saveBatchAsset(input,revision,file,options){
+  requireAssetEditor();if(!options?.sha256)throw Error('Batch benötigt den bestätigten Original-SHA.');
+  return saveAsset(input,revision,file,options);
 }
 async function assetImageUrl(row,expectedType){
   const model=globalThis.ASSET_LIBRARY_MODEL;
@@ -511,7 +597,7 @@ async function assetImageUrl(row,expectedType){
   assetImageUrls.set(cacheKey,{promise,expires:Date.now()+45000});
   try{return await promise}catch(error){assetImageUrls.delete(cacheKey);throw error}
 }
-globalThis.JMA_ASSET_STORE=Object.freeze({load:loadAssets,save:saveAsset,imageUrl:assetImageUrl,catalogAsset,catalogImage,storageReady:()=>assetStorageReady});
+globalThis.JMA_ASSET_STORE=Object.freeze({load:loadAssets,save:saveAsset,imageUrl:assetImageUrl,catalogAsset,catalogImage,storageReady:()=>assetStorageReady,batchPreflight:assetBatchPreflight,saveBatch:saveBatchAsset,read:readAsset});
 
 globalThis.JMA_CATALOG = {
   load: loadCatalog,

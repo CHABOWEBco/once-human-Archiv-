@@ -1,5 +1,7 @@
 # Phase 2B.1A — SHA-Repräsentanten und echter Cosmetic-Dry-Run
 
+Historischer Dry-Run-Checkpoint. Der später freigegebene Produktions-Uploader wird in [Phase 2B.2A](ASSET_LIBRARY_PHASE_2B2A.md) beschrieben; er startet ausschließlich nach frischem Live-Preflight und ausdrücklicher Bestätigung im authentifizierten Admin-Browser.
+
 Stand: 02.10.2026. Branch ausschließlich `admin-editor-preview`. Lokaler und tatsächlicher Remote-Ausgangsstand: `68958546a459ca672b689c90852e3f7e195d15cb`, Worktree sauber. `main` bleibt bei `94ab9f8fa408fc1ed3bd1721961321c0cec2eb45`.
 
 ## Korrigiertes Verhalten

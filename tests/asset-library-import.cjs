@@ -18,7 +18,7 @@ module.exports=async({db,pageFor,metrics,out})=>{
   'OnceHuman_CMS_v2_Review_Queue.csv':Buffer.from('relative_path,original_filename,asset_type,category,hash,review_status\nMystery/same.png,same.png,banner,profile,'+sha[2]+',ZUORDNUNG PRÜFEN\n')
  };
  const payload=(name,bytes=fixtures[name])=>({name,mimeType:name.endsWith('.zip')?'application/zip':'text/csv',buffer:bytes});
- const known=[{id:'known-image',name:'known',asset_type:'banner',category:'profile',persisted:true,metadata:{sha256:sha[3],source_package:pkg,source_path:'Mystery/known.png'}}];
+ const known=[{id:'known-image',name:'known',asset_type:'banner',category:'profile',file_ref:'assets/branding/once-human-logo.png',persisted:true,metadata:{sha256:sha[3],source_package:pkg,source_path:'Mystery/known.png'}}];
  async function engine(names,more={}){
   return page.evaluate(async({inputs,pkg,known,more})=>{
    const files=inputs.map(({name,b64})=>new File([Uint8Array.from(atob(b64),c=>c.charCodeAt(0))],name));

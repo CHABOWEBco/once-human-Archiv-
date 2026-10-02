@@ -9,21 +9,24 @@ const columns=['id','name','asset_type','category','file_ref','catalog_id','stat
 const fixture=`(()=>{
 const role=localStorage.getItem('asset-test-role')||'owner',user={id:${JSON.stringify(ids)}[role],email:role+'@example.invalid',created_at:'2026-09-01T00:00:00Z',user_metadata:{}},session={user};
 const client={storage:{from(bucket){return {
+ async list(){return sessionStorage.getItem('test-storage-unavailable')?{data:null,error:{message:'Bucket unavailable'}}:{data:[],error:null}},
+ async download(objectPath){const r=await fetch('/test-object?'+new URLSearchParams({bucket,path:objectPath}));return r.ok?{data:await r.blob(),error:null}:{data:null,error:{status:404,message:'Object not found'}}},
  async upload(objectPath,file,options){
   const fail=sessionStorage.getItem('test-upload-fail'),conflict=sessionStorage.getItem('test-upload-conflict');sessionStorage.removeItem('test-upload-fail');sessionStorage.removeItem('test-upload-conflict');
   return fetch('/test-storage/upload?'+new URLSearchParams({role,bucket,path:objectPath,upsert:options.upsert,fail:fail||'',conflict:conflict||''}),{method:'POST',headers:{'Content-Type':options.contentType},body:file}).then(r=>r.json());
  },
  async createSignedUrl(objectPath,expires){return fetch('/test-storage/sign',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({role,bucket,path:objectPath,expires})}).then(r=>r.json())}
-}}},auth:{onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}}),getSession:async()=>({data:{session}}),signOut:async()=>({error:null}),updateUser:async()=>({data:{user}})},from(table){
-let action='select',payload,filters=[],start=0,end=499;const execute=async()=>{
+}}},auth:{onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}}),getSession:async()=>({data:{session}}),getUser:async()=>sessionStorage.getItem('test-auth-unavailable')?{data:{user:null},error:{message:'Session expired'}}:{data:{user},error:null},signOut:async()=>({error:null}),updateUser:async()=>({data:{user}})},from(table){
+let action='select',payload,filters=[],start=0,end=499,singular=false,exact=false;const execute=async()=>{
  if(table==='profiles')return {data:{id:user.id,display_name:'Asset Test',avatar_url:null},error:null};
  if(table==='user_roles')return {data:{user_id:user.id,role},error:null};
- return fetch('/test-db',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({table,role,action,payload,filters,start,end,missing:localStorage.getItem('asset-test-missing')==='yes'})}).then(r=>r.json());
-};return {select(){return this},order(){return this},eq(k,v){filters.push([k,v]);return this},range(a,b){start=a;end=b;return execute()},insert(p){action='insert';payload=p;return this},update(p){action='update';payload=p;return this},maybeSingle:execute,single:execute};}};
+ return fetch('/test-db',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({table,role,action,payload,filters,start,end,singular,exact,missing:localStorage.getItem('asset-test-missing')==='yes'})}).then(r=>r.json());
+};return {select(_,opts){exact=opts?.count==='exact';return this},order(){return this},eq(k,v){filters.push([k,v]);return this},range(a,b){start=a;end=b;return execute()},insert(p){action='insert';payload=p;return this},update(p){action='update';payload=p;return this},maybeSingle(){singular=true;return execute()},single(){singular=true;return execute()}};}};
 globalThis.supabase={createClient:()=>client};})();`;
 (async()=>{
  const db=await setup();let queue=Promise.resolve();const objectBytes=new Map(),signedTokens=new Map();let uploads=0,signings=0;
  const server=http.createServer((req,res)=>{
+  if(req.url.startsWith('/test-object?')){const u=new URL(req.url,'http://test.invalid'),bytes=objectBytes.get(u.searchParams.get('bucket')+'/'+u.searchParams.get('path'));if(!bytes)return res.writeHead(404).end();return res.end(bytes)}
   if(req.url.startsWith('/test-signed/')){
    const token=signedTokens.get(req.url.split('/').pop());if(!token||token.until<Date.now())return res.writeHead(403).end();
    res.setHeader('Content-Type',token.mime);return res.end(token.bytes);
@@ -63,14 +66,17 @@ globalThis.supabase={createClient:()=>client};})();`;
       if(q.table==='asset_library'&&q.missing){res.setHeader('Content-Type','application/json');return res.end(JSON.stringify({data:null,error:{code:'PGRST205',message:'Missing table'}}))}
       const result=await asRole(db,q.role,async()=>{
        if(!['catalog_entries','asset_library'].includes(q.table))throw Error('Unsupported test table');
-       if(q.action==='select')return (await db.query('select * from '+q.table+' order by id limit $1 offset $2',[q.end-q.start+1,q.start])).rows;
+       if(q.action==='select'){
+         if(q.filters.length){const rows=(await db.query('select * from '+q.table+' where id=$1',[q.filters[0][1]])).rows;return q.singular?rows[0]||null:rows}
+         return (await db.query('select * from '+q.table+' order by id limit $1 offset $2',[q.end-q.start+1,q.start])).rows;
+       }
        const allowedColumns=q.table==='catalog_entries'?['id','entry','revision','updated_at','updated_by']:columns;
        const keys=Object.keys(q.payload);if(keys.some(k=>!allowedColumns.includes(k)))throw Error('Bad column');
        const values=keys.map(k=>q.payload[k]),args=keys.map((k,i)=>'$'+(i+1));
        if(q.action==='insert')return (await db.query('insert into '+q.table+'('+keys.join(',')+') values('+args.join(',')+') returning *',values)).rows[0]||null;
        const where=q.filters.map(([k,v])=>{if(!['id','revision'].includes(k))throw Error('Bad filter');values.push(v);return k+'=$'+values.length}).join(' and ');
        return (await db.query('update '+q.table+' set '+keys.map((k,i)=>k+'='+args[i]).join(',')+' where '+where+' returning *',values)).rows[0]||null;
-      });res.setHeader('Content-Type','application/json');res.end(JSON.stringify({data:result,error:null}));
+      });res.setHeader('Content-Type','application/json');res.end(JSON.stringify({data:result,error:null,...(q.exact?{count:Number((await asRole(db,q.role,()=>db.query('select count(*) as n from '+q.table))).rows[0].n)}:{})}));
      }catch(error){res.setHeader('Content-Type','application/json');res.end(JSON.stringify({data:null,error:{code:error.code,message:error.message}}))}
     });
    });return;
@@ -95,6 +101,7 @@ globalThis.supabase={createClient:()=>client};})();`;
  async function save(p,text='in Supabase gespeichert'){await p.locator('[data-asset-save]').click();await p.waitForFunction(text=>document.querySelector('[data-asset-message]')?.textContent.includes(text)&&document.querySelector('[data-asset-save]')?.disabled===false,text)}
  async function open(p,id){await p.locator('[data-asset-search]').fill(id);await p.locator('[data-asset-open="'+id+'"]').click()}
  try{
+  if(process.argv.includes('--batch-upload')){await setupStorage(db);await require('./asset-library-batch-upload.cjs')({db,pageFor,metrics:()=>({uploads,signings}),out,objectBytes});return}
   if(process.argv.includes('--batch-import')){await require('./asset-library-import.cjs')({db,pageFor,metrics:()=>({uploads,signings}),out});return}
   if(process.argv.includes('--catalog-link')){await require('./catalog-assets.cjs')({db,pageFor,field,save,open,objectBytes,metrics:()=>({uploads,signings}),out});return}
   const page=await pageFor('owner'),errors=[];page.on('pageerror',e=>errors.push(e.message));

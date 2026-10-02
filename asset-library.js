@@ -112,7 +112,7 @@ function preview(){
   hydrateImages(target);
   target.querySelectorAll('img').forEach(img=>img.addEventListener('error',()=>{img.hidden=true;img.parentElement.dataset.imageError='Bild nicht erreichbar'},{once:true}));
 }
-function importerSettings(){return {known:merged,previewMarkup,hydrateImages,rerender:()=>globalThis.JMA_RENDER?.()}}
+function importerSettings(){return {known:merged,previewMarkup,hydrateImages,reload:load,rerender:()=>globalThis.JMA_RENDER?.()}}
 function applyFilters(){
   const all=new Map(merged().map(r=>[r.id,r]));let count=0;
   document.querySelectorAll('[data-asset-open]').forEach(button=>{
