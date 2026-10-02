@@ -95,6 +95,7 @@ globalThis.supabase={createClient:()=>client};})();`;
  async function save(p,text='in Supabase gespeichert'){await p.locator('[data-asset-save]').click();await p.waitForFunction(text=>document.querySelector('[data-asset-message]')?.textContent.includes(text)&&document.querySelector('[data-asset-save]')?.disabled===false,text)}
  async function open(p,id){await p.locator('[data-asset-search]').fill(id);await p.locator('[data-asset-open="'+id+'"]').click()}
  try{
+  if(process.argv.includes('--batch-import')){await require('./asset-library-import.cjs')({db,pageFor,metrics:()=>({uploads,signings}),out});return}
   if(process.argv.includes('--catalog-link')){await require('./catalog-assets.cjs')({db,pageFor,field,save,open,objectBytes,metrics:()=>({uploads,signings}),out});return}
   const page=await pageFor('owner'),errors=[];page.on('pageerror',e=>errors.push(e.message));
   ok(await page.locator('[data-asset-open]').count()===128,'All existing metadata sources displayed');

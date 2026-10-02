@@ -15,7 +15,7 @@ const canEdit=()=>['moderator','admin','owner'].includes(auth().role);
 function ensureScope(){
   const next=[auth().user?.id,auth().role].join(':');
   if(scope===next)return;
-  clearUpload();scope=next;generation++;rows=[];working=base=null;metadataDraft=null;requestedAsset='';creating=false;phase='idle';message='';failed=false;saving=false;
+  clearUpload();globalThis.ASSET_LIBRARY_IMPORT?.reset();scope=next;generation++;rows=[];working=base=null;metadataDraft=null;requestedAsset='';creating=false;phase='idle';message='';failed=false;saving=false;
 }
 function merged(){
   const all=new Map(model.inventory().map(r=>[r.id,r]));
@@ -57,9 +57,12 @@ function form(){
 function render(){
   ensureScope();if(!canEdit())return '';
   const all=merged();if(!working&&all.length&&['ready','unavailable'].includes(phase)){working=structuredClone(all[0]);base=structuredClone(working)}
-  const busy=saving||phase==='idle'||phase==='loading';
+  const busy=saving||phase==='idle'||phase==='loading'||globalThis.ASSET_LIBRARY_IMPORT?.isOpen();
   const categories=Object.fromEntries([...new Set(all.map(r=>r.category).filter(Boolean))].sort().map(v=>[v,v]));
-  return '<section class="admin-section asset-library"><header class="admin-section-heading"><div><span class="eyebrow">ASSETS & CONTENT</span><h2>Asset-Bibliothek</h2><p>Bestehende Quellen, zentrale Metadaten und manueller Einzelupload.</p></div><div class="asset-actions"><button type="button" class="admin-secondary" data-asset-reload'+(busy?' disabled':'')+'>Neu laden</button><button type="button" class="admin-primary" data-asset-new'+(busy?' disabled':'')+'>+ Neues Asset</button></div></header>'+
+  const importer=globalThis.ASSET_LIBRARY_IMPORT;
+  const heading='<section class="admin-section asset-library"><header class="admin-section-heading"><div><span class="eyebrow">ASSETS & CONTENT</span><h2>Asset-Bibliothek</h2><p>Bestehende Quellen, zentrale Metadaten, Einzelupload und lokaler Import-Dry-Run.</p></div><div class="asset-actions"><button type="button" class="admin-secondary" data-asset-reload'+(busy?' disabled':'')+'>Neu laden</button><button type="button" class="admin-primary" data-asset-new'+(busy?' disabled':'')+'>+ Neues Asset</button><button type="button" class="admin-secondary" data-asset-import-open'+(busy?' disabled':'')+'>ZIP / ORDNER IMPORTIEREN</button></div></header>';
+  if(importer?.isOpen())return heading+importer.render()+'</section>';
+  return heading+
     '<p class="asset-connection" role="status" aria-live="polite" data-asset-message>'+esc(message||(phase==='idle'||phase==='loading'?'Asset-Metadaten werden aus Supabase geladen …':''))+'</p>'+
     '<div class="asset-library-layout"><section class="admin-glass asset-library-center"><div class="asset-filters"><label>Suche<input type="search" data-asset-search value="'+esc(filters.search)+'" placeholder="Name, ID, Metadaten"></label>'+[
       ['type','Typ',model.types,filters.type],['category','Kategorie',categories,filters.category],['status','Status',model.statuses,filters.status]
@@ -67,10 +70,10 @@ function render(){
     '<p data-asset-count></p><div class="asset-list" aria-label="Assets">'+all.map(r=>'<button type="button" class="asset-row'+(r.id===working?.id?' selected':'')+'" data-asset-open="'+esc(r.id)+'"'+(busy?' disabled':'')+'><span class="asset-thumb">'+imageMarkup(r,'',true)+'</span><span><strong>'+esc(r.name)+'</strong><small>'+esc(model.types[r.asset_type]||r.asset_type)+' · '+esc(r.category)+'</small><small>'+esc(r.id)+'</small></span><span class="asset-status status-'+esc(r.status)+'">'+esc(model.statuses[r.status])+'<small>Benutzer: '+(r.status==='active'?'JA':'NEIN')+'</small></span></button>').join('')+'</div><p data-asset-empty hidden>Keine passenden Assets.</p><div class="asset-edit"><h3>Metadaten bearbeiten</h3>'+form()+'</div></section>'+
     '<aside class="admin-glass asset-preview" aria-label="Reine Asset-Vorschau"><span class="eyebrow">LIVE-VORSCHAU · ENTWURF / GESPEICHERTES ASSET</span><div data-asset-preview></div><p class="asset-note">Freigabe steuert die Bibliothek. Bestehende Profil-Auswahl und gespeicherte Zuordnungen bleiben erhalten; ihre Anbindung folgt separat.</p></aside></div></section>';
 }
-function imageMarkup(row,cls='',thumb=false){
+function imageMarkup(row,cls='',thumb=false,source=''){
   if(!row)return '';
-  const local=!thumb&&row.id===working?.id&&uploadUrl;
-  const src=local?uploadUrl:row.file_ref&&model.fileAllowed(row.file_ref)?'./'+row.file_ref:'';
+  const local=source||(!thumb&&row.id===working?.id&&uploadUrl);
+  const src=local||(row.file_ref&&model.fileAllowed(row.file_ref)?'./'+row.file_ref:'');
   if(!src&&!row.storage_path)return thumb?'<b>'+esc(row.metadata?.icon||'◇')+'</b>':'';
   return '<img class="'+cls+'"'+(thumb?' loading="lazy"':'')+(src?' src="'+esc(src)+'"':'')+(!src?' data-asset-image="'+esc(row.id)+'" data-asset-purpose="'+esc(row.asset_type)+'"':'')+' alt="'+(thumb?'':esc(row.name))+'">';
 }
@@ -84,12 +87,11 @@ function hydrateImages(root=document){
     }catch{if(img.isConnected){img.hidden=true;img.parentElement.dataset.imageError='Storage-Bild nicht erreichbar'}}
   });
 }
-function preview(){
-  const target=document.querySelector('[data-asset-preview]');if(!target||!working)return;
-  const w=working;
+function previewMarkup(w,all,localURL='',info=null){
+  const picture=(row,cls='')=>imageMarkup(row,cls,false,row?.id===w.id?localURL:'');
   let visual='';
   if(model.profileTypes.has(w.asset_type)){
-    const all=merged(),pick=type=>w.asset_type===type?w:all.find(r=>r.asset_type===type&&r.status==='active');
+    const pick=type=>w.asset_type===type?w:all.find(r=>r.asset_type===type&&r.status==='active');
     const av=pick('avatar'),frame=pick('frame'),banner=pick('banner');
     const legacy=w.metadata?.legacy_id;
     const ring=w.asset_type==='ring'&&['cyan','red','gold'].includes(legacy)?legacy:'none';
@@ -97,15 +99,20 @@ function preview(){
     // Reuse the real profile avatar markup/styles without altering account appearance.
     const template=document.createElement('template');template.innerHTML=globalThis.JMA_PROFILE.avatar({avatar:'none',frame:'none',ring,wreath,color:'cyan'});
     const shell=template.content.querySelector('.profile-avatar');shell.querySelector('b')?.remove();
-    for(const [row,cls]of [[av,'avatar-image'],[frame,'avatar-frame']])shell.insertAdjacentHTML('beforeend',imageMarkup(row,cls));
-    visual='<div class="asset-profile-scene">'+(imageMarkup(banner)?'<div class="asset-profile-banner">'+imageMarkup(banner)+'</div>':'')+'<div class="asset-profile-identity"><div class="asset-profile-avatar">'+template.innerHTML+'</div><strong>'+esc(w.name||'Profilvorschau')+'</strong>'+(w.asset_type==='trophy'?'<span class="asset-trophy">'+esc(w.metadata?.icon||'◇')+'</span>':'')+'</div></div>';
+    for(const [row,cls]of [[av,'avatar-image'],[frame,'avatar-frame']])shell.insertAdjacentHTML('beforeend',picture(row,cls));
+    visual='<div class="asset-profile-scene">'+(picture(banner)?'<div class="asset-profile-banner">'+picture(banner)+'</div>':'')+'<div class="asset-profile-identity"><div class="asset-profile-avatar">'+template.innerHTML+'</div><strong>'+esc(w.name||'Profilvorschau')+'</strong>'+(w.asset_type==='trophy'?'<span class="asset-trophy">'+esc(w.metadata?.icon||'◇')+'</span>':'')+'</div></div>';
     // CSS decorations retain the existing profile preview; their uploaded raster is also inspectable.
-    if(!['avatar','frame','banner'].includes(w.asset_type)&&imageMarkup(w))visual+='<div class="asset-image-preview">'+imageMarkup(w)+'</div>';
-  }else visual='<div class="asset-image-preview">'+(imageMarkup(w)||'<p>Keine Bildreferenz</p>')+'</div>';
-  target.innerHTML=visual+'<h3>'+esc(w.name||'Ohne Namen')+'</h3><p>'+esc(model.types[w.asset_type])+' · '+esc(w.category)+'</p><p><b>'+esc(model.statuses[w.status])+'</b> · Für Benutzer: <strong>'+(w.status==='active'?'JA':'NEIN')+'</strong></p><p class="asset-note">'+esc(uploadInfo?'Lokale Vorschau: '+uploadInfo.original_name:w.file_ref||(w.storage_path?w.storage_bucket+'/'+w.storage_path:'CSS / Fortschrittsdarstellung'))+(w.catalog_id?' · Katalog: '+esc(w.catalog_id):'')+'</p><pre>'+esc(JSON.stringify(w.metadata,null,2))+'</pre>';
+    if(!['avatar','frame','banner'].includes(w.asset_type)&&picture(w))visual+='<div class="asset-image-preview">'+picture(w)+'</div>';
+  }else visual='<div class="asset-image-preview">'+(picture(w)||'<p>Keine Bildreferenz</p>')+'</div>';
+  return visual+'<h3>'+esc(w.name||'Ohne Namen')+'</h3><p>'+esc(model.types[w.asset_type])+' · '+esc(w.category)+'</p><p><b>'+esc(model.statuses[w.status])+'</b> · Für Benutzer: <strong>'+(w.status==='active'?'JA':'NEIN')+'</strong></p><p class="asset-note">'+esc(info?'Lokale Vorschau: '+info.original_name:w.file_ref||(w.storage_path?w.storage_bucket+'/'+w.storage_path:'CSS / Fortschrittsdarstellung'))+(w.catalog_id?' · Katalog: '+esc(w.catalog_id):'')+'</p><pre>'+esc(JSON.stringify(w.metadata,null,2))+'</pre>';
+}
+function preview(){
+  const target=document.querySelector('[data-asset-preview]');if(!target||!working)return;
+  target.innerHTML=previewMarkup(working,merged(),uploadUrl,uploadInfo);
   hydrateImages(target);
   target.querySelectorAll('img').forEach(img=>img.addEventListener('error',()=>{img.hidden=true;img.parentElement.dataset.imageError='Bild nicht erreichbar'},{once:true}));
 }
+function importerSettings(){return {known:merged,previewMarkup,hydrateImages,rerender:()=>globalThis.JMA_RENDER?.()}}
 function applyFilters(){
   const all=new Map(merged().map(r=>[r.id,r]));let count=0;
   document.querySelectorAll('[data-asset-open]').forEach(button=>{
@@ -127,6 +134,9 @@ function readForm(){
 }
 function bind(){
   ensureScope();if(!canEdit()||!document.querySelector('.asset-library'))return;
+  const importer=globalThis.ASSET_LIBRARY_IMPORT;
+  if(importer?.isOpen()){importer.bind(importerSettings());return}
+  document.querySelector('[data-asset-import-open]')?.addEventListener('click',()=>{readForm();if(saving||!discard())return;if(importer?.show(importerSettings()))globalThis.JMA_RENDER?.()});
   preview();applyFilters();
   document.querySelector('[data-asset-search]').addEventListener('input',event=>{filters.search=event.target.value;applyFilters()});
   document.querySelectorAll('[data-asset-filter]').forEach(el=>el.addEventListener('change',()=>{filters[el.dataset.assetFilter]=el.value;applyFilters()}));
