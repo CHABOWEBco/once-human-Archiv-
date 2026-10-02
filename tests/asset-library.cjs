@@ -2,13 +2,19 @@
 // Supabase Auth is a test fixture; no live data is written.
 const fs=require('node:fs'),path=require('node:path'),http=require('node:http'),assert=require('node:assert/strict');
 const {chromium}=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright');
-const {setup,asRole,ids}=require('./asset-library-sql.cjs');
+const {setup,setupStorage,asRole,ids}=require('./asset-library-sql.cjs');
 const root=path.resolve(__dirname,'..'),out=path.join(root,'test-results/asset-library');fs.mkdirSync(out,{recursive:true});
 let checks=0;const ok=(value,label)=>{assert.ok(value,label);console.log('PASS UI',++checks,label)};
-const columns=['id','name','asset_type','category','file_ref','catalog_id','status','sort_order','metadata','revision'];
+const columns=['id','name','asset_type','category','file_ref','catalog_id','status','sort_order','metadata','revision','storage_bucket','storage_path'];
 const fixture=`(()=>{
 const role=localStorage.getItem('asset-test-role')||'owner',user={id:${JSON.stringify(ids)}[role],email:role+'@example.invalid',created_at:'2026-09-01T00:00:00Z',user_metadata:{}},session={user};
-const client={auth:{onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}}),getSession:async()=>({data:{session}}),signOut:async()=>({error:null}),updateUser:async()=>({data:{user}})},from(table){
+const client={storage:{from(bucket){return {
+ async upload(objectPath,file,options){
+  const fail=sessionStorage.getItem('test-upload-fail'),conflict=sessionStorage.getItem('test-upload-conflict');sessionStorage.removeItem('test-upload-fail');sessionStorage.removeItem('test-upload-conflict');
+  return fetch('/test-storage/upload?'+new URLSearchParams({role,bucket,path:objectPath,upsert:options.upsert,fail:fail||'',conflict:conflict||''}),{method:'POST',headers:{'Content-Type':options.contentType},body:file}).then(r=>r.json());
+ },
+ async createSignedUrl(objectPath,expires){return fetch('/test-storage/sign',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({role,bucket,path:objectPath,expires})}).then(r=>r.json())}
+}}},auth:{onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}}),getSession:async()=>({data:{session}}),signOut:async()=>({error:null}),updateUser:async()=>({data:{user}})},from(table){
 let action='select',payload,filters=[],start=0,end=499;const execute=async()=>{
  if(table==='profiles')return {data:{id:user.id,display_name:'Asset Test',avatar_url:null},error:null};
  if(table==='user_roles')return {data:{user_id:user.id,role},error:null};
@@ -16,8 +22,39 @@ let action='select',payload,filters=[],start=0,end=499;const execute=async()=>{
 };return {select(){return this},order(){return this},eq(k,v){filters.push([k,v]);return this},range(a,b){start=a;end=b;return execute()},insert(p){action='insert';payload=p;return this},update(p){action='update';payload=p;return this},maybeSingle:execute,single:execute};}};
 globalThis.supabase={createClient:()=>client};})();`;
 (async()=>{
- const db=await setup();let queue=Promise.resolve();
+ const db=await setup();let queue=Promise.resolve();const objectBytes=new Map(),signedTokens=new Map();let uploads=0,signings=0;
  const server=http.createServer((req,res)=>{
+  if(req.url.startsWith('/test-signed/')){
+   const token=signedTokens.get(req.url.split('/').pop());if(!token||token.until<Date.now())return res.writeHead(403).end();
+   res.setHeader('Content-Type',token.mime);return res.end(token.bytes);
+  }
+  if(req.url.startsWith('/test-storage/')){
+   const chunks=[];req.on('data',chunk=>chunks.push(chunk));req.on('end',()=>{queue=queue.then(async()=>{
+    try{
+     const body=Buffer.concat(chunks),u=new URL(req.url,'http://test.invalid'),q=Object.fromEntries(u.searchParams);
+     const request=u.pathname.endsWith('/sign')?JSON.parse(body):q;if(!ids[request.role])throw Error('Bad fixture role');
+     const key=request.bucket+'/'+request.path;
+     const result=await asRole(db,request.role,async()=>{
+      if(u.pathname.endsWith('/upload')){
+       uploads++;if(q.fail)throw Error('Injected upload failure');
+       assert.equal(q.upsert,'false','Client never requests overwrite');
+       // These checks represent Storage API enforcement of the real bucket configuration.
+       await db.exec('reset role');const bucket=(await db.query('select * from storage.buckets where id=$1',[q.bucket])).rows[0];
+       await db.query("select set_config('request.jwt.claim.sub',$1,false)",[ids[q.role]]);await db.exec('set role authenticated');
+       if(!bucket||body.length>Number(bucket.file_size_limit)||!bucket.allowed_mime_types.includes(req.headers['content-type']))throw Error('Bucket format/size refused');
+       await db.query('insert into storage.objects(bucket_id,name,metadata) values($1,$2,$3)',[q.bucket,q.path,{mimetype:req.headers['content-type'],size:body.length}]);
+       objectBytes.set(key,body);
+       if(q.conflict)await db.query('update asset_library set revision=revision+1 where id=$1',[q.path.split('/')[1]]);
+       return {path:q.path};
+      }
+      const object=(await db.query('select * from storage.objects where bucket_id=$1 and name=$2',[request.bucket,request.path])).rows[0];
+      if(!object)throw Error('Storage object not authorized');signings++;
+      const token=require('node:crypto').randomUUID();signedTokens.set(token,{until:Date.now()+request.expires*1000,bytes:objectBytes.get(key),mime:object.metadata.mimetype});
+      return {signedUrl:'http://127.0.0.1:4194/test-signed/'+token};
+     });res.setHeader('Content-Type','application/json');res.end(JSON.stringify({data:result,error:null}));
+    }catch(error){res.setHeader('Content-Type','application/json');res.end(JSON.stringify({data:null,error:{code:error.code,message:error.message}}))}
+   })});return;
+  }
   if(req.url==='/test-db'){
    let body='';req.on('data',chunk=>body+=chunk);req.on('end',()=>{
     queue=queue.then(async()=>{
@@ -104,6 +141,88 @@ globalThis.supabase={createClient:()=>client};})();`;
     ok(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'Profile/map route navigation has no overflow');
     await p.evaluate(()=>location.hash='#/guides');await p.waitForSelector('[data-tutorial-start]');await p.locator('[data-tutorial-start]').click();await p.waitForSelector('.rf-tutorial-companion');ok(await p.locator('[data-tutorial-progress]').innerText()==='1 / 5','Pilot tutorial and companion retained');await p.locator('[data-tutorial-close]').click();
   }
+  // Phase 2A starts after verifying old-schema static editor compatibility above.
+  const storagePage=await pageFor('owner');storagePage.on('pageerror',e=>errors.push(e.message));
+  const png=Buffer.from(await storagePage.evaluate(()=>{const c=document.createElement('canvas');c.width=32;c.height=24;const x=c.getContext('2d');x.fillStyle='#45e3f1';x.fillRect(0,0,32,24);return c.toDataURL('image/png').split(',')[1]}),'base64');
+  const fixtures={};for(const mime of ['image/jpeg','image/webp'])fixtures[mime]=Buffer.from(await storagePage.evaluate(mime=>{const c=document.createElement('canvas');c.width=40;c.height=30;c.getContext('2d').fillRect(0,0,40,30);return c.toDataURL(mime).split(',')[1]},mime),'base64');
+  const choose=(p,name,mime,buffer)=>p.locator('[data-asset-file]').setInputFiles({name,mimeType:mime,buffer});
+  async function uploadReady(p){await p.waitForFunction(()=>document.querySelector('[data-asset-upload-message]')?.textContent.includes('noch nicht gespeichert'))}
+  async function newUpload(p,name,type='image'){
+   await p.locator('[data-asset-new]').click();await field(p,'name').fill(name);await field(p,'asset_type').selectOption(type);
+   await choose(p,'same-original.png','image/png',png);await uploadReady(p);return field(p,'id').inputValue();
+  }
+  const preMigrationId=await newUpload(storagePage,'Not yet migrated');await save(storagePage,'20261002020000_asset_library_storage.sql');
+  ok((await db.query('select id from asset_library where id=$1',[preMigrationId])).rows.length===0,'Missing Storage migration explicitly blocks upload before reserving any row');
+  await storagePage.locator('[data-asset-file-clear]').click();
+  await setupStorage(db);await storagePage.reload();await storagePage.waitForFunction(()=>document.querySelector('[data-asset-message]')?.textContent.includes('Supabase verbunden'));
+  const uploadId=await newUpload(storagePage,'Original-byte upload','deviation');
+  ok(await storagePage.locator('[data-asset-preview] img').getAttribute('src').then(s=>s.startsWith('blob:')),'Local original preview before upload');
+  await storagePage.evaluate(()=>JMA_RENDER());ok(await storagePage.locator('[data-asset-upload-message]').innerText().then(s=>s.includes('same-original.png'))&&await storagePage.locator('[data-asset-file]').evaluate(el=>el.files[0]?.name==='same-original.png'),'File selection, native filename and preview survive ordinary render');
+  await save(storagePage);
+  let stored=(await db.query('select * from asset_library where id=$1',[uploadId])).rows[0];const oldPath=stored.storage_path;
+  ok(stored.status==='draft'&&stored.revision===2&&stored.file_ref===null&&stored.storage_bucket==='archive-assets','Reserved draft becomes one normalized Storage record with revision 2');
+  ok(objectBytes.get(stored.storage_bucket+'/'+oldPath).equals(png)&&stored.metadata.upload.sha256===require('node:crypto').createHash('sha256').update(png).digest('hex')&&stored.metadata.upload.original_name==='same-original.png','Stored original bytes, SHA256 and original filename match exactly');
+  await storagePage.waitForFunction(()=>{const i=document.querySelector('[data-asset-preview] img');return i?.src.includes('/test-signed/')&&i.complete&&i.naturalWidth===32});
+  ok(await storagePage.locator('[data-asset-preview] .profile-avatar').count()===0,'Deviation remains an image preview, never a profile avatar');
+  const signedBefore=signings;await storagePage.evaluate(()=>JMA_RENDER());await storagePage.waitForTimeout(200);ok(signings===signedBefore,'Signed preview requests reused during ordinary render');
+  await field(storagePage,'status').selectOption('active');await save(storagePage);
+  const activeRow=(await db.query('select * from asset_library where id=$1',[uploadId])).rows[0];
+  ok(await user.evaluate(async row=>!!(await JMA_ASSET_STORE.imageUrl(row,'deviation')),activeRow),'User can sign only the saved active image');
+  ok(await user.evaluate(async row=>{try{await JMA_ASSET_STORE.imageUrl(row,'avatar');return false}catch{return true}},activeRow),'Purpose check rejects deviation used as avatar');
+  await choose(storagePage,'same-original.png','image/png',png);await uploadReady(storagePage);await save(storagePage);
+  stored=(await db.query('select * from asset_library where id=$1',[uploadId])).rows[0];
+  ok(stored.storage_path!==oldPath&&objectBytes.has('archive-assets/'+oldPath)&&stored.revision===4,'Same original filename creates fresh UUID; old file preserved without overwrite');
+  const replacementPath=stored.storage_path,priorUploads=uploads;
+  await choose(storagePage,'same-original.png','image/png',png);await uploadReady(storagePage);await storagePage.evaluate(()=>sessionStorage.setItem('test-upload-fail','yes'));await save(storagePage,'Bisheriger Datensatz');
+  ok((await db.query('select storage_path,revision from asset_library where id=$1',[uploadId])).rows[0].storage_path===replacementPath&&uploads===priorUploads+1,'Failed replacement leaves previous active image and record intact');
+  await storagePage.evaluate(()=>sessionStorage.setItem('test-upload-conflict','yes'));await save(storagePage,'Versionskonflikt');
+  ok((await db.query('select storage_path from asset_library where id=$1',[uploadId])).rows[0].storage_path===replacementPath,'Failed final revision commit leaves previous pointer; staged object stays private');
+  await storagePage.locator('[data-asset-file-clear]').click();await storagePage.locator('[data-asset-reload]').click();await storagePage.waitForFunction(()=>document.querySelector('[data-asset-message]')?.textContent.includes('Supabase verbunden'));await open(storagePage,uploadId);
+  for(const status of ['inactive','archived']){
+   await field(storagePage,'status').selectOption(status);await save(storagePage);const row=(await db.query('select * from asset_library where id=$1',[uploadId])).rows[0];
+   ok(!row.users_available&&await user.evaluate(async row=>(await JMA_ASSET_STORE.imageUrl(row,'deviation'))===null,row),'Saved '+status+' unavailable to normal user');
+   ok(await user.evaluate(async row=>{const c=supabase.createClient();const r=await c.storage.from(row.storage_bucket).createSignedUrl(row.storage_path,60);return !!r.error},row),'Server RLS blocks guessed '+status+' Storage signing');
+  }
+  await storagePage.reload();await storagePage.waitForFunction(()=>document.querySelector('[data-asset-message]')?.textContent.includes('Supabase verbunden'));await open(storagePage,uploadId);
+  ok(await field(storagePage,'status').inputValue()==='archived','Stored Storage reference and archive survive reload');
+  const failId=await newUpload(storagePage,'Failure-safe new upload');await field(storagePage,'status').selectOption('active');await storagePage.evaluate(()=>sessionStorage.setItem('test-upload-fail','yes'));await save(storagePage,'Metadaten-Entwurf');
+  let failedRow=(await db.query('select * from asset_library where id=$1',[failId])).rows[0];
+  ok(failedRow.status==='draft'&&failedRow.storage_path===null&&failedRow.revision===1&&!failedRow.users_available&&await field(storagePage,'status').inputValue()==='draft'&&!(await storagePage.locator('[data-asset-release]').isChecked()),'Failed new upload remains an un-released draft in DB and editor');
+  await field(storagePage,'status').selectOption('active');await save(storagePage);failedRow=(await db.query('select * from asset_library where id=$1',[failId])).rows[0];ok(failedRow.status==='active'&&failedRow.revision===2,'Retry adopts reserved draft instead of duplicate insert');
+  await field(storagePage,'status').selectOption('archived');await save(storagePage);
+  for(const [mime,ext]of [['image/jpeg','jpeg'],['image/webp','webp']]){
+   await storagePage.locator('[data-asset-new]').click();await field(storagePage,'name').fill('Accepted '+ext);await field(storagePage,'asset_type').selectOption('avatar');await choose(storagePage,'original.'+ext,mime,fixtures[mime]);await uploadReady(storagePage);await save(storagePage);
+   const row=(await db.query('select * from asset_library where id=$1',[await field(storagePage,'id').inputValue()])).rows[0];
+   ok(row.metadata.upload.mime===mime&&objectBytes.get('archive-assets/'+row.storage_path).equals(fixtures[mime]),ext+' uploaded unchanged with canonical normalized extension');
+   await storagePage.waitForFunction(()=>document.querySelector('[data-asset-preview] .avatar-image')?.src.includes('/test-signed/'));
+   ok(await storagePage.locator('[data-asset-preview] .avatar-frame').count()===1&&await storagePage.locator('[data-asset-preview] .asset-profile-banner img').count()===1,'Storage avatar reuses existing combined profile preview');
+   await field(storagePage,'status').selectOption('archived');await save(storagePage);
+  }
+  for(const type of ['ring','wreath','trophy']){
+   await newUpload(storagePage,'Raster '+type,type);
+   assert.ok(await storagePage.locator('[data-asset-preview] .asset-image-preview img').getAttribute('src').then(s=>s.startsWith('blob:')));
+   await save(storagePage);await storagePage.waitForFunction(()=>{const i=document.querySelector('[data-asset-preview] .asset-image-preview img');return i?.src.includes('/test-signed/')&&i.complete&&i.naturalWidth===32});
+   ok(await storagePage.locator('[data-asset-preview] .profile-avatar').count()===1,type+' original raster is inspectable alongside unchanged CSS/profile preview');
+   await field(storagePage,'status').selectOption('archived');await save(storagePage);
+  }
+  const countBeforeInvalid=(await db.query('select count(*) from storage.objects')).rows[0].count;
+  for(const [name,mime,bytes]of [['bad.svg','image/svg+xml',Buffer.from('<svg/>')],['bad.zip','application/zip',Buffer.from('PK')],['spoof.png','image/png',fixtures['image/jpeg']],['broken.png','image/png',png.subarray(0,16)],['large.png','image/png',Buffer.alloc(8388609)]]){
+   await choose(storagePage,name,mime,bytes);await storagePage.waitForFunction(()=>{const t=document.querySelector('[data-asset-upload-message]')?.textContent;return t&&!t.includes('prüft')&&!t.includes('wird geprüft')&&!t.includes('noch nicht gespeichert')});
+   ok(await storagePage.locator('[data-asset-preview] img').first().getAttribute('src').then(s=>!s?.startsWith('blob:')),'Invalid '+name+' refused before upload');
+  }
+  const tooWide=Buffer.from(await storagePage.evaluate(()=>{const c=document.createElement('canvas');c.width=8193;c.height=1;return c.toDataURL('image/png').split(',')[1]}),'base64');await choose(storagePage,'wide.png','image/png',tooWide);await storagePage.waitForFunction(()=>document.querySelector('[data-asset-upload-message]')?.textContent.includes('8192'));
+  ok((await db.query('select count(*) from storage.objects')).rows[0].count===countBeforeInvalid,'Invalid types, spoofed/corrupt, oversized bytes and dimensions create no objects');
+  for(const role of ['moderator','admin']){
+   const p=await pageFor(role);const id=await newUpload(p,role+' storage draft');await save(p);ok((await db.query('select created_by,storage_path from asset_library where id=$1',[id])).rows[0].storage_path,'Existing '+role+' session uploads through same editor');
+   await field(p,'status').selectOption('archived');await save(p);
+  }
+  const storageMobile=await pageFor('owner',390);await newUpload(storageMobile,'Mobile storage preview','banner');
+  ok(await storageMobile.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'390px local Storage selection and combined preview have no overflow');
+  await storageMobile.locator('[data-asset-file-clear]').scrollIntoViewIfNeeded();ok(await storageMobile.locator('[data-asset-file-clear]').boundingBox().then(b=>b.x>=0&&b.x+b.width<=390&&b.height>=44),'390px clear-file control fits with 44px touch target');
+  await storageMobile.locator('[data-asset-save]').focus();await storageMobile.keyboard.press('Enter');await storageMobile.waitForFunction(()=>document.querySelector('[data-asset-message]')?.textContent.includes('in Supabase gespeichert'));
+  ok(await storageMobile.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'390px keyboard save and persisted original preview fit');
+  await storagePage.screenshot({path:path.join(out,'storage-desktop.png'),fullPage:true});await storageMobile.screenshot({path:path.join(out,'storage-mobile.png'),fullPage:true});
   ok(errors.length===0,'No browser exceptions: '+errors.join('; '));console.log('PASS UI checks:',checks);
+
  }finally{for(const context of contexts)await context.close();await browser.close();await new Promise(resolve=>server.close(resolve));await db.close()}
 })().catch(error=>{console.error(error);process.exitCode=1});

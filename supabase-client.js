@@ -377,6 +377,8 @@ function destroy(){
 }
 
 // Shares the existing authenticated client; no second auth or local write store.
+let assetStorageReady=false,imageScope='';
+const assetImageUrls=new Map();
 function requireAssetEditor(){
   if(!state.user||!state.session||!CATALOG_WRITE_ROLES.has(state.role))throw Error('Asset-Verwaltung benötigt eine Moderator-, Admin- oder Owner-Rolle.');
 }
@@ -387,11 +389,16 @@ async function loadAssets(){
     if(error)throw error;
     rows.push(...data);if(data.length<500)break;
   }
+  assetStorageReady=rows.length>0&&Object.hasOwn(rows[0],'storage_bucket')&&Object.hasOwn(rows[0],'storage_path');
   return rows;
 }
-async function saveAsset(input,expectedRevision=null){
+async function commitAsset(input,expectedRevision=null){
   requireAssetEditor();
   const row=globalThis.ASSET_LIBRARY_MODEL.validate(input);
+  if(!assetStorageReady){
+    if(row.storage_path)throw Error('Storage-Migration 20261002020000_asset_library_storage.sql fehlt.');
+    delete row.storage_bucket;delete row.storage_path;
+  }
   let query=getClient().from('asset_library');
   if(expectedRevision===null)query=query.insert({...row,revision:1});
   else{
@@ -408,7 +415,51 @@ async function saveAsset(input,expectedRevision=null){
   if(!data)throw Error('Versionskonflikt: Das Asset wurde zwischenzeitlich geändert. Bitte neu laden; dein Entwurf bleibt erhalten.');
   return data;
 }
-globalThis.JMA_ASSET_STORE=Object.freeze({load:loadAssets,save:saveAsset});
+async function saveAsset(input,expectedRevision=null,file=null){
+  requireAssetEditor();
+  if(!file)return commitAsset(input,expectedRevision);
+  const model=globalThis.ASSET_LIBRARY_MODEL;
+  if(!assetStorageReady)throw Error('Bitte zuerst 20261002020000_asset_library_storage.sql anwenden und die Bibliothek neu laden.');
+  const row=model.validate(input,true),info=await model.inspectUpload(file);
+  const digest=await crypto.subtle.digest('SHA-256',await file.arrayBuffer());
+  const sha256=Array.from(new Uint8Array(digest),b=>b.toString(16).padStart(2,'0')).join('');
+  let reserved=null;
+  try{
+    // Reserve ONLY new IDs as a non-released, image-less draft. Existing images stay current.
+    if(expectedRevision===null)reserved=await commitAsset({...row,status:'draft',file_ref:null,storage_bucket:null,storage_path:null},null);
+    const path='library/'+row.id+'/'+crypto.randomUUID()+'.'+info.extension;
+    const {error}=await getClient().storage.from(model.storageBucket).upload(path,file,{contentType:info.mime,cacheControl:'0',upsert:false});
+    if(error)throw error;
+    return await commitAsset({...row,file_ref:null,storage_bucket:model.storageBucket,storage_path:path,
+      metadata:{...row.metadata,upload:{...info,sha256}}},reserved?.revision??expectedRevision);
+  }catch(error){
+    const failure=new Error((reserved?'Metadaten-Entwurf gesichert; Bild nicht freigegeben. ':'Bisheriger Datensatz bleibt erhalten. ')+(error?.message||'Upload konnte nicht abgeschlossen werden.'));
+    // The editor adopts a reserved draft, so retry updates this ID instead of inserting twice.
+    // An uncommitted staged object stays private. No files are automatically removed.
+    failure.assetDraft=reserved;throw failure;
+  }
+}
+async function assetImageUrl(row,expectedType){
+  const model=globalThis.ASSET_LIBRARY_MODEL;
+  if(!row||row.asset_type!==expectedType)throw Error('Asset-Typ passt nicht zum Verwendungszweck.');
+  const nextScope=[state.user?.id,state.role].join(':');
+  if(imageScope!==nextScope){assetImageUrls.clear();imageScope=nextScope}
+  if(!CATALOG_WRITE_ROLES.has(state.role)&&row.status!=='active')return null;
+  if(row.file_ref)return model.fileAllowed(row.file_ref)?'./'+row.file_ref:null;
+  if(!row.storage_path)return null;
+  if(row.storage_bucket!==model.storageBucket||!model.storagePathAllowed(row.id,row.storage_path))throw Error('Ungültige Storage-Referenz.');
+  const cacheKey=[row.id,row.revision,row.status,row.storage_path,expectedType].join('|'),cached=assetImageUrls.get(cacheKey);
+  if(cached&&cached.expires>Date.now())return cached.promise;
+  const promise=(async()=>{
+    const {data,error}=await getClient().storage.from(row.storage_bucket).createSignedUrl(row.storage_path,model.signedUrlSeconds);
+    if(error)throw error;
+    if(!data?.signedUrl)throw Error('Storage-Vorschau nicht verfügbar.');
+    return data.signedUrl;
+  })();
+  assetImageUrls.set(cacheKey,{promise,expires:Date.now()+45000});
+  try{return await promise}catch(error){assetImageUrls.delete(cacheKey);throw error}
+}
+globalThis.JMA_ASSET_STORE=Object.freeze({load:loadAssets,save:saveAsset,imageUrl:assetImageUrl,storageReady:()=>assetStorageReady});
 
 globalThis.JMA_CATALOG = {
   load: loadCatalog,

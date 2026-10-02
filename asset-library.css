@@ -18,3 +18,5 @@
 .asset-preview [data-image-error]:after{content:attr(data-image-error);color:#efbd9c;font-size:12px}.asset-library button:focus-visible,.asset-library input:focus-visible,.asset-library select:focus-visible,.asset-library textarea:focus-visible{outline:2px solid #45e3f1;outline-offset:2px}
 @media(max-width:1100px){.asset-library-layout{grid-template-columns:minmax(0,1fr)}.asset-preview{position:static}}
 @media(max-width:560px){.asset-library-center,.asset-preview{padding:12px}.asset-filters{grid-template-columns:minmax(0,1fr)}.asset-row{grid-template-columns:42px minmax(0,1fr);gap:8px}.asset-thumb{height:42px}.asset-status{grid-column:2;text-align:left}.asset-actions{width:100%}.asset-actions button{flex:1;min-height:44px}.asset-form{grid-template-columns:minmax(0,1fr)}.asset-list{max-height:380px}.asset-library-layout{gap:14px}}
+
+.asset-upload input[type="file"]{width:100%;overflow:hidden}.asset-upload-state{min-width:0}.asset-upload-state button[hidden]{display:none}.asset-upload-state button{max-width:100%;white-space:normal}.asset-upload-state p{margin-top:0}

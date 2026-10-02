@@ -74,3 +74,7 @@ Weiter offen:
 - globale Migration/Synchronisierung lokaler Werkzeug- und Medienbestände
 - sichere globale Rollenverwaltung, Moderationsmutationen und Server-Audit
 - Builds, Routen, Posts, Einreichungen oder sonstige Fachtabellen
+
+## Asset Library – Phase 2A (vorbereitet, noch nicht live angewendet)
+
+Nach der abgeschlossenen Phase 1 ergänzt ausschließlich `migrations/20261002020000_asset_library_storage.sql` einen privaten `archive-assets`-Bucket, Storage-Policies und die normalisierten Referenzspalten in der bestehenden `asset_library`. Diese neue Datei einmal vollständig manuell im bestehenden Supabase SQL Editor ausführen; keine alten Migrationen erneut ausführen. Danach die Asset-Bibliothek im vorhandenen Adminbereich neu laden. Originale und statische `file_ref`-Einträge bleiben erhalten. Modell, Ablauf, isolierte Tests und verbleibende Live-Prüfung: [Phase-2A-Bericht](../docs/ASSET_LIBRARY_PHASE_2A.md).
