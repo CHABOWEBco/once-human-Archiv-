@@ -62,20 +62,20 @@ globalThis.supabase={createClient:()=>client};})();`;
       const q=JSON.parse(body);if(!ids[q.role])throw Error('Bad fixture role');
       if(q.table==='asset_library'&&q.missing){res.setHeader('Content-Type','application/json');return res.end(JSON.stringify({data:null,error:{code:'PGRST205',message:'Missing table'}}))}
       const result=await asRole(db,q.role,async()=>{
-       if(q.table==='catalog_entries')return (await db.query('select * from catalog_entries order by id limit $1 offset $2',[q.end-q.start+1,q.start])).rows;
-       if(q.table!=='asset_library')throw Error('Unsupported test table');
-       if(q.action==='select')return (await db.query('select * from asset_library order by id limit $1 offset $2',[q.end-q.start+1,q.start])).rows;
-       const keys=Object.keys(q.payload);if(keys.some(k=>!columns.includes(k)))throw Error('Bad column');
+       if(!['catalog_entries','asset_library'].includes(q.table))throw Error('Unsupported test table');
+       if(q.action==='select')return (await db.query('select * from '+q.table+' order by id limit $1 offset $2',[q.end-q.start+1,q.start])).rows;
+       const allowedColumns=q.table==='catalog_entries'?['id','entry','revision','updated_at','updated_by']:columns;
+       const keys=Object.keys(q.payload);if(keys.some(k=>!allowedColumns.includes(k)))throw Error('Bad column');
        const values=keys.map(k=>q.payload[k]),args=keys.map((k,i)=>'$'+(i+1));
-       if(q.action==='insert')return (await db.query('insert into asset_library('+keys.join(',')+') values('+args.join(',')+') returning *',values)).rows[0]||null;
+       if(q.action==='insert')return (await db.query('insert into '+q.table+'('+keys.join(',')+') values('+args.join(',')+') returning *',values)).rows[0]||null;
        const where=q.filters.map(([k,v])=>{if(!['id','revision'].includes(k))throw Error('Bad filter');values.push(v);return k+'=$'+values.length}).join(' and ');
-       return (await db.query('update asset_library set '+keys.map((k,i)=>k+'='+args[i]).join(',')+' where '+where+' returning *',values)).rows[0]||null;
+       return (await db.query('update '+q.table+' set '+keys.map((k,i)=>k+'='+args[i]).join(',')+' where '+where+' returning *',values)).rows[0]||null;
       });res.setHeader('Content-Type','application/json');res.end(JSON.stringify({data:result,error:null}));
      }catch(error){res.setHeader('Content-Type','application/json');res.end(JSON.stringify({data:null,error:{code:error.code,message:error.message}}))}
     });
    });return;
   }
-  const rel=decodeURIComponent(req.url.split('?')[0]),file=path.join(root,rel==='/'?'index.html':rel);
+  const rel=decodeURIComponent(req.url.split('?')[0]),file=path.join(root,rel==='/'?'index.html':rel==='/assets/items/test-catalog-original.png'?'assets/branding/once-human-logo.png':rel);
   if(!file.startsWith(root+path.sep))return res.writeHead(403).end();
   fs.readFile(file,(err,bytes)=>{if(err)return res.writeHead(404).end();res.setHeader('Content-Type',({'.html':'text/html','.js':'text/javascript','.css':'text/css','.svg':'image/svg+xml','.png':'image/png','.webp':'image/webp'})[path.extname(file)]||'application/octet-stream');res.end(bytes)});
  });
@@ -95,6 +95,7 @@ globalThis.supabase={createClient:()=>client};})();`;
  async function save(p,text='in Supabase gespeichert'){await p.locator('[data-asset-save]').click();await p.waitForFunction(text=>document.querySelector('[data-asset-message]')?.textContent.includes(text)&&document.querySelector('[data-asset-save]')?.disabled===false,text)}
  async function open(p,id){await p.locator('[data-asset-search]').fill(id);await p.locator('[data-asset-open="'+id+'"]').click()}
  try{
+  if(process.argv.includes('--catalog-link')){await require('./catalog-assets.cjs')({db,pageFor,field,save,open,objectBytes,metrics:()=>({uploads,signings}),out});return}
   const page=await pageFor('owner'),errors=[];page.on('pageerror',e=>errors.push(e.message));
   ok(await page.locator('[data-asset-open]').count()===128,'All existing metadata sources displayed');
   const firstId=await field(page,'id').inputValue();await save(page);

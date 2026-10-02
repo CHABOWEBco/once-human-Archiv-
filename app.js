@@ -61,10 +61,25 @@ function writeSet(key,set){globalThis.JMA_STORE.write(key,[...set])}
 function filteredCatalog(){const q=DB_STATE.q.trim().toLowerCase(),fav=storedSet('jma_favorites');return catalogEntries().filter(e=>(!q||[e.id,e.name_de,e.kind,e.description,e.acquisition,...(e.tags||[])].join(' ').toLowerCase().includes(q))&&(DB_STATE.category==='all'||e.category===DB_STATE.category)&&(DB_STATE.status==='all'||e.status===DB_STATE.status)&&(!DB_STATE.onlyFav||fav.has(e.id))).sort((a,b)=>DB_STATE.sort==='category'?categoryFor(a.category).label.localeCompare(categoryFor(b.category).label,'de')||a.name_de.localeCompare(b.name_de,'de'):DB_STATE.sort==='checked'?String(b.last_checked||'').localeCompare(a.last_checked||''):a.name_de.localeCompare(b.name_de,'de'))}
 
 function catalogArt(e,fallback){const valid=typeof e.image==='string'&&/^assets\/items\/.+\.(png|webp|jpg|jpeg)$/i.test(e.image)&&!e.image.includes('..')&&!e.image.includes('\\');return valid?`<img src="./${e.image.split('/').map(encodeURIComponent).join('/')}" alt="${escapeHtml(e.name_de)}" loading="lazy">`:fallback}
+function hydrateCatalogArt(root){
+  root.querySelectorAll('[data-catalog-art]').forEach(async target=>{
+    const entry=catalogEntries().find(row=>row.id===target.dataset.catalogArt);if(!entry)return;
+    const ticket=target.catalogImageTicket=(target.catalogImageTicket||0)+1;
+    try{
+      const resolved=await globalThis.JMA_ASSET_STORE.catalogImage(entry);
+      if(!resolved||!target.isConnected||target.catalogImageTicket!==ticket)return;
+      const image=new Image();image.src=resolved.url;image.alt=entry.name_de;image.dataset.catalogCentral=resolved.assetId;
+      await image.decode();
+      if(!target.isConnected||target.catalogImageTicket!==ticket)return;
+      target.querySelectorAll(':scope > img,:scope > .catalog-glyph,:scope > small').forEach(node=>node.remove());
+      target.append(image);
+    }catch{/* Preserve the existing catalog fallback without resetting filters or dialogs. */}
+  });
+}
 function catalogCard(e){
   const category=categoryFor(e.category),esc=escapeHtml,found=storedSet('jma_found').has(e.id);
   return `<article class="catalog-card" data-entry="${esc(e.id)}">
-    <button class="catalog-card-art" type="button" data-db-detail="${esc(e.id)}" aria-label="Details zu ${esc(e.name_de)}"><code>${esc(e.id)}</code>${catalogArt(e,`<span class="catalog-glyph" aria-hidden="true">${esc(category.icon||'◇')}</span><small>ORIGINALBILD AUSSTEHEND</small>`)}${found?'<span class="catalog-found-mark">✓ GEFUNDEN</span>':''}</button>
+    <button class="catalog-card-art" type="button" data-catalog-art="${esc(e.id)}" data-db-detail="${esc(e.id)}" aria-label="Details zu ${esc(e.name_de)}"><code>${esc(e.id)}</code>${catalogArt(e,`<span class="catalog-glyph" aria-hidden="true">${esc(category.icon||'◇')}</span><small>ORIGINALBILD AUSSTEHEND</small>`)}${found?'<span class="catalog-found-mark">✓ GEFUNDEN</span>':''}</button>
     <div class="catalog-card-copy"><small class="catalog-category">${esc(category.label)}</small><h3><button type="button" data-db-detail="${esc(e.id)}">${esc(e.name_de)}</button></h3><p class="catalog-kind">${esc(e.kind||'Archiv-Eintrag')}</p><p class="catalog-excerpt">${esc(e.description||e.acquisition||'Beschreibung noch nicht abschließend dokumentiert.')}</p><div class="catalog-tags">${(e.tags||[]).slice(0,3).map(t=>`<span>${esc(t)}</span>`).join('')}</div></div>
     <footer class="catalog-card-footer"><span class="catalog-status"><i aria-hidden="true"></i>${esc(e.status||'Prüfstatus offen')}</span><div class="catalog-actions"><button type="button" data-db-detail="${esc(e.id)}">EINTRAG ÖFFNEN <span aria-hidden="true">↗</span></button>${[['fav','jma_favorites','★','Favorit'],['hunt','jma_hunt','◎','Jagdliste'],['found','jma_found','✓','Gefunden']].map(([action,key,icon,label])=>`<button class="icon-action ${storedSet(key).has(e.id)?'active':''}" type="button" data-db-${action}="${esc(e.id)}" aria-label="${label}: ${esc(e.name_de)}" title="${label}" aria-pressed="${storedSet(key).has(e.id)}">${icon}</button>`).join('')}</div></footer>
   </article>`;
@@ -84,6 +99,7 @@ function renderCatalogGrid(){
   $('#catalogPagination').innerHTML=`<button type="button" data-db-page="${DB_STATE.page-1}" ${DB_STATE.page===1?'disabled':''}>← ZURÜCK</button><span>SEITE <b>${String(DB_STATE.page).padStart(2,'0')}</b> / ${String(pages).padStart(2,'0')}</span><button type="button" data-db-page="${DB_STATE.page+1}" ${DB_STATE.page===pages?'disabled':''}>WEITER →</button>`;
   document.querySelectorAll('[data-db-category]').forEach(b=>{const active=b.dataset.dbCategory===DB_STATE.category;b.classList.toggle('active',active);b.setAttribute('aria-pressed',active)});
   document.querySelectorAll('[data-db-view]').forEach(b=>{const active=b.dataset.dbView===DB_STATE.view;b.classList.toggle('active',active);b.setAttribute('aria-pressed',active)});
+  hydrateCatalogArt(grid);
 }
 function renderDatabase(){
   const esc=escapeHtml,statuses=[...new Set(catalogEntries().map(e=>e.status).filter(Boolean))];
@@ -103,10 +119,11 @@ function openCatalogDetail(id){
   const e=catalogEntries().find(x=>x.id===id);if(!e)return;
   const c=categoryFor(e.category),d=ensureCatalogDialog(),esc=escapeHtml;
   d.setAttribute('aria-labelledby','catalogDetailTitle');
-  d.innerHTML=`<button class="dialog-close" data-db-close type="button" aria-label="Eintragsdetails schließen">×</button><aside class="catalog-detail-visual"><div class="catalog-detail-index"><small>ARCHIV / EINTRAG</small><code>${esc(e.id)}</code></div><div class="catalog-detail-art">${catalogArt(e,`<span class="catalog-glyph" aria-hidden="true">${esc(c.icon||'◇')}</span><small>ORIGINALBILD AUSSTEHEND</small>`)}</div><div class="catalog-detail-category"><small>ARCHIVBEREICH</small><b>${esc(c.label)}</b></div></aside><div class="catalog-detail-body"><header><div class="database-kicker"><span></span> KATALOG / DETAILANSICHT</div><h2 id="catalogDetailTitle">${esc(e.name_de)}</h2><p class="catalog-kind">${esc(e.kind||'Archiv-Eintrag')}</p><div class="catalog-detail-tags">${(e.tags||[]).map(t=>`<span>${esc(t)}</span>`).join('')}</div></header><section><small>01 / BESCHREIBUNG</small><p>${esc(e.description||'Für diesen Eintrag ist noch keine Beschreibung dokumentiert.')}</p></section><section class="catalog-acquisition"><small>02 / FUNDWEG & ERHALT</small><p>${esc(e.acquisition||'Der Fundweg ist noch nicht abschließend dokumentiert.')}</p></section><div class="catalog-detail-meta"><span><small>PRÜFSTATUS</small><b>${esc(e.status||'offen')}</b></span><span><small>ZULETZT GEPRÜFT</small><b>${esc(e.last_checked||'—')}</b></span></div><footer class="actions catalog-detail-actions">${[['fav','jma_favorites','★','FAVORIT'],['hunt','jma_hunt','◎','JAGDLISTE'],['found','jma_found','✓','GEFUNDEN']].map(([action,key,icon,label])=>`<button class="${storedSet(key).has(id)?'selected':''}" data-db-${action}="${esc(id)}" type="button" aria-pressed="${storedSet(key).has(id)}">${icon} ${label} ${storedSet(key).has(id)?'✓':'＋'}</button>`).join('')}</footer></div>`;
+  d.innerHTML=`<button class="dialog-close" data-db-close type="button" aria-label="Eintragsdetails schließen">×</button><aside class="catalog-detail-visual"><div class="catalog-detail-index"><small>ARCHIV / EINTRAG</small><code>${esc(e.id)}</code></div><div class="catalog-detail-art" data-catalog-art="${esc(e.id)}">${catalogArt(e,`<span class="catalog-glyph" aria-hidden="true">${esc(c.icon||'◇')}</span><small>ORIGINALBILD AUSSTEHEND</small>`)}</div><div class="catalog-detail-category"><small>ARCHIVBEREICH</small><b>${esc(c.label)}</b></div></aside><div class="catalog-detail-body"><header><div class="database-kicker"><span></span> KATALOG / DETAILANSICHT</div><h2 id="catalogDetailTitle">${esc(e.name_de)}</h2><p class="catalog-kind">${esc(e.kind||'Archiv-Eintrag')}</p><div class="catalog-detail-tags">${(e.tags||[]).map(t=>`<span>${esc(t)}</span>`).join('')}</div></header><section><small>01 / BESCHREIBUNG</small><p>${esc(e.description||'Für diesen Eintrag ist noch keine Beschreibung dokumentiert.')}</p></section><section class="catalog-acquisition"><small>02 / FUNDWEG & ERHALT</small><p>${esc(e.acquisition||'Der Fundweg ist noch nicht abschließend dokumentiert.')}</p></section><div class="catalog-detail-meta"><span><small>PRÜFSTATUS</small><b>${esc(e.status||'offen')}</b></span><span><small>ZULETZT GEPRÜFT</small><b>${esc(e.last_checked||'—')}</b></span></div><footer class="actions catalog-detail-actions">${[['fav','jma_favorites','★','FAVORIT'],['hunt','jma_hunt','◎','JAGDLISTE'],['found','jma_found','✓','GEFUNDEN']].map(([action,key,icon,label])=>`<button class="${storedSet(key).has(id)?'selected':''}" data-db-${action}="${esc(id)}" type="button" aria-pressed="${storedSet(key).has(id)}">${icon} ${label} ${storedSet(key).has(id)?'✓':'＋'}</button>`).join('')}</footer></div>`;
   d.querySelector('[data-db-close]').onclick=()=>d.close();
   for(const [action,key,label] of [['fav','jma_favorites','Favorit'],['hunt','jma_hunt','Jagdliste'],['found','jma_found','Gefunden']])d.querySelector(`[data-db-${action}]`).onclick=()=>{toggleCatalogSet(key,id,label);d.close();renderCatalogGrid();openCatalogDetail(id);d.querySelector(`[data-db-${action}]`).focus()};
   d.showModal();
+  hydrateCatalogArt(d);
 }
 
 function toggleCatalogSet(key,id,label){const s=storedSet(key);const adding=!s.has(id);adding?s.add(id):s.delete(id);writeSet(key,s);toast(`${label}: ${adding?'hinzugefügt':'entfernt'}.`)}

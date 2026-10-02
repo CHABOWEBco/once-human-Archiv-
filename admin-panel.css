@@ -705,3 +705,6 @@ box-shadow:0 18px 60px rgba(0,0,0,.24),inset 0 1px rgba(255,255,255,.035);paddin
 @media(prefers-reduced-motion:reduce){.admin-editor-drawer{animation:none}.admin-visual-editor-shell{transition:none}}
 
 
+
+/* One central asset action; retain the existing media-control styling. */
+.admin-editor-media-control{flex-wrap:wrap}.admin-editor-media-control>div{min-width:0;flex:1 1 160px}.admin-editor-media-control button{min-height:44px;max-width:100%;white-space:normal}

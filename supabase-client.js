@@ -379,10 +379,18 @@ function destroy(){
 // Shares the existing authenticated client; no second auth or local write store.
 let assetStorageReady=false,imageScope='';
 const assetImageUrls=new Map();
+let assetRows=null,assetRowsScope='',assetRowsAt=0,assetRowsPending=null,assetRowsVersion=0;
+const assetScope=()=>[state.user?.id,state.role].join(':');
+function ensureAssetScope(){
+  const scope=assetScope();
+  if(assetRowsScope!==scope){assetRowsScope=scope;assetRows=null;assetRowsAt=0;assetRowsPending=null;assetRowsVersion++}
+  return scope;
+}
 function requireAssetEditor(){
   if(!state.user||!state.session||!CATALOG_WRITE_ROLES.has(state.role))throw Error('Asset-Verwaltung benötigt eine Moderator-, Admin- oder Owner-Rolle.');
 }
 async function loadAssets(){
+  const scope=ensureAssetScope(),version=++assetRowsVersion;
   const rows=[];
   for(let start=0;;start+=500){
     const {data,error}=await getClient().from('asset_library').select('*').order('id',{ascending:true}).range(start,start+499);
@@ -390,10 +398,52 @@ async function loadAssets(){
     rows.push(...data);if(data.length<500)break;
   }
   assetStorageReady=rows.length>0&&Object.hasOwn(rows[0],'storage_bucket')&&Object.hasOwn(rows[0],'storage_path');
+  if(scope===assetScope()&&version===assetRowsVersion){assetRows=rows;assetRowsAt=Date.now()}
   return rows;
+}
+async function currentAssets(){
+  const scope=ensureAssetScope();
+  if(assetRows&&Date.now()-assetRowsAt<45000)return assetRows;
+  if(!assetRowsPending){
+    const pending=loadAssets().finally(()=>{if(assetRowsPending===pending)assetRowsPending=null});
+    assetRowsPending=pending;
+  }
+  await assetRowsPending;
+  if(scope!==assetScope())throw Error('Asset-Sitzung wurde gewechselt.');
+  return assetRows||loadAssets();
+}
+function linkedCatalogAssets(rows,entry,activeOnly){
+  const expected=({items:'item',weapons:'weapon',resources:'resource',deviations:'deviation'})[entry?.category]||'catalog';
+  return rows.filter(row=>entry?.id&&row.catalog_id===entry.id&&(!activeOnly||row.status==='active')&&
+    (row.asset_type===expected||row.asset_type==='catalog'));
+}
+const canonicalOrder=(a,b,id)=>Number(b.id==='catalog:'+id)-Number(a.id==='catalog:'+id)||
+  (a.sort_order||0)-(b.sort_order||0)||(a.id<b.id?-1:a.id>b.id?1:0);
+async function catalogAsset(entry){
+  if(!entry?.id)return null;
+  return (await currentAssets()).filter(row=>row.catalog_id===entry.id).sort((a,b)=>canonicalOrder(a,b,entry.id))[0]||null;
+}
+async function catalogImage(entry){
+  if(!entry?.id)return null;
+  const scope=assetScope(),model=globalThis.ASSET_LIBRARY_MODEL;
+  const sourceRank=row=>row.storage_bucket===model.storageBucket&&model.storagePathAllowed(row.id,row.storage_path)&&!row.file_ref?0:
+    row.file_ref&&model.fileAllowed(row.file_ref)&&!row.storage_path&&!row.storage_bucket?1:2;
+  // Release is explicit even for an owner whose RLS SELECT also includes private drafts.
+  const candidates=linkedCatalogAssets(await currentAssets(),entry,true)
+    .filter(row=>sourceRank(row)<2).sort((a,b)=>sourceRank(a)-sourceRank(b)||canonicalOrder(a,b,entry.id));
+  for(const row of candidates){
+    try{
+      const url=await assetImageUrl(row,row.asset_type);if(!url)continue;
+      const image=new Image();image.src=url;await image.decode();
+      if(scope!==assetScope())return null;
+      return {url,assetId:row.id};
+    }catch{/* An unavailable original falls through to the next source or the existing UI fallback. */}
+  }
+  return null;
 }
 async function commitAsset(input,expectedRevision=null){
   requireAssetEditor();
+  const scope=ensureAssetScope();
   const row=globalThis.ASSET_LIBRARY_MODEL.validate(input);
   if(!assetStorageReady){
     if(row.storage_path)throw Error('Storage-Migration 20261002020000_asset_library_storage.sql fehlt.');
@@ -413,6 +463,7 @@ async function commitAsset(input,expectedRevision=null){
     throw error;
   }
   if(!data)throw Error('Versionskonflikt: Das Asset wurde zwischenzeitlich geändert. Bitte neu laden; dein Entwurf bleibt erhalten.');
+  if(scope===assetScope()){assetRowsVersion++;if(assetRows)assetRows=[...assetRows.filter(row=>row.id!==data.id),data]}
   return data;
 }
 async function saveAsset(input,expectedRevision=null,file=null){
@@ -459,7 +510,7 @@ async function assetImageUrl(row,expectedType){
   assetImageUrls.set(cacheKey,{promise,expires:Date.now()+45000});
   try{return await promise}catch(error){assetImageUrls.delete(cacheKey);throw error}
 }
-globalThis.JMA_ASSET_STORE=Object.freeze({load:loadAssets,save:saveAsset,imageUrl:assetImageUrl,storageReady:()=>assetStorageReady});
+globalThis.JMA_ASSET_STORE=Object.freeze({load:loadAssets,save:saveAsset,imageUrl:assetImageUrl,catalogAsset,catalogImage,storageReady:()=>assetStorageReady});
 
 globalThis.JMA_CATALOG = {
   load: loadCatalog,

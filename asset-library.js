@@ -4,6 +4,7 @@ const model=globalThis.ASSET_LIBRARY_MODEL;
 const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]));
 let scope='',generation=0,rows=[],working=null,base=null,metadataDraft=null,creating=false,phase='idle',message='',failed=false,saving=false;
 let upload=null,uploadUrl='',uploadInfo=null,uploadTicket=0,checkingUpload=false,uploadMessage='';
+let requestedAsset='';
 function clearUpload(){
   uploadTicket++;if(uploadUrl)URL.revokeObjectURL(uploadUrl);
   upload=null;uploadUrl='';uploadInfo=null;checkingUpload=false;uploadMessage='';
@@ -14,7 +15,7 @@ const canEdit=()=>['moderator','admin','owner'].includes(auth().role);
 function ensureScope(){
   const next=[auth().user?.id,auth().role].join(':');
   if(scope===next)return;
-  clearUpload();scope=next;generation++;rows=[];working=base=null;metadataDraft=null;creating=false;phase='idle';message='';failed=false;saving=false;
+  clearUpload();scope=next;generation++;rows=[];working=base=null;metadataDraft=null;requestedAsset='';creating=false;phase='idle';message='';failed=false;saving=false;
 }
 function merged(){
   const all=new Map(model.inventory().map(r=>[r.id,r]));
@@ -33,7 +34,7 @@ async function load(){
     phase='unavailable';failed=true;
     message=error?.code==='PGRST205'?'Die Asset-Tabelle ist noch nicht eingerichtet. Der erkannte Bestand ist lesbar; Speichern wird nach der SQL-Migration verfügbar.':'Asset-Bibliothek nicht erreichbar. Bestand bleibt lesbar; Speichern ist gesperrt. '+(error?.message||'');
   }
-  if(!working){working=structuredClone(merged()[0]||null);base=structuredClone(working)}
+  if(!working){const all=merged();working=structuredClone(all.find(row=>row.id===requestedAsset)||all[0]||null);base=structuredClone(working);requestedAsset=''}
   if(location.hash.split('?')[0]==='#/admin')globalThis.JMA_RENDER?.();
 }
 const options=(values,selected,empty)=>`${empty?'<option value="">'+esc(empty)+'</option>':''}${Object.entries(values).map(([id,name])=>'<option value="'+esc(id)+'"'+(id===selected?' selected':'')+'>'+esc(name)+'</option>').join('')}`;
@@ -177,5 +178,12 @@ function bind(){
   hydrateImages(document.querySelector('.asset-list'));
   if(phase==='idle')load();
 }
-globalThis.ASSET_LIBRARY=Object.freeze({render,bind});
+function select(id){
+  ensureScope();if(!canEdit()||saving||typeof id!=='string')return false;
+  readForm();if(!discard())return false;
+  clearUpload();generation++;working=base=null;metadataDraft=null;creating=false;requestedAsset=id;phase='idle';
+  filters.search=id;filters.type=filters.category=filters.status='';
+  return true;
+}
+globalThis.ASSET_LIBRARY=Object.freeze({render,bind,select});
 })();
