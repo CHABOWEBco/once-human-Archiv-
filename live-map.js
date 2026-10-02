@@ -239,6 +239,8 @@ function bindLiveMap(){
   let placing=false,drag=null,pinch=null,disposed=false,persistTimer=0;
   let lastStored=JSON.stringify(view),dirty=false;
   const pointers=new Map(),desktop=matchMedia('(hover: hover) and (pointer: fine)');
+  const navigationHint=()=>desktop.matches&&innerWidth>1180?'MAUS ZUM RAND = GLEITEN · ZIEHEN · MAUSRAD / ± = ZOOMEN':'ZIEHEN = VERSCHIEBEN · MAUSRAD / ± = ZOOMEN';
+  if(instruction)instruction.textContent=navigationHint();
   let geometry={w:0,h:0,bw:0,bh:0},inside=false,hoverPoint=null,interactive=false;
   let panFrame=0,lastFrame=0,velocity={x:0,y:0};
   const measure=()=>{
@@ -266,8 +268,8 @@ function bindLiveMap(){
     if(!pointers.size)plane.style.willChange='';
     cancelAnimationFrame(panFrame);panFrame=0;lastFrame=0;velocity={x:0,y:0};if(flush)persist();
   };
-  // The middle 44% of each axis is quiet; a quadratic curve reaches 360px/s.
-  const axisSpeed=n=>{const speed=360*Math.pow(clamp((Math.abs(n)-.44)/.5,0,1),2);return speed<.6?0:-Math.sign(n)*speed};
+  // Keep the middle 28% quiet, then make a deliberate move toward an edge felt.
+  const axisSpeed=n=>{const speed=560*Math.pow(clamp((Math.abs(n)-.28)/.62,0,1),1.35);return speed<.6?0:-Math.sign(n)*speed};
   const canMove=(speed,position,limit)=>limit>.01&&((speed>0&&position<limit-.01)||(speed<0&&position>-limit+.01));
   const desired=()=>{
     if(!desktop.matches||!inside||!hoverPoint||interactive||placing||pointers.size||document.hidden||qs('dialog[open]'))return {x:0,y:0};
@@ -280,8 +282,8 @@ function bindLiveMap(){
     // Also pause when a moving marker arrives beneath a stationary pointer.
     const hit=hoverPoint&&document.elementFromPoint(hoverPoint.clientX,hoverPoint.clientY);
     if(hit?.closest('[data-lm-marker],button,input,select,textarea,a')||placing||pointers.size||qs('dialog[open]')){stopPan();return}
-    const target=desired(),dt=lastFrame?Math.min((time-lastFrame)/1000,.04):1/60;lastFrame=time;
-    const blend=flybyMotion.matches?1:1-Math.exp(-dt/((target.x||target.y)? .09 : .06));
+    const target=desired(),dt=lastFrame?Math.min((time-lastFrame)/1000,.06):1/60;lastFrame=time;
+    const blend=flybyMotion.matches?1:1-Math.exp(-dt/((target.x||target.y)? .07 : .06));
     velocity.x+=(target.x-velocity.x)*blend;velocity.y+=(target.y-velocity.y)*blend;
     const limit=bounds();
     if(!canMove(velocity.x,view.x,limit.x)||(!target.x&&Math.abs(velocity.x)<.6))velocity.x=0;
@@ -313,7 +315,7 @@ function bindLiveMap(){
   listen(qs('#lmPlace'),'click',e=>{
     stopPan();placing=!placing;e.currentTarget.classList.toggle('active',placing);
     e.currentTarget.textContent=placing?'× ABBRECHEN':'＋ MARKER';board.classList.toggle('placing',placing);
-    if(instruction)instruction.textContent=placing?'AUF DIE GEWÜNSCHTE POSITION KLICKEN':'ZIEHEN = VERSCHIEBEN · MAUSRAD / ± = ZOOMEN';
+    if(instruction)instruction.textContent=placing?'AUF DIE GEWÜNSCHTE POSITION KLICKEN':navigationHint();
   });
   listen(qs('.lm-toolbar'),'pointerenter',()=>{inside=false;stopPan()});
   listen(board,'wheel',e=>{
@@ -361,10 +363,10 @@ function bindLiveMap(){
     if(mapX<0||mapX>100||mapY<0||mapY>100)return;
     placing=false;board.classList.remove('placing');qs('#lmPlace')?.classList.remove('active');
     if(qs('#lmPlace'))qs('#lmPlace').textContent='＋ MARKER';
-    if(instruction)instruction.textContent='ZIEHEN = VERSCHIEBEN · MAUSRAD / ± = ZOOMEN';
+    if(instruction)instruction.textContent=navigationHint();
     openMarkerDialog(mapX,mapY,current.scenario);
   });
-  const resize=()=>{measure();apply();queuePersist();stopPan()};
+  const resize=()=>{measure();apply();queuePersist();stopPan();if(instruction&&!placing)instruction.textContent=navigationHint()};
   listen(image,'load',resize,{once:true});
   const observer=new ResizeObserver(resize);observer.observe(board);
   // A render disposes synchronously; this also catches DOM removal by other code.
@@ -380,7 +382,7 @@ function bindLiveMap(){
   listen(window,'blur',()=>{inside=false;stopPan();pointers.clear();resetGesture()});
   listen(document,'visibilitychange',()=>{if(document.hidden){inside=false;stopPan();persist()}});
   listen(window,'scroll',()=>{inside=false;stopPan()},{passive:true});
-  listen(desktop,'change',()=>{inside=false;stopPan()});
+  listen(desktop,'change',()=>{inside=false;stopPan();if(instruction&&!placing)instruction.textContent=navigationHint()});
   measure();apply();queuePersist();
 }
 
