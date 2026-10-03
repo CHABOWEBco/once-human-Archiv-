@@ -102,6 +102,7 @@ globalThis.supabase={createClient:()=>client};})();`;
  async function save(p,text='in Supabase gespeichert'){await p.locator('[data-asset-save]').click();await p.waitForFunction(text=>document.querySelector('[data-asset-message]')?.textContent.includes(text)&&document.querySelector('[data-asset-save]')?.disabled===false,text)}
  async function open(p,id){await p.locator('[data-asset-search]').fill(id);await p.locator('[data-asset-open="'+id+'"]').click()}
  try{
+  if(process.argv.includes('--batch-packages')){await setupStorage(db);await require('./asset-library-batch-packages.cjs')({db,pageFor,metrics:()=>({uploads,signings}),out,objectBytes});return}
   if(process.argv.includes('--upload-mime')){await setupStorage(db);await require('./asset-library-upload-mime.cjs')({db,pageFor,metrics:()=>({uploads,signings}),out,objectBytes});return}
   if(process.argv.includes('--batch-upload')){await setupStorage(db);await require('./asset-library-batch-upload.cjs')({db,pageFor,metrics:()=>({uploads,signings}),out,objectBytes});return}
   if(process.argv.includes('--batch-import')){await require('./asset-library-import.cjs')({db,pageFor,metrics:()=>({uploads,signings}),out});return}

@@ -1,5 +1,7 @@
 # Phase 2B.2A — Cosmetic-Produktions-Uploader vorbereitet
 
+Historischer Cosmetic-Checkpoint einschließlich MIME-Hotfix. Die nachfolgende Freigabe für Paket 02 und die verbindliche lokale Dry-Run-Grenze sind in [Phase 2B.2B](ASSET_LIBRARY_PHASE_2B2B.md) dokumentiert.
+
 Stand: **03.10.2026**. Ausschließlich `admin-editor-preview`. Lokaler und tatsächlicher Remote-Ausgangsstand: `6bd132dfac1b30c331c297b87f38ec9cefe497e9`, Worktree sauber. `main`: unverändert `94ab9f8fa408fc1ed3bd1721961321c0cec2eb45`.
 
 **Dieser Codex-Lauf hat keine Produktionsdaten verändert und keinen Cosmetic-Produktionsupload ausgelöst.** Die Anwendung ist für den späteren Start durch den Benutzer im authentifizierten Admin-Browser vorbereitet. Testuploads fanden ausschließlich in der isolierten PostgreSQL-/Storage-Fixture statt. Keine Veröffentlichung, kein Service-Role-Key, keine Migration oder neue Dependency.
