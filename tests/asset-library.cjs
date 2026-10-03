@@ -7,7 +7,15 @@ const root=path.resolve(__dirname,'..'),out=path.join(root,'test-results/asset-l
 let checks=0;const ok=(value,label)=>{assert.ok(value,label);console.log('PASS UI',++checks,label)};
 const columns=['id','name','asset_type','category','file_ref','catalog_id','status','sort_order','metadata','revision','storage_bucket','storage_path'];
 const fixture=`(()=>{
-const role=localStorage.getItem('asset-test-role')||'owner',user={id:${JSON.stringify(ids)}[role],email:role+'@example.invalid',created_at:'2026-09-01T00:00:00Z',user_metadata:{}},session={user};
+let role=localStorage.getItem('asset-test-role')||'owner',user={id:${JSON.stringify(ids)}[role],email:role+'@example.invalid',created_at:'2026-09-01T00:00:00Z',user_metadata:{}},session={user};
+let authListener;
+globalThis.assetTestAuthQueries=0;globalThis.assetTestAuthCompleted=0;
+globalThis.assetTestAuthEvent=(event, nextRole=role, sameUser=false)=>{
+ role=nextRole;
+ user=nextRole?{...user,id:sameUser?user.id:${JSON.stringify(ids)}[nextRole],email:sameUser?user.email:nextRole+'@example.invalid'}:null;
+ session=user?{user,access_token:'fixture-refreshed-token'}:null;
+ authListener?.(event,session);
+};
 const client={storage:{from(bucket){return {
  async list(){return sessionStorage.getItem('test-storage-unavailable')?{data:null,error:{message:'Bucket unavailable'}}:{data:[],error:null}},
  async download(objectPath){const r=await fetch('/test-object?'+new URLSearchParams({bucket,path:objectPath}));return r.ok?{data:await r.blob(),error:null}:{data:null,error:{status:404,message:'Object not found'}}},
@@ -17,10 +25,14 @@ const client={storage:{from(bucket){return {
   return fetch('/test-storage/upload?'+new URLSearchParams({role,bucket,path:objectPath,upsert:options.upsert,fail:fail||'',conflict:conflict||''}),{method:'POST',headers:{'Content-Type':file.type||'application/octet-stream'},body:file}).then(r=>r.json());
  },
  async createSignedUrl(objectPath,expires){return fetch('/test-storage/sign',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({role,bucket,path:objectPath,expires})}).then(r=>r.json())}
-}}},auth:{onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}}),getSession:async()=>({data:{session}}),getUser:async()=>sessionStorage.getItem('test-auth-unavailable')?{data:{user:null},error:{message:'Session expired'}}:{data:{user},error:null},signOut:async()=>({error:null}),updateUser:async()=>({data:{user}})},from(table){
+}}},auth:{onAuthStateChange:callback=>{authListener=callback;return {data:{subscription:{unsubscribe(){authListener=null}}}}},getSession:async()=>({data:{session}}),getUser:async()=>sessionStorage.getItem('test-auth-unavailable')?{data:{user:null},error:{message:'Session expired'}}:{data:{user},error:null},signOut:async()=>({error:null}),updateUser:async()=>({data:{user}})},from(table){
 let action='select',payload,filters=[],start=0,end=499,singular=false,exact=false;const execute=async()=>{
- if(table==='profiles')return {data:{id:user.id,display_name:'Asset Test',avatar_url:null},error:null};
- if(table==='user_roles')return {data:{user_id:user.id,role},error:null};
+ if(table==='profiles'||table==='user_roles'){
+  const currentUser=user,currentRole=role;globalThis.assetTestAuthQueries++;
+  await globalThis.assetTestIdentityGate;globalThis.assetTestAuthCompleted++;
+  if(globalThis.assetTestIdentityError)return {data:null,error:{message:'Injected identity refresh failure'}};
+  return {data:table==='profiles'?{id:currentUser.id,display_name:'Asset Test',avatar_url:null}:{user_id:currentUser.id,role:currentRole},error:null};
+ }
  return fetch('/test-db',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({table,role,action,payload,filters,start,end,singular,exact,missing:localStorage.getItem('asset-test-missing')==='yes'})}).then(r=>r.json());
 };return {select(_,opts){exact=opts?.count==='exact';return this},order(){return this},eq(k,v){filters.push([k,v]);return this},range(a,b){start=a;end=b;return execute()},insert(p){action='insert';payload=p;return this},update(p){action='update';payload=p;return this},maybeSingle(){singular=true;return execute()},single(){singular=true;return execute()}};}};
 globalThis.supabase={createClient:()=>client};})();`;
@@ -102,6 +114,7 @@ globalThis.supabase={createClient:()=>client};})();`;
  async function save(p,text='in Supabase gespeichert'){await p.locator('[data-asset-save]').click();await p.waitForFunction(text=>document.querySelector('[data-asset-message]')?.textContent.includes(text)&&document.querySelector('[data-asset-save]')?.disabled===false,text)}
  async function open(p,id){await p.locator('[data-asset-search]').fill(id);await p.locator('[data-asset-open="'+id+'"]').click()}
  try{
+  if(process.argv.includes('--batch-auth')){await setupStorage(db);await require('./asset-library-batch-auth.cjs')({db,pageFor,metrics:()=>({uploads,signings}),out,objectBytes});return}
   if(process.argv.includes('--batch-world')){await setupStorage(db);await require('./asset-library-batch-packages.cjs')({db,pageFor,metrics:()=>({uploads,signings}),out,objectBytes,world:true});return}
   if(process.argv.includes('--batch-packages')){await setupStorage(db);await require('./asset-library-batch-packages.cjs')({db,pageFor,metrics:()=>({uploads,signings}),out,objectBytes});return}
   if(process.argv.includes('--upload-mime')){await setupStorage(db);await require('./asset-library-upload-mime.cjs')({db,pageFor,metrics:()=>({uploads,signings}),out,objectBytes});return}

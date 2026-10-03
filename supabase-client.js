@@ -18,6 +18,7 @@ let client = null;
 let initialized = false;
 let authSubscription = null;
 let syncChain = Promise.resolve();
+let identityEpoch = 0;
 const recoveryHandlers = new Set();
 
 function getClient(){
@@ -58,52 +59,54 @@ function clearIdentity(){
   state.account = null;
 }
 
-async function loadIdentity(session){
-  if(!session?.user){
-    clearIdentity();
-    return null;
-  }
-
-  const sb = getClient();
-  const user = session.user;
-  state.session = session;
-  state.user = user;
-  state.profile = null;
-  state.role = null;
-  state.account = normalizeAccount(user, null, null);
-
-  const [profileResult, roleResult] = await Promise.all([
-    sb.from('profiles')
-      .select('id, display_name, avatar_url')
-      .eq('id', user.id)
-      .maybeSingle(),
-    sb.from('user_roles')
-      .select('user_id, role')
-      .eq('user_id', user.id)
-      .maybeSingle()
-  ]);
-
-  if(profileResult.error) throw profileResult.error;
-  if(roleResult.error) throw roleResult.error;
-
-  state.profile = profileResult.data || null;
-  state.role = roleResult.data?.role || null;
-  state.account = normalizeAccount(user, state.profile, state.role);
-  return state.account;
+// Invalidate older identity reads immediately on auth events. A refresh of the
+// same user keeps the last complete identity until both queries have succeeded.
+function acceptIdentitySession(session){
+  identityEpoch++;
+  if(!session?.user || state.user?.id !== session.user.id) clearIdentity();
+  state.session = session || null;
+  state.user = session?.user || null;
+  return identityEpoch;
 }
 
-function queueSessionSync(session, renderAfter=true){
+async function loadIdentity(session, epoch=acceptIdentitySession(session)){
+  if(epoch !== identityEpoch || !session?.user) return null;
+  const sb = getClient(), user = session.user;
+  try{
+    const [profileResult, roleResult] = await Promise.all([
+      sb.from('profiles').select('id, display_name, avatar_url').eq('id', user.id).maybeSingle(),
+      sb.from('user_roles').select('user_id, role').eq('user_id', user.id).maybeSingle()
+    ]);
+    if(epoch !== identityEpoch) return null;
+    if(profileResult.error) throw profileResult.error;
+    if(roleResult.error) throw roleResult.error;
+    const profile = profileResult.data || null, role = roleResult.data?.role || null;
+    const account = normalizeAccount(user, profile, role);
+    Object.assign(state, {session, user, profile, role, account});
+    return account;
+  }catch(error){
+    // Failed authorization refresh is fail-closed; stale privileges never survive
+    // an actual failed read. Superseded queries cannot restore a logged-out user.
+    if(epoch === identityEpoch) clearIdentity();
+    throw error;
+  }
+}
+
+const identityView = ()=>JSON.stringify([state.user?.id, state.profile, state.role, state.account]);
+function queueSessionSync(session, renderAfter=true, epoch=acceptIdentitySession(session)){
   syncChain = syncChain
     .catch(()=>{})
-    .then(()=>loadIdentity(session))
-    .then(()=>{
-      if(renderAfter) globalThis.JMA_RENDER?.();
-      return state.account;
-    })
-    .catch(error=>{
-      console.error('Supabase Auth-Synchronisierung fehlgeschlagen:', error);
-      if(renderAfter) globalThis.JMA_RENDER?.();
-      return null;
+    .then(async()=>{
+      if(epoch !== identityEpoch) return null;
+      const before = identityView();
+      try{
+        return await loadIdentity(session, epoch);
+      }catch(error){
+        console.error('Supabase Auth-Synchronisierung fehlgeschlagen:', error);
+        return null;
+      }finally{
+        if(epoch === identityEpoch && (renderAfter === true || renderAfter === 'changed' && before !== identityView())) globalThis.JMA_RENDER?.();
+      }
     });
   return syncChain;
 }
@@ -141,7 +144,9 @@ async function init(){
       return;
     }
     if(!initialized) return;
-    setTimeout(()=>queueSessionSync(session, true), 0);
+    const sameUser = Boolean(session?.user && session.user.id === state.user?.id);
+    const epoch = acceptIdentitySession(session);
+    setTimeout(()=>queueSessionSync(session, event === 'TOKEN_REFRESHED' && sameUser ? 'changed' : true, epoch), 0);
   });
   authSubscription = listener.data?.subscription || null;
 
@@ -201,7 +206,7 @@ async function signOut(){
   const sb = getClient();
   const {error} = await sb.auth.signOut();
   if(error) throw error;
-  clearIdentity();
+  acceptIdentitySession(null);
   return true;
 }
 

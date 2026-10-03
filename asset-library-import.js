@@ -58,7 +58,9 @@ async function zipEntries(file,signal){
     if(!path.endsWith('/')){
       const max=csvName(path)?limits.manifest:model.maxUploadBytes;
       if(expanded>max||compressed>max)error='Datei überschreitet '+(max/MiB)+' MiB.';
-      entries.push({path,size:expanded,checksum,error,async read(readSignal=signal){
+      // Each consumer owns its signal: analysis/preview pass one explicitly;
+      // later production reads must never inherit the original analysis abort.
+      entries.push({path,size:expanded,checksum,error,async read(readSignal){
         if(error)throw Error(error);check(readSignal);
         const header=await bytesAt(file,local,30,readSignal),h=new DataView(header.buffer);
         if(h.getUint32(0,true)!==0x04034b50||h.getUint16(6,true)!==flags||h.getUint16(8,true)!==method)throw Error('ZIP-Dateikopf stimmt nicht mit dem Verzeichnis überein.');
