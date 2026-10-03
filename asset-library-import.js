@@ -145,9 +145,25 @@ function filenameClass(path){
   if(types.length!==1||types[0]==='image'&&!/website (image|bild)/.test(name))return null;
   return {type:types[0],category:defaults[types[0]]||''};
 }
-async function classify(items,manifests,known,packages,warnings,signal,onProgress=()=>{}){
+const packagePath=i=>JSON.stringify([i.source_package,i.source_path]);
+const packageEqual=(a,b)=>String(a||'').replace(/\.zip$/i,'')===String(b||'').replace(/\.zip$/i,'');
+const safePackage=name=>typeof name==='string'&&name.length<=200&&name.length>4&&safePath(name)&&!name.includes('/')&&/\.zip$/i.test(name);
+function archivePackage(name){
+  if(!safePackage(name))throw Error('Unsicherer ZIP-Paketname.');
+  return name.replace(/^OnceHuman_CMS_(?:Codex|v2)_/i,'OnceHuman_CMS_v2_').replace(/(?:_READY)?(?: \(\d+\))?\.zip$/i,'.zip').replace(/_Part\d+\.zip$/i,'.zip');
+}
+function manifestApplies(m,item,items){
+  if(!(m.path?m.path===item.source_path:m.original===item.original_name))return false;
+  if(m.package)return packageEqual(m.package,item.source_package);
+  if(m.containerPackage)return m.containerPackage===item.source_package;
+  // Unscoped external rows are usable only for an unambiguous package/path.
+  const packages=new Set(items.filter(i=>m.path?i.source_path===m.path:i.original_name===m.original).map(i=>i.source_package));
+  return packages.size===1&&packages.has(item.source_package);
+}
+const heldByReview=(analysis,item)=>Boolean(item.productionReview)||analysis.mode==='all-in'&&analysis.metadataErrors?.some(e=>!e.source_package||e.source_package===item.source_package)||analysis.manifests.some(m=>m.review&&(!m.sha||m.sha===item.sha256)&&manifestApplies(m,item,analysis.items));
+async function classify(items,manifests,known,packages,warnings,signal,onProgress=()=>{},mode='single',metadataErrors=[]){
   const categories=[...new Set([...Object.keys(categoryAliases),...known.map(r=>r.category).filter(Boolean)])],names=new Map(),hashes=new Map(),paths=new Map();
-  for(const item of items){const name=norm(item.original_name),list=names.get(name)||[];list.push(item);names.set(name,list);const pathsAt=paths.get(item.source_path)||[];pathsAt.push(item);paths.set(item.source_path,pathsAt);if(item.valid){const h=hashes.get(item.sha256)||[];h.push(item);hashes.set(item.sha256,h)}}
+  for(const item of items){const name=norm(item.original_name),list=names.get(name)||[];list.push(item);names.set(name,list);const pathsAt=paths.get(packagePath(item))||[];pathsAt.push(item);paths.set(packagePath(item),pathsAt);if(item.valid){const h=hashes.get(item.sha256)||[];h.push(item);hashes.set(item.sha256,h)}}
   const knownHashes=new Map();for(const row of known){const sha=shaOf(row);if(/^[a-f0-9]{64}$/.test(sha)){const list=knownHashes.get(sha)||[];list.push(row);knownHashes.set(sha,list)}}
   const knownNames=new Set(known.flatMap(r=>[norm(r.name),norm(r.metadata?.original_name||r.metadata?.upload?.original_name||r.name)]));
   const manifestPaths=new Map(),manifestNames=new Map();
@@ -163,12 +179,17 @@ async function classify(items,manifests,known,packages,warnings,signal,onProgres
     const linked=existing.filter(hasImage);
     item.exact_duplicate=hashes.get(item.sha256).length>1;item.known_ids=linked.map(r=>r.id);
     item.already_imported=linked.some(r=>r.persisted!==false&&r.metadata?.source_package===item.source_package&&r.metadata?.source_path===item.source_path);
-    item.path_duplicate=paths.get(item.source_path).length>1;
-    const matching=[...(manifestPaths.get(item.source_path)||[]),...(names.get(norm(item.original_name)).length===1?manifestNames.get(item.original_name)||[]:[])];
+    item.path_duplicate=paths.get(packagePath(item)).length>1;
+    const nameUnique=items.filter(i=>i.source_package===item.source_package&&i.original_name===item.original_name).length===1;
+    const possible=[...(manifestPaths.get(item.source_path)||[]),...(nameUnique?manifestNames.get(item.original_name)||[]:[])];
+    const matching=possible.filter(m=>manifestApplies(m,item,items));
+    const ambiguous=mode==='all-in'&&possible.some(m=>!m.package&&!m.containerPackage&&!manifestApplies(m,item,items));
     const verified=matching.filter(m=>{if(m.sha&&(!/^[a-f0-9]{64}$/.test(m.sha)||m.sha!==item.sha256)){item.notes.push('Manifest-Hash passt nicht zum Originalbild.');return false}if(m.original&&m.original!==item.original_name){item.notes.push('Manifest-Dateiname passt nicht.');return false}return true});
     let type='',category='',source='unresolved',reason='',locked=false;
+    const unsafeManifest=mode==='all-in'&&(metadataErrors.some(e=>!e.source_package||e.source_package===item.source_package)||ambiguous||verified.length!==matching.length||matching.some(m=>m.review));
+    item.productionReview=unsafeManifest;
     if(item.manualClassification){({type,category}=item.manualClassification);source='manual';reason='Vom Admin im lokalen Dry Run bestätigt.'}
-    if(verified.length&&!item.manualClassification){
+    if(verified.length&&!item.manualClassification&&!unsafeManifest){
       item.manifest_category=verified[0].category;
       const prepared=verified.map(m=>{const t=m.type?typeOf(m.type):typeOf(m.category);return {m,type:t,category:categoryOf(m.category,categories)||(typeOf(m.category)?defaults[t]||'':'')}});
       for(const p of prepared){
@@ -183,6 +204,7 @@ async function classify(items,manifests,known,packages,warnings,signal,onProgres
         reason='Vorbereitete Metadaten benötigen eine bestätigte Typ-/Kategoriezuordnung.';item.manifest=verified[0].raw;item.classificationLocked=true;
       }
     }
+    if(unsafeManifest){type='';category='';source='unresolved';locked=true;reason='Manifest/Review ist unklar, widersprüchlich zum Original oder ausdrücklich in Review.'}
     if(!source||source==='unresolved'){
       if(!locked){const folder=folderClass(item.source_path,categories);if(folder.conflict){locked=true;reason='Widersprüchliche Ordnerzuordnung.'}else if(folder.type&&folder.category){type=folder.type;category=folder.category;source='folder';reason='Eindeutiger Ordnerpfad: '+item.source_path}}
       if(!locked&&source==='unresolved'){
@@ -209,12 +231,11 @@ async function classify(items,manifests,known,packages,warnings,signal,onProgres
   const displayNames=new Map();for(const item of items){const key=norm(item.name);displayNames.set(key,(displayNames.get(key)||0)+1)}
   for(const item of items)if(displayNames.get(norm(item.name))>1||knownNames.has(norm(item.name)))item.name_duplicate=true;
   check(signal);
-  const itemPaths=new Set(items.map(i=>i.source_path)),itemNames=new Set(items.map(i=>i.original_name));
-  for(const m of manifests)if(!(m.path?itemPaths.has(m.path):itemNames.has(m.original)))warnings.push(m.source+': Metadaten ohne passende Datei: '+(m.path||m.original||'(Pfad fehlt)'));
+  for(const m of manifests)if(!items.some(i=>manifestApplies(m,i,items)))warnings.push(m.source+': Metadaten ohne passende Datei: '+(m.path||m.original||'(Pfad fehlt)'));
 }
 // One selection policy for analysis, part additions and local admin overrides.
-const comparePath=(a,b)=>a.source_path<b.source_path?-1:a.source_path>b.source_path?1:0;
-const complete=i=>i.valid&&!i.review&&Object.hasOwn(model.types,i.asset_type)&&Boolean(i.category);
+const comparePath=(a,b)=>a.source_path<b.source_path?-1:a.source_path>b.source_path?1:a.source_package<b.source_package?-1:a.source_package>b.source_package?1:0;
+const complete=i=>i.valid&&!i.review&&!i.productionReview&&Object.hasOwn(model.types,i.asset_type)&&Boolean(i.category);
 function selectRepresentatives(items){
   const hashes=new Map();
   for(const item of items){
@@ -223,7 +244,7 @@ function selectRepresentatives(items){
   }
   for(const group of hashes.values()){
     const ordered=[...group].sort(comparePath),duplicate=group.length>1,known=group.some(i=>i.known_ids.length);
-    const sources=duplicate?ordered.map(i=>({source_path:i.source_path,original_name:i.original_name,...(i.manifest?.['original category v2']?{original_category:i.manifest['original category v2']}:{})})):[];
+    const sources=duplicate?ordered.map(i=>({source_package:i.source_package,source_path:i.source_path,original_name:i.original_name,asset_type:i.asset_type,category:i.category,classification_source:i.classification_source,...(i.manifest?.['original category v2']?{original_category:i.manifest['original category v2']}:{})})):[];
     const eligible=ordered.filter(i=>complete(i)&&!i.path_duplicate);
     const ranked=[...eligible].sort((a,b)=>Number(b.classification_source==='manifest')-Number(a.classification_source==='manifest')||comparePath(a,b));
     // Explicit local decisions survive reclassification; a skipped representative yields to the next eligible member.
@@ -243,30 +264,48 @@ function selectRepresentatives(items){
     }
   }
 }
-async function analyze({files,known=[],sourcePackage='',previous=null,signal,onProgress=()=>{}}){
+async function analyze({files,known=[],sourcePackage='',mode='single',previous=null,signal,onProgress=()=>{}}){
   if(!allowed())throw Error('Bestehende Moderator-/Admin-/Owner-Rolle erforderlich.');
   check(signal);if(!files?.length)throw Error('Bitte ZIP, Ordner oder Bilder auswählen.');
-  if(previous&&sourcePackage!==previous.sourcePackage)throw Error('Paketname während einer gemeinsamen Sitzung nicht ändern.');
-  if(!sourcePackage||sourcePackage.length>200||/[\u0000-\u001f]/.test(sourcePackage))throw Error('Gemeinsamen Paketnamen mit 1 bis 200 Zeichen angeben.');
-  const entries=[],packages=[sourcePackage],warnings=(previous?.warnings||[]).filter(w=>!w.includes(': Metadaten ohne passende Datei:')),metadataSources=[...(previous?.metadataSources||[])],manifests=[...(previous?.manifests||[])];
+  if(!['single','all-in'].includes(mode))throw Error('Unbekannter Importmodus.');
+  if(previous&&(sourcePackage!==previous.sourcePackage||mode!==(previous.mode||'single')))throw Error('Paketname während einer gemeinsamen Sitzung nicht ändern.');
+  if(mode==='single'&&(!sourcePackage||sourcePackage.length>200||/[\u0000-\u001f]/.test(sourcePackage)))throw Error('Gemeinsamen Paketnamen mit 1 bis 200 Zeichen angeben.');
+  const entries=[],packages=mode==='single'?[sourcePackage]:[...(previous?.packages||[])],analyzedPackages=new Set(previous?.analyzedPackages||[]),packageErrors=[...(previous?.packageErrors||[])],metadataErrors=[...(previous?.metadataErrors||[])],warnings=(previous?.warnings||[]).filter(w=>!w.includes(': Metadaten ohne passende Datei:')),metadataSources=[...(previous?.metadataSources||[])],manifests=[...(previous?.manifests||[])];
   for(const file of files){
     check(signal);if(/\.zip$/i.test(file.name)){
-      onProgress({stage:'ZIP-Verzeichnis lesen',done:0,total:files.length});
-      const pack=await zipEntries(file,signal);entries.push(...pack.map(e=>({...e,package:sourcePackage})));
-    }else{const path=file.webkitRelativePath||file.name;entries.push({path,size:file.size,package:sourcePackage,error:!safePath(path)?'Unsicherer Pfad.':systemPath(path)?'Versteckte Systemdatei.':'',read:async()=>file})}
+      let packageName=sourcePackage;
+      try{
+        if(mode==='all-in')packageName=archivePackage(file.name);
+        onProgress({stage:'ZIP-Verzeichnis lesen: '+file.name,done:0,total:files.length});
+        const pack=await zipEntries(file,signal);
+        if(mode==='all-in'&&entries.length+pack.length>limits.entries)throw Error('Gemeinsame Analyse überschreitet 10.000 Dateien.');
+        entries.push(...pack.map(e=>({...e,package:packageName})));analyzedPackages.add(packageName);
+        if(!packages.includes(packageName))packages.push(packageName);
+        for(let i=packageErrors.length-1;i>=0;i--)if(packageErrors[i].archive_name===file.name)packageErrors.splice(i,1);
+      }catch(error){
+        check(signal);if(mode!=='all-in')throw error;
+        for(let i=packageErrors.length-1;i>=0;i--)if(packageErrors[i].archive_name===file.name)packageErrors.splice(i,1);
+        packageErrors.push({source_package:packageName||file.name,archive_name:file.name,error:error.message});
+        warnings.push(file.name+': '+error.message);
+      }
+    }else{
+      const path=file.webkitRelativePath||file.name;
+      entries.push({path,size:file.size,package:mode==='all-in'?'':sourcePackage,error:!safePath(path)?'Unsicherer Pfad.':systemPath(path)?'Versteckte Systemdatei.':mode==='all-in'&&!csvName(path)?'Im ALL-IN-Modus nur ZIPs und Manifest-/Review-CSVs wählen.':'',read:async readSignal=>{check(readSignal);return file}});
+    }
   }
   if(entries.length>limits.entries)throw Error('Höchstens 10.000 Dateien pro Analyse.');
   const invalidMetadata=[...(previous?.invalidMetadata||[])];
   for(const entry of entries.filter(e=>csvName(e.path))){
-    check(signal);let key=entry.path+':'+entry.size+':'+(entry.checksum??'unreadable');
+    check(signal);let key=entry.package+':'+entry.path+':'+entry.size+':'+(entry.checksum??'unreadable');
     try{
       if(entry.error)throw Error(entry.error);if(entry.size>limits.manifest)throw Error('CSV überschreitet 4 MiB.');
       const file=await entry.read(signal),text=await file.text();check(signal);
-      const digest=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',await file.arrayBuffer())),b=>b.toString(16).padStart(2,'0')).join('');key=entry.path+':'+digest;
+      const digest=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',await file.arrayBuffer())),b=>b.toString(16).padStart(2,'0')).join('');key=entry.package+':'+entry.path+':'+digest;
       if(metadataSources.includes(key))continue;
       const parsed=parseCSV(text);if(parsed.some(row=>new TextEncoder().encode(JSON.stringify(row)).length>16384))throw Error('CSV-Zeile überschreitet 16 KiB Metadaten.');
-      manifests.push(...parsed.map(row=>manifestRecord(row,entry.path)));metadataSources.push(key);
-    }catch(error){check(signal);if(!metadataSources.includes(key))metadataSources.push(key);if(!invalidMetadata.includes(key))invalidMetadata.push(key);warnings.push(entry.path+': '+error.message)}
+      manifests.push(...parsed.map(row=>({...manifestRecord(row,entry.path),containerPackage:mode==='all-in'?entry.package:''})));metadataSources.push(key);
+      for(let i=metadataErrors.length-1;i>=0;i--)if(metadataErrors[i].source_package===(entry.package||null)&&metadataErrors[i].source_path===entry.path)metadataErrors.splice(i,1);
+    }catch(error){check(signal);if(!metadataSources.includes(key))metadataSources.push(key);if(!invalidMetadata.includes(key))invalidMetadata.push(key);warnings.push(entry.path+': '+error.message);if(mode==='all-in'){for(let i=metadataErrors.length-1;i>=0;i--)if(metadataErrors[i].source_package===(entry.package||null)&&metadataErrors[i].source_path===entry.path)metadataErrors.splice(i,1);metadataErrors.push({source_package:entry.package||null,source_path:entry.path,error:error.message})}}
   }
   const imageEntries=entries.filter(e=>!csvName(e.path)),items=new Array(imageEntries.length);let cursor=0,done=0;
   async function worker(){
@@ -287,17 +326,18 @@ async function analyze({files,known=[],sourcePackage='',previous=null,signal,onP
   for(const item of items){const key=identity(item);if(identities.has(key)){repeated++;continue}identities.add(key);merged.push(item)}
   if(merged.length+metadataSources.length>limits.entries)throw Error('Gemeinsames Paket überschreitet 10.000 Dateien.');
   // Copy previous items before reclassification so an aborted addition cannot change the old session.
-  const combined=merged.map(i=>({...i,notes:[],manifest:null}));await classify(combined,manifests,known,packages,warnings,signal,onProgress);check(signal);
-  return {items:combined,packages,sourcePackage,loadedParts:[...new Set([...(previous?.loadedParts||[]),...files.map(f=>f.name)])],repeatedEntries:repeated,invalidMetadata,warnings:[...new Set(warnings)],metadataSources,manifests,metadataFiles:metadataSources.length,totalFiles:combined.length+metadataSources.length,knownCount:known.length,knownHashCount:known.filter(r=>/^[a-f0-9]{64}$/.test(shaOf(r))).length};
+  const combined=merged.map(i=>({...i,notes:[],manifest:null}));await classify(combined,manifests,known,packages,warnings,signal,onProgress,mode,metadataErrors);check(signal);
+  return {items:combined,packages,sourcePackage,mode,analyzedPackages:[...analyzedPackages],packageErrors,metadataErrors,loadedParts:[...new Set([...(previous?.loadedParts||[]),...files.map(f=>f.name)])],repeatedEntries:repeated,invalidMetadata,warnings:[...new Set(warnings)],metadataSources,manifests,metadataFiles:metadataSources.length,totalFiles:combined.length+metadataSources.length,knownCount:known.length,knownHashCount:known.filter(r=>/^[a-f0-9]{64}$/.test(shaOf(r))).length};
 }
 function identity(item){return JSON.stringify([item.source_package,item.source_path,item.valid?item.sha256:[item.size,item.error,item.archive_checksum]])}
 function candidate(item){
   return model.validate({id:item.id,name:item.name,asset_type:item.asset_type,category:item.category,file_ref:null,catalog_id:null,status:'draft',sort_order:0,metadata:{source_package:item.source_package,source_path:item.source_path,original_name:item.original_name,sha256:item.sha256,classification_source:item.classification_source,classification_reason:item.reason,...(item.manifest?{source_manifest:item.manifest}:{}),...(item.duplicate_sources?.length?{duplicate_sources:item.duplicate_sources}:{})}});
 }
 function report(result){
+  const selected=i=>i.include&&!i.review&&(result.mode!=='all-in'||!heldByReview(result,i));
   const valid=result.items.filter(i=>i.valid),sources=Object.fromEntries(Object.keys(labels).map(k=>[k,valid.filter(i=>i.classification_source===k).length])),byType=Object.create(null),byCategory=Object.create(null),formats={png:0,jpg:0,webp:0},groups=new Map();
   for(const item of valid){byType[item.asset_type||'unresolved']=(byType[item.asset_type||'unresolved']||0)+1;byCategory[item.category||'unresolved']=(byCategory[item.category||'unresolved']||0)+1;formats[item.extension]++;if(item.exact_duplicate){const members=groups.get(item.sha256)||[];members.push(item);groups.set(item.sha256,members)}}
-  return {mode:'DRY RUN',production_writes:0,packages:result.packages,loaded_parts:result.loadedParts,repeated_entries_not_counted:result.repeatedEntries,total_files:result.totalFiles,metadata_files:result.metadataFiles,valid_images:valid.length,invalid_files:result.items.length-valid.length+(result.invalidMetadata?.length||0),invalid_metadata_files:result.invalidMetadata?.length||0,formats,automatically_classified:valid.filter(i=>!i.review&&i.classification_source!=='manual').length,classification_sources:sources,review:valid.filter(i=>i.review).length,name_duplicates:result.items.filter(i=>i.name_duplicate).length,exact_duplicate_files:valid.filter(i=>i.exact_duplicate).length,exact_duplicate_groups:groups.size,duplicate_groups_with_new_representative:[...groups.values()].filter(g=>!g.some(i=>i.known_ids.length)&&g.some(i=>i.include)).length,duplicate_groups_already_present:[...groups.values()].filter(g=>g.some(i=>i.known_ids.length)).length,duplicate_groups_review:[...groups.values()].filter(g=>!g.some(i=>i.known_ids.length)&&g.every(i=>!complete(i))).length,duplicate_groups_without_representative:[...groups.values()].filter(g=>!g.some(i=>i.known_ids.length)&&g.some(complete)&&!g.some(i=>i.include)).map(g=>({sha256:g[0].sha256,reason:g[0].selection_reason,source_paths:g.map(i=>i.source_path).sort()})),skipped_redundant_copies:[...groups.values()].reduce((n,g)=>n+(g.some(i=>i.known_ids.length)||g.some(i=>i.include)?g.filter(i=>!i.include).length:0),0),selected_unique_image_contents:new Set(valid.filter(i=>i.include&&!i.review).map(i=>i.sha256)).size,duplicate_groups_multiple_selected:[...groups.values()].filter(g=>g.filter(i=>i.include).length>1).length,known_images:valid.filter(i=>i.known_ids.length).length,already_imported:valid.filter(i=>i.already_imported).length,path_conflicts:valid.filter(i=>i.path_duplicate).length,unknown_categories:[...new Set(valid.filter(i=>i.review&&i.manifest_category&&!i.category).map(i=>i.manifest_category))],selected_candidates:valid.filter(i=>i.include&&!i.review).length,skipped_candidates:valid.filter(i=>!i.include||i.review).length,by_type:byType,by_category:byCategory,known_assets:result.knownCount,known_assets_with_sha256:result.knownHashCount,warnings:result.warnings};
+  return {mode:'DRY RUN',production_writes:0,analysis_mode:result.mode||'single',packages:result.packages,per_package:packageSummary(result),package_errors:result.packageErrors||[],metadata_errors:result.metadataErrors||[],loaded_parts:result.loadedParts,repeated_entries_not_counted:result.repeatedEntries,total_files:result.totalFiles,metadata_files:result.metadataFiles,valid_images:valid.length,invalid_files:result.items.length-valid.length+(result.invalidMetadata?.length||0),invalid_metadata_files:result.invalidMetadata?.length||0,formats,automatically_classified:valid.filter(i=>!i.review&&i.classification_source!=='manual').length,classification_sources:sources,review:valid.filter(i=>i.review).length,name_duplicates:result.items.filter(i=>i.name_duplicate).length,exact_duplicate_files:valid.filter(i=>i.exact_duplicate).length,exact_duplicate_groups:groups.size,duplicate_groups_with_new_representative:[...groups.values()].filter(g=>!g.some(i=>i.known_ids.length)&&g.some(i=>i.include)).length,duplicate_groups_already_present:[...groups.values()].filter(g=>g.some(i=>i.known_ids.length)).length,duplicate_groups_review:[...groups.values()].filter(g=>!g.some(i=>i.known_ids.length)&&g.every(i=>!complete(i))).length,duplicate_groups_without_representative:[...groups.values()].filter(g=>!g.some(i=>i.known_ids.length)&&g.some(complete)&&!g.some(i=>i.include)).map(g=>({sha256:g[0].sha256,reason:g[0].selection_reason,source_paths:g.map(i=>i.source_path).sort()})),skipped_redundant_copies:[...groups.values()].reduce((n,g)=>n+(g.some(i=>i.known_ids.length)||g.some(i=>i.include)?g.filter(i=>!i.include).length:0),0),selected_unique_image_contents:new Set(valid.filter(selected).map(i=>i.sha256)).size,duplicate_groups_multiple_selected:[...groups.values()].filter(g=>g.filter(i=>i.include).length>1).length,known_images:valid.filter(i=>i.known_ids.length).length,already_imported:valid.filter(i=>i.already_imported).length,path_conflicts:valid.filter(i=>i.path_duplicate).length,unknown_categories:[...new Set(valid.filter(i=>i.review&&i.manifest_category&&!i.category).map(i=>i.manifest_category))],selected_candidates:valid.filter(selected).length,skipped_candidates:valid.filter(i=>!selected(i)).length,by_type:byType,by_category:byCategory,known_assets:result.knownCount,known_assets_with_sha256:result.knownHashCount,warnings:result.warnings};
 }
 // Explicit production package approvals; no general enablement of arbitrary ZIPs.
 const productionPackages=Object.freeze({
@@ -309,31 +349,56 @@ const productionPackages=Object.freeze({
 const liveSha=shaOf;
 const sameSource=(row,item)=>row.metadata?.source_package===item.source_package&&row.metadata?.source_path===item.source_path&&liveSha(row)===item.sha256;
 const hasImage=row=>Boolean(row.file_ref&&model.fileAllowed(row.file_ref)||row.storage_bucket===model.storageBucket&&model.storagePathAllowed(row.id,row.storage_path));
+const sourceMatches=(row,origin)=>[row.metadata,...(row.metadata?.duplicate_sources||[])].some(s=>s?.source_package===origin.source_package&&s.source_path===origin.source_path);
+const sourceKey=s=>JSON.stringify([s.source_package||'',s.source_path]);
+const selectionFingerprint=analysis=>JSON.stringify({mode:analysis.mode||'single',packages:[...analysis.packages].sort(),selected:analysis.items.filter(i=>i.valid&&i.include&&!i.review).map(i=>[i.id,i.source_package,i.source_path,i.sha256,i.asset_type,i.category,(i.duplicate_sources||[]).map(sourceKey).sort()]).sort((a,b)=>String(a).localeCompare(String(b)))});
+function packageSummary(analysis,jobs=[]){
+  const selected=i=>i.include&&!i.review&&(analysis.mode!=='all-in'||!heldByReview(analysis,i));
+  return [...new Set([...analysis.packages,...(analysis.packageErrors||[]).map(e=>e.source_package)])].sort().map(source_package=>{
+    const items=analysis.items.filter(i=>i.source_package===source_package),valid=items.filter(i=>i.valid),own=jobs.filter(j=>j.item.source_package===source_package);
+    const covered=new Set(jobs.filter(j=>j.verified||j.status==='BEREITS VORHANDEN').map(j=>j.item.sha256));
+    return {source_package,files:items.length,valid_images:valid.length,invalid_files:items.filter(i=>!i.valid).length,review:valid.filter(i=>i.review||heldByReview(analysis,i)).length,selected:valid.filter(selected).length,redundant_copies:valid.filter(i=>i.duplicate_state==='covered').length,known_images:valid.filter(i=>i.known_ids.length).length,new_candidates:own.filter(j=>j.kind==='new'&&j.status==='WARTET').length,resumable_drafts:own.filter(j=>j.kind==='resume'&&j.status==='WARTET').length,verified_assets:own.filter(j=>j.verified).length,covered_image_contents:new Set(valid.filter(i=>covered.has(i.sha256)).map(i=>i.sha256)).size,already_present:own.filter(j=>j.status==='BEREITS VORHANDEN').length,conflicts:own.filter(j=>j.status==='KONFLIKT').length,errors:own.filter(j=>j.status==='FEHLER').length,uploaded_bytes:own.reduce((n,j)=>n+j.uploaded_bytes,0),package_errors:(analysis.packageErrors||[]).filter(e=>e.source_package===source_package)};
+  });
+}
 function buildBatchPlan(analysis,live,dryRunCount=report(analysis).selected_unique_image_contents){
-  if(!Object.hasOwn(productionPackages,analysis.sourcePackage))throw Error('STOPP: Produktionsbatch ist nur für Cosmetic-Pilot, Database / Combat, Database / World Items und Building / Formulas freigegeben.');
-  const approval=productionPackages[analysis.sourcePackage];
+  const allIn=analysis.mode==='all-in';
+  if(!allIn&&!Object.hasOwn(productionPackages,analysis.sourcePackage))throw Error('STOPP: Produktionsbatch ist nur für Cosmetic-Pilot, Database / Combat, Database / World Items und Building / Formulas freigegeben.');
+  const approval=allIn?{label:'ALL-IN · '+analysis.packages.length+' Pakete',maxCandidates:null,reportMode:'ALL-IN PRODUCTION BATCH'}:productionPackages[analysis.sourcePackage];
   if(!Number.isSafeInteger(dryRunCount)||dryRunCount<0)throw Error('STOPP: Bestätigte lokale Dry-Run-Menge fehlt.');
-  const originals=analysis.items.filter(i=>i.valid),held=i=>analysis.manifests.some(m=>m.review&&(!m.sha||m.sha===i.sha256)&&(m.path===i.source_path||!m.path&&m.original===i.original_name));
-  if(originals.some(i=>i.source_package!==analysis.sourcePackage))throw Error('STOPP: Quelldatei gehört nicht zum aktuellen Paket.');
-  const jobs=[],hashes=new Set();
+  const originals=analysis.items.filter(i=>i.valid),held=i=>heldByReview(analysis,i);
+  if(originals.some(i=>allIn?!safePackage(i.source_package)||!analysis.analyzedPackages?.includes(i.source_package)||!analysis.packages.includes(i.source_package):i.source_package!==analysis.sourcePackage))throw Error('STOPP: Quelldatei gehört nicht zum aktuellen Paket oder einer erfolgreich analysierten ZIP.');
+  const jobs=[],hashes=new Set(),skippedExisting=new Set();
   for(const item of originals){
-    if(item.include!==true||item.review!==false||!complete(item)||held(item)||item.duplicate_state==='covered'||item.exact_duplicate&&item.representative_id!==item.id)continue;
-    const input=candidate(item);let state='WARTET',kind='new',reason='',row=null;
+    if(item.include!==true||item.review!==false||!complete(item)||held(item)||item.duplicate_state==='covered'||item.exact_duplicate&&item.representative_id!==item.id){
+      if(allIn&&live.some(r=>liveSha(r)===item.sha256&&hasImage(r)))skippedExisting.add(item.sha256);
+      continue;
+    }
+    let input=candidate(item),chosen=item,state='WARTET',kind='new',reason='',row=null;
     if(hashes.has(item.sha256))throw Error('STOPP: Mehrere Produktivrepräsentanten desselben SHA.');hashes.add(item.sha256);
-    const source=live.filter(r=>r.metadata?.source_package===item.source_package&&r.metadata?.source_path===item.source_path),exact=source.filter(r=>liveSha(r)===item.sha256),same=live.filter(r=>liveSha(r)===item.sha256);
+    const group=allIn?originals.filter(i=>i.sha256===item.sha256):[item];
+    const source=live.filter(r=>group.some(i=>sourceMatches(r,i))),exact=source.filter(r=>liveSha(r)===item.sha256),same=live.filter(r=>liveSha(r)===item.sha256);
     if(source.some(r=>liveSha(r)!==item.sha256)||exact.length>1){state='KONFLIKT';reason='Quellpfad mit anderem/fehlendem SHA oder mehreren passenden Datensätzen.'}
-    else if(same.some(hasImage)){state='BEREITS VORHANDEN';kind='existing';row=same.find(hasImage);reason='Identische Bildbytes mit vorhandener Bildreferenz.'}
+    else if(same.some(hasImage)){state='BEREITS VORHANDEN';kind='existing';row=same.find(hasImage);reason='Identische Bildbytes mit vorhandener Bildreferenz.';skippedExisting.delete(item.sha256)}
     else if(exact.length===1){
-      row=exact[0];if(row.status==='draft'&&!row.storage_path&&!row.file_ref&&row.asset_type===item.asset_type&&row.category===item.category&&Number.isInteger(row.revision)){kind='resume'}
+      row=exact[0];const original=group.find(i=>sameSource(row,i)&&complete(i)&&!held(i)&&i.asset_type===input.asset_type&&i.category===input.category);
+      if(row.status==='draft'&&!row.storage_path&&!row.file_ref&&row.asset_type===input.asset_type&&row.category===input.category&&Number.isInteger(row.revision)&&original){kind='resume';chosen=original;input=candidate(chosen)}
       else{state='KONFLIKT';reason='Passender Datensatz ist kein kompatibler reservierter Draft.'}
     }else if(same.length){state='KONFLIKT';reason='Identischer SHA ist unter anderer Herkunft ohne vollständige Bildreferenz reserviert.'}
-    jobs.push({item,input,row,kind,status:state,error:reason,storage_pending:null,uploaded_bytes:0,verified:false});
+    jobs.push({selection_id:item.id,item:chosen,input,row,kind,status:state,error:reason,storage_pending:null,uploaded_bytes:0,verified:false});
   }
+  for(const packageName of allIn?analysis.packages:[]){
+    const cap=productionPackages[packageName]?.maxCandidates;
+    const pending=jobs.filter(j=>j.status==='WARTET'&&j.item.source_package===packageName);
+    if(cap!==null&&cap!==undefined&&pending.length>cap)for(const j of pending){j.status='KONFLIKT';j.error='Paket überschreitet seine bestätigte Grenze '+cap+'. Andere sichere Pakete bleiben erhalten.'}
+  }
+  const handled=new Set(jobs.flatMap(j=>[j.selection_id,j.item.id]));
+  const excludedFiles=allIn?analysis.items.filter(i=>!handled.has(i.id)).map(i=>({source_package:i.source_package,source_path:i.source_path,original_name:i.original_name,sha256:i.sha256||null,valid:i.valid,review:Boolean(i.review||held(i)),duplicate_state:i.duplicate_state,known_ids:i.known_ids,already_present:skippedExisting.has(i.sha256),reason:!i.valid?i.error:i.review||held(i)?'ZUORDNUNG PRÜFEN':skippedExisting.has(i.sha256)?'BEREITS VORHANDEN':i.duplicate_state==='covered'?'DUPLIKAT – DURCH REPRÄSENTANT ABGEDECKT':i.selection_reason||'Nicht ausgewählt'})):[];
   const pending=jobs.filter(j=>j.status==='WARTET');
   if(approval.maxCandidates!==null&&pending.length>approval.maxCandidates)throw Error('STOPP: Live-Preflight ergibt '+pending.length+' Kandidaten; maximal '+approval.maxCandidates.toLocaleString('de-DE')+' sind für '+approval.label+' freigegeben.');
   if(pending.length>dryRunCount)throw Error('STOPP: Live-Menge '+pending.length+' überschreitet die bestätigte lokale Dry-Run-Menge '+dryRunCount+'.');
-  return {jobs,source_package:analysis.sourcePackage,package_label:approval.label,report_mode:approval.reportMode,dry_run_limit:dryRunCount,original_planned:report(analysis).selected_candidates,confirmed_pilot_limit:approval.maxCandidates,remaining:pending.length,new_candidates:pending.filter(j=>j.kind==='new').length,resumable_drafts:pending.filter(j=>j.kind==='resume').length,already_present:jobs.filter(j=>j.kind==='existing').length,conflicts:jobs.filter(j=>j.status==='KONFLIKT').length,review_excluded:originals.filter(i=>i.review||held(i)).length,redundant_duplicates_excluded:originals.filter(i=>i.duplicate_state==='covered').length,total_bytes:pending.reduce((n,j)=>n+j.item.size,0)};
+  return {jobs,mode:analysis.mode||'single',packages:[...analysis.packages],selection_fingerprint:selectionFingerprint(analysis),source_package:allIn?null:analysis.sourcePackage,package_label:approval.label,report_mode:approval.reportMode,dry_run_limit:dryRunCount,original_planned:report(analysis).selected_candidates,confirmed_pilot_limit:approval.maxCandidates,remaining:pending.length,new_candidates:pending.filter(j=>j.kind==='new').length,resumable_drafts:pending.filter(j=>j.kind==='resume').length,already_present:jobs.filter(j=>j.kind==='existing').length+skippedExisting.size,conflicts:jobs.filter(j=>j.status==='KONFLIKT').length,review_excluded:originals.filter(i=>i.review||held(i)).length,redundant_duplicates_excluded:originals.filter(i=>i.duplicate_state==='covered').length,total_bytes:pending.reduce((n,j)=>n+j.item.size,0),skipped_existing_hashes:[...skippedExisting],excluded_files:excludedFiles,per_package:packageSummary(analysis,jobs),package_errors:analysis.packageErrors||[],metadata_errors:analysis.metadataErrors||[]};
 }
+
 function createProductionBatch(analysis,proof,onChange=()=>{},dryRunCount=report(analysis).selected_unique_image_contents){
   const plan=buildBatchPlan(analysis,proof.rows,dryRunCount),store=globalThis.JMA_ASSET_STORE,id='batch-'+crypto.randomUUID();
   const batch={id,plan,phase:'BEREIT',active:0,running:false,starting:false,pause:false,started:false,confirmed:false,confirmation:'',uploaded_bytes:0,last_live_remaining:plan.remaining,verification_error:'',new_active_assets:null,proof};
@@ -350,7 +415,7 @@ function createProductionBatch(analysis,proof,onChange=()=>{},dryRunCount=report
       }
       const file=await job.item.read();
       const previous=job.row?.metadata||{},sources=[...(previous.duplicate_sources||[]),...(job.input.metadata.duplicate_sources||[])];
-      const input={...job.input,id:job.row?.id||job.input.id,name:job.row?.name||job.input.name,sort_order:job.row?.sort_order??job.input.sort_order,catalog_id:job.row?.catalog_id??job.input.catalog_id,metadata:{...previous,...job.input.metadata,import_batch:id,...(sources.length?{duplicate_sources:[...new Map(sources.map(s=>[s.source_path,s])).values()]}:{})}};
+      const input={...job.input,id:job.row?.id||job.input.id,name:job.row?.name||job.input.name,sort_order:job.row?.sort_order??job.input.sort_order,catalog_id:job.row?.catalog_id??job.input.catalog_id,metadata:{...previous,...job.input.metadata,import_batch:id,...(sources.length?{duplicate_sources:[...new Map(sources.map(s=>[sourceKey(s),s])).values()]}:{})}};
       const saved=await store.saveBatch(input,job.row?.revision??null,file,{sha256:job.item.sha256,scope:proof.scope,shouldPause:()=>batch.pause,onStage:status=>{job.status=status;changed()},onUploaded:bytes=>{job.uploaded_bytes+=bytes;batch.uploaded_bytes+=bytes;changed()}});
       job.row=saved;job.status=job.kind==='resume'?'FORTGESETZT':'ERFOLGREICH';
     }catch(error){
@@ -364,7 +429,7 @@ function createProductionBatch(analysis,proof,onChange=()=>{},dryRunCount=report
     if(scope()!==proof.scope)throw Error('STOPP: Verifikation gehört zu einer anderen Sitzung.');
     for(const job of plan.jobs.filter(j=>['ERFOLGREICH','FORTGESETZT'].includes(j.status))){
       const row=byId.get(job.row.id),sources=job.input.metadata.duplicate_sources||[];
-      job.verified=Boolean(row&&row.status==='draft'&&row.storage_bucket===model.storageBucket&&model.storagePathAllowed(row.id,row.storage_path)&&row.storage_path===job.row.storage_path&&sameSource(row,job.item)&&row.metadata?.upload?.sha256===job.item.sha256&&row.metadata?.original_name===job.item.original_name&&row.metadata?.import_batch===id&&row.users_available===false&&row.metadata?.classification_source===job.input.metadata.classification_source&&row.metadata?.classification_reason===job.input.metadata.classification_reason&&sources.every(s=>row.metadata.duplicate_sources?.some(x=>x.source_path===s.source_path&&x.original_name===s.original_name)));
+      job.verified=Boolean(row&&row.status==='draft'&&row.storage_bucket===model.storageBucket&&model.storagePathAllowed(row.id,row.storage_path)&&row.storage_path===job.row.storage_path&&sameSource(row,job.item)&&row.metadata?.upload?.sha256===job.item.sha256&&row.metadata?.original_name===job.item.original_name&&row.metadata?.import_batch===id&&row.users_available===false&&row.metadata?.classification_source===job.input.metadata.classification_source&&row.metadata?.classification_reason===job.input.metadata.classification_reason&&sources.every(s=>row.metadata.duplicate_sources?.some(x=>x.source_path===s.source_path&&x.original_name===s.original_name&&(!s.source_package||x.source_package===s.source_package))));
       if(!job.verified){job.status='FEHLER';job.error='STOPP: Live-Verifikation von Draft, Storage oder Source-Metadaten fehlgeschlagen.';batch.pause=true}
     }
     batch.new_active_assets=rows.filter(r=>r.metadata?.import_batch===id&&r.status==='active').length;
@@ -373,19 +438,20 @@ function createProductionBatch(analysis,proof,onChange=()=>{},dryRunCount=report
   batch.verify=verify;
   batch.requestPause=()=>{batch.pause=true;batch.phase='PAUSE ANGEFORDERT';changed()};
   batch.stop=()=>{batch.confirmed=false;batch.requestPause()};
-  batch.retry=jobId=>{if(batch.running||batch.active)throw Error('Zuerst laufende Uploads beenden.');const j=plan.jobs.find(j=>j.item.id===jobId);if(j?.status==='FEHLER'){j.status='WARTET';j.error='';batch.pause=true;batch.phase='PAUSIERT';changed()}};
+  batch.retry=jobId=>{if(batch.running||batch.active)throw Error('Zuerst laufende Uploads beenden.');const j=plan.jobs.find(j=>j.item.id===jobId||j.selection_id===jobId);if(j?.status==='FEHLER'){j.status='WARTET';j.error='';batch.pause=true;batch.phase='PAUSIERT';changed()}};
   batch.run=async confirmation=>{
     if(batch.running||batch.starting)return;
     if(!batch.confirmed){if(confirmation!=='IMPORT '+plan.remaining+' DRAFT-ASSETS')throw Error('Exakte Importbestätigung fehlt.');batch.confirmed=true}
     if(scope()!==proof.scope)throw Error('STOPP: Sitzung gewechselt.');
     // Reconcile the fixed approved set again before each start/resume; never add later Review/selection changes.
     batch.starting=true;batch.pause=false;changed();let current,fresh,map;
-    try{current=await store.batchPreflight();fresh=buildBatchPlan(analysis,current.rows,plan.dry_run_limit);map=new Map(fresh.jobs.map(j=>[j.item.id,j]))}finally{batch.starting=false}
+    try{current=await store.batchPreflight();fresh=buildBatchPlan(analysis,current.rows,plan.dry_run_limit);map=new Map(fresh.jobs.map(j=>[j.selection_id,j]))}finally{batch.starting=false}
     if(batch.pause){batch.phase='PAUSIERT';changed();return}
     if(fresh.source_package!==plan.source_package)throw Error('STOPP: Bestätigtes Paket wurde verändert.');
     if(fresh.remaining>plan.remaining)throw Error('STOPP: Live-Menge ist nach der Bestätigung gewachsen.');
+    if(fresh.selection_fingerprint!==plan.selection_fingerprint||fresh.mode!==plan.mode)throw Error('STOPP: Bestätigte Pakete oder Auswahl wurden verändert.');
     for(const j of plan.jobs.filter(j=>j.status==='WARTET')){
-      const next=map.get(j.item.id);if(!next)throw Error('STOPP: Bestätigte Auswahl wurde verändert.');Object.assign(j,{row:next.row,kind:next.kind,status:next.status,error:next.error});
+      const next=map.get(j.selection_id);if(!next)throw Error('STOPP: Bestätigte Auswahl wurde verändert.');Object.assign(j,{item:next.item,input:next.input,row:next.row,kind:next.kind,status:next.status,error:next.error});
     }
     batch.last_live_remaining=fresh.remaining;
     batch.pause=false;batch.running=true;batch.started=true;batch.phase='LÄUFT';batch.verification_error='';changed();
@@ -394,20 +460,22 @@ function createProductionBatch(analysis,proof,onChange=()=>{},dryRunCount=report
     try{await Promise.all([worker(),worker()]);try{await verify()}catch(error){batch.verification_error=error.message;batch.pause=true}}
     finally{batch.running=false;batch.phase=batch.pause?'PAUSIERT':'ABGESCHLOSSEN';changed()}
   };
-  batch.report=()=>({mode:plan.report_mode,source_package:plan.source_package,batch_id:id,originally_planned:plan.original_planned,confirmed_dry_run_limit:plan.dry_run_limit,confirmed_pilot_limit:plan.confirmed_pilot_limit,after_live_preflight:plan.remaining,after_latest_live_recheck:batch.last_live_remaining,planned_total_bytes:plan.total_bytes,new_imported:plan.jobs.filter(j=>j.kind==='new'&&j.verified).length,resumed_drafts:plan.jobs.filter(j=>j.kind==='resume'&&j.verified).length,already_fully_present:plan.jobs.filter(j=>j.status==='BEREITS VORHANDEN').length,redundant_duplicates:plan.redundant_duplicates_excluded,review_untouched:plan.review_excluded,conflicts:plan.jobs.filter(j=>j.status==='KONFLIKT').length,errors:plan.jobs.filter(j=>j.status==='FEHLER').length,verified_assets:plan.jobs.filter(j=>j.verified).length,uploaded_total_bytes:batch.uploaded_bytes,active_upload_bytes:plan.jobs.filter(j=>j.status==='UPLOAD').reduce((n,j)=>n+j.item.size,0),new_active_assets:batch.new_active_assets,storage_attachment_open:plan.jobs.filter(j=>j.storage_pending&&!j.verified).map(j=>({...j.storage_pending,error:j.error})),verification_error:batch.verification_error,phase:batch.phase,items:plan.jobs.map(j=>({source_path:j.item.source_path,sha256:j.item.sha256,id:j.row?.id||j.input.id,status:j.status,kind:j.kind,error:j.error,verified:j.verified,uploaded_bytes:j.uploaded_bytes,storage_pending:j.storage_pending}))});
+  batch.report=()=>({mode:plan.report_mode,source_package:plan.source_package,packages:plan.packages,per_package:packageSummary(analysis,plan.jobs),package_errors:plan.package_errors,metadata_errors:plan.metadata_errors,excluded_files:plan.excluded_files,skipped_existing_hashes:plan.skipped_existing_hashes,batch_id:id,originally_planned:plan.original_planned,confirmed_dry_run_limit:plan.dry_run_limit,confirmed_pilot_limit:plan.confirmed_pilot_limit,after_live_preflight:plan.remaining,after_latest_live_recheck:batch.last_live_remaining,planned_total_bytes:plan.total_bytes,new_imported:plan.jobs.filter(j=>j.kind==='new'&&j.verified).length,resumed_drafts:plan.jobs.filter(j=>j.kind==='resume'&&j.verified).length,already_fully_present:plan.jobs.filter(j=>j.status==='BEREITS VORHANDEN').length+plan.skipped_existing_hashes.length,redundant_duplicates:plan.redundant_duplicates_excluded,review_untouched:plan.review_excluded,conflicts:plan.jobs.filter(j=>j.status==='KONFLIKT').length,errors:plan.jobs.filter(j=>j.status==='FEHLER').length,verified_assets:plan.jobs.filter(j=>j.verified).length,uploaded_total_bytes:batch.uploaded_bytes,active_upload_bytes:plan.jobs.filter(j=>j.status==='UPLOAD').reduce((n,j)=>n+j.item.size,0),new_active_assets:batch.new_active_assets,storage_attachment_open:plan.jobs.filter(j=>j.storage_pending&&!j.verified).map(j=>({...j.storage_pending,error:j.error})),verification_error:batch.verification_error,phase:batch.phase,items:plan.jobs.map(j=>({source_package:j.item.source_package,source_path:j.item.source_path,sha256:j.item.sha256,id:j.row?.id||j.input.id,status:j.status,kind:j.kind,error:j.error,verified:j.verified,uploaded_bytes:j.uploaded_bytes,storage_pending:j.storage_pending,duplicate_sources:j.input.metadata.duplicate_sources||[]}))});
   return batch;
 }
 let production=null,productionDrawTimer=null,productionEpoch=0,preflighting=false,productionMessage='';
+const jobForItem=i=>production?.plan.jobs.find(j=>j.selection_id===i.id||j.item.id===i.id);
 const productionBusy=()=>Boolean(production?.running||production?.starting||production?.active);
 function scheduleProductionDraw(){if(open&&productionDrawTimer===null)productionDrawTimer=setTimeout(()=>{productionDrawTimer=null;if(open)draw()},120)}
 function productionMarkup(){
   const locked=running||preflighting||productionBusy(),ready=production?.phase==='BEREIT',r=production?.report(),p=production?.plan;
-  return '<div class="asset-batch-footer" aria-busy="'+locked+'"><button type="button" class="admin-primary" data-batch-production="start"'+(!ready||!p.remaining||production.confirmation!=='IMPORT '+p.remaining+' DRAFT-ASSETS'?' disabled':'')+'>'+(p?'IMPORT '+p.remaining+' DRAFT-ASSETS':'PRODUKTIONSIMPORT GESPERRT')+'</button><button type="button" class="admin-secondary" data-batch-production="preflight"'+(!result||locked||production?.started?' disabled':'')+'>Live-Preflight prüfen</button><p class="asset-note" role="status" data-batch-production-message>'+esc(productionMessage||'Pakete 01 Cosmetic, 02 Database / Combat, 03 Database / World Items und 04 Building / Formulas: erst Live-Preflight, dann ausdrücklich bestätigen. Keine automatische Veröffentlichung.')+'</p>'+
-    (p?'<div class="asset-batch-summary">'+[['Neue Kandidaten',p.new_candidates],['Bereits vorhanden',p.already_present],['Resumierbare Drafts',p.resumable_drafts],['Review ausgeschlossen',p.review_excluded],['Redundante Duplikate ausgeschlossen',p.redundant_duplicates_excluded],['Konflikte',p.conflicts],['Geplante Bytes',p.total_bytes]].map(([k,v])=>'<div><small>'+esc(k)+'</small><strong>'+esc(v)+'</strong></div>').join('')+'</div><p class="asset-note">'+esc(p.package_label)+' · Lokaler Dry Run: '+p.dry_run_limit+' eindeutige vorgemerkte Bildinhalte. Frisch aus Supabase: '+production.proof.rows.length+' Assets, '+production.proof.private_rows+' privat. '+production.proof.unverified_hashes.length+' Legacy-Referenzen ohne bestätigten Bildhash. Die Auswahl kann gegenüber dem Dry Run kleiner werden.</p><label class="asset-batch-package">Bestätigung: IMPORT '+p.remaining+' DRAFT-ASSETS<input data-batch-production-confirm value="'+esc(production.confirmation)+'" autocomplete="off"'+(production.started?' disabled':'')+'></label><div class="asset-actions"><button type="button" class="admin-secondary" data-batch-production="pause"'+(!production.running?' disabled':'')+'>Pause</button><button type="button" class="admin-secondary" data-batch-production="resume"'+(production.phase!=='PAUSIERT'?' disabled':'')+'>Fortsetzen</button><button type="button" class="admin-secondary" data-batch-production="stop"'+(!production.running?' disabled':'')+'>Nach aktuellen Uploads stoppen</button><button type="button" class="admin-secondary" data-batch-production="report">Importbericht herunterladen</button></div><p class="asset-note" role="status">'+esc(production.phase)+' · '+planFinished(production)+' / '+p.jobs.length+' · erfolgreich verifiziert '+r.verified_assets+' · vorhanden '+r.already_fully_present+' · Fehler '+r.errors+' · hochgeladen '+r.uploaded_total_bytes+' Bytes · aktuell '+r.active_upload_bytes+' Bytes</p><p class="asset-note">'+esc(production.verification_error)+'</p>':'')+'</div>';
+  return '<div class="asset-batch-footer" aria-busy="'+locked+'"><button type="button" class="admin-primary" data-batch-production="start"'+(locked||!ready||!p.remaining||production.confirmation!=='IMPORT '+p.remaining+' DRAFT-ASSETS'?' disabled':'')+'>'+(p?'IMPORT '+p.remaining+' DRAFT-ASSETS':'PRODUKTIONSIMPORT GESPERRT')+'</button><button type="button" class="admin-secondary" data-batch-production="preflight"'+(!result||locked||production?.started?' disabled':'')+'>Live-Preflight prüfen</button><p class="asset-note" role="status" data-batch-production-message>'+esc(productionMessage||'Einzelpakete 01–04 oder analysierter ALL-IN-Modus: erst gemeinsamer Live-Preflight, dann Gesamtmenge ausdrücklich bestätigen. Keine automatische Veröffentlichung.')+'</p>'+
+    (p?'<div class="asset-batch-summary">'+[['Neue Kandidaten',p.new_candidates],['Bereits vorhanden',p.already_present],['Resumierbare Drafts',p.resumable_drafts],['Review ausgeschlossen',p.review_excluded],['Redundante Duplikate ausgeschlossen',p.redundant_duplicates_excluded],['Konflikte',p.conflicts],['Geplante Bytes',p.total_bytes]].map(([k,v])=>'<div><small>'+esc(k)+'</small><strong>'+esc(v)+'</strong></div>').join('')+'</div><p class="asset-note">'+esc(p.package_label)+' · Lokaler Dry Run: '+p.dry_run_limit+' eindeutige vorgemerkte Bildinhalte. Frisch aus Supabase: '+production.proof.rows.length+' Assets, '+production.proof.private_rows+' privat. '+production.proof.unverified_hashes.length+' Legacy-Referenzen ohne bestätigten Bildhash. Die Auswahl kann gegenüber dem Dry Run kleiner werden.</p><label class="asset-batch-package">Bestätigung: IMPORT '+p.remaining+' DRAFT-ASSETS<input data-batch-production-confirm value="'+esc(production.confirmation)+'" autocomplete="off"'+(production.started?' disabled':'')+'></label><div class="asset-actions"><button type="button" class="admin-secondary" data-batch-production="pause"'+(!production.running?' disabled':'')+'>Pause</button><button type="button" class="admin-secondary" data-batch-production="resume"'+(production.phase!=='PAUSIERT'?' disabled':'')+'>Fortsetzen</button><button type="button" class="admin-secondary" data-batch-production="stop"'+(!production.running?' disabled':'')+'>Nach aktuellen Uploads stoppen</button><button type="button" class="admin-secondary" data-batch-production="report">Importbericht herunterladen</button></div><p class="asset-note" role="status">'+esc(production.phase)+' · '+planFinished(production)+' / '+p.jobs.length+' · erfolgreich verifiziert '+r.verified_assets+' · vorhanden '+r.already_fully_present+' · Fehler '+r.errors+' · hochgeladen '+r.uploaded_total_bytes+' Bytes · aktuell '+r.active_upload_bytes+' Bytes</p><p class="asset-note">'+esc(production.verification_error)+'</p>'+packageOverview(result,production.plan.jobs):'')+'</div>';
 }
 const planFinished=b=>b.plan.jobs.filter(j=>['ERFOLGREICH','FORTGESETZT','BEREITS VORHANDEN','FEHLER','KONFLIKT'].includes(j.status)).length;
 function downloadBatchReport(){const url=URL.createObjectURL(new Blob([JSON.stringify(production.report(),null,2)],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download='asset-library-import-report.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
 async function productionAction(action){
+  if(['preflight','start','resume'].includes(action)&&(running||preflighting||productionBusy()))return;
   try{
     if(action==='preflight'){
       const ticket=++productionEpoch,analysis=result,dryRunCount=report(analysis).selected_unique_image_contents;preflighting=true;production=null;productionMessage='Frische Live-Sitzung, Privatbestand und Storage prüfen …';draw();
@@ -419,28 +487,48 @@ async function productionAction(action){
   finally{preflighting=false;clearTimeout(productionDrawTimer);productionDrawTimer=null;if(open)draw()}
 }
 
-let open=false,result=null,running=false,message='',analysisController=null,previewController=null,epoch=0,page=1,selected=new Set(),urls=[],previewId='',sourcePackage='OnceHuman_CMS_v2_01_Profile_Cosmetics_Shop.zip',config=null,observer=null,binding=null;
-const filters={search:'',type:'',category:'',status:'',duplicate:'',source:'',review:''};
+let open=false,result=null,running=false,message='',analysisController=null,previewController=null,epoch=0,page=1,selected=new Set(),urls=[],previewId='',sourcePackage='OnceHuman_CMS_v2_01_Profile_Cosmetics_Shop.zip',importMode='single',reselectionNote='',config=null,observer=null,binding=null;
+const filters={search:'',package:'',type:'',category:'',status:'',duplicate:'',source:'',review:''};
 function releasePreviews(){epoch++;previewController?.abort();previewController=null;for(const url of urls)URL.revokeObjectURL(url);urls=[]}
-function close(reset=false){clearTimeout(productionDrawTimer);productionDrawTimer=null;if(productionBusy()){production.requestPause();reset=false}analysisController?.abort();running=false;open=false;releasePreviews();binding?.abort();if(reset){productionEpoch++;preflighting=false;production=null;productionMessage='';result=null;selected.clear();previewId='';message='';page=1;for(const key in filters)filters[key]=''}observer?.disconnect();observer=null}
+function close(reset=false){clearTimeout(productionDrawTimer);productionDrawTimer=null;if(productionBusy()){production.requestPause();reset=false}analysisController?.abort();running=false;open=false;releasePreviews();binding?.abort();if(reset){productionEpoch++;preflighting=false;production=null;productionMessage='';result=null;importMode='single';reselectionNote='';selected.clear();previewId='';message='';page=1;for(const key in filters)filters[key]=''}observer?.disconnect();observer=null}
 function reset(){close(true)}
 function filtered(){return (result?.items||[]).filter(i=>{
-  const text=[i.name,i.original_name,i.source_path].join(' ').toLocaleLowerCase('de');
-  return (!filters.search||text.includes(filters.search.toLocaleLowerCase('de')))&&(!filters.type||i.asset_type===filters.type)&&(!filters.category||i.category===filters.category)&&(!filters.status||filters.status===(i.valid?'draft':'invalid'))&&(!filters.source||i.classification_source===filters.source)&&(!filters.review||(filters.review==='review'?i.valid&&i.review:filters.review==='clear'?i.valid&&!i.review:!i.valid))&&(!filters.duplicate||(filters.duplicate==='name'?i.name_duplicate:filters.duplicate==='hash'?i.exact_duplicate||i.known_ids.length:filters.duplicate==='imported'?i.already_imported:Object.hasOwn(duplicateRoles,filters.duplicate)?i.duplicate_state===filters.duplicate:!i.name_duplicate&&!i.exact_duplicate&&!i.known_ids.length));
+  const text=[i.name,i.original_name,i.source_package,i.source_path].join(' ').toLocaleLowerCase('de');
+  return (!filters.search||text.includes(filters.search.toLocaleLowerCase('de')))&&(!filters.package||i.source_package===filters.package)&&(!filters.type||i.asset_type===filters.type)&&(!filters.category||i.category===filters.category)&&(!filters.status||filters.status===(i.valid?'draft':'invalid'))&&(!filters.source||i.classification_source===filters.source)&&(!filters.review||(filters.review==='review'?i.valid&&i.review:filters.review==='clear'?i.valid&&!i.review:!i.valid))&&(!filters.duplicate||(filters.duplicate==='name'?i.name_duplicate:filters.duplicate==='hash'?i.exact_duplicate||i.known_ids.length:filters.duplicate==='imported'?i.already_imported:Object.hasOwn(duplicateRoles,filters.duplicate)?i.duplicate_state===filters.duplicate:!i.name_duplicate&&!i.exact_duplicate&&!i.known_ids.length));
 })}
 const opts=(values,current,empty='Alle')=>'<option value="">'+esc(empty)+'</option>'+Object.entries(values).map(([id,label])=>'<option value="'+esc(id)+'"'+(current===id?' selected':'')+'>'+esc(label)+'</option>').join('');
 const duplicateRoles={representative:'REPRÄSENTANT',covered:'DUPLIKAT – DURCH REPRÄSENTANT ABGEDECKT',existing:'BEREITS VORHANDEN',review:'DUPLIKATGRUPPE IN REVIEW',unselected:'DUPLIKATGRUPPE OHNE REPRÄSENTANT'};
 const duplicateText=i=>[duplicateRoles[i.duplicate_state]||'',i.includeOverride!==undefined?'MANUELL '+(i.includeOverride?'VORGEMERKT':'ÜBERSPRUNGEN'):'',i.name_duplicate?'NAME BEREITS VORHANDEN':'',i.exact_duplicate?'EXAKTES BILDDUPLIKAT':'',i.known_ids.length?'IDENTISCHES BEKANNTES BILD':'',i.already_imported?'BEREITS IMPORTIERT':'',i.path_duplicate?'GLEICHER PFAD / ANDERE BILDBYTES':''].filter(Boolean).join(' · ')||'NEU';
+const checkpointKey='jma_asset_import_selection';
+const importScope=()=>{const a=globalThis.JMA_AUTH?.getState?.()||{};return [a.user?.id,a.role].join(':')};
+function saveSelectionHint(){
+  if(!result)return;
+  try{sessionStorage.setItem(checkpointKey,JSON.stringify({scope:importScope(),mode:importMode,sourcePackage,files:result.loadedParts.slice(0,100)}))}catch{}
+}
+function restoreSelectionHint(){
+  if(result||production)return;
+  try{
+    const hint=JSON.parse(sessionStorage.getItem(checkpointKey)||'null');
+    if(!hint)return;
+    if(hint.scope!==importScope()){sessionStorage.removeItem(checkpointKey);return}
+    if(['single','all-in'].includes(hint.mode)){importMode=hint.mode;if(typeof hint.sourcePackage==='string'&&hint.sourcePackage.length<=200)sourcePackage=hint.sourcePackage;reselectionNote='Nach Reload die Original-ZIPs und Manifest-/Review-Dateien erneut wählen. Bereits vorhandene Bilder und offene Drafts werden im frischen Live-Preflight erkannt. Keine alte Bestätigung wird übernommen.'}
+  }catch{sessionStorage.removeItem(checkpointKey)}
+}
+function packageOverview(analysis,jobs=[]){
+  if(analysis.mode!=='all-in')return '';
+  const rows=packageSummary(analysis,jobs);
+  return '<details class="asset-note" data-batch-packages><summary>'+rows.length+' Paketberichte</summary>'+rows.map(r=>'<p><b>'+esc(r.source_package)+'</b><br>'+r.valid_images+' gültige Bilder · '+r.invalid_files+' ungültig · '+r.review+' Review · '+r.selected+' vorgemerkt · '+r.redundant_copies+' redundante Kopien · '+r.known_images+' bekannte Bilder · '+r.verified_assets+' verifiziert · '+r.covered_image_contents+' Bildinhalte abgedeckt · '+r.conflicts+' Konflikte · '+r.errors+' Importfehler'+r.package_errors.map(e=>'<br>'+esc(e.archive_name+': '+e.error)).join('')+'</p>').join('')+'</details>'+(analysis.metadataErrors?.length?'<p class="asset-note" role="status">'+analysis.metadataErrors.map(e=>esc((e.source_package||'Paketübergreifende Metadaten')+' · '+e.source_path+': '+e.error)).join('<br>')+' · Betroffene Kandidaten bleiben in Review.</p>':'')+(analysis.packageErrors?.length?'<p class="asset-note" role="status">'+analysis.packageErrors.length+' fehlerhafte Pakete ausgeschlossen; die übrigen sicheren Kandidaten bleiben erhalten.</p>':'');
+}
 function summary(){
   if(!result)return '';
-  const r=report(result);return '<div class="asset-batch-summary">'+[['Dateien',r.total_files],['Gültige Bilder',r.valid_images],['Ungültig / ausgeschlossen',r.invalid_files],['Automatisch eindeutig',r.automatically_classified],['ZUORDNUNG PRÜFEN',r.review],['Namensduplikate',r.name_duplicates],['Exakte Duplikate',r.exact_duplicate_files+' / '+r.exact_duplicate_groups+' Gruppen'],['Gruppen mit neuem Repräsentanten',r.duplicate_groups_with_new_representative],['Gruppen bereits vorhanden',r.duplicate_groups_already_present],['Gruppen in Review',r.duplicate_groups_review],['Gruppen ohne Repräsentant',r.duplicate_groups_without_representative.length],['Redundante Kopien übersprungen',r.skipped_redundant_copies],['Eindeutige Bildinhalte vorgemerkt',r.selected_unique_image_contents],['Bereits importiert',r.already_imported],['Vorgemerkt',r.selected_candidates],['Übersprungen',r.skipped_candidates],['Erneut gelesen / nicht doppelt gezählt',r.repeated_entries_not_counted]].map(([k,v])=>'<div><small>'+esc(k)+'</small><strong>'+esc(v)+'</strong></div>').join('')+'</div><p class="asset-note">PNG '+r.formats.png+' · JPEG '+r.formats.jpg+' · WebP '+r.formats.webp+' · '+r.metadata_files+' Metadatendateien · '+r.loaded_parts.length+' eingelesene ZIPs / Dateien. Bekannte Assets: '+r.known_assets+'; davon '+r.known_assets_with_sha256+' mit vorhandenem SHA-256. Bilder ohne gespeicherten Hash können hier nur über Namen verglichen werden.</p><p class="asset-note">'+Object.keys(labels).filter(k=>k!=='unresolved').map(k=>esc(labels[k])+': '+r.classification_sources[k]).join(' · ')+'</p>';
+  const r=report(result);return '<div class="asset-batch-summary">'+[['Dateien',r.total_files],['Gültige Bilder',r.valid_images],['Ungültig / ausgeschlossen',r.invalid_files],['Automatisch eindeutig',r.automatically_classified],['ZUORDNUNG PRÜFEN',r.review],['Namensduplikate',r.name_duplicates],['Exakte Duplikate',r.exact_duplicate_files+' / '+r.exact_duplicate_groups+' Gruppen'],['Gruppen mit neuem Repräsentanten',r.duplicate_groups_with_new_representative],['Gruppen bereits vorhanden',r.duplicate_groups_already_present],['Gruppen in Review',r.duplicate_groups_review],['Gruppen ohne Repräsentant',r.duplicate_groups_without_representative.length],['Redundante Kopien übersprungen',r.skipped_redundant_copies],['Eindeutige Bildinhalte vorgemerkt',r.selected_unique_image_contents],['Bereits importiert',r.already_imported],['Vorgemerkt',r.selected_candidates],['Übersprungen',r.skipped_candidates],['Erneut gelesen / nicht doppelt gezählt',r.repeated_entries_not_counted]].map(([k,v])=>'<div><small>'+esc(k)+'</small><strong>'+esc(v)+'</strong></div>').join('')+'</div><p class="asset-note">PNG '+r.formats.png+' · JPEG '+r.formats.jpg+' · WebP '+r.formats.webp+' · '+r.metadata_files+' Metadatendateien · '+r.loaded_parts.length+' eingelesene ZIPs / Dateien. Bekannte Assets: '+r.known_assets+'; davon '+r.known_assets_with_sha256+' mit vorhandenem SHA-256. Bilder ohne gespeicherten Hash können hier nur über Namen verglichen werden.</p><p class="asset-note">'+Object.keys(labels).filter(k=>k!=='unresolved').map(k=>esc(labels[k])+': '+r.classification_sources[k]).join(' · ')+'</p>'+packageOverview(result);
 }
 function render(){
   if(!open||!allowed())return '';
   const visible=filtered();page=Math.max(1,Math.min(page,Math.ceil(visible.length/limits.page)||1));
   const part=visible.slice((page-1)*limits.page,page*limits.page),categories=Object.fromEntries([...new Set((result?.items||[]).map(i=>i.category).filter(Boolean))].sort().map(c=>[c,c]));
-  return '<section class="asset-batch" data-asset-import><div class="asset-actions"><h3>ZIP / ORDNER IMPORTIEREN</h3><button type="button" class="admin-secondary" data-batch-action="close">Zur Asset-Bibliothek</button></div><p class="asset-note">Lokale Analyse · Originalbytes bleiben unverändert · Produktivimport nur nach Live-Preflight und Bestätigung · ausschließlich Drafts, keine Veröffentlichung.</p><label class="asset-batch-package">Gemeinsames Ursprungspaket<input data-batch-package maxlength="200" value="'+esc(sourcePackage)+'"'+(result||running?' readonly':'')+'></label><p class="asset-note">Teil-ZIPs nacheinander hinzufügen. Manifest und Review-CSV können separat ausgewählt werden. Gleicher Originalpfad + SHA-256 wird nur einmal gezählt.</p><div class="asset-batch-pickers"><label class="admin-secondary">ZIP / Bilder wählen<input type="file" data-batch-files multiple accept=".zip,.png,.jpg,.jpeg,.webp,.csv"'+(running||production?.started||preflighting?' disabled':'')+'></label><label class="admin-secondary">Ordner wählen<input type="file" data-batch-folder multiple webkitdirectory'+(running||production?.started||preflighting?' disabled':'')+'></label><button type="button" class="admin-secondary" data-batch-action="cancel"'+(!running?' hidden':'')+'>Analyse abbrechen</button></div><p role="status" aria-live="polite" data-batch-progress>'+esc(message)+'</p>'+summary()+
-    (result?'<div class="asset-actions asset-batch-tabs"><button type="button" class="admin-secondary" data-batch-view="">Alle Dateien</button><button type="button" class="admin-secondary" data-batch-view="review">ZUORDNUNG PRÜFEN</button><button type="button" class="admin-secondary" data-batch-action="export">Dry-Run-Bericht herunterladen</button><button type="button" class="admin-secondary" data-batch-action="clear">Neues Paket / Sitzung leeren</button></div><div class="asset-filters"><label>Suche<input type="search" data-batch-search value="'+esc(filters.search)+'" placeholder="Name oder Pfad"></label>'+[['type','Typ',model.types],['category','Kategorie',categories],['status','Status',{draft:'Entwurf',invalid:'Ungültig / ausgeschlossen'}],['duplicate','Duplikatstatus',{name:'Name bereits vorhanden',hash:'Identisches Bild',representative:'Repräsentant',covered:'Durch Repräsentant abgedeckt',existing:'Bereits vorhanden',review:'Duplikatgruppe in Review',unselected:'Ohne Repräsentant',imported:'Bereits importiert',new:'Neu'}],['source','Klassifizierungsquelle',labels],['review','Zuordnung',{clear:'Eindeutig',review:'ZUORDNUNG PRÜFEN',invalid:'Ungültig'}]].map(([key,label,values])=>'<label>'+label+'<select data-batch-filter="'+key+'">'+opts(values,filters[key])+'</select></label>').join('')+'</div><div class="asset-actions asset-batch-selection">'+[['visible','Alle sichtbaren auswählen'],['clear','Alle eindeutigen auswählen'],['review','Alle unklaren auswählen'],['duplicates','Alle Duplikate auswählen'],['none','Auswahl aufheben']].map(([key,label])=>'<button type="button" class="admin-secondary" data-batch-select="'+key+'">'+label+'</button>').join('')+'</div><div class="asset-batch-bulk"><strong>'+selected.size+' ausgewählt</strong><label>Asset-Typ<select data-batch-bulk-type>'+opts(model.types,'','Typ beibehalten')+'</select></label><label>Kategorie<input data-batch-bulk-category maxlength="80" placeholder="Kategorie beibehalten"></label><button type="button" class="admin-secondary" data-batch-action="classify">Zuordnung übernehmen</button><button type="button" class="admin-secondary" data-batch-action="include">Zum Import vormerken</button><button type="button" class="admin-secondary" data-batch-action="skip">Überspringen</button></div><div class="asset-batch-layout"><div><p>'+visible.length+' Treffer · Seite '+page+' / '+(Math.ceil(visible.length/limits.page)||1)+'</p><div class="asset-list asset-batch-list">'+part.map(i=>'<article class="asset-row asset-batch-row"><label class="asset-batch-check"><input type="checkbox" data-batch-check="'+esc(i.id)+'" aria-label="'+esc(i.name)+' auswählen"'+(selected.has(i.id)?' checked':'')+'></label><button type="button" class="asset-batch-entry" data-batch-preview="'+esc(i.id)+'"><span class="asset-thumb" data-batch-thumb="'+esc(i.id)+'"><b>◇</b></span><span><strong>'+esc(i.name)+'</strong><small>'+esc(i.original_name)+'</small><small>'+esc(i.source_path)+'</small><small>'+esc(model.types[i.asset_type]||'Typ offen')+' · '+esc(i.category||'Kategorie offen')+' · '+(i.size/MiB).toFixed(2)+' MiB'+(i.valid?' · '+i.width+' × '+i.height:'')+'</small><small>'+esc(i.valid?duplicateText(i):i.error)+'</small>'+(i.exact_duplicate?'<small>'+esc(i.representative_path?'Repräsentant: '+i.representative_path:i.selection_reason)+'</small>':'')+(i.candidate_error?'<small>'+esc(i.candidate_error)+'</small>':'')+'<small>'+esc(labels[i.classification_source])+' · '+esc(i.reason||'')+'</small><small>'+esc(i.valid?(i.include&&!i.review?'VORGEMERKT · DRAFT':'ÜBERSPRUNGEN · DRAFT'):'AUSGESCHLOSSEN')+'</small>'+(i.sha256?'<small class="asset-batch-sha">SHA-256 '+esc(i.sha256)+'</small>':'')+(i.notes.length?'<small>'+esc(i.notes.join(' · '))+'</small>':'')+(production?.plan.jobs.find(j=>j.item.id===i.id)?'<small>'+esc(production.plan.jobs.find(j=>j.item.id===i.id).status+' · '+production.plan.jobs.find(j=>j.item.id===i.id).error)+'</small>':'')+'</span></button>'+(production?.plan.jobs.some(j=>j.item.id===i.id&&j.status==='FEHLER')?'<button type="button" class="admin-secondary" data-batch-retry="'+esc(i.id)+'"'+(productionBusy()?' disabled':'')+'>Fehler erneut versuchen</button>':'')+'</article>').join('')+'</div><div class="asset-actions asset-batch-pagination"><button type="button" class="admin-secondary" data-batch-action="previous"'+(page===1?' disabled':'')+'>Zurück</button><button type="button" class="admin-secondary" data-batch-action="next"'+(page*limits.page>=visible.length?' disabled':'')+'>Weiter</button></div></div><aside class="admin-glass asset-preview" data-batch-preview-panel><span class="eyebrow">LOKALE ASSET-VORSCHAU</span><div data-batch-preview-body>Ein Bild auswählen.</div></aside></div><details class="asset-note"><summary>Metadatenhinweise ('+result.warnings.length+')</summary>'+result.warnings.map(w=>'<p>'+esc(w)+'</p>').join('')+'</details>':'')+
+  return '<section class="asset-batch" data-asset-import><div class="asset-actions"><h3>ZIP / ORDNER IMPORTIEREN</h3><button type="button" class="admin-secondary" data-batch-action="close">Zur Asset-Bibliothek</button></div><p class="asset-note">Lokale Analyse · Originalbytes bleiben unverändert · Produktivimport nur nach Live-Preflight und Bestätigung · ausschließlich Drafts, keine Veröffentlichung.</p><div class="asset-filters"><label>Importmodus<select data-batch-mode'+(result||running||preflighting||production?.started?' disabled':'')+'><option value="single"'+(importMode==='single'?' selected':'')+'>Ein Paket / Teil-ZIPs (01–04)</option><option value="all-in"'+(importMode==='all-in'?' selected':'')+'>ALL-IN · mehrere Pakete</option></select></label></div><p class="asset-note">'+esc(reselectionNote|| (importMode==='all-in'?'Alle ZIPs und vorbereiteten Manifest-/Review-Dateien gemeinsam wählen. Paketidentität bleibt erhalten; sichere Kandidaten aus weiteren Paketen sind nur in diesem analysierten ALL-IN-Modus zulässig.':''))+'</p><label class="asset-batch-package"'+(importMode==='all-in'?' hidden':'')+'>Gemeinsames Ursprungspaket<input data-batch-package maxlength="200" value="'+esc(sourcePackage)+'"'+(result||running?' readonly':'')+'></label><p class="asset-note">Teil-ZIPs nacheinander hinzufügen. Manifest und Review-CSV können separat ausgewählt werden. Gleicher Originalpfad + SHA-256 wird nur einmal gezählt.</p><div class="asset-batch-pickers"><label class="admin-secondary">ZIP / Bilder wählen<input type="file" data-batch-files multiple accept=".zip,.png,.jpg,.jpeg,.webp,.csv"'+(running||productionBusy()||production?.started||preflighting?' disabled':'')+'></label><label class="admin-secondary"'+(importMode==='all-in'?' hidden':'')+'>Ordner wählen<input type="file" data-batch-folder multiple webkitdirectory'+(running||productionBusy()||production?.started||preflighting?' disabled':'')+'></label><button type="button" class="admin-secondary" data-batch-action="cancel"'+(!running?' hidden':'')+'>Analyse abbrechen</button></div><p role="status" aria-live="polite" data-batch-progress>'+esc(message)+'</p>'+summary()+
+    (result?'<div class="asset-actions asset-batch-tabs"><button type="button" class="admin-secondary" data-batch-view="">Alle Dateien</button><button type="button" class="admin-secondary" data-batch-view="review">ZUORDNUNG PRÜFEN</button><button type="button" class="admin-secondary" data-batch-action="export">Dry-Run-Bericht herunterladen</button><button type="button" class="admin-secondary" data-batch-action="clear">Neues Paket / Sitzung leeren</button></div><div class="asset-filters"><label>Suche<input type="search" data-batch-search value="'+esc(filters.search)+'" placeholder="Name oder Pfad"></label>'+[...(importMode==='all-in'?[['package','Paket',Object.fromEntries((result?.packages||[]).map(p=>[p,p]))]]:[]),['type','Typ',model.types],['category','Kategorie',categories],['status','Status',{draft:'Entwurf',invalid:'Ungültig / ausgeschlossen'}],['duplicate','Duplikatstatus',{name:'Name bereits vorhanden',hash:'Identisches Bild',representative:'Repräsentant',covered:'Durch Repräsentant abgedeckt',existing:'Bereits vorhanden',review:'Duplikatgruppe in Review',unselected:'Ohne Repräsentant',imported:'Bereits importiert',new:'Neu'}],['source','Klassifizierungsquelle',labels],['review','Zuordnung',{clear:'Eindeutig',review:'ZUORDNUNG PRÜFEN',invalid:'Ungültig'}]].map(([key,label,values])=>'<label>'+label+'<select data-batch-filter="'+key+'">'+opts(values,filters[key])+'</select></label>').join('')+'</div><div class="asset-actions asset-batch-selection">'+[['visible','Alle sichtbaren auswählen'],['clear','Alle eindeutigen auswählen'],['review','Alle unklaren auswählen'],['duplicates','Alle Duplikate auswählen'],['none','Auswahl aufheben']].map(([key,label])=>'<button type="button" class="admin-secondary" data-batch-select="'+key+'">'+label+'</button>').join('')+'</div><div class="asset-batch-bulk"><strong>'+selected.size+' ausgewählt</strong><label>Asset-Typ<select data-batch-bulk-type>'+opts(model.types,'','Typ beibehalten')+'</select></label><label>Kategorie<input data-batch-bulk-category maxlength="80" placeholder="Kategorie beibehalten"></label><button type="button" class="admin-secondary" data-batch-action="classify">Zuordnung übernehmen</button><button type="button" class="admin-secondary" data-batch-action="include">Zum Import vormerken</button><button type="button" class="admin-secondary" data-batch-action="skip">Überspringen</button></div><div class="asset-batch-layout"><div><p>'+visible.length+' Treffer · Seite '+page+' / '+(Math.ceil(visible.length/limits.page)||1)+'</p><div class="asset-list asset-batch-list">'+part.map(i=>'<article class="asset-row asset-batch-row"><label class="asset-batch-check"><input type="checkbox" data-batch-check="'+esc(i.id)+'" aria-label="'+esc(i.name)+' auswählen"'+(selected.has(i.id)?' checked':'')+'></label><button type="button" class="asset-batch-entry" data-batch-preview="'+esc(i.id)+'"><span class="asset-thumb" data-batch-thumb="'+esc(i.id)+'"><b>◇</b></span><span><strong>'+esc(i.name)+'</strong><small>'+esc(i.original_name)+'</small><small>'+esc(importMode==='all-in'?i.source_package+' · '+i.source_path:i.source_path)+'</small><small>'+esc(model.types[i.asset_type]||'Typ offen')+' · '+esc(i.category||'Kategorie offen')+' · '+(i.size/MiB).toFixed(2)+' MiB'+(i.valid?' · '+i.width+' × '+i.height:'')+'</small><small>'+esc(i.valid?duplicateText(i):i.error)+'</small>'+(i.exact_duplicate?'<small>'+esc(i.representative_path?'Repräsentant: '+i.representative_path:i.selection_reason)+'</small>':'')+(i.candidate_error?'<small>'+esc(i.candidate_error)+'</small>':'')+'<small>'+esc(labels[i.classification_source])+' · '+esc(i.reason||'')+'</small><small>'+esc(i.valid?(i.include&&!i.review?'VORGEMERKT · DRAFT':'ÜBERSPRUNGEN · DRAFT'):'AUSGESCHLOSSEN')+'</small>'+(i.sha256?'<small class="asset-batch-sha">SHA-256 '+esc(i.sha256)+'</small>':'')+(i.notes.length?'<small>'+esc(i.notes.join(' · '))+'</small>':'')+(jobForItem(i)?'<small>'+esc(jobForItem(i).status+' · '+jobForItem(i).error)+'</small>':'')+'</span></button>'+(jobForItem(i)?.status==='FEHLER'?'<button type="button" class="admin-secondary" data-batch-retry="'+esc(i.id)+'"'+(productionBusy()?' disabled':'')+'>Fehler erneut versuchen</button>':'')+'</article>').join('')+'</div><div class="asset-actions asset-batch-pagination"><button type="button" class="admin-secondary" data-batch-action="previous"'+(page===1?' disabled':'')+'>Zurück</button><button type="button" class="admin-secondary" data-batch-action="next"'+(page*limits.page>=visible.length?' disabled':'')+'>Weiter</button></div></div><aside class="admin-glass asset-preview" data-batch-preview-panel><span class="eyebrow">LOKALE ASSET-VORSCHAU</span><div data-batch-preview-body>Ein Bild auswählen.</div></aside></div><details class="asset-note"><summary>Metadatenhinweise ('+result.warnings.length+')</summary>'+result.warnings.map(w=>'<p>'+esc(w)+'</p>').join('')+'</details>':'')+
     productionMarkup()+'</section>';
 }
 function draw(){releasePreviews();const target=document.querySelector('[data-asset-import]');if(target){target.outerHTML=render();bind(config)}}
@@ -455,18 +543,19 @@ async function hydrate(){
   await Promise.all([run(),run()]);
 }
 async function start(files){
-  if(running||preflighting||production?.started||!allowed())return;production=null;productionMessage='';
+  if(running||preflighting||productionBusy()||production?.started||!allowed())return;production=null;productionMessage='';
   analysisController?.abort();analysisController=new AbortController();const controller=analysisController;
   releasePreviews();page=1;running=true;message='Lokale Analyse / Teil hinzufügen …';draw();
   try{
-    const next=await analyze({files,known:config.known(),sourcePackage,previous:result,signal:controller.signal,onProgress:p=>{if(controller!==analysisController)return;message=p.stage+' · '+p.done+' / '+p.total;const target=document.querySelector('[data-batch-progress]');if(target)target.textContent=message}});
-    if(controller!==analysisController||controller.signal.aborted)return;result=next;message='Analyse abgeschlossen. Kein Asset wurde gespeichert.';
+    const next=await analyze({files,known:config.known(),sourcePackage:importMode==='all-in'?'':sourcePackage,mode:importMode,previous:result,signal:controller.signal,onProgress:p=>{if(controller!==analysisController)return;message=p.stage+' · '+p.done+' / '+p.total;const target=document.querySelector('[data-batch-progress]');if(target)target.textContent=message}});
+    if(controller!==analysisController||controller.signal.aborted)return;result=next;reselectionNote='';saveSelectionHint();message='Analyse abgeschlossen. Kein Asset wurde gespeichert.';
   }catch(error){if(controller===analysisController)message=error.name==='AbortError'?'Analyse abgebrochen. Es wurde nichts gespeichert.':error.message}
   finally{if(controller===analysisController){running=false;if(open)draw()}}
 }
 function bind(settings){
   config=settings;binding?.abort();if(!open||!allowed())return;const root=document.querySelector('[data-asset-import]');if(!root)return;
   binding=new AbortController();const events={signal:binding.signal};
+  root.querySelector('[data-batch-mode]')?.addEventListener('change',e=>{if(result||running||preflighting||production?.started)return;importMode=e.target.value;reselectionNote='';draw()},events);
   root.querySelector('[data-batch-package]')?.addEventListener('input',e=>{sourcePackage=e.target.value.trim()},events);
   root.querySelectorAll('[data-batch-files],[data-batch-folder]').forEach(input=>input.addEventListener('change',e=>start([...e.target.files]),events));
   root.querySelector('[data-batch-search]')?.addEventListener('input',e=>{filters.search=e.target.value;page=1;const position=e.target.selectionStart;draw();const input=document.querySelector('[data-batch-search]');input?.focus();input?.setSelectionRange(position,position)},events);
@@ -481,7 +570,7 @@ function bind(settings){
     if(button.dataset.batchSelect){const mode=button.dataset.batchSelect;if(mode==='none')selected.clear();else for(const i of mode==='visible'?filtered().slice((page-1)*limits.page,page*limits.page):filtered()){if(mode==='visible'||mode==='clear'&&i.valid&&!i.review||mode==='review'&&i.valid&&i.review||mode==='duplicates'&&(i.name_duplicate||i.exact_duplicate||i.known_ids.length))selected.add(i.id)}draw();return}
     const action=button.dataset.batchAction;
     if(action==='close'){close();config.rerender();document.querySelector('[data-asset-import-open]')?.focus();return}
-    if(action==='clear'){if(running||productionBusy())return;production=null;productionMessage='';result=null;selected.clear();previewId='';message='Lokale Sitzung geleert.';page=1;for(const key in filters)filters[key]='';draw();return}
+    if(action==='clear'){if(running||productionBusy())return;production=null;productionMessage='';result=null;sessionStorage.removeItem(checkpointKey);reselectionNote='';selected.clear();previewId='';message='Lokale Sitzung geleert.';page=1;for(const key in filters)filters[key]='';draw();return}
     if(action==='cancel'){analysisController?.abort();return}
     if(action==='previous'||action==='next'){page+=action==='next'?1:-1;draw();return}
     if(action==='export'&&result){
@@ -489,12 +578,12 @@ function bind(settings){
       const url=URL.createObjectURL(new Blob([JSON.stringify({report:report(result),items:rows,duplicate_groups:[...new Map(result.items.filter(i=>i.exact_duplicate).map(i=>[i.sha256,i])).values()].map(i=>({sha256:i.sha256,state:i.known_ids.length?'existing':i.representative_id?'representative':i.duplicate_state,representative_id:i.representative_id,representative_path:i.representative_path,reason:i.selection_reason,duplicate_sources:i.duplicate_sources}))},null,2)],{type:'application/json'})),link=document.createElement('a');link.href=url;link.download='asset-library-dry-run.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);return;
     }
     if(['classify','include','skip'].includes(action)&&result){
-      if(preflighting||production?.started)return;production=null;productionMessage='';
+      if(preflighting||productionBusy()||production?.started)return;production=null;productionMessage='';
       const type=root.querySelector('[data-batch-bulk-type]').value,category=root.querySelector('[data-batch-bulk-category]').value.trim();
       for(const i of result.items.filter(i=>selected.has(i.id)&&i.valid)){
         if(action==='classify'){
           if(type)i.asset_type=type;if(category)i.category=category;
-          if(type||category){i.manualClassification={type:i.asset_type,category:i.category};i.classification_source='manual';i.reason='Vom Admin im lokalen Dry Run bestätigt.';i.review=!Object.hasOwn(model.types,i.asset_type)||!i.category;if(i.review)i.include=false}
+          if(type||category){i.manualClassification={type:i.asset_type,category:i.category};i.classification_source='manual';i.reason='Vom Admin im lokalen Dry Run bestätigt.';i.review=!Object.hasOwn(model.types,i.asset_type)||!i.category;if(importMode==='all-in'&&heldByReview(result,i))i.review=true;if(i.review)i.include=false}
         }else if(action==='skip'){i.include=false;i.includeOverride=false}
         else if(!i.review){i.include=true;i.includeOverride=true}
       }
@@ -505,7 +594,7 @@ function bind(settings){
   if(!observer){observer=new MutationObserver(()=>{if(!document.querySelector('.asset-library')||!allowed())reset()});observer.observe(document.querySelector('#app')||document.body,{childList:true,subtree:true})}
   hydrate();
 }
-function show(settings){if(!allowed())return false;config=settings;open=true;return true}
+function show(settings){if(!allowed())return false;config=settings;restoreSelectionHint();open=true;return true}
 window.addEventListener('beforeunload',e=>{if(productionBusy()){e.preventDefault();e.returnValue=''}});
 window.addEventListener('hashchange',()=>{if(location.hash.split('?')[0]!=='#/admin')reset()});window.addEventListener('pagehide',reset);
 globalThis.ASSET_LIBRARY_IMPORT=Object.freeze({show,render,bind,reset,isOpen:()=>open,analyze,report,candidate,safePath,parseCSV,buildBatchPlan,createProductionBatch});

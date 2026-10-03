@@ -114,6 +114,7 @@ globalThis.supabase={createClient:()=>client};})();`;
  async function save(p,text='in Supabase gespeichert'){await p.locator('[data-asset-save]').click();await p.waitForFunction(text=>document.querySelector('[data-asset-message]')?.textContent.includes(text)&&document.querySelector('[data-asset-save]')?.disabled===false,text)}
  async function open(p,id){await p.locator('[data-asset-search]').fill(id);await p.locator('[data-asset-open="'+id+'"]').click()}
  try{
+  if(process.argv.includes('--batch-all-in')){await setupStorage(db);await require('./asset-library-all-in.cjs')({db,pageFor,metrics:()=>({uploads,signings}),out,objectBytes});return}
   if(process.argv.includes('--batch-auth')){await setupStorage(db);await require('./asset-library-batch-auth.cjs')({db,pageFor,metrics:()=>({uploads,signings}),out,objectBytes});return}
   if(process.argv.includes('--batch-formulas')){await setupStorage(db);await require('./asset-library-batch-packages.cjs')({db,pageFor,metrics:()=>({uploads,signings}),out,objectBytes,formulas:true});return}
   if(process.argv.includes('--batch-world')){await setupStorage(db);await require('./asset-library-batch-packages.cjs')({db,pageFor,metrics:()=>({uploads,signings}),out,objectBytes,world:true});return}
