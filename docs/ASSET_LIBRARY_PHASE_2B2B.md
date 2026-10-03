@@ -1,5 +1,7 @@
 # Phase 2B.2B — bestehender Batchimport für Database / Combat
 
+Historischer Paket-02-Checkpoint. Die anschließende minimale Freigabe für Paket 03 ist in [Phase 2B.2C](ASSET_LIBRARY_PHASE_2B2C.md) dokumentiert.
+
 Stand: **03.10.2026**. Branch ausschließlich `admin-editor-preview`. Lokaler und tatsächlicher Remote-Ausgangspunkt: `1533b160d2dacbf0959358ce88c03a41503cec15`, Worktree sauber. `main` unverändert bei `94ab9f8fa408fc1ed3bd1721961321c0cec2eb45`.
 
 **Keine Produktionsdaten verändert, kein Produktionsupload durch Codex.** Alle Schreibtests verwenden ausschließlich den bestehenden isolierten PostgreSQL-/Auth-/Storage-Adapter. Keine Migration, keine neue Dependency, keine neue Importarchitektur.
