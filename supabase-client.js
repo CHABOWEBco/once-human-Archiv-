@@ -506,7 +506,10 @@ async function saveAsset(input,expectedRevision=null,file=null,batch=null){
     if(batch&&pending){const stored=await downloadStaged(path);if(stored){const hash=await hashAssetBytes(stored);if(hash!==sha256)throw Error('Konflikt: Reservierte Storage-Bytes haben einen anderen SHA.');existing=true;uploaded=true}}
     if(!existing){
       assertScope();pauseBeforeUpload();batch?.onStage?.('UPLOAD');
-      const {error}=await getClient().storage.from(model.storageBucket).upload(path,file,{contentType:info.mime,cacheControl:'0',upsert:false});
+      // Storage's multipart file part uses File.type, not only options.contentType.
+      // Wrap verified original bytes; no image conversion or extension-based MIME guessing.
+      const uploadFile=new File([file],file.name,{type:info.mime,lastModified:file.lastModified});
+      const {error}=await getClient().storage.from(model.storageBucket).upload(path,uploadFile,{contentType:info.mime,cacheControl:'0',upsert:false});
       if(error)throw error;
       uploaded=true;batch?.onUploaded?.(file.size);
     }

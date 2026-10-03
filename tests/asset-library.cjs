@@ -12,8 +12,9 @@ const client={storage:{from(bucket){return {
  async list(){return sessionStorage.getItem('test-storage-unavailable')?{data:null,error:{message:'Bucket unavailable'}}:{data:[],error:null}},
  async download(objectPath){const r=await fetch('/test-object?'+new URLSearchParams({bucket,path:objectPath}));return r.ok?{data:await r.blob(),error:null}:{data:null,error:{status:404,message:'Object not found'}}},
  async upload(objectPath,file,options){
+  globalThis.assetTestUploadFiles??=[];globalThis.assetTestUploadFiles.push({file,options,objectPath,bucket});
   const fail=sessionStorage.getItem('test-upload-fail'),conflict=sessionStorage.getItem('test-upload-conflict');sessionStorage.removeItem('test-upload-fail');sessionStorage.removeItem('test-upload-conflict');
-  return fetch('/test-storage/upload?'+new URLSearchParams({role,bucket,path:objectPath,upsert:options.upsert,fail:fail||'',conflict:conflict||''}),{method:'POST',headers:{'Content-Type':options.contentType},body:file}).then(r=>r.json());
+  return fetch('/test-storage/upload?'+new URLSearchParams({role,bucket,path:objectPath,upsert:options.upsert,fail:fail||'',conflict:conflict||''}),{method:'POST',headers:{'Content-Type':file.type||'application/octet-stream'},body:file}).then(r=>r.json());
  },
  async createSignedUrl(objectPath,expires){return fetch('/test-storage/sign',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({role,bucket,path:objectPath,expires})}).then(r=>r.json())}
 }}},auth:{onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}}),getSession:async()=>({data:{session}}),getUser:async()=>sessionStorage.getItem('test-auth-unavailable')?{data:{user:null},error:{message:'Session expired'}}:{data:{user},error:null},signOut:async()=>({error:null}),updateUser:async()=>({data:{user}})},from(table){
@@ -101,6 +102,7 @@ globalThis.supabase={createClient:()=>client};})();`;
  async function save(p,text='in Supabase gespeichert'){await p.locator('[data-asset-save]').click();await p.waitForFunction(text=>document.querySelector('[data-asset-message]')?.textContent.includes(text)&&document.querySelector('[data-asset-save]')?.disabled===false,text)}
  async function open(p,id){await p.locator('[data-asset-search]').fill(id);await p.locator('[data-asset-open="'+id+'"]').click()}
  try{
+  if(process.argv.includes('--upload-mime')){await setupStorage(db);await require('./asset-library-upload-mime.cjs')({db,pageFor,metrics:()=>({uploads,signings}),out,objectBytes});return}
   if(process.argv.includes('--batch-upload')){await setupStorage(db);await require('./asset-library-batch-upload.cjs')({db,pageFor,metrics:()=>({uploads,signings}),out,objectBytes});return}
   if(process.argv.includes('--batch-import')){await require('./asset-library-import.cjs')({db,pageFor,metrics:()=>({uploads,signings}),out});return}
   if(process.argv.includes('--catalog-link')){await require('./catalog-assets.cjs')({db,pageFor,field,save,open,objectBytes,metrics:()=>({uploads,signings}),out});return}

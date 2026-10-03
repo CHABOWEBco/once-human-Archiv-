@@ -4,6 +4,31 @@ Stand: **03.10.2026**. Ausschließlich `admin-editor-preview`. Lokaler und tats�
 
 **Dieser Codex-Lauf hat keine Produktionsdaten verändert und keinen Cosmetic-Produktionsupload ausgelöst.** Die Anwendung ist für den späteren Start durch den Benutzer im authentifizierten Admin-Browser vorbereitet. Testuploads fanden ausschließlich in der isolierten PostgreSQL-/Storage-Fixture statt. Keine Veröffentlichung, kein Service-Role-Key, keine Migration oder neue Dependency.
 
+## Hotfix vom 03.10.2026 — verifizierter MIME im ZIP-Upload
+
+Ausgangspunkt dieses gesonderten Hotfixes: `d0544454e8966dfd7f2d6bbcbe986d03ef81f485`, lokal und remote bestätigt, Worktree sauber. Der Benutzer meldete zwei reservierte Drafts und null hochgeladene Bytes nach Ablehnung von `application/octet-stream`. Diese Produktionsmeldung stammt vom Benutzer; der Hotfix-Lauf greift nicht schreibend auf die Produktion zu.
+
+Die Ursache wurde mit dem tatsächlichen Browser-Supabase-SDK und einer vollständig lokalen, im Speicher beantworteten Fetch-Funktion reproduziert: Bei einem File mit leerem `type` enthält die Multipart-Datei `application/octet-stream`, auch wenn die Uploadoption `contentType:'image/png'` korrekt ist. Der bisherige Testadapter leitete dagegen ausschließlich die Option als MIME weiter und konnte diesen Unterschied nicht entdecken. Er verwendet jetzt den tatsächlichen File-MIME und verweigert leere/unzulässige Typen wie der Bucket.
+
+Der bestehende zentrale `saveAsset()`-Pfad erzeugt unmittelbar vor seinem einzigen Storage-Uploadaufruf ein `File` aus den bereits validierten Originalbytes mit demselben Namen und Änderungsdatum sowie `type:info.mime`. `info.mime` stammt unverändert aus `ASSET_LIBRARY_MODEL.inspectUpload()`, nicht aus der Dateiendung. Bytes werden lediglich in ein File verpackt, nicht konvertiert oder neu codiert. Batch und Einzelupload verwenden denselben Fix. Die Cacheversion des Store-Scripts wurde erhöht.
+
+Die gezielte Chromium-Prüfung verwendet den echten ZIP-Reader für PNG, JPEG und WebP mit intern leerem File-MIME. Sie prüft Magic Bytes, die beim SDK ankommende Datei, die tatsächlich vom echten SDK erzeugten Multipart-Dateitypen, byteidentische Original-/Upload-/Storage-Inhalte und unveränderte SHA-Werte. Eine negative Kontrolle reproduziert den Fehler ohne MIME-Normalisierung. Falsche Endung, beschädigte PNG-Datei und ein falscher deklarierter MIME bleiben vor Reservation/Upload blockiert.
+
+**146 Hotfix-Prüfungen bestanden, alle Prozesse Exit 0:** 25 gezielte MIME-/Originalbyte-/SDK-/Resume-Prüfungen, 46 bestehende Batch-Upload-Sicherheitsprüfungen und 75 bestehende Asset-Editor-/Einzelupload-Prüfungen. Die Regressionen enthalten Desktop und 390 px. Sie wurden nacheinander mit dem bestehenden isolierten PostgreSQL-/Chromium-Adapter ausgeführt; keine Assertion wurde deaktiviert.
+
+Zwei lokale Drafts mit gespeichertem `import_pending`, ohne Bildreferenz und mit Revision 2 wurden vor Reload angelegt. Nach nativer erneuter ZIP-Auswahl erkennt der frische Preflight beide als resumierbar; der Upload verwendet dieselben IDs und jeweils Revision 3 nach Attach. Es entstehen keine zweiten Datensätze. Alle drei geprüften Batchassets bleiben `draft`, benutzerverfügbar false, neue aktive Assets null. Das sichert den vom Benutzer gemeldeten Zustand der zwei Fehl-Drafts ab; eine neue produktive Live-Inventarprüfung erfolgt erst in dessen Browser.
+
+Keine Änderung an Preflight, Pause/Resume, Parallelität, Rollen/RLS, Original-ZIP-Reader oder Migrationen. Kein Produktionsupload durch Codex. Der echte SDK-Code ist die bereits in `index.html` verwendete Frontend-Dependency, ausschließlich für den Test nach `/tmp` geladen; keine neue Dependency oder Vendoring.
+
+```bash
+curl -fLsS https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js -o /tmp/supabase-mime-test.js
+ASSET_TEST_PGLITE=/tmp/asset-library-sql-test/node_modules/@electric-sql/pglite ASSET_TEST_SUPABASE_SDK=/tmp/supabase-mime-test.js node tests/asset-library.cjs --upload-mime
+ASSET_TEST_PGLITE=/tmp/asset-library-sql-test/node_modules/@electric-sql/pglite node tests/asset-library.cjs --batch-upload
+ASSET_TEST_PGLITE=/tmp/asset-library-sql-test/node_modules/@electric-sql/pglite node tests/asset-library.cjs
+```
+
+Der isolierte Ergebnisbericht `test-results/asset-library/upload-mime-fixture-report.json` enthält beide Resume-IDs, tatsächliche Multipart-Dateitypen, Originalbytes und SHA des getesteten Browser-SDKs. Er ist keine produktive Importbestätigung. Geändert im Hotfix: `supabase-client.js`, `index.html`, `tests/asset-library.cjs`, neu `tests/asset-library-upload-mime.cjs`, dieser Auditnachtrag.
+
 ## Bestehende Architektur
 
 Der Uploader bleibt ein Modus von `ASSET_LIBRARY_IMPORT` innerhalb der vorhandenen Asset-Bibliothek. `JMA_ASSET_STORE.saveBatch()` ist ein kleiner Wrapper um den bisherigen `saveAsset()`-Kern, nicht ein zweiter Uploadpfad. Es gibt weiterhin genau einen SDK-Storage-Uploadaufruf; Reservation, `commitAsset()`, Bildvalidierung, Hashing, Versionsprüfung und Storage-Pfade werden gemeinsam verwendet.
