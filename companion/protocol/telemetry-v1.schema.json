@@ -1,0 +1,23 @@
+{
+ "$schema":"https://json-schema.org/draft/2020-12/schema",
+ "title":"Own loopback telemetry envelope v1 (not a game API)",
+ "type":"object",
+ "required":["version","type","data"],
+ "properties":{
+  "version":{"const":1},"type":{"const":"telemetry"},
+  "data":{
+   "type":"object",
+   "required":["connected","source","gameRunning","scene","scenario","x","y","z","heading","timestamp","accuracy"],
+   "properties":{
+    "connected":{"type":"boolean"},"source":{"const":"local-companion"},"gameRunning":{"type":"boolean"},
+    "scene":{"enum":["unknown","lobby","ingame","death"]},
+    "scenario":{"type":["string","null"],"minLength":1,"maxLength":80},
+    "x":{"$ref":"#/$defs/coordinate"},"y":{"$ref":"#/$defs/coordinate"},"z":{"$ref":"#/$defs/coordinate"},
+    "heading":{"type":["number","null"],"minimum":0,"exclusiveMaximum":360},
+    "timestamp":{"type":"integer","minimum":0},"accuracy":{"enum":["unknown","exact","estimated"]}
+   },
+   "$comment":"Runtime also checks paired X/Y, finite numbers, epoch age/future bound and strict monotonicity; trust is never supplied by this envelope."
+  }
+ },
+ "$defs":{"coordinate":{"type":["number","null"],"minimum":-1000000000,"maximum":1000000000}}
+}

@@ -19,6 +19,9 @@ const go=id=>{location.hash=`#/${id}`};
 // The intro belongs to a route visit, not to a render or the zoomable map plane.
 const flybyMotion=matchMedia('(prefers-reduced-motion: reduce)');
 let mapVisit=null,disposeMapView=null,refreshExpandedMap=null;
+const playerSession={follow:false,scenario:null,lastPosition:null,scope:null};
+const calibrationKey=()=>String(globalThis.JMA_STORE?.key?.('jma_custom_markers')||'guest')+':map-calibration';
+const calibrationFor=scenario=>{try{const c=read(calibrationKey(),{})[scenario];return c?.confirmed===true&&c.image==='./assets/map/once-human-world-map.webp'?globalThis.JMA_TELEMETRY.calibrate(c.points):null}catch{return null}};
 function stopMapFlyby(){
   if(!mapVisit)return;
   cancelAnimationFrame(mapVisit.frame);
@@ -164,7 +167,7 @@ function renderLiveMap(){
 
       <div class="lm-map-column">
         <div class="lm-toolbar lm-glass">
-          <div><small>AKTIVES SZENARIO</small><b>${esc(scenarioName(s,s.scenario))}</b></div>
+          <div class="lm-telemetry-title"><small>AKTIVES SZENARIO · <span id="lmTelemetryStatus" role="status">OFFLINE</span></small><b>${esc(scenarioName(s,s.scenario))}</b><button class="lm-companion-open" id="lmCompanion" type="button" aria-label="Companion und Spielersteuerung öffnen" title="Companion, Spieler folgen und Kalibrierung"></button></div>
           <div class="lm-toolbar-actions">
             <button id="lmExpand" class="lm-expand" type="button" aria-controls="lmWorkspace" aria-expanded="false">⛶ KARTE MAXIMIEREN</button>
             <button class="lm-expanded-only" type="button" data-lm-panel="filter" aria-controls="lmFilters" aria-expanded="false">FILTER</button>
@@ -178,8 +181,9 @@ function renderLiveMap(){
         <div class="lm-board" id="lmBoard">
           <div class="lm-plane" id="lmPlane">
             <img class="lm-map-image" id="lmMapImage" src="./assets/map/once-human-world-map.webp" alt="Once Human Weltkarte" draggable="false">
-            <svg class="lm-route-layer" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${line?`<polyline points="${line}" fill="none" vector-effect="non-scaling-stroke"/>`:''}</svg>
+            <svg class="lm-route-layer" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${line?`<polyline points="${line}" fill="none" vector-effect="non-scaling-stroke"/>`:''}<line class="lm-player-start" hidden vector-effect="non-scaling-stroke"/></svg>
             ${s.visible.map(m=>markerMarkup(m,s)).join('')}
+            <div class="lm-player" id="lmPlayer" hidden role="img" aria-label="Spielerposition unverifiziert"><i class="lm-player-heading" hidden>▲</i><b>●</b><small></small></div>
             <div class="lm-navigator" style="--nav-x:${navX}%;--nav-y:${navY}%" aria-hidden="true">
               <div class="lm-nav-ring"></div><img src="./assets/live-map/shattered-maiden.png" alt=""><span>${selectedOnScenario?esc(selectedOnScenario.name||'Marker'):'NAVIGATOR'}</span>
             </div>
@@ -216,6 +220,7 @@ function bindLiveMap(){
   disposeMapView?.();
   enterMapFlyby();
   let current=state(),searchTimer;
+  if(playerSession.scenario!==current.scenario||playerSession.scope!==calibrationKey()){playerSession.follow=false;playerSession.lastPosition=null;playerSession.scenario=current.scenario;playerSession.scope=calibrationKey()}
   const workspace=qs('#lmWorkspace'),page=qs('.lm-page'),rail=qs('#lmFilters'),detail=qs('#lmDetail');
 
   const board=qs('#lmBoard'),plane=qs('#lmPlane'),image=qs('#lmMapImage'),zoomLabel=qs('#lmZoomLabel'),instruction=qs('#lmInstruction');
@@ -259,6 +264,59 @@ function bindLiveMap(){
     const stored=storageView();write('jma_map_view',stored);lastStored=JSON.stringify(stored);dirty=false;
   };
   const queuePersist=()=>{clearTimeout(persistTimer);persistTimer=setTimeout(persist,250)};
+  const telemetry=globalThis.JMA_TELEMETRY,pin=qs('#lmPlayer',plane);
+  let sample=telemetry?.getState(),telemetryInfo=telemetry?.getInfo(),position=null,angle=null,interactingUntil=0,companionDialog=null,calibrationDialog=null;
+  const centerPlayer=(explicit=false)=>{
+    if(!position||pointers.size||placing||!explicit&&performance.now()<interactingUntil||qs('dialog[open]'))return false;
+    inside=false;stopPan(false);view.x=(.5-position.x/100)*geometry.w*view.zoom;view.y=(.5-position.y/100)*geometry.h*view.zoom;apply();if(!playerSession.follow)queuePersist();return true;
+  };
+  const telemetryStatus=()=>sample?.source==='simulator'?'SIMULATION':['lost','reconnecting'].includes(telemetryInfo?.transport)?'VERBINDUNG VERLOREN':!sample?.connected?(telemetryInfo?.transport==='waiting'?'WARTE AUF SPIEL':'OFFLINE'):!sample.gameRunning?'WARTE AUF SPIEL':telemetryInfo.verifiedSource&&sample.scene==='ingame'?'LIVE VERBUNDEN':'SPIEL ERKANNT';
+  const updatePlayer=()=>{
+    if(disposed||!pin||!telemetry)return;
+    const cal=calibrationFor(current.scenario),usable=sample?.connected&&sample.gameRunning&&sample.scene==='ingame'&&sample.scenario===current.scenario&&sample.x!==null&&sample.y!==null;
+    position=usable&&cal?telemetry.project(cal,sample.x,sample.y):null;
+    if(position&&(position.x<0||position.x>100||position.y<0||position.y>100))position=null;
+    if(position)playerSession.lastPosition={...position,source:sample.source,timestamp:sample.timestamp};
+    const visual=position||playerSession.lastPosition;
+    pin.hidden=!visual;pin.classList.toggle('is-lost',!position);const visualSource=position?sample.source:visual?.source||sample?.source||'none';pin.dataset.source=visualSource;
+    if(visual){pin.style.left=visual.x+'%';pin.style.top=visual.y+'%';pin.setAttribute('aria-label',(position?'':'Letzte Position – Verbindung/Zuordnung fehlt · ')+(visualSource==='simulator'?'SIMULATION':'Quelle NICHT VERIFIZIERT'))}
+    const arrow=qs('.lm-player-heading',pin),h=position&&sample.heading!==null?telemetry.heading(cal,sample.heading,geometry.w/geometry.h):null;
+    arrow.hidden=h===null;if(h!==null){angle=angle===null?h:angle+(((h-angle)%360+540)%360)-180;arrow.style.transform='rotate('+angle+'deg)'}
+    qs('small',pin).textContent=visualSource==='simulator'?'SIM':'?';
+    const status=qs('#lmTelemetryStatus',workspace);if(status.textContent!==telemetryStatus())status.textContent=telemetryStatus();status.title=telemetryInfo?.reason||'';
+    const next=current.draft.map(id=>current.candidates.find(m=>m.id===id)).find(Boolean);
+    for(const el of qsa('[data-lm-marker]',plane))el.classList.toggle('lm-next-station',Boolean(position&&next?.id===el.dataset.lmMarker));
+    const start=qs('.lm-player-start',plane);start.toggleAttribute('hidden',!(position&&next));if(position&&next){for(const [key,value] of Object.entries({x1:position.x,y1:position.y,x2:markerCoord(next,'mapX'),y2:markerCoord(next,'mapY')}))start.setAttribute(key,value)}
+    if(companionDialog?.open){qs('[data-companion-status]',companionDialog).textContent=telemetryStatus()+' · Szene: '+(sample?.scene||'unknown')+' · '+(cal?'Kalibrierung vom Benutzer bestätigt, RMS '+cal.rmse.toFixed(3)+' Prozentpunkte.':'Keine Kalibrierung.');qs('[data-player-follow]',companionDialog).setAttribute('aria-pressed',String(playerSession.follow));qs('[data-player-follow]',companionDialog).textContent=playerSession.follow?'SPIELER FOLGEN: AN':'SPIELER FOLGEN: AUS';qs('[data-player-center]',companionDialog).disabled=!position;qs('[data-player-follow]',companionDialog).disabled=!position}
+    if(companionDialog?.open){
+      const selectedDistance=telemetry.distance(sample,current.selected,telemetryInfo),routeDistance=telemetry.distance(sample,next,telemetryInfo);
+      const nearest=current.visible.map(m=>({m,d:telemetry.distance(sample,m,telemetryInfo)})).filter(x=>x.d!==null).sort((a,b)=>a.d-b.d)[0];
+      const fmt=d=>d===null?'NICHT VERIFIZIERT':d.toFixed(1)+' Spieleinheiten (keine belegten Meter)';
+      qs('[data-player-distances]',companionDialog).textContent='Ausgewählt: '+fmt(selectedDistance)+' · nächster sichtbarer Marker: '+(nearest?nearest.m.name+' / '+fmt(nearest.d):'NICHT VERIFIZIERT')+' · nächste Routenstation: '+fmt(routeDistance);
+    }
+    if(playerSession.follow)centerPlayer();
+  };
+  const openCalibration=()=>{
+    companionDialog?.close();calibrationDialog?.remove();const d=calibrationDialog=document.createElement('dialog');d.className='lm-marker-dialog lm-companion-dialog';
+    const saved=calibrationFor(current.scenario),available=current.candidates.filter(m=>telemetry.gamePoint(m)&&Number.isFinite(Number(m.mapX))&&Number.isFinite(Number(m.mapY))).map(m=>({gameX:Number(m.gameX),gameY:Number(m.gameY),mapX:Number(m.mapX),mapY:Number(m.mapY)}));
+    d.innerHTML='<form><button class="dialog-close" type="button" aria-label="Kalibrierung schließen">×</button><small>KOORDINATENKALIBRIERUNG · '+esc(scenarioName(current,current.scenario))+'</small><h2>REFERENZPUNKTE</h2><p>Mindestens vier bekannte, nicht kollineare Punkte. Je Zeile: Game X, Game Y, Map X %, Map Y %. Keine Spielkoordinaten werden automatisch erfunden.</p><label>Referenzen<textarea data-calibration-points rows="7" required aria-label="Kalibrierungspunkte"></textarea></label><label class="lm-confirm-reference"><input type="checkbox" data-calibration-confirm required> Ich habe diese Referenzen für dieses Szenario und Kartenbild überprüft.</label><p data-calibration-error role="status">'+available.length+' vorhandene Marker mit Koordinatenpaar. Diese sind nicht automatisch verifiziert.</p><button type="submit" class="cyan-btn">KALIBRIERUNG SPEICHERN</button><button type="button" data-calibration-clear class="lm-companion-action">KALIBRIERUNG ENTFERNEN</button></form>';
+    qs('textarea',d).value=(saved?.points||available).map(p=>[p.gameX,p.gameY,p.mapX,p.mapY].join(', ')).join('\n');
+    listen(qs('.dialog-close',d),'click',()=>d.close());listen(qs('[data-calibration-clear]',d),'click',()=>{const records=read(calibrationKey(),{});delete records[current.scenario];write(calibrationKey(),records);playerSession.follow=false;playerSession.lastPosition=null;d.close();updatePlayer()});
+    listen(qs('form',d),'submit',e=>{e.preventDefault();try{if(!qs('[data-calibration-confirm]',d).checked)throw Error('Referenzen zuerst bestätigen.');const points=qs('textarea',d).value.trim().split(/\n+/).map(line=>{const values=line.trim().split(/[;,\s]+/).map(Number);if(values.length!==4)throw Error('Jede Zeile braucht genau vier Zahlen.');return Object.fromEntries(['gameX','gameY','mapX','mapY'].map((k,i)=>[k,values[i]]))});const fit=telemetry.calibrate(points),records=read(calibrationKey(),{});records[current.scenario]={points:fit.points,confirmed:true,image:image.getAttribute('src')};write(calibrationKey(),records);qs('[data-calibration-error]',d).textContent='Gespeichert · RMS '+fit.rmse.toFixed(3)+' · maximal '+fit.maxError.toFixed(3)+' Prozentpunkte. Residuen belegen keine echte Spielgenauigkeit.';updatePlayer()}catch(error){qs('[data-calibration-error]',d).textContent=error.message}});
+    document.body.append(d);d.showModal();
+  };
+  const openCompanion=()=>{
+    companionDialog?.remove();const d=companionDialog=document.createElement('dialog');d.className='lm-marker-dialog lm-companion-dialog';
+    d.innerHTML='<form method="dialog"><button class="dialog-close" aria-label="Companion schließen">×</button><small>PLAYER TRACKING FOUNDATION</small><h2>COMPANION</h2><p data-companion-status role="status"></p><p>Game Reader: NICHT VORHANDEN. Bridge-Daten und Spielkoordinaten: NICHT VERIFIZIERT. Kein automatischer Szenariowechsel.</p><label>Loopback-Port<input data-companion-port type="number" min="1024" max="65535" value="8787"></label><button type="button" class="lm-companion-action" data-companion-connect>COMPANION VERBINDEN</button><button type="button" class="lm-companion-action" data-companion-disconnect>TRENNEN</button><button type="button" class="lm-companion-action" data-player-follow aria-pressed="false">SPIELER FOLGEN: AUS</button><button type="button" class="lm-companion-action" data-player-center>AUF SPIELER ZENTRIEREN</button><button type="button" class="lm-companion-action" data-player-calibrate>KALIBRIERUNG</button><p data-player-distances>Distanz zum Marker / nächsten sichtbaren Marker / nächster Routenstation: NICHT VERIFIZIERT. Keine Meter aus Kartenprozenten.</p></form>';
+    listen(qs('[data-companion-connect]',d),'click',()=>{try{telemetry.connect(Number(qs('[data-companion-port]',d).value))}catch(error){qs('[data-companion-status]',d).textContent=error.message}});
+    listen(qs('[data-companion-disconnect]',d),'click',()=>{playerSession.follow=false;telemetry.disconnect()});
+    listen(qs('[data-player-calibrate]',d),'click',openCalibration);
+    listen(qs('[data-player-follow]',d),'click',()=>{playerSession.follow=!playerSession.follow;d.close();if(playerSession.follow)centerPlayer(true)});
+    listen(qs('[data-player-center]',d),'click',()=>{d.close();centerPlayer(true)});
+    document.body.append(d);d.showModal();updatePlayer();
+  };
+  const userInteraction=()=>{playerSession.follow=false;interactingUntil=performance.now()+600;updatePlayer()};
+
   const stopPan=(flush=true)=>{
     if(!pointers.size)plane.style.willChange='';
     cancelAnimationFrame(panFrame);panFrame=0;lastFrame=0;velocity={x:0,y:0};if(flush)persist();
@@ -267,7 +325,7 @@ function bindLiveMap(){
   const axisSpeed=n=>{const speed=560*Math.pow(clamp((Math.abs(n)-.28)/.62,0,1),1.35);return speed<.6?0:-Math.sign(n)*speed};
   const canMove=(speed,position,limit)=>limit>.01&&((speed>0&&position<limit-.01)||(speed<0&&position>-limit+.01));
   const desired=()=>{
-    if(!desktop.matches||!inside||!hoverPoint||interactive||placing||pointers.size||document.hidden||qs('dialog[open]'))return {x:0,y:0};
+    if(playerSession.follow||!desktop.matches||!inside||!hoverPoint||interactive||placing||pointers.size||document.hidden||qs('dialog[open]'))return {x:0,y:0};
     const limit=bounds(),x=axisSpeed(hoverPoint.x),y=axisSpeed(hoverPoint.y);
     return {x:canMove(x,view.x,limit.x)?x:0,y:canMove(y,view.y,limit.y)?y:0};
   };
@@ -334,7 +392,7 @@ function bindLiveMap(){
     document.body.classList.toggle('map-expanded',next);document.documentElement.classList.toggle('map-expanded',next);
     qs('#lmExpand',workspace)?.setAttribute('aria-expanded',String(next));setPanel(null,false);
     if(mapVisit?.layer)(next?workspace:document.body).append(mapVisit.layer);
-    if(board.isConnected){measure();apply();persist()}
+    if(board.isConnected){measure();apply();persist();if(playerSession.follow)centerPlayer()}
     if(!next&&returnScroll)scrollTo({left:returnScroll.x,top:returnScroll.y,behavior:'instant'});
     if(focus)(next?qs('#lmCollapse',workspace):qs('#lmExpand',workspace))?.focus({preventScroll:true});
   };
@@ -344,7 +402,7 @@ function bindLiveMap(){
     inside=false;stopPan();current=state();
     const route=current.draft.map(id=>allMarkers().find(m=>m.id===id&&m.scenario===current.scenario)).filter(Boolean);
     const line=route.map(m=>`${markerCoord(m,'mapX')},${markerCoord(m,'mapY')}`).join(' ');
-    qs('.lm-route-layer',plane).innerHTML=line?`<polyline points="${line}" fill="none" vector-effect="non-scaling-stroke"/>`:'';
+    qs('.lm-route-layer',plane).innerHTML=(line?`<polyline points="${line}" fill="none" vector-effect="non-scaling-stroke"/>`:'')+'<line class="lm-player-start" hidden vector-effect="non-scaling-stroke"/>';
     const existing=new Map(qsa('[data-lm-marker]',plane).map(el=>[el.dataset.lmMarker,el]));
     for(const m of current.visible){
       let el=existing.get(m.id);existing.delete(m.id);
@@ -362,11 +420,13 @@ function bindLiveMap(){
     qs('.lm-toolbar>div:first-child b',workspace).textContent=scenarioName(current,current.scenario);
     const counts=[current.scenarios.length,current.visible.length,current.draft.length,customMarkers().filter(m=>m.scenario===current.scenario).length];
     qsa('.lm-command-metrics b',page).forEach((el,i)=>el.textContent=counts[i]);
+    updatePlayer();
     return true;
   };
   refreshExpandedMap=updateExpanded;
   listen(workspace,'click',e=>{
     const b=e.target.closest('button');if(!b)return;
+    if(b.id==='lmCompanion'){openCompanion();return}
     if(b.id==='lmExpand'){setExpanded(true);return}
     if(b.id==='lmCollapse'){setExpanded(false);return}
     if(b.dataset.lmPanel){setPanel(openPanel===b.dataset.lmPanel?null:b.dataset.lmPanel);return}
@@ -414,7 +474,7 @@ function bindLiveMap(){
   listen(rail,'pointerenter',()=>{inside=false;stopPan()});listen(detail,'pointerenter',()=>{inside=false;stopPan()});
   listen(qs('#lmZoomIn'),'click',()=>{zoom(view.zoom+.15);persist()});
   listen(qs('#lmZoomOut'),'click',()=>{zoom(view.zoom-.15);persist()});
-  listen(qs('#lmResetView'),'click',()=>{stopPan();view={zoom:1,x:0,y:0};apply();persist()});
+  listen(qs('#lmResetView'),'click',()=>{userInteraction();stopPan();view={zoom:1,x:0,y:0};apply();persist()});
   listen(qs('#lmPlace'),'click',e=>{
     stopPan();placing=!placing;e.currentTarget.classList.toggle('active',placing);
     e.currentTarget.textContent=placing?'× ABBRECHEN':'＋ MARKER';board.classList.toggle('placing',placing);
@@ -426,6 +486,7 @@ function bindLiveMap(){
     if(placing||pointers.size||qs('dialog[open]'))return;
     const rect=board.getBoundingClientRect(),pixels=e.deltaY*(e.deltaMode===1?16:e.deltaMode===2?geometry.bh:1);
     if(!pixels)return;
+    userInteraction();
     zoom(view.zoom*Math.exp(-clamp(pixels,-160,160)*.001),{x:e.clientX-rect.left-rect.width/2,y:e.clientY-rect.top-rect.height/2});
     queuePersist();
   },{passive:false});
@@ -441,7 +502,7 @@ function bindLiveMap(){
   listen(board,'pointerdown',e=>{
     stopPan();
     if(placing||e.target.closest('[data-lm-marker]')||e.button>0||qs('dialog[open]'))return;
-    e.preventDefault();pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});board.setPointerCapture(e.pointerId);resetGesture();
+    userInteraction();e.preventDefault();pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});board.setPointerCapture(e.pointerId);resetGesture();
   });
   listen(board,'pointermove',e=>{
     updateHover(e);
@@ -469,7 +530,7 @@ function bindLiveMap(){
     if(instruction)instruction.textContent=navigationHint();
     openMarkerDialog(mapX,mapY,current.scenario);
   });
-  const resize=()=>{if(expanded&&innerWidth<=1180)setExpanded(false);measure();apply();queuePersist();stopPan();if(instruction&&!placing)instruction.textContent=navigationHint()};
+  const resize=()=>{if(expanded&&innerWidth<=1180)setExpanded(false);measure();apply();queuePersist();stopPan();if(instruction&&!placing)instruction.textContent=navigationHint();updatePlayer()};
   listen(image,'load',resize,{once:true});
   const observer=new ResizeObserver(resize);observer.observe(board);
   // A render disposes synchronously; this also catches DOM removal by other code.
@@ -478,6 +539,7 @@ function bindLiveMap(){
     if(disposed)return;
     if(expanded)setExpanded(false,false);
     stopPan();disposed=true;events.abort();observer.disconnect();removal.disconnect();clearTimeout(searchTimer);
+    unsubscribeTelemetry?.();companionDialog?.remove();calibrationDialog?.remove();
     pointers.clear();board.classList.remove('dragging');plane.style.willChange='';
     if(disposeMapView===dispose)disposeMapView=null;
     if(refreshExpandedMap===updateExpanded)refreshExpandedMap=null;
@@ -489,7 +551,9 @@ function bindLiveMap(){
   listen(window,'scroll',()=>{inside=false;stopPan()},{passive:true});
   listen(desktop,'change',()=>{inside=false;stopPan();if(instruction&&!placing)instruction.textContent=navigationHint()});
   measure();apply();queuePersist();
+  const unsubscribeTelemetry=telemetry?.subscribe((value,info)=>{sample=value;telemetryInfo=info;updatePlayer()});
 }
+
 
 globalThis.FULL_ROUTE_RENDERERS={...(globalThis.FULL_ROUTE_RENDERERS||{}),map:renderLiveMap,'live-map':renderLiveMap};
 globalThis.FULL_ROUTE_BINDERS={...(globalThis.FULL_ROUTE_BINDERS||{}),map:bindLiveMap,'live-map':bindLiveMap};
