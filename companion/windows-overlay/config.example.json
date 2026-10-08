@@ -1,0 +1,8 @@
+{
+  "webPort": 5500,
+  "bridgePort": 8787,
+  "overlayWidthPercent": 96,
+  "overlayHeightPercent": 94,
+  "hotkey": "Shift+F9",
+  "note": "Die aktuelle Starterdatei nutzt Parameter statt einer automatisch gelesenen Config. Diese Datei dokumentiert die Defaultwerte."
+}

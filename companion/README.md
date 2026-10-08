@@ -49,6 +49,29 @@ In der Website-Karte: **Companion → Port 8787 → COMPANION VERBINDEN**.
 
 `companion\start-local.cmd` startet lokalen Website-Server und Bridge in getrennten Fenstern. Voraussetzungen: Python (`py`) und Node.js im PATH.
 
+## Ohne Overwolf — privates Windows-In-Game-Overlay
+
+Für deinen lokalen/private Test gibt es jetzt zusätzlich:
+
+```text
+companion\windows-overlay\start-overlay.cmd
+```
+
+Diese Variante braucht keine Overwolf-Developer-Freischaltung. Sie startet die vorhandene Karte lokal in Microsoft Edge App Mode, erkennt das sichtbare Once-Human-Fenster über Windows-Fenster-/Prozessmetadaten und legt die Karte als bedienbares Topmost-Fenster über die echte Game-Clientfläche.
+
+Standardhotkey: **Shift+F9**.
+
+- Einblenden: Karte bekommt Fokus und ist vollständig bedienbar.
+- Ausblenden: Fokus geht zurück an Once Human.
+- Die Karte folgt Größe/Position des Game-Fensters.
+- Die Website wird nicht skaliert oder dupliziert.
+- Mit Node.js wird die lokale Bridge automatisch gestartet und meldet `SPIEL ERKANNT`, sobald das Once-Human-Fenster vorhanden ist.
+- Ohne Node.js funktioniert die sichtbare/interaktive In-Game-Karte trotzdem; nur die Bridge-Statusintegration fehlt.
+
+Für zuverlässige Darstellung Once Human in **Borderless/randlosem Vollbild** oder Fenstermodus verwenden. Exklusives Vollbild kann normale Windows-Topmost-Fenster verdecken.
+
+Siehe `companion/windows-overlay/README.md`.
+
 ## Overwolf
 
 Siehe `companion/overwolf/README.md`.

@@ -28,10 +28,11 @@ function nowTimestamp(){const n=Date.now();lastTimestamp=Math.max(n,lastTimestam
 function json(res,status,value){const body=JSON.stringify(value);res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Content-Length':Buffer.byteLength(body),'Cache-Control':'no-store'});res.end(body)}
 function readBody(req){return new Promise((resolve,reject)=>{let size=0,chunks=[];req.on('data',chunk=>{size+=chunk.length;if(size>MAX_BODY){reject(Error('payload_too_large'));req.destroy();return}chunks.push(chunk)});req.on('end',()=>resolve(Buffer.concat(chunks).toString('utf8')));req.on('error',reject)})}
 function normalizeProvider(value){
- if(!value||typeof value!=='object'||Array.isArray(value)||value.provider!=='overwolf-gep'||typeof value.gameRunning!=='boolean')return null;
- const scene=SCENES.has(value.scene)?value.scene:'unknown';
- const events=Array.isArray(value.events)?value.events.filter(v=>['knockout','level_up','match_start','match_end','death'].includes(v)).slice(-10):[];
- return {provider:'overwolf-gep',gameRunning:value.gameRunning,scene,events,receivedAt:Date.now()};
+ if(!value||typeof value!=='object'||Array.isArray(value)||!['overwolf-gep','windows-window'].includes(value.provider)||typeof value.gameRunning!=='boolean')return null;
+ const provider=value.provider;
+ const scene=provider==='overwolf-gep'&&SCENES.has(value.scene)?value.scene:'unknown';
+ const events=provider==='overwolf-gep'&&Array.isArray(value.events)?value.events.filter(v=>['knockout','level_up','match_start','match_end','death'].includes(v)).slice(-10):[];
+ return {provider,gameRunning:value.gameRunning,scene,events,receivedAt:Date.now()};
 }
 function telemetry(){
  const fresh=provider&&Date.now()-provider.receivedAt<=PROVIDER_TTL_MS;
@@ -71,7 +72,7 @@ const server=http.createServer(async(req,res)=>{
  if(req.method==='GET'&&url.pathname==='/health')return json(res,200,health());
  if(req.method==='POST'&&url.pathname==='/provider'){
   const auth=String(req.headers.authorization||'');if(!auth.startsWith('Bearer ')||!secureEqual(auth.slice(7),TOKEN))return json(res,401,{ok:false,error:'unauthorized'});
-  try{const value=normalizeProvider(JSON.parse(await readBody(req)));if(!value)return json(res,400,{ok:false,error:'invalid_provider_payload'});provider=value;broadcast();return json(res,200,{ok:true,accepted:'overwolf-gep',poseAccepted:false})}catch(error){if(!res.headersSent)return json(res,error.message==='payload_too_large'?413:400,{ok:false,error:error.message==='payload_too_large'?'payload_too_large':'invalid_json'})}
+  try{const value=normalizeProvider(JSON.parse(await readBody(req)));if(!value)return json(res,400,{ok:false,error:'invalid_provider_payload'});provider=value;broadcast();return json(res,200,{ok:true,accepted:value.provider,poseAccepted:false})}catch(error){if(!res.headersSent)return json(res,error.message==='payload_too_large'?413:400,{ok:false,error:error.message==='payload_too_large'?'payload_too_large':'invalid_json'})}
  }
  return json(res,404,{ok:false,error:'not_found'});
 });

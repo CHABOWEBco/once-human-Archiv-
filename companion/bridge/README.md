@@ -39,7 +39,12 @@ Der WebSocket akzeptiert nur explizit konfigurierte Browser-Origins. Remote-Inte
 Authorization: Bearer <JMA_BRIDGE_TOKEN>
 ```
 
-Aktuell akzeptiert die Bridge ausschließlich den Provider-Typ:
+Aktuell akzeptiert die Bridge zwei eng begrenzte Provider-Typen:
+
+- `overwolf-gep`: offizielle Overwolf-GEP-Prozess-/Szeneninfos.
+- `windows-window`: private Windows-Overlay-Erkennung; meldet ausschließlich `gameRunning`, Szene bleibt immer `unknown`.
+
+Beispiel Overwolf:
 
 ```json
 {
@@ -53,6 +58,8 @@ Aktuell akzeptiert die Bridge ausschließlich den Provider-Typ:
 Zulässige Szenen: `unknown`, `lobby`, `ingame`, `death`.
 
 Zulässige Events: `knockout`, `level_up`, `match_start`, `match_end`, `death`.
+
+`windows-window` darf keine Position, kein Heading und keine Spielszenen behaupten. Etwaige X/Y/Z-/Heading-Felder werden wie beim Overwolf-Provider nicht in das Website-Protokoll übernommen.
 
 **X/Y/Z/Heading aus einem `overwolf-gep`-POST werden absichtlich nicht übernommen**, weil die öffentliche Once-Human-GEP-Dokumentation diese Daten nicht bereitstellt.
 

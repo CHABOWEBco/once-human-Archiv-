@@ -552,6 +552,11 @@ function bindLiveMap(){
   listen(desktop,'change',()=>{inside=false;stopPan();if(instruction&&!placing)instruction.textContent=navigationHint()});
   measure();apply();queuePersist();
   const unsubscribeTelemetry=telemetry?.subscribe((value,info)=>{sample=value;telemetryInfo=info;updatePlayer()});
+  const overlayParams=new URLSearchParams(location.search);
+  if(telemetry&&overlayParams.get('companion')==='windows-overlay'&&globalThis.__JMA_WINDOWS_OVERLAY_AUTOCONNECT__!==true){
+    const overlayPort=Number(overlayParams.get('port')||8787);
+    if(Number.isInteger(overlayPort)&&overlayPort>=1024&&overlayPort<=65535){globalThis.__JMA_WINDOWS_OVERLAY_AUTOCONNECT__=true;try{telemetry.connect(overlayPort)}catch{}}
+  }
 }
 
 
