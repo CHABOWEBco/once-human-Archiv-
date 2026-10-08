@@ -29,7 +29,7 @@ const overwolf={
   }
 };
 const context={window:{},localStorage,overwolf,setInterval:fn=>{intervalFn=fn;return 1},setTimeout:fn=>{fn();return 1},console};
-vm.createContext(context);vm.runInContext(fs.readFileSync(path.join(__dirname,'../overwolf/background.js'),'utf8'),context);
+vm.createContext(context);vm.runInContext(fs.readFileSync(path.join(__dirname,'../companion/overwolf/background.js'),'utf8'),context);
 ok(JSON.stringify(required)===JSON.stringify(['gep_internal','game_info','match_info']),'Registers only documented Once Human GEP feature families');
 ok(requests.some(r=>r.url==='http://127.0.0.1:8787/provider'&&r.method==='POST'),'Posts only to fixed loopback bridge endpoint');
 let last=requests.at(-1).data;
