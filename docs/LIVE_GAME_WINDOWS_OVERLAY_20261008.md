@@ -78,11 +78,12 @@ Dieser Block löst das vom Nutzer gewünschte private **sichtbare und bedienbare
 
 ## Tests
 
-Automatisierbar in der Cloud:
-- `tests/windows-overlay.cjs`: 23 statische Architektur-/Sicherheitschecks.
-- `tests/companion-bridge.cjs`: erweitert um `windows-window`-Providervertrag.
-- `node --check companion/bridge/server.js`.
-- `node --check live-map.js`.
+Im Arbeitslauf tatsächlich ausgeführt:
+- `tests/windows-overlay.cjs`: **23/23** statische Architektur-/Sicherheitschecks gegen die neu verfassten Overlay-Dateien und die vorgesehenen Bridge/Map-Gates.
+- `tests/companion-bridge.cjs`: **11/11** Bridge-Protokoll-/Sicherheitschecks inklusive `windows-window`-Providervertrag.
+- `node --check companion/bridge/server.js`: bestanden.
+
+Die fünfzeilige `live-map.js`-Ergänzung wurde als gezielter Diff geprüft; ein vollständiger erneuter `node --check` der 45k-Datei konnte in diesem Connector-Lauf nicht direkt gegen den Remote-Blob ausgeführt werden. Der vorherige Kartenstand war bereits getestet; kein erfolgreicher neuer Vollsyntaxlauf wird hier behauptet.
 
 Nicht in dieser Linux-/Cloudumgebung ausführbar:
 - Windows PowerShell/Win32-Runtime,

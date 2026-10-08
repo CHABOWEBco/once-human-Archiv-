@@ -17,7 +17,7 @@ ok(cs.includes('SetProcessDpiAwarenessContext')&&cs.includes('EnablePerMonitorDp
 ok(cs.includes('SetWindowPos')&&cs.includes('HWND_TOPMOST'),'Overlay is positioned as topmost native window');
 ok(cs.includes('SetForegroundWindow')&&ps.includes('FocusWindow($gameHwnd)'),'Hiding returns focus to the game');
 ok(cs.includes('oncehuman')&&cs.includes('once_human')&&cs.includes('Once Human'),'Game detection has process and title fallbacks');
-ok(cs.includes('processName != "msedge"')&&cs.includes('Archiv'),'Game detection excludes the archive Edge overlay');
+ok(cs.includes('excludedTitleProcess')&&cs.includes('processName.Contains("overwolf")')&&cs.includes('Archiv'),'Title fallback excludes browsers/Overwolf and prioritizes real process names');
 ok(ps.includes("$OverlayWidthPercent = [Math]::Max(60")&&ps.includes("$OverlayHeightPercent = [Math]::Max(60"),'Overlay size inputs are bounded');
 ok(ps.includes("Get-Command py")&&ps.includes("Get-Command python"),'Local website supports py/python launchers');
 ok(ps.includes("Get-Command node")&&ps.includes('companion\\bridge\\server.js'),'Existing bridge starts automatically when Node is available');

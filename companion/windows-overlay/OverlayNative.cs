@@ -96,8 +96,10 @@ public static class JmaOverlayNative
 
     public static IntPtr FindOnceHumanWindow()
     {
-        IntPtr best = IntPtr.Zero;
-        long bestArea = 0;
+        IntPtr processBest = IntPtr.Zero;
+        IntPtr titleBest = IntPtr.Zero;
+        long processArea = 0;
+        long titleArea = 0;
         EnumWindows((hWnd, _) =>
         {
             if (!IsWindowVisible(hWnd)) return true;
@@ -107,13 +109,14 @@ public static class JmaOverlayNative
             try { processName = Process.GetProcessById((int)pid).ProcessName.ToLowerInvariant(); } catch { return true; }
             string title = WindowTitle(hWnd);
             bool processMatch = processName == "oncehuman" || processName == "once_human" || processName == "oncehuman-win64-shipping";
-            bool titleMatch = title.IndexOf("Once Human", StringComparison.OrdinalIgnoreCase) >= 0 && title.IndexOf("Archiv", StringComparison.OrdinalIgnoreCase) < 0 && processName != "msedge";
-            if (!processMatch && !titleMatch) return true;
+            bool excludedTitleProcess = processName == "msedge" || processName == "chrome" || processName == "firefox" || processName == "opera" || processName.Contains("overwolf");
+            bool titleMatch = !excludedTitleProcess && title.IndexOf("Once Human", StringComparison.OrdinalIgnoreCase) >= 0 && title.IndexOf("Archiv", StringComparison.OrdinalIgnoreCase) < 0;
             long area = ClientArea(hWnd);
-            if (area > bestArea) { best = hWnd; bestArea = area; }
+            if (processMatch && area > processArea) { processBest = hWnd; processArea = area; }
+            else if (titleMatch && area > titleArea) { titleBest = hWnd; titleArea = area; }
             return true;
         }, IntPtr.Zero);
-        return best;
+        return processBest != IntPtr.Zero ? processBest : titleBest;
     }
 
     public static IntPtr FindEdgeOverlayWindow(int preferredProcessId)
@@ -187,6 +190,13 @@ public static class JmaOverlayNative
         if (hWnd != IntPtr.Zero && IsWindow(hWnd)) SetForegroundWindow(hWnd);
     }
 
-    public static bool IsAlive(IntPtr hWnd) => hWnd != IntPtr.Zero && IsWindow(hWnd);
-    public static bool KeyDown(int virtualKey) => (GetAsyncKeyState(virtualKey) & 0x8000) != 0;
+    public static bool IsAlive(IntPtr hWnd)
+    {
+        return hWnd != IntPtr.Zero && IsWindow(hWnd);
+    }
+
+    public static bool KeyDown(int virtualKey)
+    {
+        return (GetAsyncKeyState(virtualKey) & 0x8000) != 0;
+    }
 }
