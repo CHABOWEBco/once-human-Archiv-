@@ -1,0 +1,97 @@
+{
+  "manifest_version": "1",
+  "type": "WebApp",
+  "permissions": [
+    "GameInfo",
+    "Hotkeys",
+    "Web"
+  ],
+  "meta": {
+    "name": "Once Human Archiv Companion",
+    "version": "0.1.0",
+    "minimum-overwolf-version": "0.220.0.1",
+    "minimum-gep-version": "259.0",
+    "author": "CHABOWEBco",
+    "description": "Once Human Archiv companion for official scene events and the existing map overlay.",
+    "icon": "icon.png"
+  },
+  "data": {
+    "game_targeting": {
+      "type": "dedicated",
+      "game_ids": [
+        23930
+      ]
+    },
+    "game_events": [
+      23930
+    ],
+    "start_window": "background",
+    "windows": {
+      "background": {
+        "file": "background.html",
+        "is_background_page": true,
+        "native_window": true,
+        "desktop_only": true
+      },
+      "settings": {
+        "file": "settings.html",
+        "native_window": true,
+        "desktop_only": true,
+        "resizable": false,
+        "size": {
+          "width": 520,
+          "height": 620
+        },
+        "start_position": {
+          "top": 120,
+          "left": 120
+        }
+      },
+      "overlay": {
+        "file": "overlay.html",
+        "native_window": false,
+        "in_game_only": true,
+        "transparent": false,
+        "resizable": true,
+        "restrict_to_game_bounds": true,
+        "grab_keyboard_focus": false,
+        "size": {
+          "width": 1280,
+          "height": 720
+        },
+        "start_position": {
+          "top": 100,
+          "left": 100
+        }
+      }
+    },
+    "hotkeys": {
+      "jma_toggle_map": {
+        "title": "Once Human Archiv Karte ein-/ausblenden",
+        "action-type": "custom",
+        "default": "Shift+F9",
+        "passthrough": true,
+        "game_ids": [
+          23930
+        ]
+      }
+    },
+    "launch_events": [
+      {
+        "event": "GameLaunch",
+        "event_data": {
+          "game_ids": [
+            23930
+          ]
+        },
+        "start_minimized": true
+      }
+    ],
+    "externally_connectable": {
+      "matches": [
+        "http://127.0.0.1/*",
+        "http://localhost/*"
+      ]
+    }
+  }
+}

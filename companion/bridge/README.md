@@ -1,18 +1,84 @@
-# Bridge-Adapter (Browser-Foundation)
+# Once Human Archiv — lokale Loopback-Bridge
 
-Implementiert in `live-game-telemetry.js`: `create()`, `connect(port)`, `normalize()`, `disconnect()`. Die bereits bestehende Karte subscribiert normalisierte Snapshots; rohe Bridge-Nachrichten erreichen den Renderer nicht. Kein zweiter Renderer oder Auth-Client.
+`server.js` ist der reale lokale Transport zwischen der bestehenden Website-Karte und einem zulässigen lokalen Provider.
 
-**Hier wird kein Server, kein nativer/proprietärer Game Reader und kein Hintergrunddienst installiert.** Der Browser-Transport ist vorbereitet und mit einem synthetischen Protokollpartner geprüft; eine echte externe Companion-Verbindung ist NICHT VERIFIZIERT. Die Produktivoberfläche bietet ausschließlich Verbindung/Trennen und Kalibrierung, keine Simulationscontrols.
+## Start
 
-Anforderungen an einen künftigen, separat zu beauftragenden Publisher:
+```bat
+node companion\bridge\server.js
+```
 
-1. Bind ausschließlich `127.0.0.1`, nie `0.0.0.0`/externes Interface. Keine externen IP-Verbindungen.
-2. WebSocket-Origin strikt gegen ausdrücklich zugelassene lokale/Web-App-Origins prüfen; kein `*`. Loopback allein authentifiziert den lokalen Prozess nicht. Keine fremden Origin-Angaben als Freigabe akzeptieren.
-3. Eigene Reader-/Game-API-Quelle, Spielbetrieb, Szenario-ID, Achsen, Heading, Timestamp und Einheiten offiziell/nachprüfbar belegen. Keine Speicherzugriffe oder Prozessmanipulation in dieser Foundation.
-4. Strikt Protokoll v1, bounded Frames/Frequenz und Heartbeat. Nur gemessene Felder publizieren; fehlende Positions-/Richtungsdaten null, keine erfundenen Werte.
-5. Keine Supabase-Sessions oder Credentials, keine Aktionen/Automatisierung in Richtung Spiel, keine Rohdatenhistorie.
-6. Browser-Mixed-Content-/Local-Network-Schutz unter dem tatsächlich benutzten Browser/Origin separat testen. Nicht SSL, Origin- oder Sicherheitsprüfungen abschalten, um eine Verbindung zu erzwingen.
+Standard:
 
-Browserstart: Companion im Karten-Statusfeld öffnen, Port → VERBINDEN. Browserstop: TRENNEN oder Seite verlassen. Ein echter zukünftiger Server benötigt eigene Start-/Stop-Anweisungen; solche werden hier mangels Serverprozess ausdrücklich nicht behauptet.
+- Bind: `127.0.0.1`
+- Port: `8787`
+- Browser-WebSocket: `ws://127.0.0.1:8787` (kompatibel mit der bestehenden Website; `/telemetry` wird ebenfalls akzeptiert)
+- Health: `http://127.0.0.1:8787/health`
+- Provider: `POST http://127.0.0.1:8787/provider`
 
-Tests: `node tests/live-game-telemetry.cjs` verwendet deterministische Uhr und FakeSocket. `node tests/live-game-companion.cjs` nutzt echten Chromium-WebSocket-Client mit Playwright-geroutetem synthetischem Peer. Beides ist Simulation, kein Game-End-to-End-Nachweis.
+Beim Start erzeugt die Bridge standardmäßig einen zufälligen Provider-Token und gibt ihn im Terminal aus.
+
+Optional:
+
+```bat
+set JMA_BRIDGE_PORT=8787
+set JMA_BRIDGE_TOKEN=MEIN_LOKALER_TOKEN
+set JMA_BROWSER_ORIGINS=http://127.0.0.1:5500,http://localhost:5500
+node companion\bridge\server.js
+```
+
+## Browser-Sicherheit
+
+Der WebSocket akzeptiert nur explizit konfigurierte Browser-Origins. Remote-Interfaces werden nicht gebunden. Ein Browser von einer fremden Origin erhält HTTP 403 beim Upgrade.
+
+## Provider-Sicherheit
+
+`/provider` ist nur über Loopback erreichbar und benötigt:
+
+```text
+Authorization: Bearer <JMA_BRIDGE_TOKEN>
+```
+
+Aktuell akzeptiert die Bridge ausschließlich den Provider-Typ:
+
+```json
+{
+  "provider": "overwolf-gep",
+  "gameRunning": true,
+  "scene": "ingame",
+  "events": ["match_start"]
+}
+```
+
+Zulässige Szenen: `unknown`, `lobby`, `ingame`, `death`.
+
+Zulässige Events: `knockout`, `level_up`, `match_start`, `match_end`, `death`.
+
+**X/Y/Z/Heading aus einem `overwolf-gep`-POST werden absichtlich nicht übernommen**, weil die öffentliche Once-Human-GEP-Dokumentation diese Daten nicht bereitstellt.
+
+Die Website erhält daher für diesen Provider:
+
+```json
+{
+  "connected": true,
+  "source": "local-companion",
+  "gameRunning": true,
+  "scene": "ingame",
+  "scenario": null,
+  "x": null,
+  "y": null,
+  "z": null,
+  "heading": null,
+  "accuracy": "unknown"
+}
+```
+
+Der Zeitstempel wird von der Bridge frisch und monoton erzeugt.
+
+## Heartbeat
+
+Die vorhandene Website sendet Protokoll-v1-JSON-Pings. Die Bridge antwortet mit einem `pong` und demselben Timestamp. Zusätzlich wird alle zwei Sekunden ein aktueller Snapshot versendet. Ein Provider gilt nach fünf Sekunden ohne Update als veraltet.
+
+## Grenzen
+
+Dies ist kein Game Reader. Der Server öffnet keinen Spielprozess, liest keinen Speicher und schreibt nichts ins Spiel. Er automatisiert keine Eingabe und umgeht kein Anti-Cheat.

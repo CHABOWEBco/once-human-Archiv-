@@ -1,42 +1,89 @@
-# Live Game Companion — Foundation
+# Once Human Archiv — Live Game Companion
 
-Stand 08.10.2026. **Kein Game Reader, keine echte Spieltelemetrie und keine offizielle Spiel-/Anti-Cheat-Freigabe nachgewiesen.** Die bestehende Webkarte bleibt die einzige Karte.
+Stand 08.10.2026. Die bestehende Website-Karte bleibt die einzige Karten-Engine. Die Foundation aus `live-game-telemetry.js` ist jetzt um zwei reale lokale Komponenten ergänzt:
 
-Die Website lädt `live-game-telemetry.js`. `JMA_TELEMETRY` stellt unveränderliche normalisierte Snapshots, Subscription, explizites Connect/Disconnect, lokale DEV-Simulation und zentrale affine Kalibrierung bereit. Player-Pin, Richtung und Follow verwenden dieselbe `#lmPlane` und denselben Zoom-/Pan-Controller in `live-map.js`.
+1. **Loopback-Bridge** in `companion/bridge/server.js`.
+2. **Overwolf-Native-Provider** in `companion/overwolf/`, der ausschließlich öffentlich dokumentierte Once-Human-GEP-Daten nutzt.
 
-## Start / Stop
+## Was jetzt tatsächlich funktioniert
 
-Für lokale Prüfung im Repository `python -m http.server 5500 --bind 127.0.0.1` starten. Die Kartenroute ist `index.html#/map`, bestehende Anmeldung erforderlich. Server mit Ctrl+C stoppen. Dieser Befehl ist eine lokale Arbeitsanweisung, kein öffentlich bereitgestellter Preview-Dienst.
+- Die Website kann sich wie bereits vorgesehen mit `ws://127.0.0.1:8787` verbinden.
+- Die Bridge läuft real als lokaler Node-Prozess, bindet nur `127.0.0.1`, prüft Browser-Origins und verlangt für Provider-POSTs einen Bearer-Token.
+- Der Overwolf-Provider erkennt Once Human (Game-ID 23930), registriert `gep_internal`, `game_info`, `match_info` und sendet den dokumentierten Szenenstatus an die Bridge.
+- Das Overwolf-Fenster kann die bestehende lokale `#/map`-Seite als In-Game-Overlay anzeigen; Standardhotkey `Shift+F9`.
+- Die Bridge sendet niemals erfundene X/Y/Z-/Heading-Werte.
 
-Die tatsächlich ausgeführte automatisierte Browserprüfung startet selbst einen lokalen HTTP-Server auf **4223**. Bestehende Regressionen verwenden ihre eigenen Ports (4184, 4211, 4189 usw.). Auth/Supabase und der Bridge-Protokollpartner sind dabei ausdrücklich Testfixtures. Screenshots stehen ignoriert unter `test-results/live-game-companion/`.
+## Was weiterhin NICHT vorhanden ist
 
-In der Karten-Toolbar das Szenario-/Statusfeld mit ▾ öffnen: Companion → Loopback-Port (Standard 8787) → COMPANION VERBINDEN. Das startet nur den Browser-Client. **In dieser Foundation wird kein Companion-Serverprozess oder Spiel-Reader mitgeliefert.** Ohne einen separat implementierten lokalen Protokollpartner erfolgt keine Verbindung. TRENNEN beendet Socket, Heartbeat und Reconnect. Seitenverlassen/Reload beendet die alte Verbindung. Keine automatische Verbindung nach Reload.
+Die öffentlich dokumentierte Once-Human-GEP-Schnittstelle liefert aktuell keine Spielerposition und kein Heading. Deshalb gibt es weiterhin **keine verifizierte Live-Spielerposition**. Der vorhandene Player-Pin, Follow-Modus und die Distanzlogik werden erst nutzbar, wenn eine separat zulässige und nachgewiesene Positionsquelle vorhanden ist.
 
-Eine spätere Bridge muss ausschließlich `127.0.0.1` binden, zulässige Browser-Origins ausdrücklich prüfen und die Daten von einem separat nachgewiesenen Provider normalisieren. Ein laufender Socket allein beweist weder Spielbetrieb noch echte Position. Private Supabase-Tokens gehören nie in dieses Protokoll.
+Kein Spielspeicher-Reader, keine DLL-Injection, kein Anti-Cheat-Bypass, keine Automatisierung.
 
-## Kalibrierung
+## Schnellstart unter Windows
 
-Es gibt aktuell vier Archivmarker, alle ohne numerische `gameX/gameY`; keiner ist eine geeignete Referenz. Kein automatisches Ableiten erfundener Spielkoordinaten oder Weltgrenzen.
+### Variante A — per Hand
 
-Companion → KALIBRIERUNG. Mindestens vier bekannte, nicht kollineare Referenzen im selben Szenario/Kartenbild, je Zeile `GameX, GameY, MapX%, MapY%`; explizit bestätigen. 4–50 Punkte, endliche Werte, Kartenprozente 0–100. Transformation: zentrierte/skalierte affine Least-Squares-Abbildung. Kollineare Spielreferenzen und kollabierte Kartenreferenzen werden abgewiesen. RMS und maximaler Restfehler in **Prozentpunkten** sind Fit-Residuen; kein Nachweis echter Spielgenauigkeit. Mit weiteren unabhängigen Referenzen praktisch validieren, beim Wechsel des Kartenbildes neu kalibrieren.
+Terminal 1 im Repository:
 
-Nur bestätigte statische Referenzpunkte werden benutzerspezifisch/szenariobezogen über den bestehenden `JMA_STORE` gespeichert. Live-Payloads und Spielerkoordinaten werden ausschließlich im Speicher gehalten. Follow nutzt die vorhandene Kamera; es gibt keine Telemetriehistorie. Eine bewusst zentrierte/normal beendete Kartenansicht kann wie bisher als Kamerazustand gespeichert werden.
+```bat
+py -m http.server 5500 --bind 127.0.0.1
+```
 
-## Status / Grenzen
+Terminal 2:
 
-- `none`: OFFLINE, keine Position.
-- `simulator`: nur localhost/Loopback-DEV-Origin; Status SIMULATION, Pin SIM. Keine Produktions-Debugoberfläche, kein echtes Spiel.
-- `local-companion`: strikt `ws://127.0.0.1:<Port>`. Validiertes JSON kann eine unverifizierte Position liefern. Der angezeigte Pin ist als Quelle NICHT VERIFIZIERT gekennzeichnet. `getInfo().verifiedSource` bleibt **false**.
-- `overwolf`: reservierter Modellwert, **kein Provider/SDK implementiert**. Keine öffentliche Once-Human-GEP-Funktion verwendet oder Capability behauptet.
+```bat
+node companion\bridge\server.js
+```
 
-Keine Foundation-Quelle ist als echte Game-Quelle verifiziert. Deshalb wird **LIVE VERBUNDEN derzeit nie ausgegeben**. Eine Bridge kann WARTE AUF SPIEL / SPIEL ERKANNT nach eigenem Payload melden; das ist keine unabhängige Game-Erkennung. Verbindungs-/Frischeverlust wird markiert, die letzte projizierte Position bleibt ausgegraut. Fehlende Kalibrierung, Szenariomismatch oder Projektion außerhalb des Kartenbildes verhindern eine aktuelle Playeranzeige.
+Die Bridge zeigt beim Start einen zufälligen **Provider token** an. Diesen Token nur lokal verwenden und in die Overwolf-Companion-Einstellungen eintragen.
 
-Distanzen sind gesperrt, solange Provider und Markerkoordinaten nicht unabhängig verifiziert sind. `distance()` enthält den mathematischen Gate, benutzt Game X/Y und niemals Prozentkoordinaten. Ein späterer echter Provider benötigt zusätzlich einen nachgewiesenen Koordinaten-/Einheitenvertrag; die Foundation behauptet keine Meter. Aktuell bleiben alle drei Distanzanzeigen NICHT VERIFIZIERT.
+Website:
 
-Der Spieler kann temporär als Routenstart angezeigt werden; erste Station im aktuellen Szenario wird hervorgehoben. Kein automatisches Abhaken/Anlaufen von Stationen, kein Startpunkt in gespeicherten Routen. Manueller Szenariowechsel bleibt Master. Drag/Wheel/Reset lösen Follow, aktive Interaktion blockiert automatisches Zentrieren. Explizites Zentrieren/erneutes Follow ist eine Benutzeraktion. Zoom/Pan/Expanded nutzen dieselbe Instanz.
+```text
+http://127.0.0.1:5500/index.html#/map
+```
 
-## Fair Play und Sicherheit
+In der Website-Karte: **Companion → Port 8787 → COMPANION VERBINDEN**.
 
-Der Code liest keinen Spielprozess, schreibt nicht in Spielspeicher, injiziert keine DLL und umgeht kein Anti-Cheat. Er sendet keine Spieleingaben, Makros, Bewegungs-/Looting-/Farmingaktionen. Daraus wird **keine offizielle Freigabe** für einen zukünftigen Reader abgeleitet. Zulässigkeit und tatsächliche API-Capabilities sind vor einem realen Provider anhand aktueller offizieller Quellen separat zu prüfen.
+### Variante B — Starter
 
-Siehe `protocol/README.md`, `protocol/telemetry-v1.schema.json`, `bridge/README.md` und den Tatsachenaudit `docs/LIVE_GAME_COMPANION_FOUNDATION_20261008.md`.
+`companion\start-local.cmd` startet lokalen Website-Server und Bridge in getrennten Fenstern. Voraussetzungen: Python (`py`) und Node.js im PATH.
+
+## Overwolf
+
+Siehe `companion/overwolf/README.md`.
+
+Kurzfassung:
+
+1. Overwolf Developer Client installieren.
+2. `companion/overwolf/manifest.json` als unpacked App laden.
+3. Bridge-Token in den Companion-Einstellungen speichern.
+4. Once Human starten.
+5. `Shift+F9` toggelt die lokale Archivkarte im Spiel.
+
+Die Overwolf-App nutzt nur offizielle APIs für Spielprozessstatus, GEP-Szene, Match-Events, lokale HTTP-Kommunikation und Fenster/Hotkeys.
+
+## Sicherheit
+
+- Bridge bindet nur `127.0.0.1`.
+- Website-WebSocket akzeptiert standardmäßig nur `http://127.0.0.1:5500` und `http://localhost:5500` als Origin.
+- Zusätzliche lokale Origins nur explizit über `JMA_BROWSER_ORIGINS` konfigurieren.
+- Provider-Endpunkt braucht `Authorization: Bearer <token>`.
+- Keine Supabase-Tokens oder Website-Sessions im Companion-Protokoll.
+- Keine Rohpose wird gespeichert.
+- Position und Heading bleiben `null`, solange keine nachgewiesene Positionsquelle existiert.
+
+## Tests dieses Companion-Blocks
+
+Lokal in der Arbeitsumgebung ausgeführt:
+
+```text
+node tests/companion-bridge.cjs
+node tests/companion-overwolf.cjs
+```
+
+- 8 Bridge-Protokoll-/Sicherheitschecks.
+- 9 synthetische Overwolf-Providerchecks.
+- JS-Syntax und Manifest-JSON statisch geprüft.
+
+Der echte Overwolf-Windows-Client und Once Human selbst können in der Cloud-Arbeitsumgebung nicht gestartet werden. Ein echter Windows-End-to-End-Lauf bleibt deshalb ausdrücklich offen.
